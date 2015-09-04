@@ -28,8 +28,8 @@ typedef struct {
 
 typedef struct {
 	heap_object metadata;
-	int length;         // number of floats
-	float data[];       // a label to the start of the data part of vector
+	int length;         // number of doubles
+	double data[];       // a label to the start of the data part of vector
 } Vector;
 
 typedef struct string {
@@ -49,11 +49,14 @@ String *String_add(String *s, String *t);
 String *String_copy(String *s);
 
 Vector *Vector_empty();
-Vector *Vector_new(int size);
-Vector *Vector_append(Vector *a, float value);
+Vector *Vector_alloc(int size);
+Vector *Vector_new(double *data, int n);
+Vector *Vector_append(Vector *a, double value);
 Vector *Vector_append_vector(Vector *a, Vector *b);
 
 Vector *Vector_add(Vector *a, Vector *b);
 Vector *Vector_sub(Vector *a, Vector *b);
 Vector *Vector_mul(Vector *a, Vector *b);
 Vector *Vector_div(Vector *a, Vector *b);
+
+char *Vector_as_string(Vector *a);

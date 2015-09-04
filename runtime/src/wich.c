@@ -24,24 +24,44 @@ SOFTWARE.
 
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 #include "wich.h"
+
+Vector *Vector_new(double *data, int n)
+{
+	Vector *v = Vector_alloc(n);
+	memcpy(v->data, data, n * sizeof(double));
+	return v;
+}
 
 Vector *Vector_empty()
 {
-    return Vector_new(10);
+	int n = 10;
+    Vector *v = Vector_alloc(n);
+	memset(v->data, 0, n*sizeof(double));
+	return v;
 }
 
-Vector *Vector_new(int size)
+Vector *Vector_alloc(int size)
 {
-    Vector *v = malloc(sizeof(Vector) + size * sizeof(float));
+    Vector *v = malloc(sizeof(Vector) + size * sizeof(double));
     v->length = size;
-    memset(v->data, 0, size*sizeof(float));
     return v;
 }
 
-String *String_new(char *s);
-String *String_add(String *s, String *t);
-String *String_copy(String *s);
+char *Vector_as_string(Vector *a)
+{
+	char *s = calloc((size_t)a->length*20, sizeof(char));
+	char buf[50];
+	strcat(s, "[");
+	for (int i=0; i<a->length; i++) {
+		if ( i>0 ) strcat(s, ", ");
+		sprintf(buf, "%1.2f", a->data[i]);
+		strcat(s, buf);
+	}
+	strcat(s, "]");
+	return s;
+}
 
 String *String_new(char *orig)
 {
@@ -52,7 +72,7 @@ String *String_new(char *orig)
     return s;
 }
 
-/* old stuff we might use as base for float vector?
+/* old stuff we might use as base for double vector?
 
 void IntList_add(IntList *list, int v) {
     if ( list->next >= list->size ) {
