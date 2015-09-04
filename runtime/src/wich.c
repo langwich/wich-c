@@ -22,38 +22,58 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-typedef struct {
-	int refs;           // refs to this object
-} heap_object;
+#include <stdlib.h>
+#include <string.h>
+#include "wich.h"
 
-typedef struct {
-	heap_object metadata;
-	int length;         // number of floats
-	float data[];       // a label to the start of the data part of vector
-} Vector;
+Vector *Vector_empty()
+{
+    return Vector_new(10);
+}
 
-typedef struct string {
-	heap_object metadata;
-	int length;         // number of char in string
-	char str[];
-	/* the string starts at the end of fixed fields; this field
-     * does not take any room in the structure; it's really just a
-     * label for the element beyond the length field. So, there is no
-     * need set this field. You must, however, copy strings into it.
-     * You cannot set p->str = "foo";
-     */
-} String;
+Vector *Vector_new(int size)
+{
+    Vector *v = malloc(sizeof(Vector) + size * sizeof(float));
+    v->length = size;
+    memset(v->data, 0, size*sizeof(float));
+    return v;
+}
 
 String *String_new(char *s);
 String *String_add(String *s, String *t);
 String *String_copy(String *s);
 
-Vector *Vector_empty();
-Vector *Vector_new(int size);
-Vector *Vector_append(Vector *a, float value);
-Vector *Vector_append_vector(Vector *a, Vector *b);
+String *String_new(char *orig)
+{
+    size_t n = strlen(orig);
+    String *s = (String *) malloc(sizeof(String) + n * sizeof(char) + 1); // include \0 of string
+    s->length = (int)n;
+    memset(s->str, 0, n*sizeof(char));
+    return s;
+}
 
-Vector *Vector_add(Vector *a, Vector *b);
-Vector *Vector_sub(Vector *a, Vector *b);
-Vector *Vector_mul(Vector *a, Vector *b);
-Vector *Vector_div(Vector *a, Vector *b);
+/* old stuff we might use as base for float vector?
+
+void IntList_add(IntList *list, int v) {
+    if ( list->next >= list->size ) {
+        int *old = list->data;
+        list->data = calloc(list->size*2, sizeof(int));
+        memcpy(list->data, old, list->size);
+        free(old);
+        list->size *= 2;
+    }
+    list->data[list->next++] = v;
+}
+
+// Do two IntLists have same elements?
+int IntList_eq(IntList a, IntList b) {
+    int i;
+    if ( a.next!=b.next ) return 0;
+    int n = a.next > b.next ? a.next : b.next; // get max
+    if ( n<=0 ) return 0;
+    for (i=0; i<n; i++) {
+        if ( a.data[i]!=b.data[i] ) return 0;
+    }
+    return 1;
+}
+*/
