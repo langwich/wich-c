@@ -49,6 +49,7 @@ String *String_add(String *s, String *t);
 String *String_copy(String *s);
 
 Vector *Vector_empty();
+Vector *Vector_copy(Vector *v);
 Vector *Vector_alloc(int size);
 Vector *Vector_new(double *data, int n);
 Vector *Vector_append(Vector *a, double value);
@@ -60,3 +61,10 @@ Vector *Vector_mul(Vector *a, Vector *b);
 Vector *Vector_div(Vector *a, Vector *b);
 
 char *Vector_as_string(Vector *a);
+
+#define COPY_ON_WRITE(x) \
+	if ( x!=NULL && ((heap_object *)x)->refs > 1 ) { \
+		((heap_object *)x)->refs--; \
+        x = Vector_copy(x); \
+		((heap_object *)x)->refs = 1; \
+	}

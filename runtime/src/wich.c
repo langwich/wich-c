@@ -34,6 +34,11 @@ Vector *Vector_new(double *data, int n)
 	return v;
 }
 
+Vector *Vector_copy(Vector *v)
+{
+	return Vector_new(v->data, v->length);
+}
+
 Vector *Vector_empty()
 {
 	int n = 10;
