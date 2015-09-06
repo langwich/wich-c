@@ -21,10 +21,16 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-package wich.codegen.model;
+package wich.semantics.type;
 
-/** A model object that represents a complete script with possibly function
- *  definitions.
+import org.antlr.symtab.PrimitiveType;
+
+/**
+ * This class should not be instantiated.
+ * Subclasses of this class should all be singletons.
  */
-public class Script extends OutputModelObject {
+public abstract class WPrimitiveType extends PrimitiveType {
+	protected WPrimitiveType(String name) {
+		super(name);
+	}
 }

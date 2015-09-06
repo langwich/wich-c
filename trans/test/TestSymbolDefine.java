@@ -21,10 +21,23 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-package wich.codegen.model;
 
-/** A model object that represents a complete script with possibly function
- *  definitions.
- */
-public class Script extends OutputModelObject {
+import org.antlr.symtab.GlobalScope;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+
+public class TestSymbolDefine {
+
+	@Test
+	public void testDefineGlobalSymbol() throws Exception {
+		String input = "var x = 1";
+		String expected = "global>>x";
+		check(input, expected);
+	}
+	private void check(String input, String expected) {
+		GlobalScope globalScope = CompilerFacade.defineSymbols(input);
+		assertEquals(expected, globalScope.toTestString(",", ">>"));
+	}
 }

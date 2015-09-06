@@ -21,10 +21,15 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-package wich.codegen.model;
+package wich.parser;
 
-/** A model object that represents a complete script with possibly function
- *  definitions.
- */
-public class Script extends OutputModelObject {
+import which.parser.WichBaseVisitor;
+import wich.semantics.SymbolTable;
+
+public class TypeAnnotator extends WichBaseVisitor {
+	protected final SymbolTable symtab;
+
+	public TypeAnnotator(SymbolTable symtab) {
+		this.symtab = symtab;
+	}
 }

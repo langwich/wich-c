@@ -21,10 +21,26 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-package wich.codegen.model;
+package wich.semantics;
 
-/** A model object that represents a complete script with possibly function
- *  definitions.
- */
-public class Script extends OutputModelObject {
+import org.antlr.symtab.GlobalScope;
+import wich.semantics.type.WPrimitiveType;
+import wich.semantics.type.WFloat;
+import wich.semantics.type.WInt;
+import wich.semantics.type.WString;
+
+public class SymbolTable {
+	public static WPrimitiveType _int = WInt.instance();
+	public static WPrimitiveType _float = WFloat.instance();
+	public static WPrimitiveType _string = WString.instance();
+
+	protected final GlobalScope GLOBAL;
+
+	public SymbolTable() {
+		GLOBAL = new GlobalScope(null);
+	}
+
+	public GlobalScope getGlobalScope() {
+		return GLOBAL;
+	}
 }
