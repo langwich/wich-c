@@ -21,10 +21,30 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-package wich.codegen.model;
 
-/** A model object that represents a complete script with possibly function
- *  definitions.
- */
-public class Script extends OutputModelObject {
+import org.antlr.symtab.GlobalScope;
+import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
+import which.parser.WichLexer;
+import which.parser.WichParser;
+import wich.parser.SymbolTableConstructor;
+import wich.semantics.SymbolTable;
+
+public class CompilerFacade {
+
+	private static ParserRuleContext parse(ANTLRInputStream antlrInputStream) {
+		TokenStream tokens = new CommonTokenStream(new WichLexer(antlrInputStream));
+		WichParser parser = new WichParser(tokens);
+		return parser.file();
+	}
+
+	public static GlobalScope defineSymbols(String input) {
+		ParserRuleContext tree = parse(new ANTLRInputStream(input));
+		SymbolTable symtab = new SymbolTable();
+		ParseTreeWalker walker = new ParseTreeWalker();
+		SymbolTableConstructor symtabConstructor = new SymbolTableConstructor(symtab);
+		walker.walk(symtabConstructor, tree);
+
+		return symtab.getGlobalScope();
+	}
 }
