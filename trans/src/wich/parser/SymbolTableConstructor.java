@@ -25,8 +25,6 @@ package wich.parser;
 
 import org.antlr.symtab.Scope;
 import org.antlr.symtab.VariableSymbol;
-import which.parser.WichBaseListener;
-import which.parser.WichParser;
 import wich.semantics.SymbolTable;
 
 public class SymbolTableConstructor extends WichBaseListener{

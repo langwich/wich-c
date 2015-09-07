@@ -25,9 +25,9 @@ SOFTWARE.
 import org.antlr.symtab.GlobalScope;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
-import which.parser.WichLexer;
-import which.parser.WichParser;
 import wich.parser.SymbolTableConstructor;
+import wich.parser.WichLexer;
+import wich.parser.WichParser;
 import wich.semantics.SymbolTable;
 
 public class CompilerFacade {
@@ -44,7 +44,6 @@ public class CompilerFacade {
 		ParseTreeWalker walker = new ParseTreeWalker();
 		SymbolTableConstructor symtabConstructor = new SymbolTableConstructor(symtab);
 		walker.walk(symtabConstructor, tree);
-
 		return symtab.getGlobalScope();
 	}
 }
