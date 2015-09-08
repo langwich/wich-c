@@ -29,14 +29,10 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
-import which.parser.WichLexer;
-import which.parser.WichParser;
 import wich.codegen.ModelConverter;
 import wich.codegen.model.OutputModelObject;
-import wich.parser.CodeGenerator;
-import wich.parser.SymbolTableConstructor;
-import wich.parser.TypeAnnotator;
-import wich.parser.TypeChecker;
+import wich.codegen.CodeGenerator;
+import wich.parser.*;
 import wich.semantics.SymbolTable;
 
 import java.io.FileOutputStream;

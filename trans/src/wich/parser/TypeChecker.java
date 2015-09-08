@@ -23,7 +23,6 @@ SOFTWARE.
 */
 package wich.parser;
 
-import which.parser.WichBaseVisitor;
 import wich.semantics.SymbolTable;
 
 public class TypeChecker extends WichBaseVisitor {

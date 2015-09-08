@@ -21,10 +21,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-package wich.parser;
+package wich.codegen;
 
-import which.parser.WichBaseVisitor;
 import wich.codegen.model.OutputModelObject;
+import wich.parser.WichBaseVisitor;
 import wich.semantics.SymbolTable;
 
 public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {

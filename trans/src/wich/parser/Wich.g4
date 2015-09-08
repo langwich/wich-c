@@ -24,6 +24,7 @@ SOFTWARE.
 
 grammar Wich;
 
+
 file : script ;
 
 script : (statement | function)+ EOF ;
