@@ -70,3 +70,9 @@ void wich_free(heap_object *p);
         x = Vector_copy(x); \
 		((heap_object *)x)->refs = 1; \
 	}
+
+#define REF(x) ((heap_object *)x)->refs++;
+
+#define DEREF(x) \
+	((heap_object *)x)->refs--; \
+	if ( x!=NULL && ((heap_object *)x)->refs==0 ) wich_free((heap_object *)x); // frees object from y=f() finally
