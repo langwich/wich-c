@@ -28,6 +28,8 @@ Vector *f(Vector *x)
 	((heap_object *)x)->refs--;
 	// for ref counting GC, here is where we'd check for ref count == 0 to free()
 
+	// TODO for ref counting GC: we need to handle return of refs to local vectors; see gc_retval.c
+
 	return y;
 }
 

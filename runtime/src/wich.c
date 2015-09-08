@@ -77,6 +77,12 @@ String *String_new(char *orig)
     return s;
 }
 
+/** Recursively free all objects pointed to by p. we currently have no meta data on fields however */
+void wich_free(heap_object *p)
+{
+	free(p); // TODO: use metadata to recurse
+}
+
 /* old stuff we might use as base for double vector?
 
 void IntList_add(IntList *list, int v) {

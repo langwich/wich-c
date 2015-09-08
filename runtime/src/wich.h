@@ -62,6 +62,8 @@ Vector *Vector_div(Vector *a, Vector *b);
 
 char *Vector_as_string(Vector *a);
 
+void wich_free(heap_object *p);
+
 #define COPY_ON_WRITE(x) \
 	if ( x!=NULL && ((heap_object *)x)->refs > 1 ) { \
 		((heap_object *)x)->refs--; \
