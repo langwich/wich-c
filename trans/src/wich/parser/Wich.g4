@@ -23,7 +23,8 @@ SOFTWARE.
 */
 
 grammar Wich;
-
+@header {package wich.parser;
+}
 
 file : script ;
 

@@ -26,10 +26,14 @@ package wich.codegen.model;
 import java.util.ArrayList;
 import java.util.List;
 
-/** A model object that represents a complete script with possibly function
- *  definitions.
+/**
+ * Created by yuanyuan on 9/7/15.
  */
-public class Script extends OutputModelObject {
-    @ModelElement public List<FunDef> functions = new ArrayList<FunDef>();
-    @ModelElement public MainMethod main;
+public class CallExpr extends Expr{
+    public final String callName;
+    @ModelElement public List<Expr> exprs = new ArrayList<Expr>();
+    @ModelElement public List<Expr> printExpr = new ArrayList<Expr>();
+    public CallExpr(String callName) {
+        this.callName = callName;
+    }
 }
