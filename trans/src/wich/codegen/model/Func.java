@@ -26,17 +26,14 @@ package wich.codegen.model;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by yuanyuan on 9/7/15.
- */
-public class FunDef extends OutputModelObject{
+public class Func extends OutputModelObject{
     public final String funcName;
     @ModelElement public PType returnType;
     @ModelElement public List<ArgsDef> args = new ArrayList<ArgsDef>();
     @ModelElement public List<Stat> body = new ArrayList<Stat>();
-    @ModelElement public List<String> localVars = new ArrayList<String>();//store variables defines in current scope, used for refers --
+    @ModelElement public List<String> localVars = new ArrayList<String>();
 
-    public FunDef(String funcName) {
+    public Func(String funcName) {
         this.funcName = funcName;
     }
 }

@@ -25,12 +25,9 @@ package wich.codegen.model;
 
 import java.util.List;
 
-/**
- * Created by yuanyuan on 9/7/15.
- */
 public class AtomExpr extends Expr{
     public final String content;
-    @ModelElement public List<Expr> vector; //if a vector
+    @ModelElement public List<Expr> vector;
 
     public AtomExpr(String content) {
         this.content = content;

@@ -25,10 +25,7 @@ package wich.codegen.model;
 
 import java.util.List;
 
-/**
- * Created by yuanyuan on 9/7/15.
- */
 public class MainMethod extends OutputModelObject{
     @ModelElement public List<Stat> stats;
-    @ModelElement public List<String> vars;//store variables defines in current scope, used for refers --
+    @ModelElement public List<String> vars;
 }

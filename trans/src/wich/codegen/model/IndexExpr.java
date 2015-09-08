@@ -23,9 +23,6 @@ SOFTWARE.
 */
 package wich.codegen.model;
 
-/**
- * Created by yuanyuan on 9/7/15.
- */
 public class IndexExpr extends Expr {
     public final String varName;
     @ModelElement public Expr expr;

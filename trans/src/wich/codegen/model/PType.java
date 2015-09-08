@@ -23,12 +23,8 @@ SOFTWARE.
 */
 package wich.codegen.model;
 
-/**
- * Created by yuanyuan on 9/7/15.
- */
 public class PType extends OutputModelObject {
     public final String typeName;
-
     public PType(String typeName) {
         this.typeName = typeName;
     }

@@ -23,8 +23,5 @@ SOFTWARE.
 */
 package wich.codegen.model;
 
-/**
- * Created by yuanyuan on 9/7/15.
- */
 public abstract class Stat extends OutputModelObject {
 }

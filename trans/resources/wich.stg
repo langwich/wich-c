@@ -6,19 +6,19 @@ Script(s,functions,main) ::= <<
 <main>
 >>
 
-FunDef(f,returnType,args,localVars,body):: <<
+Func(f,returnType,args,localVars,body):: <<
 <returnType> <f.funcName>(<if(args)>, <args ;separator=","><endif>)
 {
- <body;separator="\n">
- <if(localVars)><localVars:{var|((heap_object *)<var>)->refs--;};separator="\n">
+    <body;separator="\n">
+    <if(localVars)><localVars:{var|((heap_object *)<var>)->refs--;};separator="\n">
 }
 >>
 
 MainMethod(main,stats,vars) ::<<
 int main(int argc, char *argv[])
 {
-  <stats;separator="\n">
-  <if(vars)><vars:{v|((heap_object *)<v>)->refs--;};separator="\n">
+    <stats;separator="\n">
+    <if(vars)><vars:{v|((heap_object *)<v>)->refs--;};separator="\n">
 }
 >>
 
@@ -47,7 +47,7 @@ while(<condition>){
 }
 >>
 
-ReturnStat(r,expr)  ::= "return <expr>;"
+ReturnStat(r,rExpr)  ::= "return <rExpr>;"
 
 VarDefStat(v,type,expr) ::= <<
 <type> <v.name> = <expr>;
@@ -78,7 +78,7 @@ OpExpr(o,lExpr,rExpr) ::= <<
 <lExpr> <o.operator> <rExpr>
 >>
 
-ParensExpr(p,pExpr) ::= "(<pExpr>)"
+ParensExpr(p,expression) ::= "(<expression>)"
 
 ArgDef(arg,type) ::= "<type> <arg.name>"
 

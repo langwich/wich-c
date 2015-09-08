@@ -23,9 +23,6 @@ SOFTWARE.
 */
 package wich.codegen.model;
 
-/**
- * Created by yuanyuan on 9/7/15.
- */
 public class NotExpr extends Expr {
     @ModelElement public Expr notExpr;
 }

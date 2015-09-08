@@ -26,9 +26,6 @@ package wich.codegen.model;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by yuanyuan on 9/7/15.
- */
 public class BlockStat extends Stat{
     @ModelElement public List<Stat> stats = new ArrayList<Stat>();
 }

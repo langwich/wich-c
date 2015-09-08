@@ -26,13 +26,11 @@ package wich.codegen.model;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by yuanyuan on 9/7/15.
- */
 public class CallExpr extends Expr{
     public final String callName;
     @ModelElement public List<Expr> exprs = new ArrayList<Expr>();
     @ModelElement public List<Expr> printExpr = new ArrayList<Expr>();
+
     public CallExpr(String callName) {
         this.callName = callName;
     }

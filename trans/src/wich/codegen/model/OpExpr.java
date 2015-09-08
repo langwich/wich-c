@@ -23,9 +23,6 @@ SOFTWARE.
 */
 package wich.codegen.model;
 
-/**
- * Created by yuanyuan on 9/7/15.
- */
 public class OpExpr extends Expr{
     public final String operator;
     @ModelElement public Expr lExp;
