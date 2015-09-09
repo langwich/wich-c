@@ -23,13 +23,12 @@ SOFTWARE.
 */
 package wich.codegen.model;
 
-import java.util.ArrayList;
-import java.util.List;
+public class OpExpr extends Expr{
+	public final String operator;
+	@ModelElement public Expr lExp;
+	@ModelElement public Expr rExp;
 
-/** A model object that represents a complete script with possibly function
- *  definitions.
- */
-public class Script extends OutputModelObject {
-	@ModelElement public List<Func> functions = new ArrayList<Func>();
-	@ModelElement public MainMethod main;
+	public OpExpr(String operator) {
+		this.operator = operator;
+	}
 }

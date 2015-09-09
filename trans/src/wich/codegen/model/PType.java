@@ -23,13 +23,9 @@ SOFTWARE.
 */
 package wich.codegen.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
-/** A model object that represents a complete script with possibly function
- *  definitions.
- */
-public class Script extends OutputModelObject {
-	@ModelElement public List<Func> functions = new ArrayList<Func>();
-	@ModelElement public MainMethod main;
+public class PType extends OutputModelObject {
+	public final String typeName;
+	public PType(String typeName) {
+		this.typeName = typeName;
+	}
 }

@@ -23,13 +23,12 @@ SOFTWARE.
 */
 package wich.codegen.model;
 
-import java.util.ArrayList;
-import java.util.List;
+public class ElementAssignStat extends Stat{
+	public final String eName;
+	@ModelElement public Expr index;
+	@ModelElement public Expr rExpr;
 
-/** A model object that represents a complete script with possibly function
- *  definitions.
- */
-public class Script extends OutputModelObject {
-	@ModelElement public List<Func> functions = new ArrayList<Func>();
-	@ModelElement public MainMethod main;
+	public ElementAssignStat(String eName) {
+		this.eName = eName;
+	}
 }
