@@ -52,7 +52,7 @@ statement
 	|	ID '[' expr ']' '=' expr							# ElementAssign
 	|	call_expr											# CallStatement
 	|	'return' expr										# Return
-	|	'{' statement+ '}'									# Block
+	|	'{' statement* '}'									# Block
 	;
 
 expr:	expr operator expr									# Op
