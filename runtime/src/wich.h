@@ -23,25 +23,25 @@ SOFTWARE.
 */
 
 typedef struct {
-	int refs;           // refs to this object
+    int refs;           // refs to this object
 } heap_object;
 
 typedef struct {
-	heap_object metadata;
-	int length;         // number of doubles
-	double data[];       // a label to the start of the data part of vector
+    heap_object metadata;
+    int length;         // number of doubles
+    double data[];       // a label to the start of the data part of vector
 } Vector;
 
 typedef struct string {
-	heap_object metadata;
-	int length;         // number of char in string
-	char str[];
-	/* the string starts at the end of fixed fields; this field
-     * does not take any room in the structure; it's really just a
-     * label for the element beyond the length field. So, there is no
-     * need set this field. You must, however, copy strings into it.
-     * You cannot set p->str = "foo";
-     */
+    heap_object metadata;
+    int length;         // number of char in string
+    char str[];
+    /* the string starts at the end of fixed fields; this field
+	 * does not take any room in the structure; it's really just a
+	 * label for the element beyond the length field. So, there is no
+	 * need set this field. You must, however, copy strings into it.
+	 * You cannot set p->str = "foo";
+	 */
 } String;
 
 String *String_new(char *s);
@@ -61,18 +61,26 @@ Vector *Vector_mul(Vector *a, Vector *b);
 Vector *Vector_div(Vector *a, Vector *b);
 
 char *Vector_as_string(Vector *a);
+void print_vector(Vector *a);
 
 void wich_free(heap_object *p);
 
 #define COPY_ON_WRITE(x) \
 	if ( x!=NULL && ((heap_object *)x)->refs > 1 ) { \
 		((heap_object *)x)->refs--; \
-        x = Vector_copy(x); \
+		x = Vector_copy(x); \
 		((heap_object *)x)->refs = 1; \
 	}
 
-#define REF(x) ((heap_object *)x)->refs++;
+#define REF(x) \
+	if ( x!=NULL ) ((heap_object *)x)->refs++; \
+	printf("REF(" #x ") bumps refs to %d\n", ((heap_object *)x)->refs);
 
 #define DEREF(x) \
-	((heap_object *)x)->refs--; \
-	if ( x!=NULL && ((heap_object *)x)->refs==0 ) wich_free((heap_object *)x); // frees object from y=f() finally
+	printf("DEREF(" #x ") has %d refs\n", ((heap_object *)x)->refs);\
+	if ( x!=NULL ) ((heap_object *)x)->refs--; \
+	if ( x!=NULL && ((heap_object *)x)->refs==0 ) { \
+		printf("free(" #x ")\n"); \
+        wich_free((heap_object *)x); \
+		x = NULL; \
+	}

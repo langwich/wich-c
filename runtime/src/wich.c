@@ -31,6 +31,7 @@ Vector *Vector_new(double *data, int n)
 {
 	Vector *v = Vector_alloc(n);
 	memcpy(v->data, data, n * sizeof(double));
+	REF(v); // presumption is that people will have a ref to this result
 	return v;
 }
 
@@ -42,16 +43,38 @@ Vector *Vector_copy(Vector *v)
 Vector *Vector_empty()
 {
 	int n = 10;
-    Vector *v = Vector_alloc(n);
+	Vector *v = Vector_alloc(n);
 	memset(v->data, 0, n*sizeof(double));
+	REF(v); // presumption is that people will have a ref to this result
 	return v;
 }
 
 Vector *Vector_alloc(int size)
 {
-    Vector *v = malloc(sizeof(Vector) + size * sizeof(double));
-    v->length = size;
-    return v;
+	Vector *v = malloc(sizeof(Vector) + size * sizeof(double));
+	v->metadata.refs = 0;
+	v->length = size;
+	return v;
+}
+
+Vector *Vector_add(Vector *a, Vector *b)
+{
+	int i;
+	if ( a==NULL || b==NULL || a->length!=b->length ) return NULL;
+	int n = a->length;
+	Vector * c = Vector_alloc(n);
+	for (i=0; i<n; i++) {
+		c->data[i] = a->data[i] + b->data[i];
+	}
+	REF(c); // presumption is that people will have a ref to this result
+	return c;
+}
+
+void print_vector(Vector *a)
+{
+	char *vs = Vector_as_string(a);
+	printf("%s\n", vs);
+	free(vs);
 }
 
 char *Vector_as_string(Vector *a)
@@ -70,11 +93,12 @@ char *Vector_as_string(Vector *a)
 
 String *String_new(char *orig)
 {
-    size_t n = strlen(orig);
-    String *s = (String *) malloc(sizeof(String) + n * sizeof(char) + 1); // include \0 of string
-    s->length = (int)n;
-    memset(s->str, 0, n*sizeof(char));
-    return s;
+	size_t n = strlen(orig);
+	String *s = (String *) malloc(sizeof(String) + n * sizeof(char) + 1); // include \0 of string
+	s->length = (int)n;
+	memset(s->str, 0, n*sizeof(char));
+	REF(s); // presumption is that people will have a ref to this result
+	return s;
 }
 
 /** Recursively free all objects pointed to by p. we currently have no meta data on fields however */

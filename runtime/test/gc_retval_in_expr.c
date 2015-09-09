@@ -8,8 +8,7 @@ func f() : [] {
 	return x
 }
 
-var y = f()
-f()
+print( f() + f() )
  */
 
 Vector *f()
@@ -29,14 +28,14 @@ Vector *f()
 
 int main(int argc, char *argv[])
 {
-	// var y = f()
-	Vector *y = f();                // ref count is 1 for return value
-
-	// f(x)
-	Vector *tmp;
-	tmp = f();      	            // need to track return values for free'ing at end of scope
+	// print( f() + f() )
+	Vector *tmp1;
+	Vector *tmp2;
+	Vector *tmp3;
+	print_vector( tmp3=Vector_add(tmp1=f(), tmp2=f()) );
 
 	// end of global scope
-	DEREF(y);
-	DEREF(tmp);
+	DEREF(tmp1);
+	DEREF(tmp2);
+	DEREF(tmp3);
 }
