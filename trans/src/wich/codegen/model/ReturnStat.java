@@ -24,6 +24,5 @@ SOFTWARE.
 package wich.codegen.model;
 
 public class ReturnStat extends Stat {
-
-    @ModelElement public Expr rExpr;
+	@ModelElement public Expr rExpr;
 }

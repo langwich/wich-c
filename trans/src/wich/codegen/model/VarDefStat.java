@@ -24,11 +24,11 @@ SOFTWARE.
 package wich.codegen.model;
 
 public class VarDefStat extends OutputModelObject {
-    public final String name;
-    @ModelElement public PType type;
-    @ModelElement public Expr expr;
+	public final String name;
+	@ModelElement public PType type;
+	@ModelElement public Expr expr;
 
-    public VarDefStat(String name) {
-        this.name = name;
-    }
+	public VarDefStat(String name) {
+		this.name = name;
+	}
 }

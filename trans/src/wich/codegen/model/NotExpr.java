@@ -24,5 +24,5 @@ SOFTWARE.
 package wich.codegen.model;
 
 public class NotExpr extends Expr {
-    @ModelElement public Expr notExpr;
+	@ModelElement public Expr notExpr;
 }

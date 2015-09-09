@@ -26,6 +26,6 @@ package wich.codegen.model;
 import java.util.List;
 
 public class MainMethod extends OutputModelObject{
-    @ModelElement public List<Stat> stats;
-    @ModelElement public List<String> vars;
+	@ModelElement public List<Stat> stats;
+	@ModelElement public List<String> vars;
 }

@@ -27,5 +27,5 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BlockStat extends Stat{
-    @ModelElement public List<Stat> stats = new ArrayList<Stat>();
+	@ModelElement public List<Stat> stats = new ArrayList<Stat>();
 }

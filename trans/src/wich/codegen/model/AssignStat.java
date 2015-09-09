@@ -24,9 +24,9 @@ SOFTWARE.
 package wich.codegen.model;
 
 public class AssignStat extends Stat{
-    public final String varName;
-    @ModelElement public Expr right;
-    public AssignStat(String varName) {
-        this.varName = varName;
-    }
+	public final String varName;
+	@ModelElement public Expr right;
+	public AssignStat(String varName) {
+		this.varName = varName;
+	}
 }

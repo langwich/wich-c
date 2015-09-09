@@ -24,5 +24,5 @@ SOFTWARE.
 package wich.codegen.model;
 
 public class CallStat extends Stat {
-    @ModelElement CallExpr callExpr;
+	@ModelElement CallExpr callExpr;
 }

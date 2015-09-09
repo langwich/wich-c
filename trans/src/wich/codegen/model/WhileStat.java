@@ -24,6 +24,6 @@ SOFTWARE.
 package wich.codegen.model;
 
 public class WhileStat extends Stat {
-    @ModelElement Expr condition;
-    @ModelElement public Stat stat;
+	@ModelElement Expr condition;
+	@ModelElement public Stat stat;
 }

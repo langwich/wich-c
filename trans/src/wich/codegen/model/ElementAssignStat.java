@@ -24,11 +24,11 @@ SOFTWARE.
 package wich.codegen.model;
 
 public class ElementAssignStat extends Stat{
-    public final String eName;
-    @ModelElement public Expr index;
-    @ModelElement public Expr rExpr;
+	public final String eName;
+	@ModelElement public Expr index;
+	@ModelElement public Expr rExpr;
 
-    public ElementAssignStat(String eName) {
-        this.eName = eName;
-    }
+	public ElementAssignStat(String eName) {
+		this.eName = eName;
+	}
 }

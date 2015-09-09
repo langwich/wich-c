@@ -24,10 +24,10 @@ SOFTWARE.
 package wich.codegen.model;
 
 public class IndexExpr extends Expr {
-    public final String varName;
-    @ModelElement public Expr expr;
+	public final String varName;
+	@ModelElement public Expr expr;
 
-    public IndexExpr(String varName) {
-        this.varName = varName;
-    }
+	public IndexExpr(String varName) {
+		this.varName = varName;
+	}
 }

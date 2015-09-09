@@ -26,10 +26,10 @@ package wich.codegen.model;
 import java.util.List;
 
 public class AtomExpr extends Expr{
-    public final String content;
-    @ModelElement public List<Expr> vector;
+	public final String content;
+	@ModelElement public List<Expr> vector;
 
-    public AtomExpr(String content) {
-        this.content = content;
-    }
+	public AtomExpr(String content) {
+		this.content = content;
+	}
 }

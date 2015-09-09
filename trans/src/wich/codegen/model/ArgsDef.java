@@ -24,10 +24,10 @@ SOFTWARE.
 package wich.codegen.model;
 
 public class ArgsDef extends OutputModelObject{
-    public final String name;
-    @ModelElement public PType type;
+	public final String name;
+	@ModelElement public PType type;
 
-    public ArgsDef(String name) {
-        this.name = name;
-    }
+	public ArgsDef(String name) {
+		this.name = name;
+	}
 }

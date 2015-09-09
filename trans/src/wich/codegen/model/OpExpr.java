@@ -24,11 +24,11 @@ SOFTWARE.
 package wich.codegen.model;
 
 public class OpExpr extends Expr{
-    public final String operator;
-    @ModelElement public Expr lExp;
-    @ModelElement public Expr rExp;
+	public final String operator;
+	@ModelElement public Expr lExp;
+	@ModelElement public Expr rExp;
 
-    public OpExpr(String operator) {
-        this.operator = operator;
-    }
+	public OpExpr(String operator) {
+		this.operator = operator;
+	}
 }
