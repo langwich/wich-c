@@ -54,7 +54,7 @@ block returns [Scope scope]
 statement
 	:	'if' '(' expr ')' statement ('else' statement)?		# If
 	|	'while' '(' expr ')' statement						# While
-	|	'var' ID ('=' expr)?								# VarDef
+	|	'var' ID '=' expr									# VarDef
 	|	ID '=' expr											# Assign
 	|	ID '[' expr ']' '=' expr				            # ElementAssign
 	|	call_expr											# CallStatement
