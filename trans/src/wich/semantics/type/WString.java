@@ -25,7 +25,7 @@ package wich.semantics.type;
 
 import org.antlr.symtab.PrimitiveType;
 
-public class WString extends PrimitiveType {
+public class WString extends WBuiltInTypeSymbol {
 	public WString() {
 		super("String");
 	}

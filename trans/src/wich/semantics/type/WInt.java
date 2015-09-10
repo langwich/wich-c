@@ -25,7 +25,7 @@ package wich.semantics.type;
 
 import org.antlr.symtab.PrimitiveType;
 
-public class WInt extends PrimitiveType {
+public class WInt extends WBuiltInTypeSymbol {
 	public WInt() {
 		super("int");
 	}

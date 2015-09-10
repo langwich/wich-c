@@ -23,22 +23,41 @@ SOFTWARE.
 */
 package wich.semantics;
 
+import org.antlr.symtab.BaseScope;
 import org.antlr.symtab.GlobalScope;
+import org.antlr.symtab.InvalidType;
+import org.antlr.symtab.PredefinedScope;
+import org.antlr.symtab.Scope;
+import org.antlr.symtab.Type;
+import wich.semantics.type.WBoolean;
 import wich.semantics.type.WFloat;
 import wich.semantics.type.WInt;
 import wich.semantics.type.WString;
 import wich.semantics.type.WVector;
 
 public class SymbolTable {
-	public static WInt _int = new WInt();
-	public static WFloat _float = new WFloat();
-	public static WString _string = new WString();
-	public static WVector _vector = new WVector();
+	public BaseScope PREDEFINED = new PredefinedScope();
+	public GlobalScope GLOBALS = new GlobalScope(PREDEFINED);
+	public static final Type INVALID_TYPE = new InvalidType();
+
+	public static final WInt _int = new WInt();
+	public static final WFloat _float = new WFloat();
+	public static final WString _string = new WString();
+	public static final WVector _vector = new WVector();
+	public static final WBoolean _boolean = new WBoolean();
 
 	protected final GlobalScope GLOBAL;
 
 	public SymbolTable() {
 		GLOBAL = new GlobalScope(null);
+	}
+
+	protected void initTypeSystem() {
+		PREDEFINED.define(_int);
+		PREDEFINED.define(_float);
+		PREDEFINED.define(_string);
+		PREDEFINED.define(_vector);
+		PREDEFINED.define(_boolean);
 	}
 
 	public GlobalScope getGlobalScope() {
