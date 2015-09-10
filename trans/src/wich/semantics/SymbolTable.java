@@ -28,6 +28,7 @@ import org.antlr.symtab.GlobalScope;
 import org.antlr.symtab.InvalidType;
 import org.antlr.symtab.PredefinedScope;
 import org.antlr.symtab.Scope;
+import org.antlr.symtab.Symbol;
 import org.antlr.symtab.Type;
 import wich.semantics.type.WBoolean;
 import wich.semantics.type.WFloat;
@@ -50,6 +51,7 @@ public class SymbolTable {
 
 	public SymbolTable() {
 		GLOBAL = new GlobalScope(null);
+		initTypeSystem();
 	}
 
 	protected void initTypeSystem() {
@@ -62,5 +64,38 @@ public class SymbolTable {
 
 	public GlobalScope getGlobalScope() {
 		return GLOBAL;
+	}
+
+	public Scope getPredefinedScope() {
+		return PREDEFINED;
+	}
+
+	public static String dump(Scope s) {
+		StringBuilder buf = new StringBuilder();
+		dump(buf, s, 0);
+		return buf.toString();
+	}
+
+	public static void dump(StringBuilder buf, Scope s, int level) {
+		buf.append(tab(level));
+		buf.append(s.getName()+" {\n");
+		level++;
+		for (Symbol sym : s.getSymbols()) {
+			if ( !(sym instanceof Scope) ) {
+				buf.append(tab(level));	buf.append(sym+"\n");
+			}
+		}
+		for (Scope nested : s.getNestedScopes()) {
+			dump(buf, nested, level);
+		}
+		level--;
+		buf.append(tab(level));
+		buf.append("}\n");
+	}
+
+	public static String tab(int n) {
+		StringBuilder buf = new StringBuilder();
+		for (int i=1; i<=n; i++) buf.append("    ");
+		return buf.toString();
 	}
 }

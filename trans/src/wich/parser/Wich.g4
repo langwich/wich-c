@@ -25,7 +25,6 @@ SOFTWARE.
 grammar Wich;
 
 @header {
-package wich.parser;
 import wich.semantics.type.*;
 import org.antlr.symtab.*;
 }
@@ -33,10 +32,10 @@ import org.antlr.symtab.*;
 file : script ;
 
 script returns [GlobalScope scope]
-    : (statement | function)+ EOF ;
+    : (statement | function)* EOF ;
 
-function returns [WFunction scope]
-	:	'func' ID '(' formal_args ')' (':' type)? block
+function returns [WFunctionSymbol scope]
+	:	'func' ID '(' formal_args? ')' (':' type)? block
 	;
 
 formal_args : formal_arg (',' formal_arg)* ;
@@ -74,7 +73,7 @@ expr returns [Type exprType]
 	;
 
 operator  : '*'|'/'|'+'|'-'|'<'|'<='|'=='|'!='|'>'|'>='|'||'|'&&'|' . ' ; // no precedence
-call_expr : ID '(' expr_list ')' ;
+call_expr : ID '(' expr_list ')' ; // todo: maybe add print as keyword?
 expr_list : expr (',' expr)* ;
 
 primary

@@ -38,12 +38,12 @@ public class CompilerFacade {
 		return parser.file();
 	}
 
-	public static GlobalScope defineSymbols(String input) {
+	public static SymbolTable defineSymbols(String input) {
 		ParserRuleContext tree = parse(new ANTLRInputStream(input));
 		SymbolTable symtab = new SymbolTable();
 		ParseTreeWalker walker = new ParseTreeWalker();
 		SymbolTableConstructor symtabConstructor = new SymbolTableConstructor(symtab);
 		walker.walk(symtabConstructor, tree);
-		return symtab.getGlobalScope();
+		return symtab;
 	}
 }
