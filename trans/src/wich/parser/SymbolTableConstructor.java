@@ -30,10 +30,10 @@ import org.antlr.symtab.Type;
 import org.antlr.v4.runtime.misc.NotNull;
 import wich.semantics.SymbolTable;
 import wich.semantics.type.WArgSymbol;
-import wich.semantics.type.WFunction;
+import wich.semantics.type.WFunctionSymbol;
 import wich.semantics.type.WVariableSymbol;
 
-public class SymbolTableConstructor extends WichBaseListener{
+public class SymbolTableConstructor extends WichBaseListener {
 
 	private final SymbolTable symtab;
 	private Scope currentScope;
@@ -55,7 +55,7 @@ public class SymbolTableConstructor extends WichBaseListener{
 
     @Override
     public void enterFunction(@NotNull WichParser.FunctionContext ctx) {
-        WFunction f = new WFunction(ctx.ID().getText());
+        WFunctionSymbol f = new WFunctionSymbol(ctx.ID().getText());
         ctx.scope = f;
         f.setEnclosingScope(currentScope);
         currentScope.define(f);

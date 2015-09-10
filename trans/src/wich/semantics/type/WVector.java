@@ -1,17 +1,10 @@
 package wich.semantics.type;
 
-/**
- * Created by Shuai on 9/9/15.
- */
-public class WVector extends WPrimitiveType {
+import org.antlr.symtab.ArrayType;
+import wich.semantics.SymbolTable;
 
-    protected static WVector instance = new WVector("vector");
-
-    public static WVector instance() {
-        return instance;
-    }
-
-    protected WVector(String name) {
-        super(name);
+public class WVector extends ArrayType {
+    public WVector() {
+        super(SymbolTable._float);
     }
 }

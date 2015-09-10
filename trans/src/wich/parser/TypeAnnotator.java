@@ -62,12 +62,12 @@ public class TypeAnnotator extends WichBaseListener {
     public void exitCall(@NotNull WichParser.CallContext ctx) {
         Symbol s = currentScope.resolve(ctx.call_expr().ID().getText());
         if(s != null)
-            ctx.exprType = ((WFunction)s).getType();
+            ctx.exprType = ((WFunctionSymbol)s).getType();
     }
 
     @Override
     public void exitIndex(@NotNull WichParser.IndexContext ctx) {
-        ctx.exprType = WFloat.instance();
+        ctx.exprType = SymbolTable._float;
     }
 
     @Override
@@ -86,19 +86,19 @@ public class TypeAnnotator extends WichBaseListener {
         }
         //INT
         else if(primary.INT() != null){
-            ctx.exprType = WInt.instance();
+            ctx.exprType = SymbolTable._int;
         }
         //FLOAT
         else if(primary.FLOAT() != null){
-            ctx.exprType = WFloat.instance();
+            ctx.exprType = SymbolTable._float;
         }
         //STRING
         else if(primary.STRING() !=null){
-            ctx.exprType = WString.instance();
+            ctx.exprType = SymbolTable._string;
         }
         //vector
         else{
-            ctx.exprType = WVector.instance();
+            ctx.exprType = SymbolTable._vector;
         }
     }
 

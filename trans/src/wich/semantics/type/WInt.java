@@ -23,15 +23,10 @@ SOFTWARE.
 */
 package wich.semantics.type;
 
-public class WInt extends WPrimitiveType {
+import org.antlr.symtab.PrimitiveType;
 
-	protected static WInt instance = new WInt("int");
-
-	public static WInt instance() {
-		return instance;
-	}
-
-	protected WInt(String name) {
-		super(name);
+public class WInt extends PrimitiveType {
+	public WInt() {
+		super("int");
 	}
 }

@@ -61,10 +61,10 @@ public class TypeChecker extends WichBaseListener {
         WichParser.ExprContext index = ctx.expr(0);
         WichParser.ExprContext elem = ctx. expr(1);
 
-        if(index.exprType != WInt.instance()) //TODO: range of the index: 1 to length of the vector
+        if(index.exprType != SymbolTable._int) //TODO: range of the index: 1 to length of the vector
             error("Invalid vector index.", new Exception());
 
-        if(elem.exprType != WFloat.instance() && elem.exprType != WInt.instance())
+        if(elem.exprType != SymbolTable._float && elem.exprType != SymbolTable._int)
             error("Invalid vector element.", new Exception());
 
     }

@@ -23,15 +23,8 @@ SOFTWARE.
 */
 package wich.semantics.type;
 
-public class WFloat extends WPrimitiveType {
+import org.antlr.symtab.PrimitiveType;
 
-	protected static WFloat instance = new WFloat("float");
-
-	public static WFloat instance() {
-		return instance;
-	}
-
-	protected WFloat(String name) {
-		super(name);
-	}
+public class WFloat extends PrimitiveType {
+	public WFloat() { super("float"); }
 }

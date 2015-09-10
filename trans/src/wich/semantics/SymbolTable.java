@@ -24,15 +24,16 @@ SOFTWARE.
 package wich.semantics;
 
 import org.antlr.symtab.GlobalScope;
-import wich.semantics.type.WPrimitiveType;
 import wich.semantics.type.WFloat;
 import wich.semantics.type.WInt;
 import wich.semantics.type.WString;
+import wich.semantics.type.WVector;
 
 public class SymbolTable {
-	public static WPrimitiveType _int = WInt.instance();
-	public static WPrimitiveType _float = WFloat.instance();
-	public static WPrimitiveType _string = WString.instance();
+	public static WInt _int = new WInt();
+	public static WFloat _float = new WFloat();
+	public static WString _string = new WString();
+	public static WVector _vector = new WVector();
 
 	protected final GlobalScope GLOBAL;
 

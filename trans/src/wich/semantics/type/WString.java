@@ -23,15 +23,10 @@ SOFTWARE.
 */
 package wich.semantics.type;
 
-public class WString extends WPrimitiveType {
+import org.antlr.symtab.PrimitiveType;
 
-	protected static WString instance = new WString("string");
-
-	public static WString instance() {
-		return instance;
-	}
-
-	protected WString(String name) {
-		super(name);
+public class WString extends PrimitiveType {
+	public WString() {
+		super("String");
 	}
 }
