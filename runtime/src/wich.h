@@ -23,35 +23,38 @@ SOFTWARE.
 */
 
 typedef struct {
-    int refs;           // refs to this object
+	int refs;    		// refs to this object
 } heap_object;
 
 typedef struct {
-    heap_object metadata;
-    int length;         // number of doubles
-    double data[];       // a label to the start of the data part of vector
+	heap_object metadata;
+	size_t length;      // number of doubles
+	double data[];      // a label to the start of the data part of vector
 } Vector;
 
 typedef struct string {
-    heap_object metadata;
-    int length;         // number of char in string
-    char str[];
-    /* the string starts at the end of fixed fields; this field
+	heap_object metadata;
+	char str[];
+	/* the string starts at the end of fixed fields; this field
 	 * does not take any room in the structure; it's really just a
 	 * label for the element beyond the length field. So, there is no
 	 * need set this field. You must, however, copy strings into it.
 	 * You cannot set p->str = "foo";
+	 * Must terminate with '\0';
 	 */
 } String;
 
 String *String_new(char *s);
+String *String_from_char(char c);
+String *String_alloc(size_t size);
 String *String_add(String *s, String *t);
 String *String_copy(String *s);
+void print_string(String *s);
 
 Vector *Vector_empty();
 Vector *Vector_copy(Vector *v);
-Vector *Vector_alloc(int size);
-Vector *Vector_new(double *data, int n);
+Vector *Vector_alloc(size_t size);
+Vector *Vector_new(double *data, size_t n);
 Vector *Vector_append(Vector *a, double value);
 Vector *Vector_append_vector(Vector *a, Vector *b);
 

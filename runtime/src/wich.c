@@ -27,7 +27,7 @@ SOFTWARE.
 #include <stdio.h>
 #include "wich.h"
 
-Vector *Vector_new(double *data, int n)
+Vector *Vector_new(double *data, size_t n)
 {
 	Vector *v = Vector_alloc(n);
 	memcpy(v->data, data, n * sizeof(double));
@@ -49,7 +49,7 @@ Vector *Vector_empty()
 	return v;
 }
 
-Vector *Vector_alloc(int size)
+Vector *Vector_alloc(size_t size)
 {
 	Vector *v = malloc(sizeof(Vector) + size * sizeof(double));
 	v->metadata.refs = 0;
@@ -61,7 +61,7 @@ Vector *Vector_add(Vector *a, Vector *b)
 {
 	int i;
 	if ( a==NULL || b==NULL || a->length!=b->length ) return NULL;
-	int n = a->length;
+	size_t n = a->length;
 	Vector * c = Vector_alloc(n);
 	for (i=0; i<n; i++) {
 		c->data[i] = a->data[i] + b->data[i];
@@ -79,7 +79,7 @@ void print_vector(Vector *a)
 
 char *Vector_as_string(Vector *a)
 {
-	char *s = calloc((size_t)a->length*20, sizeof(char));
+	char *s = calloc(a->length*20, sizeof(char));
 	char buf[50];
 	strcat(s, "[");
 	for (int i=0; i<a->length; i++) {
@@ -91,14 +91,42 @@ char *Vector_as_string(Vector *a)
 	return s;
 }
 
+String *String_alloc(size_t size)
+{
+	String *s = (String *)malloc(sizeof(String) + size * sizeof(char) + 1); // include \0 of string
+	s->metadata.refs = 0;
+	return s;
+}
+
 String *String_new(char *orig)
 {
-	size_t n = strlen(orig);
-	String *s = (String *) malloc(sizeof(String) + n * sizeof(char) + 1); // include \0 of string
-	s->length = (int)n;
-	memset(s->str, 0, n*sizeof(char));
+	String *s = String_alloc(strlen(orig));
+	strcpy(s->str, orig);
 	REF(s); // presumption is that people will have a ref to this result
 	return s;
+}
+
+String *String_from_char(char c)
+{
+	char buf[2] = {c, '\0'};
+	return String_new(buf);
+}
+
+void print_string(String *a)
+{
+	printf("%s\n", a->str);
+}
+
+String *String_add(String *s, String *t)
+{
+	if ( s==NULL ) return t;
+	if ( t==NULL ) return s;
+	size_t n = strlen(s->str) + strlen(t->str);
+	String *u = String_alloc(n);
+	REF(u);
+	strcpy(u->str, s->str);
+	strcat(u->str, t->str);
+	return u;
 }
 
 /** Recursively free all objects pointed to by p. we currently have no meta data on fields however */
