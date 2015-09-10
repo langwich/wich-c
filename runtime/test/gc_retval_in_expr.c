@@ -16,13 +16,13 @@ Vector *f()
 	// var x = [1, 2, 3]
 	Vector *x = Vector_new((double []){1,2,3}, 3);
 
-	// code for return statement is split in two parts; part 1 indicates a ref will escape this context
+	// 1. code for return statement is split in 3 parts; part 1 indicates a ref will escape this context
 	REF(x); // count is now 2
 
-	// end of scope code: drop ref count by 1 for all [], string vars
+	// 2. end of scope code: drop ref count by 1 for all [], string vars
 	DEREF(x);
 
-	// code for return statement is split in two parts; part 2
+	// 3. actual return statement
 	return x;
 }
 
