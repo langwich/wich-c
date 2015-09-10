@@ -37,9 +37,13 @@ import wich.semantics.SymbolTable;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class Trans {
-	public static void main(String[] args) {
+
+    public static void main(String[] args) {
 		Trans translator = new Trans();
 		if (args.length != 2 && args.length != 3) {
 			System.out.println("Try: java Trans <input_file> [-console | -file <output_path>]");
@@ -86,12 +90,14 @@ public class Trans {
 			// and annotate the parse tree with type information
 			// also, it deals with type inference
 			TypeAnnotator typeAnnotator = new TypeAnnotator(symtab);
-			typeAnnotator.visit(tree);
+            walker = new ParseTreeWalker();
+			walker.walk(typeAnnotator, tree);
 
 			// use TypeChecker tree visitor to do static type checking
 			// as well as type promotion
 			TypeChecker typeChecker = new TypeChecker(symtab);
-			typeChecker.visit(tree);
+            walker = new ParseTreeWalker();
+			walker.walk(typeChecker, tree);
 
 			// use CodeGenerator tree visitor to generate the target
 			// language (C).

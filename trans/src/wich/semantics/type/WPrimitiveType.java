@@ -23,13 +23,14 @@ SOFTWARE.
 */
 package wich.semantics.type;
 
-import org.antlr.symtab.PrimitiveType;
+import org.antlr.symtab.BaseSymbol;
+import org.antlr.symtab.Type;
 
 /**
  * This class should not be instantiated.
  * Subclasses of this class should all be singletons.
  */
-public abstract class WPrimitiveType extends PrimitiveType {
+public abstract class WPrimitiveType extends BaseSymbol implements Type {
 	protected WPrimitiveType(String name) {
 		super(name);
 	}

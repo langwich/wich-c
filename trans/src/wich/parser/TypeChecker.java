@@ -23,13 +23,97 @@ SOFTWARE.
 */
 package wich.parser;
 
+import org.antlr.symtab.Scope;
+import org.antlr.symtab.Symbol;
+import org.antlr.symtab.Type;
+import org.antlr.symtab.TypedSymbol;
+import org.antlr.v4.runtime.misc.NotNull;
 import wich.semantics.SymbolTable;
+import wich.semantics.type.*;
 
-public class TypeChecker extends WichBaseVisitor {
+import java.lang.Exception;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-	protected final SymbolTable symtab;
+public class TypeChecker extends WichBaseListener {
 
-	public TypeChecker(SymbolTable symtab) {
+	private final SymbolTable symtab;
+    private Scope currentScope;
+    public final List<String> errors = new ArrayList<>();
+
+
+    public TypeChecker(SymbolTable symtab) {
 		this.symtab = symtab;
 	}
+
+    @Override
+    public void exitAssign(@NotNull WichParser.AssignContext ctx) {
+        Symbol s = currentScope.resolve(ctx.ID().getText());
+        Type left = ((TypedSymbol) s).getType();
+        Type right = ctx.expr().exprType;
+
+        //TODO checktype after type promotion
+    }
+
+    @Override
+    public void exitElementAssign(@NotNull WichParser.ElementAssignContext ctx) {
+        WichParser.ExprContext index = ctx.expr(0);
+        WichParser.ExprContext elem = ctx. expr(1);
+
+        if(index.exprType != WInt.instance()) //TODO: range of the index: 1 to length of the vector
+            error("Invalid vector index.", new Exception());
+
+        if(elem.exprType != WFloat.instance() && elem.exprType != WInt.instance())
+            error("Invalid vector element.", new Exception());
+
+    }
+
+    @Override
+    public void enterScript(@NotNull WichParser.ScriptContext ctx) {
+        pushScope(ctx.scope);
+    }
+
+    @Override
+    public void exitScript(@NotNull WichParser.ScriptContext ctx) {
+        popScope();
+    }
+
+    @Override
+    public void enterFunction(@NotNull WichParser.FunctionContext ctx) {
+        pushScope(ctx.scope);
+    }
+
+    @Override
+    public void exitFunction(@NotNull WichParser.FunctionContext ctx) {
+        popScope();
+    }
+
+    @Override
+    public void enterBlock(@NotNull WichParser.BlockContext ctx) {
+        pushScope(ctx.scope);
+    }
+
+    @Override
+    public void exitBlock(@NotNull WichParser.BlockContext ctx) {
+        popScope();
+    }
+
+    private void pushScope(Scope s) {
+        currentScope = s;
+    }
+
+    private void popScope() {
+        if (currentScope == null) return;
+        currentScope = currentScope.getEnclosingScope();
+    }
+
+    // Naive error support for typeChecker
+    private void error(String msg) {
+        errors.add(msg);
+    }
+    private void error(String msg, Exception e) {
+        errors.add(msg+"\n"+ Arrays.toString(e.getStackTrace()));
+    }
+
 }
