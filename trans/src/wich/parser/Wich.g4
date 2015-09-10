@@ -23,15 +23,20 @@ SOFTWARE.
 */
 
 grammar Wich;
-@header {package wich.parser;
+
+@header {
+package wich.parser;
+import wich.semantics.type.*;
+import org.antlr.symtab.*;
 }
 
 file : script ;
 
-script : (statement | function)+ EOF ;
+script returns [GlobalScope scope]
+    : (statement | function)+ EOF ;
 
-function
-	:	'func' ID '(' formal_args ')' (':' type)? '{' statement* '}'
+function returns [WFunction scope]
+	:	'func' ID '(' formal_args ')' (':' type)? block
 	;
 
 formal_args : formal_arg (',' formal_arg)* ;
@@ -44,18 +49,22 @@ type:	'int'
 	|	'[' ']'
 	;
 
+block returns [Scope scope]
+    :  '{' statement* '}';
+
 statement
 	:	'if' '(' expr ')' statement ('else' statement)?		# If
 	|	'while' '(' expr ')' statement						# While
 	|	'var' ID ('=' expr)?								# VarDef
 	|	ID '=' expr											# Assign
-	|	ID '[' expr ']' '=' expr							# ElementAssign
+	|	ID '[' expr ']' '=' expr				            # ElementAssign
 	|	call_expr											# CallStatement
 	|	'return' expr										# Return
-	|	'{' statement* '}'									# Block
+	|	block              	 								# BlockStatement
 	;
 
-expr:	expr operator expr									# Op
+expr returns [Type exprType]
+    :	expr operator expr									# Op
 	|	'-' expr											# Negate
 	|	'!' expr											# Not
 	|	call_expr											# Call
