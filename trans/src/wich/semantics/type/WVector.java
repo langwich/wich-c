@@ -3,9 +3,10 @@ package wich.semantics.type;
 import org.antlr.symtab.Type;
 import wich.semantics.SymbolTable;
 
-public class WVector extends WBuiltInTypeSymbol implements Type {
+public class WVector extends WBuiltInTypeSymbol {
 	protected final Type elemType = SymbolTable._float;
-    public WVector() {
+	public WVector() {
         super("vector");
+		typeIndex = 3;
     }
 }

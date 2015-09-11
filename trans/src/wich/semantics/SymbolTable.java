@@ -30,11 +30,7 @@ import org.antlr.symtab.PredefinedScope;
 import org.antlr.symtab.Scope;
 import org.antlr.symtab.Symbol;
 import org.antlr.symtab.Type;
-import wich.semantics.type.WBoolean;
-import wich.semantics.type.WFloat;
-import wich.semantics.type.WInt;
-import wich.semantics.type.WString;
-import wich.semantics.type.WVector;
+import wich.semantics.type.*;
 
 public class SymbolTable {
 	public BaseScope PREDEFINED = new PredefinedScope();
@@ -98,4 +94,9 @@ public class SymbolTable {
 		for (int i=1; i<=n; i++) buf.append("    ");
 		return buf.toString();
 	}
+
+	public static WBuiltInTypeSymbol op(String op, WBuiltInTypeSymbol lt, WBuiltInTypeSymbol rt) {
+		return TypeHelper.getResultType(op, lt, rt);
+	}
+
 }

@@ -23,8 +23,9 @@ SOFTWARE.
 */
 package wich.semantics.type;
 
-import org.antlr.symtab.PrimitiveType;
-
 public class WFloat extends WBuiltInTypeSymbol {
-	public WFloat() { super("float"); }
+	public WFloat() {
+		super("float");
+		typeIndex = 1;
+	}
 }
