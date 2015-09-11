@@ -33,8 +33,8 @@ public class WVariableSymbol extends VariableSymbol {
 	@Override
 	public String toString() {
 		String s = "";
-		s = scope.getName()+".";
-		if ( type!=null ) return '<'+s+getName()+":"+type+'>';
-		return s+getName();
+		s = scope.getName() + ".";
+		if (type != null) return '<' + s + getName() + ":" + type + '>';
+		return s + getName();
 	}
 }

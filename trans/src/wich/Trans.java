@@ -43,7 +43,7 @@ import java.util.List;
 
 public class Trans {
 
-    public static void main(String[] args) {
+	public static void main(String[] args) {
 		Trans translator = new Trans();
 		if (args.length != 2 && args.length != 3) {
 			System.out.println("Try: java Trans <input_file> [-console | -file <output_path>]");
@@ -86,17 +86,16 @@ public class Trans {
 			SymbolTableConstructor symtabConstructor = new SymbolTableConstructor(symtab);
 			walker.walk(symtabConstructor, tree);
 
-			// use the TypeAnnotator tree visitor to compute and
+			// use the TypeAnnotator listener to compute and
 			// and annotate the parse tree with type information
-			// also, it deals with type inference
+			// also, it deals with type inference and type promotion
 			TypeAnnotator typeAnnotator = new TypeAnnotator(symtab);
-            walker = new ParseTreeWalker();
+			walker = new ParseTreeWalker();
 			walker.walk(typeAnnotator, tree);
 
-			// use TypeChecker tree visitor to do static type checking
-			// as well as type promotion
+			// use TypeChecker listener to do static type checking
 			TypeChecker typeChecker = new TypeChecker(symtab);
-            walker = new ParseTreeWalker();
+			walker = new ParseTreeWalker();
 			walker.walk(typeChecker, tree);
 
 			// use CodeGenerator tree visitor to generate the target
