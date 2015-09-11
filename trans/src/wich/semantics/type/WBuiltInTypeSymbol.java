@@ -27,11 +27,13 @@ import org.antlr.symtab.BaseSymbol;
 import org.antlr.symtab.Type;
 
 public class WBuiltInTypeSymbol extends BaseSymbol implements Type {
+	public static enum TYPE { INT, FLOAT, BOOLEAN, STRING, VECTOR };
 	protected int typeIndex;
 	protected WBuiltInTypeSymbol promotedType;
 
-	public WBuiltInTypeSymbol(String name) {
+	public WBuiltInTypeSymbol(String name, TYPE type) {
 		super(name);
+		this.typeIndex = type.ordinal();
 	}
 
 	@Override
