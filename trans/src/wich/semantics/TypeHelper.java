@@ -25,18 +25,22 @@ package wich.semantics;
 
 import wich.semantics.type.WBuiltInTypeSymbol;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static wich.semantics.SymbolTable.*;
 
-public class TypeSystemHelper {
+public class TypeHelper {
+
 	// ---------------------------- Result Type Table ----------------------------
 	// *, / -
 	protected static final WBuiltInTypeSymbol[][] arithmeticResultTable = new WBuiltInTypeSymbol[][] {
-	/*           int        float       string      vector      boolean */
-	/*int*/	    {_int,      _float,     null,       _vector,    null},
-	/*float*/	{_float,    _float,     null,       _vector,    null},
-	/*string*/	{null,      null,       null,       null,       null},
-	/*vector*/	{_vector,   _vector,    null,       _vector,    null},
-	/*boolean*/	{null,      null,       null,       null,       null}
+		/*           int        float       string      vector      boolean */
+		/*int*/	    {_int,      _float,     null,       _vector,    null},
+		/*float*/	{_float,    _float,     null,       _vector,    null},
+		/*string*/	{null,      null,       null,       null,       null},
+		/*vector*/	{_vector,   _vector,    null,       _vector,    null},
+		/*boolean*/	{null,      null,       null,       null,       null}
 	};
 	// +
 	protected static final WBuiltInTypeSymbol[][] arithmeticStrResultTable = new WBuiltInTypeSymbol[][] {
@@ -122,18 +126,68 @@ public class TypeSystemHelper {
 	/*boolean*/	{null,      null,       null,       null,       null}
 	};
 
+	protected WBuiltInTypeSymbol[][] resultTable = null;
+	protected WBuiltInTypeSymbol[][] promoteTable = null;
+
+	static class ArithmeticTypeHelper extends TypeHelper {
+		public ArithmeticTypeHelper() {
+			resultTable = TypeHelper.arithmeticResultTable;
+			promoteTable = TypeHelper.arithmeticPromoteFromTo;
+		}
+	}
+	static class StringArithmeticTypeHelper extends TypeHelper {
+		public StringArithmeticTypeHelper() {
+			resultTable = TypeHelper.arithmeticStrResultTable;
+			promoteTable = TypeHelper.arithmeticStrPromoteFromTo;
+		}
+	}
+	static class RelationalTypeHelper extends TypeHelper {
+		public RelationalTypeHelper() {
+			resultTable = TypeHelper.relationalResultTable;
+			promoteTable = TypeHelper.relationalPromoteFromTo;
+		}
+	}
+	static class EqualityTypeHelper extends TypeHelper {
+		public EqualityTypeHelper() {
+			resultTable = TypeHelper.equalityResultTable;
+			promoteTable = TypeHelper.equalityPromoteFromTo;
+		}
+	}
+	static class LogicalTypeHelper extends TypeHelper {
+		public LogicalTypeHelper() {
+			resultTable = TypeHelper.logicalResultTable;
+			promoteTable = TypeHelper.logicalPromoteFromTo;
+		}
+	}
+
+	protected static final Map<String, TypeHelper> opTypeMap = new HashMap<>();
+	static {
+		opTypeMap.put("*", new ArithmeticTypeHelper());
+		opTypeMap.put("-", new ArithmeticTypeHelper());
+		opTypeMap.put("/", new ArithmeticTypeHelper());
+		opTypeMap.put("+", new StringArithmeticTypeHelper());
+
+		opTypeMap.put("<=", new RelationalTypeHelper());
+		opTypeMap.put("<", new RelationalTypeHelper());
+		opTypeMap.put(">=", new RelationalTypeHelper());
+		opTypeMap.put(">", new RelationalTypeHelper());
+
+		opTypeMap.put("==", new EqualityTypeHelper());
+		opTypeMap.put("!=", new EqualityTypeHelper());
+
+		opTypeMap.put("and", new LogicalTypeHelper());
+		opTypeMap.put("or", new LogicalTypeHelper());
+	}
 
 	// This method is the general helper method used to calculate result type.
 	// You should use the method in SymbolTable based on this method.
-	public static WBuiltInTypeSymbol getResultType(WBuiltInTypeSymbol[][] resultTable,
-	                                               WBuiltInTypeSymbol[][] promoteTable,
-	                                               WBuiltInTypeSymbol lt,
-	                                               WBuiltInTypeSymbol rt) {
+	public static WBuiltInTypeSymbol getResultType(String op, WBuiltInTypeSymbol lt, WBuiltInTypeSymbol rt) {
 		int li = lt.getTypeIndex();
 		int ri = rt.getTypeIndex();
-		WBuiltInTypeSymbol resultType = resultTable[li][ri];
-		lt.setPromotedType(promoteTable[li][resultType.getTypeIndex()]);
-		lt.setPromotedType(promoteTable[li][resultType.getTypeIndex()]);
+		TypeHelper typeHelper = opTypeMap.get(op);
+		WBuiltInTypeSymbol resultType = typeHelper.resultTable[li][ri];
+		lt.setPromotedType(typeHelper.promoteTable[li][resultType.getTypeIndex()]);
+		lt.setPromotedType(typeHelper.promoteTable[li][resultType.getTypeIndex()]);
 		return resultType;
 	}
 }
