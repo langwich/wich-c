@@ -39,81 +39,82 @@ import java.util.List;
 public class TypeChecker extends WichBaseListener {
 
 	private final SymbolTable symtab;
-    private Scope currentScope;
-    public final List<String> errors = new ArrayList<>();
+	private Scope currentScope;
+	public final List<String> errors = new ArrayList<>();
 
 
-    public TypeChecker(SymbolTable symtab) {
+	public TypeChecker(SymbolTable symtab) {
 		this.symtab = symtab;
 	}
 
-    @Override
-    public void exitAssign(@NotNull WichParser.AssignContext ctx) {
-        Symbol s = currentScope.resolve(ctx.ID().getText());
-        Type left = ((TypedSymbol) s).getType();
-        Type right = ctx.expr().exprType;
+	@Override
+	public void exitAssign(@NotNull WichParser.AssignContext ctx) {
+		Symbol s = currentScope.resolve(ctx.ID().getText());
+		Type left = ((TypedSymbol) s).getType();
+		Type right = ctx.expr().exprType;
 
-        //TODO checktype after type promotion
-    }
+		//TODO checktype after type promotion
+	}
 
-    @Override
-    public void exitElementAssign(@NotNull WichParser.ElementAssignContext ctx) {
-        WichParser.ExprContext index = ctx.expr(0);
-        WichParser.ExprContext elem = ctx. expr(1);
+	@Override
+	public void exitElementAssign(@NotNull WichParser.ElementAssignContext ctx) {
+		WichParser.ExprContext index = ctx.expr(0);
+		WichParser.ExprContext elem = ctx.expr(1);
 
-        if(index.exprType != SymbolTable._int) //TODO: range of the index: 1 to length of the vector
-            error("Invalid vector index.", new Exception());
+		if (index.exprType != SymbolTable._int) //TODO: range of the index: 1 to length of the vector
+			error("Invalid vector index.", new Exception());
 
-        if(elem.exprType != SymbolTable._float && elem.exprType != SymbolTable._int)
-            error("Invalid vector element.", new Exception());
+		if (elem.exprType != SymbolTable._float && elem.exprType != SymbolTable._int)
+			error("Invalid vector element.", new Exception());
 
-    }
+	}
 
-    @Override
-    public void enterScript(@NotNull WichParser.ScriptContext ctx) {
-        pushScope(ctx.scope);
-    }
+	@Override
+	public void enterScript(@NotNull WichParser.ScriptContext ctx) {
+		pushScope(ctx.scope);
+	}
 
-    @Override
-    public void exitScript(@NotNull WichParser.ScriptContext ctx) {
-        popScope();
-    }
+	@Override
+	public void exitScript(@NotNull WichParser.ScriptContext ctx) {
+		popScope();
+	}
 
-    @Override
-    public void enterFunction(@NotNull WichParser.FunctionContext ctx) {
-        pushScope(ctx.scope);
-    }
+	@Override
+	public void enterFunction(@NotNull WichParser.FunctionContext ctx) {
+		pushScope(ctx.scope);
+	}
 
-    @Override
-    public void exitFunction(@NotNull WichParser.FunctionContext ctx) {
-        popScope();
-    }
+	@Override
+	public void exitFunction(@NotNull WichParser.FunctionContext ctx) {
+		popScope();
+	}
 
-    @Override
-    public void enterBlock(@NotNull WichParser.BlockContext ctx) {
-        pushScope(ctx.scope);
-    }
+	@Override
+	public void enterBlock(@NotNull WichParser.BlockContext ctx) {
+		pushScope(ctx.scope);
+	}
 
-    @Override
-    public void exitBlock(@NotNull WichParser.BlockContext ctx) {
-        popScope();
-    }
+	@Override
+	public void exitBlock(@NotNull WichParser.BlockContext ctx) {
+		popScope();
+	}
 
-    private void pushScope(Scope s) {
-        currentScope = s;
-    }
+	private void pushScope(Scope s) {
+		currentScope = s;
+	}
 
-    private void popScope() {
-        if (currentScope == null) return;
-        currentScope = currentScope.getEnclosingScope();
-    }
+	private void popScope() {
+		if (currentScope == null) return;
+		currentScope = currentScope.getEnclosingScope();
+	}
 
-    // Naive error support for typeChecker
-    private void error(String msg) {
-        errors.add(msg);
-    }
-    private void error(String msg, Exception e) {
-        errors.add(msg+"\n"+ Arrays.toString(e.getStackTrace()));
-    }
+	// Naive error support for typeChecker
+	private void error(String msg) {
+		errors.add(msg);
+	}
+
+	private void error(String msg, Exception e) {
+		errors.add(msg + "\n" + Arrays.toString(e.getStackTrace()));
+	}
 
 }

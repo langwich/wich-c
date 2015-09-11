@@ -35,109 +35,109 @@ import wich.semantics.type.*;
 public class TypeAnnotator extends WichBaseListener {
 
 	private final SymbolTable symtab;
-    private Scope currentScope;
+	private Scope currentScope;
 
 	public TypeAnnotator(SymbolTable symtab) {
-        this.symtab = symtab;
+		this.symtab = symtab;
 	}
 
-    @Override
-    public void exitOp(@NotNull WichParser.OpContext ctx) {
-        //TODO type promotion
-        super.exitOp(ctx);
-    }
+	@Override
+	public void exitOp(@NotNull WichParser.OpContext ctx) {
+		//TODO type promotion
+		super.exitOp(ctx);
+	}
 
-    @Override
-    public void exitNegate(@NotNull WichParser.NegateContext ctx) {
-        ctx.exprType = ctx.expr().exprType;
-    }
+	@Override
+	public void exitNegate(@NotNull WichParser.NegateContext ctx) {
+		ctx.exprType = ctx.expr().exprType;
+	}
 
-    @Override
-    public void exitNot(@NotNull WichParser.NotContext ctx) {
-        //Not sure what it means, used in conditional to see if it's nonzero? Like a boolean?
-        ctx.exprType = ctx.expr().exprType;
-    }
+	@Override
+	public void exitNot(@NotNull WichParser.NotContext ctx) {
+		//Not sure what it means, used in conditional to see if it's nonzero? Like a boolean?
+		ctx.exprType = ctx.expr().exprType;
+	}
 
-    @Override
-    public void exitCall(@NotNull WichParser.CallContext ctx) {
-        Symbol s = currentScope.resolve(ctx.call_expr().ID().getText());
-        if(s != null)
-            ctx.exprType = ((WFunctionSymbol)s).getType();
-    }
+	@Override
+	public void exitCall(@NotNull WichParser.CallContext ctx) {
+		Symbol s = currentScope.resolve(ctx.call_expr().ID().getText());
+		if (s != null)
+			ctx.exprType = ((WFunctionSymbol) s).getType();
+	}
 
-    @Override
-    public void exitIndex(@NotNull WichParser.IndexContext ctx) {
-        ctx.exprType = SymbolTable._float;
-    }
+	@Override
+	public void exitIndex(@NotNull WichParser.IndexContext ctx) {
+		ctx.exprType = SymbolTable._float;
+	}
 
-    @Override
-    public void exitParens(@NotNull WichParser.ParensContext ctx) {
-        ctx.exprType = ctx.expr().exprType;
-    }
+	@Override
+	public void exitParens(@NotNull WichParser.ParensContext ctx) {
+		ctx.exprType = ctx.expr().exprType;
+	}
 
-    @Override
-    public void exitAtom(@NotNull WichParser.AtomContext ctx) {
-        WichParser.PrimaryContext primary = ctx.primary();
-        //ID
-        if(primary.ID() != null){
-            Symbol s = currentScope.resolve(primary.ID().getText());
-            if(s != null)
-                ctx.exprType = ((TypedSymbol)s).getType();
-        }
-        //INT
-        else if(primary.INT() != null){
-            ctx.exprType = SymbolTable._int;
-        }
-        //FLOAT
-        else if(primary.FLOAT() != null){
-            ctx.exprType = SymbolTable._float;
-        }
-        //STRING
-        else if(primary.STRING() !=null){
-            ctx.exprType = SymbolTable._string;
-        }
-        //vector
-        else{
-            ctx.exprType = SymbolTable._vector;
-        }
-    }
+	@Override
+	public void exitAtom(@NotNull WichParser.AtomContext ctx) {
+		WichParser.PrimaryContext primary = ctx.primary();
+		//ID
+		if (primary.ID() != null) {
+			Symbol s = currentScope.resolve(primary.ID().getText());
+			if (s != null)
+				ctx.exprType = ((TypedSymbol) s).getType();
+		}
+		//INT
+		else if (primary.INT() != null) {
+			ctx.exprType = SymbolTable._int;
+		}
+		//FLOAT
+		else if (primary.FLOAT() != null) {
+			ctx.exprType = SymbolTable._float;
+		}
+		//STRING
+		else if (primary.STRING() != null) {
+			ctx.exprType = SymbolTable._string;
+		}
+		//vector
+		else {
+			ctx.exprType = SymbolTable._vector;
+		}
+	}
 
-    @Override
-    public void enterScript(@NotNull WichParser.ScriptContext ctx) {
-        pushScope(ctx.scope);
-    }
+	@Override
+	public void enterScript(@NotNull WichParser.ScriptContext ctx) {
+		pushScope(ctx.scope);
+	}
 
-    @Override
-    public void exitScript(@NotNull WichParser.ScriptContext ctx) {
-        popScope();
-    }
+	@Override
+	public void exitScript(@NotNull WichParser.ScriptContext ctx) {
+		popScope();
+	}
 
-    @Override
-    public void enterFunction(@NotNull WichParser.FunctionContext ctx) {
-        pushScope(ctx.scope);
-    }
+	@Override
+	public void enterFunction(@NotNull WichParser.FunctionContext ctx) {
+		pushScope(ctx.scope);
+	}
 
-    @Override
-    public void exitFunction(@NotNull WichParser.FunctionContext ctx) {
-        popScope();
-    }
+	@Override
+	public void exitFunction(@NotNull WichParser.FunctionContext ctx) {
+		popScope();
+	}
 
-    @Override
-    public void enterBlock(@NotNull WichParser.BlockContext ctx) {
-        pushScope(ctx.scope);
-    }
+	@Override
+	public void enterBlock(@NotNull WichParser.BlockContext ctx) {
+		pushScope(ctx.scope);
+	}
 
-    @Override
-    public void exitBlock(@NotNull WichParser.BlockContext ctx) {
-        popScope();
-    }
+	@Override
+	public void exitBlock(@NotNull WichParser.BlockContext ctx) {
+		popScope();
+	}
 
-    private void pushScope(Scope s) {
-        currentScope = s;
-    }
+	private void pushScope(Scope s) {
+		currentScope = s;
+	}
 
-    private void popScope() {
-        if (currentScope == null) return;
-        currentScope = currentScope.getEnclosingScope();
-    }
+	private void popScope() {
+		if (currentScope == null) return;
+		currentScope = currentScope.getEnclosingScope();
+	}
 }
