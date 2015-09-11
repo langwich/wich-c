@@ -58,7 +58,7 @@ public class TestSymbolDefs {
 	}
 
 	@Test public void testDefineGlobalSymbol() throws Exception {
-		String input = "var x = 1";
+		String input = "var x = 1\n";
 		String expecting =
 			"global {\n" +
 			"    global.x:int\n" +
@@ -67,39 +67,16 @@ public class TestSymbolDefs {
 	}
 
 	@Test
-	public void testOneGlobal() throws Exception {
-		String lava =
-			"int i;";
-		String expecting =
-			"global {\n" +
-			"    <global.i@0:int>\n" +
-			"    main {\n" +
-			"        local {\n" +
-			"        }\n" +
-			"    }\n" +
-			"}\n";
-		checkScopes(lava, expecting);
-	}
-
-	@Test
 	public void testMultipleGlobal() throws Exception {
 		String lava =
-			"int i;" +
-			"float g;\n" +
-			"char c;\n" +
-			"string s = \"hi\";\n" +
-			"boolean b = true;\n";
+			"var i = 1\n" +
+			"var j = \"hi\"\n" +
+			"var k = [1,2,3.3]\n";
 		String expecting =
 			"global {\n" +
-			"    <global.i@0:int>\n" +
-			"    <global.g@1:float>\n" +
-			"    <global.c@2:char>\n" +
-			"    <global.s@3:string>\n" +
-			"    <global.b@4:boolean>\n" +
-			"    main {\n" +
-			"        local {\n" +
-			"        }\n" +
-			"    }\n" +
+			"    global.i:int\n" +
+			"    global.j:string\n" +
+			"    global.k:vector\n" +
 			"}\n";
 		checkScopes(lava, expecting);
 	}
@@ -116,7 +93,7 @@ public class TestSymbolDefs {
 	}
 
 	@Test
-	public void testGlobalStringArray() throws Exception {
+	public void testGlobalString() throws Exception {
 		String lava =
 			"var s = \"hi\"\n";
 		String expecting =
