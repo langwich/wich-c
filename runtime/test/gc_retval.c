@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
 	// var y = f()
 	Vector *y = f();                // ref count is 1 for return value
 
-	// f(x)
+	// f()
 	Vector *tmp;
 	tmp = f();      	            // need to track return values for free'ing at end of scope
 
