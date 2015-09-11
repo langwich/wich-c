@@ -26,5 +26,6 @@ package wich.semantics.type;
 public class WString extends WBuiltInTypeSymbol {
 	public WString() {
 		super("String");
+		typeIndex = 2;
 	}
 }

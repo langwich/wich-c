@@ -26,5 +26,6 @@ package wich.semantics.type;
 public class WBoolean extends WBuiltInTypeSymbol {
 	public WBoolean() {
 		super("boolean");
+		typeIndex = 4;
 	}
 }

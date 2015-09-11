@@ -30,11 +30,9 @@ import org.antlr.symtab.PredefinedScope;
 import org.antlr.symtab.Scope;
 import org.antlr.symtab.Symbol;
 import org.antlr.symtab.Type;
-import wich.semantics.type.WBoolean;
-import wich.semantics.type.WFloat;
-import wich.semantics.type.WInt;
-import wich.semantics.type.WString;
-import wich.semantics.type.WVector;
+import wich.semantics.type.*;
+
+import static wich.semantics.TypeSystemHelper.*;
 
 public class SymbolTable {
 	public BaseScope PREDEFINED = new PredefinedScope();
@@ -97,5 +95,25 @@ public class SymbolTable {
 		StringBuilder buf = new StringBuilder();
 		for (int i=1; i<=n; i++) buf.append("    ");
 		return buf.toString();
+	}
+
+	public WBuiltInTypeSymbol strBop(WBuiltInTypeSymbol lt, WBuiltInTypeSymbol rt) {
+		return getResultType(arithmeticStrResultTable, arithmeticStrPromoteFromTo, lt, rt);
+	}
+
+	public WBuiltInTypeSymbol bop(WBuiltInTypeSymbol lt, WBuiltInTypeSymbol rt) {
+		return getResultType(arithmeticResultTable, arithmeticPromoteFromTo, lt, rt);
+	}
+
+	public WBuiltInTypeSymbol relop(WBuiltInTypeSymbol lt, WBuiltInTypeSymbol rt) {
+		return getResultType(relationalResultTable, relationalPromoteFromTo, lt, rt);
+	}
+
+	public WBuiltInTypeSymbol eop(WBuiltInTypeSymbol lt, WBuiltInTypeSymbol rt) {
+		return getResultType(equalityResultTable, equalityPromoteFromTo, lt, rt);
+	}
+
+	public WBuiltInTypeSymbol lop(WBuiltInTypeSymbol lt, WBuiltInTypeSymbol rt) {
+		return getResultType(logicalResultTable, logicalPromoteFromTo, lt, rt);
 	}
 }

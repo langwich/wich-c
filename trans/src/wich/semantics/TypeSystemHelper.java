@@ -23,59 +23,97 @@ SOFTWARE.
 */
 package wich.semantics;
 
-import org.antlr.symtab.PrimitiveType;
+import wich.semantics.type.WBuiltInTypeSymbol;
+
+import static wich.semantics.SymbolTable.*;
 
 public class TypeSystemHelper {
 	// ---------------------------- Result Type Table ----------------------------
-
-	protected static final PrimitiveType[][] arithmeticResultTable = new PrimitiveType[][] {
+	// *, / -
+	protected static final WBuiltInTypeSymbol[][] arithmeticResultTable = new WBuiltInTypeSymbol[][] {
 	/*           int        float       string      vector      boolean */
-	/*int*/	    {null,      null,       null,       null,       null},
-	/*float*/	{null,      null,       null,       null,       null},
+	/*int*/	    {_int,      _float,     null,       _vector,    null},
+	/*float*/	{_float,    _float,     null,       _vector,    null},
 	/*string*/	{null,      null,       null,       null,       null},
+	/*vector*/	{_vector,   _vector,    null,       _vector,    null},
+	/*boolean*/	{null,      null,       null,       null,       null}
+	};
+	// +
+	protected static final WBuiltInTypeSymbol[][] arithmeticStrResultTable = new WBuiltInTypeSymbol[][] {
+	/*           int        float       string      vector      boolean */
+	/*int*/	    {_int,      _float,     _string,    _vector,    null},
+	/*float*/	{_float,    _float,     _string,    _vector,    null},
+	/*string*/	{_string,   _string,    _string,    _string,    null},
+	/*vector*/	{_vector,   _vector,    _string,    _vector,    null},
+	/*boolean*/	{null,      null,       null,       null,       null}
+	};
+	// <, <=, >, >=
+	protected static final WBuiltInTypeSymbol[][] relationalResultTable = new WBuiltInTypeSymbol[][] {
+	/*           int        float       string      vector      boolean */
+	/*int*/	    {_boolean,  _boolean,   null,       null,       null},
+	/*float*/	{_boolean,  _boolean,   null,       null,       null},
+	/*string*/	{null,      null,       _boolean,   null,       null},
 	/*vector*/	{null,      null,       null,       null,       null},
 	/*boolean*/	{null,      null,       null,       null,       null}
 	};
-
-	protected static final PrimitiveType[][] arithmeticStrResultTable = new PrimitiveType[][] {
+	// ==, !=
+	protected static final WBuiltInTypeSymbol[][] equalityResultTable = new WBuiltInTypeSymbol[][] {
 	/*           int        float       string      vector      boolean */
-	/*int*/	    {null,      null,       null,       null,       null},
-	/*float*/	{null,      null,       null,       null,       null},
-	/*string*/	{null,      null,       null,       null,       null},
-	/*vector*/	{null,      null,       null,       null,       null},
-	/*boolean*/	{null,      null,       null,       null,       null}
+	/*int*/	    {_boolean,  _boolean,   null,       null,       null},
+	/*float*/	{_boolean,  _boolean,   null,       null,       null},
+	/*string*/	{null,      null,       _boolean,   null,       null},
+	/*vector*/	{null,      null,       null,       _boolean,   null},
+	/*boolean*/	{null,      null,       null,       null,       _boolean}
 	};
-
-	protected static final PrimitiveType[][] relationalResultTable = new PrimitiveType[][] {
+	// and, or
+	protected static final WBuiltInTypeSymbol[][] logicalResultTable = new WBuiltInTypeSymbol[][] {
 	/*           int        float       string      vector      boolean */
 	/*int*/	    {null,      null,       null,       null,       null},
 	/*float*/	{null,      null,       null,       null,       null},
 	/*string*/	{null,      null,       null,       null,       null},
 	/*vector*/	{null,      null,       null,       null,       null},
-	/*boolean*/	{null,      null,       null,       null,       null}
-	};
-
-	protected static final PrimitiveType[][] relationalEqualityResultTable = new PrimitiveType[][] {
-	/*           int        float       string      vector      boolean */
-	/*int*/	    {null,      null,       null,       null,       null},
-	/*float*/	{null,      null,       null,       null,       null},
-	/*string*/	{null,      null,       null,       null,       null},
-	/*vector*/	{null,      null,       null,       null,       null},
-	/*boolean*/	{null,      null,       null,       null,       null}
-	};
-
-	protected static final PrimitiveType[][] LogicalResultTable = new PrimitiveType[][] {
-	/*           int        float       string      vector      boolean */
-	/*int*/	    {null,      null,       null,       null,       null},
-	/*float*/	{null,      null,       null,       null,       null},
-	/*string*/	{null,      null,       null,       null,       null},
-	/*vector*/	{null,      null,       null,       null,       null},
-	/*boolean*/	{null,      null,       null,       null,       null}
+	/*boolean*/	{null,      null,       null,       null,       _boolean}
 	};
 
 	// ---------------------------- Type Promotion Table ----------------------------
-
-	protected static final PrimitiveType[][] arithmeticPromoteFromTo = new PrimitiveType[][] {
+	// *, /, -
+	protected static final WBuiltInTypeSymbol[][] arithmeticPromoteFromTo = new WBuiltInTypeSymbol[][] {
+	/*           int        float       string      vector      boolean */
+	/*int*/	    {null,      _float,     null,       _vector,    null},
+	/*float*/	{null,      null,       null,       _vector,    null},
+	/*string*/	{null,      null,       null,       null,       null},
+	/*vector*/	{null,      null,       null,       null,       null},
+	/*boolean*/	{null,      null,       null,       null,       null}
+	};
+	// +
+	protected static final WBuiltInTypeSymbol[][] arithmeticStrPromoteFromTo = new WBuiltInTypeSymbol[][] {
+	/*           int        float       string      vector      boolean */
+	/*int*/	    {null,      _float,     _string,    _vector,    null},
+	/*float*/	{null,      null,       _string,    _vector,    null},
+	/*string*/	{null,      null,       null,       null,       null},
+	/*vector*/	{null,      null,       _string,    null,       null},
+	/*boolean*/	{null,      null,       null,       null,       null}
+	};
+	// <, <=, >, >=
+	protected static final WBuiltInTypeSymbol[][] relationalPromoteFromTo = new WBuiltInTypeSymbol[][] {
+	/*           int        float       string      vector      boolean */
+	/*int*/	    {null,      _float,     null,       null,       null},
+	/*float*/	{null,      null,       null,       null,       null},
+	/*string*/	{null,      null,       null,       null,       null},
+	/*vector*/	{null,      null,       null,       null,       null},
+	/*boolean*/	{null,      null,       null,       null,       null}
+	};
+	// ==, !=
+	protected static final WBuiltInTypeSymbol[][] equalityPromoteFromTo = new WBuiltInTypeSymbol[][] {
+	/*           int        float       string      vector      boolean */
+	/*int*/	    {null,      _float,     null,       null,       null},
+	/*float*/	{null,      null,       null,       null,       null},
+	/*string*/	{null,      null,       null,       null,       null},
+	/*vector*/	{null,      null,       null,       null,       null},
+	/*boolean*/	{null,      null,       null,       null,       null}
+	};
+	// and, or
+	protected static final WBuiltInTypeSymbol[][] logicalPromoteFromTo = new WBuiltInTypeSymbol[][] {
 	/*           int        float       string      vector      boolean */
 	/*int*/	    {null,      null,       null,       null,       null},
 	/*float*/	{null,      null,       null,       null,       null},
@@ -84,39 +122,18 @@ public class TypeSystemHelper {
 	/*boolean*/	{null,      null,       null,       null,       null}
 	};
 
-	protected static final PrimitiveType[][] arithmeticStrPromoteFromTo = new PrimitiveType[][] {
-	/*           int        float       string      vector      boolean */
-	/*int*/	    {null,      null,       null,       null,       null},
-	/*float*/	{null,      null,       null,       null,       null},
-	/*string*/	{null,      null,       null,       null,       null},
-	/*vector*/	{null,      null,       null,       null,       null},
-	/*boolean*/	{null,      null,       null,       null,       null}
-	};
 
-	protected static final PrimitiveType[][] relationalPromoteFromTo = new PrimitiveType[][] {
-	/*           int        float       string      vector      boolean */
-	/*int*/	    {null,      null,       null,       null,       null},
-	/*float*/	{null,      null,       null,       null,       null},
-	/*string*/	{null,      null,       null,       null,       null},
-	/*vector*/	{null,      null,       null,       null,       null},
-	/*boolean*/	{null,      null,       null,       null,       null}
-	};
-
-	protected static final PrimitiveType[][] relationalEqualityPromoteFromTo = new PrimitiveType[][] {
-	/*           int        float       string      vector      boolean */
-	/*int*/	    {null,      null,       null,       null,       null},
-	/*float*/	{null,      null,       null,       null,       null},
-	/*string*/	{null,      null,       null,       null,       null},
-	/*vector*/	{null,      null,       null,       null,       null},
-	/*boolean*/	{null,      null,       null,       null,       null}
-	};
-
-	protected static final PrimitiveType[][] LogicalPromoteFromTo = new PrimitiveType[][] {
-	/*           int        float       string      vector      boolean */
-	/*int*/	    {null,      null,       null,       null,       null},
-	/*float*/	{null,      null,       null,       null,       null},
-	/*string*/	{null,      null,       null,       null,       null},
-	/*vector*/	{null,      null,       null,       null,       null},
-	/*boolean*/	{null,      null,       null,       null,       null}
-	};
+	// This method is the general helper method used to calculate result type.
+	// You should use the method in SymbolTable based on this method.
+	public static WBuiltInTypeSymbol getResultType(WBuiltInTypeSymbol[][] resultTable,
+	                                               WBuiltInTypeSymbol[][] promoteTable,
+	                                               WBuiltInTypeSymbol lt,
+	                                               WBuiltInTypeSymbol rt) {
+		int li = lt.getTypeIndex();
+		int ri = rt.getTypeIndex();
+		WBuiltInTypeSymbol resultType = resultTable[li][ri];
+		lt.setPromotedType(promoteTable[li][resultType.getTypeIndex()]);
+		lt.setPromotedType(promoteTable[li][resultType.getTypeIndex()]);
+		return resultType;
+	}
 }

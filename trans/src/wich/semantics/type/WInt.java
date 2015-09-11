@@ -26,5 +26,6 @@ package wich.semantics.type;
 public class WInt extends WBuiltInTypeSymbol {
 	public WInt() {
 		super("int");
+		typeIndex = 0;
 	}
 }
