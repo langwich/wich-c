@@ -51,7 +51,7 @@ Vector *Vector_empty()
 
 Vector *Vector_alloc(size_t size)
 {
-	Vector *v = malloc(sizeof(Vector) + size * sizeof(double));
+	Vector *v = wich_malloc(sizeof(Vector) + size * sizeof(double));
 	v->metadata.refs = 0;
 	v->length = size;
 	return v;
@@ -93,7 +93,7 @@ char *Vector_as_string(Vector *a)
 
 String *String_alloc(size_t size)
 {
-	String *s = (String *)malloc(sizeof(String) + size * sizeof(char) + 1); // include \0 of string
+	String *s = (String *)wich_malloc(sizeof(String) + size * sizeof(char) + 1); // include \0 of string
 	s->metadata.refs = 0;
 	return s;
 }
@@ -129,10 +129,15 @@ String *String_add(String *s, String *t)
 	return u;
 }
 
-/** Recursively free all objects pointed to by p. we currently have no meta data on fields however */
+/** We don't have data aggregates like structs so no need to free nested pointers. */
 void wich_free(heap_object *p)
 {
-	free(p); // TODO: use metadata to recurse
+	free(p);
+}
+
+void *wich_malloc(size_t nbytes)
+{
+	return malloc(nbytes);
 }
 
 /* old stuff we might use as base for double vector?

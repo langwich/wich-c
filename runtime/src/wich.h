@@ -66,6 +66,8 @@ Vector *Vector_div(Vector *a, Vector *b);
 char *Vector_as_string(Vector *a);
 void print_vector(Vector *a);
 
+// Following malloc/free our the hook where we create our own malloc/free or use the system's
+void *wich_malloc(size_t nbytes);
 void wich_free(heap_object *p);
 
 #define COPY_ON_WRITE(x) \
