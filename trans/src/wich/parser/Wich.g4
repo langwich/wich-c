@@ -84,6 +84,35 @@ primary
 	|	'[' expr_list ']'
 	;
 
+LPAREN : '(' ;
+RPAREN : ')' ;
+COLON : ':' ;
+COMMA : ',' ;
+LBRACK : '[' ;
+RBRACK : ']' ;
+LBRACE : '{' ;
+RBRACE : '}' ;
+IF : 'if' ;
+ELSE : 'else' ;
+WHILE : 'while' ;
+VAR : 'var' ;
+EQUAL : '=' ;
+RETURN : 'return' ;
+SUB : '-' ;
+BANG : '!' ;
+MUL : '*' ;
+DIV : '/' ;
+ADD : '+' ;
+LT : '<' ;
+LE : '<=' ;
+EQUAL_EQUAL : '==' ;
+NOT_EQUAL : '!=' ;
+GT : '>' ;
+GE : '>=' ;
+OR : '||' ;
+AND : '&&' ;
+DOT : ' . ' ;
+
 LINE_COMMENT : '//' .*? ('\n'|EOF) -> channel(HIDDEN) ;
 COMMENT      : '/*' .*? '*/'    -> channel(HIDDEN) ;
 
