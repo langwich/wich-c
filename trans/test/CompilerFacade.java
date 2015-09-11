@@ -22,12 +22,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import org.antlr.symtab.GlobalScope;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
-import wich.parser.SymbolTableConstructor;
-import wich.parser.WichLexer;
-import wich.parser.WichParser;
+import wich.parser.*;
 import wich.semantics.SymbolTable;
 
 public class CompilerFacade {
@@ -38,12 +35,19 @@ public class CompilerFacade {
 		return parser.file();
 	}
 
-	public static SymbolTable defineSymbols(String input) {
+	public static ParserRuleContext defineSymbols(String input, SymbolTable symtab) {
 		ParserRuleContext tree = parse(new ANTLRInputStream(input));
-		SymbolTable symtab = new SymbolTable();
 		ParseTreeWalker walker = new ParseTreeWalker();
 		SymbolTableConstructor symtabConstructor = new SymbolTableConstructor(symtab);
 		walker.walk(symtabConstructor, tree);
-		return symtab;
+		return tree;
+	}
+
+	public static ParserRuleContext getAnnotatedParseTree(String input, SymbolTable symtab) {
+		ParserRuleContext tree = defineSymbols(input, symtab);
+		TypeAnnotator typeAnnotator = new TypeAnnotator(symtab);
+		ParseTreeWalker walker = new ParseTreeWalker();
+		walker.walk(typeAnnotator, tree);
+		return tree;
 	}
 }

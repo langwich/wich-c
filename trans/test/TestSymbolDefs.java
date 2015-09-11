@@ -188,7 +188,8 @@ public class TestSymbolDefs {
 	}
 
 	public void checkAllScopes(String input, boolean includePredefined, String expecting) {
-		SymbolTable symtab = CompilerFacade.defineSymbols(input);
+		SymbolTable symtab = new SymbolTable();
+		CompilerFacade.defineSymbols(input, symtab);
 		Scope scope = symtab.getGlobalScope();
 		if ( includePredefined ) scope = symtab.getPredefinedScope();
 		String result = SymbolTable.dump(scope);

@@ -28,6 +28,7 @@ import org.antlr.symtab.Scope;
 import org.antlr.symtab.Symbol;
 import org.antlr.symtab.TypedSymbol;
 import org.antlr.v4.runtime.misc.NotNull;
+import wich.parser.WichParser.ExprContext;
 import wich.semantics.SymbolTable;
 import wich.semantics.type.*;
 
@@ -43,8 +44,10 @@ public class TypeAnnotator extends WichBaseListener {
 
 	@Override
 	public void exitOp(@NotNull WichParser.OpContext ctx) {
-		//TODO type promotion
-		super.exitOp(ctx);
+		int op = ctx.operator().start.getType();
+		ExprContext lExpr = ctx.expr(0);
+		ExprContext rExpr = ctx.expr(1);
+		ctx.exprType = SymbolTable.op(op, lExpr, rExpr);
 	}
 
 	@Override
@@ -62,7 +65,7 @@ public class TypeAnnotator extends WichBaseListener {
 	public void exitCall(@NotNull WichParser.CallContext ctx) {
 		Symbol s = currentScope.resolve(ctx.call_expr().ID().getText());
 		if (s != null)
-			ctx.exprType = ((WFunctionSymbol) s).getType();
+			ctx.exprType = (WBuiltInTypeSymbol) ((WFunctionSymbol) s).getType();
 	}
 
 	@Override
@@ -82,7 +85,7 @@ public class TypeAnnotator extends WichBaseListener {
 		if (primary.ID() != null) {
 			Symbol s = currentScope.resolve(primary.ID().getText());
 			if (s != null)
-				ctx.exprType = ((TypedSymbol) s).getType();
+				ctx.exprType = (WBuiltInTypeSymbol) ((TypedSymbol) s).getType();
 		}
 		//INT
 		else if (primary.INT() != null) {
