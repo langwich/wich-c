@@ -45,58 +45,58 @@ public class SymbolTableConstructor extends WichBaseListener {
 
 	@Override
 	public void enterVarDef(WichParser.VarDefContext ctx) {
-        currentScope.define(new WVariableSymbol(ctx.ID().getText()));
+		currentScope.define(new WVariableSymbol(ctx.ID().getText()));
 	}
 
-    @Override
-    public void enterFormal_arg(@NotNull WichParser.Formal_argContext ctx) {
-        currentScope.define(new WArgSymbol(ctx.ID().getText()));
-    }
+	@Override
+	public void enterFormal_arg(@NotNull WichParser.Formal_argContext ctx) {
+		currentScope.define(new WArgSymbol(ctx.ID().getText()));
+	}
 
-    @Override
-    public void enterFunction(@NotNull WichParser.FunctionContext ctx) {
-        WFunctionSymbol f = new WFunctionSymbol(ctx.ID().getText());
-        ctx.scope = f;
-        f.setEnclosingScope(currentScope);
-        currentScope.define(f);
-        //resolve return type of the method
-        if(ctx.type() != null)
-            f.setType((Type)currentScope.resolve(ctx.type().getText()));
-        else
-            f.setType(null);
-        pushScope(f);
-    }
+	@Override
+	public void enterFunction(@NotNull WichParser.FunctionContext ctx) {
+		WFunctionSymbol f = new WFunctionSymbol(ctx.ID().getText());
+		ctx.scope = f;
+		f.setEnclosingScope(currentScope);
+		currentScope.define(f);
+		//resolve return type of the method
+		if (ctx.type() != null)
+			f.setType((Type) currentScope.resolve(ctx.type().getText()));
+		else
+			f.setType(null);
+		pushScope(f);
+	}
 
-    @Override
-    public void exitFunction(@NotNull WichParser.FunctionContext ctx) {
-        popScope();
-    }
+	@Override
+	public void exitFunction(@NotNull WichParser.FunctionContext ctx) {
+		popScope();
+	}
 
-    @Override
-    public void enterBlock(@NotNull WichParser.BlockContext ctx) {
-        LocalScope l = new LocalScope(currentScope);
-        ctx.scope = l;
-        pushScope(l);
-    }
+	@Override
+	public void enterBlock(@NotNull WichParser.BlockContext ctx) {
+		LocalScope l = new LocalScope(currentScope);
+		ctx.scope = l;
+		pushScope(l);
+	}
 
-    @Override
-    public void exitBlock(@NotNull WichParser.BlockContext ctx) {
-        popScope();
-    }
+	@Override
+	public void exitBlock(@NotNull WichParser.BlockContext ctx) {
+		popScope();
+	}
 
-    @Override
-    public void enterScript(@NotNull WichParser.ScriptContext ctx) {
-        ctx.scope = (GlobalScope) currentScope;
-    }
+	@Override
+	public void enterScript(@NotNull WichParser.ScriptContext ctx) {
+		ctx.scope = (GlobalScope) currentScope;
+	}
 
-    @Override
-    public void exitScript(@NotNull WichParser.ScriptContext ctx) {
-        popScope();
-    }
+	@Override
+	public void exitScript(@NotNull WichParser.ScriptContext ctx) {
+		popScope();
+	}
 
-    private void pushScope(Scope s) {
-        currentScope = s;
-    }
+	private void pushScope(Scope s) {
+		currentScope = s;
+	}
 
 	private void popScope() {
 		if (currentScope == null) return;

@@ -23,7 +23,11 @@ SOFTWARE.
 */
 package wich.semantics;
 
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.TerminalNode;
 import wich.parser.WichParser;
+import wich.parser.WichParser.ExprContext;
 import wich.semantics.type.WBuiltInTypeSymbol;
 
 import static wich.parser.WichParser.ADD;
@@ -145,6 +149,7 @@ public class TypeHelper {
 	};
 
 	static {
+		// register result tables.
 		opResultTypeMap[MUL] = arithmeticResultTable;
 		opResultTypeMap[SUB] = arithmeticResultTable;
 		opResultTypeMap[DIV] = arithmeticResultTable;
@@ -160,19 +165,100 @@ public class TypeHelper {
 
 		opResultTypeMap[AND] = logicalResultTable;
 		opResultTypeMap[OR]  = logicalResultTable;
+		// register promote tables.
+		operandPromotionMap[MUL] = arithmeticPromoteFromTo;
+		operandPromotionMap[SUB] = arithmeticPromoteFromTo;
+		operandPromotionMap[DIV] = arithmeticPromoteFromTo;
+		operandPromotionMap[ADD] = arithmeticStrPromoteFromTo;
+
+		operandPromotionMap[LT]  = relationalPromoteFromTo;
+		operandPromotionMap[LE]  = relationalPromoteFromTo;
+		operandPromotionMap[GT]  = relationalPromoteFromTo;
+		operandPromotionMap[GE]  = relationalPromoteFromTo;
+
+		operandPromotionMap[EQUAL_EQUAL] = equalityPromoteFromTo;
+		operandPromotionMap[NOT_EQUAL]   = equalityPromoteFromTo;
+
+		operandPromotionMap[AND] = logicalPromoteFromTo;
+		operandPromotionMap[OR]  = logicalPromoteFromTo;
 	}
 
 	// This method is the general helper method used to calculate result type.
 	// You should use the method in SymbolTable based on this method.
 	public static WBuiltInTypeSymbol getResultType(int op,
-												   WBuiltInTypeSymbol lt,
-												   WBuiltInTypeSymbol rt)
+												   ExprContext le,
+												   ExprContext re)
 	{
-		int li = lt.getTypeIndex();
-		int ri = rt.getTypeIndex();
+		int li = le.exprType.getTypeIndex();
+		int ri = re.exprType.getTypeIndex();
 		WBuiltInTypeSymbol resultType = opResultTypeMap[op][li][ri];
-		lt.setPromotedType(operandPromotionMap[op][li][resultType.getTypeIndex()]);
-		lt.setPromotedType(operandPromotionMap[op][ri][resultType.getTypeIndex()]);
+		le.promoteToType = operandPromotionMap[op][li][resultType.getTypeIndex()];
+		re.promoteToType = operandPromotionMap[op][ri][resultType.getTypeIndex()];
 		return resultType;
+	}
+
+	public static String dumpWithType(ParserRuleContext tree) {
+		if (tree == null) return "";
+		StringBuilder sb = new StringBuilder();
+		for (ParseTree child : tree.children) {
+			if (child instanceof TerminalNode) continue;
+			ParserRuleContext ctx = (ParserRuleContext) child;
+			if (ctx instanceof ExprContext) {
+				sb.append(dumpExprWithType(ctx));
+			}
+			else {
+				sb.append(dumpWithType((ParserRuleContext) child));
+			}
+		}
+		return sb.toString();
+	}
+
+	protected static String dumpExprWithType(ParserRuleContext ctx) {
+		StringBuilder sb = new StringBuilder();
+		if (ctx instanceof WichParser.AtomContext) {
+			sb.append(dumpPrimaryWithType((WichParser.AtomContext) ctx));
+		}
+		else if (ctx instanceof WichParser.OpContext) {
+			sb.append(dumpOpWithType((WichParser.OpContext) ctx));
+		}
+		else {
+			ExprContext exprCtx = (ExprContext) ctx;
+			for (ParseTree parseTree : exprCtx.children) {
+				sb.append(dumpWithType((ParserRuleContext) parseTree));
+			}
+		}
+		return sb.toString();
+	}
+
+	protected static String dumpOpWithType(WichParser.OpContext ctx) {
+		StringBuilder sb = new StringBuilder();
+		for (ParseTree parseTree : ctx.children) {
+			if (parseTree instanceof ExprContext)
+				sb.append(dumpExprWithType((ParserRuleContext) parseTree));
+		}
+		sb.append(ctx.operator().getText()).append(":");
+		sb.append(getPrintType(ctx)).append("\n");
+		return sb.toString();
+	}
+
+	protected static String dumpPrimaryWithType(WichParser.AtomContext ctx) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(ctx.getText()).append(":").append(getPrintType(ctx)).append("\n");
+		WichParser.PrimaryContext primary = ctx.primary();
+		if (primary.getChildCount() > 1) {
+			for (ExprContext exprContext : primary.expr_list().expr()) {
+				sb.append(dumpExprWithType(exprContext));
+			}
+		}
+		return sb.toString();
+	}
+
+	protected static String getPrintType(ExprContext ctx) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(ctx.exprType.getName());
+		if (ctx.promoteToType != null) {
+			sb.append(" => ").append(ctx.promoteToType);
+		}
+		return sb.toString();
 	}
 }

@@ -30,6 +30,7 @@ import org.antlr.symtab.PredefinedScope;
 import org.antlr.symtab.Scope;
 import org.antlr.symtab.Symbol;
 import org.antlr.symtab.Type;
+import wich.parser.WichParser.ExprContext;
 import wich.semantics.type.WBoolean;
 import wich.semantics.type.WBuiltInTypeSymbol;
 import wich.semantics.type.WFloat;
@@ -83,7 +84,7 @@ public class SymbolTable {
 		level++;
 		for (Symbol sym : s.getSymbols()) {
 			if ( !(sym instanceof Scope) ) {
-				buf.append(tab(level));	buf.append(sym+"\n");
+				buf.append(tab(level));	buf.append(sym + "\n");
 			}
 		}
 		for (Scope nested : s.getNestedScopes()) {
@@ -100,7 +101,7 @@ public class SymbolTable {
 		return buf.toString();
 	}
 
-	public static WBuiltInTypeSymbol op(int op, WBuiltInTypeSymbol lt, WBuiltInTypeSymbol rt) {
+	public static WBuiltInTypeSymbol op(int op, ExprContext lt, ExprContext rt) {
 		return TypeHelper.getResultType(op, lt, rt);
 	}
 

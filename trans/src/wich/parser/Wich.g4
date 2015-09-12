@@ -62,8 +62,8 @@ statement
 	|	block              	 								# BlockStatement
 	;
 
-expr returns [Type exprType]
-    :	expr operator expr									# Op
+expr returns [WBuiltInTypeSymbol exprType, WBuiltInTypeSymbol promoteToType]
+	:	expr operator expr									# Op
 	|	'-' expr											# Negate
 	|	'!' expr											# Not
 	|	call_expr											# Call
@@ -72,7 +72,7 @@ expr returns [Type exprType]
 	|	primary												# Atom
 	;
 
-operator  : '*'|'/'|'+'|'-'|'<'|'<='|'=='|'!='|'>'|'>='|'||'|'&&'|' . ' ; // no precedence
+operator  : MUL|DIV|ADD|SUB|GT|LE|EQUAL_EQUAL|NOT_EQUAL|GT|GE|OR|AND|DOT ; // no precedence
 call_expr : ID '(' expr_list ')' ; // todo: maybe add print as keyword?
 expr_list : expr (',' expr)* ;
 
