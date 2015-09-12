@@ -24,6 +24,12 @@ SOFTWARE.
 
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
+import org.stringtemplate.v4.ST;
+import org.stringtemplate.v4.STGroup;
+import org.stringtemplate.v4.STGroupFile;
+import wich.codegen.CodeGenerator;
+import wich.codegen.ModelConverter;
+import wich.codegen.model.OutputModelObject;
 import wich.parser.*;
 import wich.semantics.SymbolTable;
 
@@ -49,5 +55,15 @@ public class CompilerFacade {
 		ParseTreeWalker walker = new ParseTreeWalker();
 		walker.walk(typeAnnotator, tree);
 		return tree;
+	}
+
+	public static String genCode(String input, SymbolTable symtab) {
+		ParserRuleContext tree = getAnnotatedParseTree(input, symtab);
+		CodeGenerator codeGenerator = new CodeGenerator(symtab);
+		OutputModelObject omo = codeGenerator.visit(tree);
+		STGroup templates = new STGroupFile("resources/wich.stg");
+		ModelConverter converter = new ModelConverter(templates);
+		ST wichST = converter.walk(omo);
+		return wichST.render();
 	}
 }
