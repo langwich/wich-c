@@ -73,7 +73,10 @@ expr returns [WBuiltInTypeSymbol exprType, WBuiltInTypeSymbol promoteToType]
 	;
 
 operator  : MUL|DIV|ADD|SUB|GT|LE|EQUAL_EQUAL|NOT_EQUAL|GT|GE|OR|AND|DOT ; // no precedence
-call_expr : ID '(' expr_list ')' ; // todo: maybe add print as keyword?
+call_expr
+	: ID '(' expr_list? ')'                                 # FuncCall
+	| 'print' '(' expr ')'                                  # Print
+	;
 expr_list : expr (',' expr)* ;
 
 primary
