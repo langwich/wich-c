@@ -60,6 +60,7 @@ statement
 	|	call_expr											# CallStatement
 	|	'return' expr										# Return
 	|	block              	 								# BlockStatement
+	|   'print' '(' expr? ')'                               # Print
 	;
 
 expr returns [WBuiltInTypeSymbol exprType, WBuiltInTypeSymbol promoteToType]
@@ -73,10 +74,7 @@ expr returns [WBuiltInTypeSymbol exprType, WBuiltInTypeSymbol promoteToType]
 	;
 
 operator  : MUL|DIV|ADD|SUB|GT|LE|EQUAL_EQUAL|NOT_EQUAL|GT|GE|OR|AND|DOT ; // no precedence
-call_expr
-	: ID '(' expr_list? ')'                                 # FuncCall
-	| 'print' '(' expr ')'                                  # Print
-	;
+call_expr : ID '(' expr_list? ')';
 expr_list : expr (',' expr)* ;
 
 primary
