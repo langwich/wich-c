@@ -67,7 +67,7 @@ public class TestTypeAnnotation {
 		String input =
 				"var x = 1\n" +
 				"var y = 2\n" +
-				"f(y > x) {\n" +
+				"if(y > x) {\n" +
 				"   var z = 3" +
 				"}\n";
 		String expected =
@@ -75,7 +75,7 @@ public class TestTypeAnnotation {
 				"2:int\n" +
 				"y:int\n" +
 				"x:int\n" +
-				">:int\n" +
+				">:boolean\n" +
 				"3:int\n";
 		annotateTypeAndCheck(input, expected);
 	}
@@ -93,7 +93,7 @@ public class TestTypeAnnotation {
 				"2:int\n" +
 				"y:int\n" +
 				"x:int\n" +
-				">=:int\n" +
+				">=:boolean\n" +
 				"3:int\n";
 		annotateTypeAndCheck(input, expected);
 	}
@@ -105,9 +105,9 @@ public class TestTypeAnnotation {
 				"var y = 2\n" +
 				"y = x\n";
 		String expected =
-				"1:int" +
-				"2:int" +
-				"x:int";
+				"1:int\n" +
+				"2:int\n" +
+				"x:int\n";
 		annotateTypeAndCheck(input, expected);
 	}
 

@@ -29,7 +29,9 @@ import org.antlr.symtab.Scope;
 import org.antlr.symtab.Type;
 import org.antlr.v4.runtime.misc.NotNull;
 import wich.semantics.SymbolTable;
+import wich.semantics.TypeHelper;
 import wich.semantics.type.WArgSymbol;
+import wich.semantics.type.WBlock;
 import wich.semantics.type.WFunctionSymbol;
 import wich.semantics.type.WVariableSymbol;
 
@@ -50,7 +52,10 @@ public class SymbolTableConstructor extends WichBaseListener {
 
 	@Override
 	public void enterFormal_arg(@NotNull WichParser.Formal_argContext ctx) {
-		currentScope.define(new WArgSymbol(ctx.ID().getText()));
+		WArgSymbol arg = new WArgSymbol(ctx.ID().getText());
+		String typeName = ctx.type().getText();
+		arg.setType(TypeHelper.getTypeFromName(typeName));
+		currentScope.define(arg);
 	}
 
 	@Override
@@ -74,8 +79,9 @@ public class SymbolTableConstructor extends WichBaseListener {
 
 	@Override
 	public void enterBlock(@NotNull WichParser.BlockContext ctx) {
-		LocalScope l = new LocalScope(currentScope);
+		WBlock l = new WBlock("local");
 		ctx.scope = l;
+		currentScope.define(l);
 		pushScope(l);
 	}
 

@@ -23,6 +23,7 @@ SOFTWARE.
 */
 package wich.semantics;
 
+import org.antlr.symtab.Type;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -195,6 +196,35 @@ public class TypeHelper {
 		le.promoteToType = operandPromotionMap[op][li][resultType.getTypeIndex()];
 		re.promoteToType = operandPromotionMap[op][ri][resultType.getTypeIndex()];
 		return resultType;
+	}
+
+	//This method is used to promote type in assignment.
+	//Returns a boolean indicating whether the assignment is legal.
+	public static boolean isLegalAssign(WBuiltInTypeSymbol ltype,
+	                                    WBuiltInTypeSymbol rtype)
+	{
+		if (ltype == rtype)
+			return true;
+		else  {
+			int li = ltype.getTypeIndex();
+			int ri = rtype.getTypeIndex();
+			if(equalityPromoteFromTo[li][ri].getTypeIndex() == li)
+				return true;
+			else
+				return false;
+		}
+	}
+
+	//This method is used to get type of function arguments, which are explicitly specified.
+	public static Type getTypeFromName(String name) {
+		switch (name) {
+			case "int": return SymbolTable._int;
+			case "float": return SymbolTable._float;
+			case "string": return SymbolTable._string;
+			case "boolean": return SymbolTable._boolean;
+			case "[]": return SymbolTable._vector;
+			default: return null;
+		}
 	}
 
 	public static String dumpWithType(ParserRuleContext tree) {

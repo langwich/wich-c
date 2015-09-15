@@ -39,7 +39,7 @@ public class TestSymbolDefs {
 			"predefined {\n" +
 			"    int\n" +
 			"    float\n" +
-			"    String\n" +
+			"    string\n" +
 			"    vector\n" +
 			"    boolean\n" +
 			"}\n";
@@ -110,6 +110,9 @@ public class TestSymbolDefs {
 		String expecting =
 			"global {\n" +
 			"    f {\n" +
+			"        local {\n" +
+			"        }\n" +
+
 			"    }\n" +
 			"}\n";
 		checkScopes(lava, expecting);
@@ -122,8 +125,10 @@ public class TestSymbolDefs {
 		String expecting =
 			"global {\n" +
 			"    f {\n" +
-			"        f.x\n" +
-			"        f.y\n" +
+			"        f.x:int\n" +
+			"        f.y:vector\n" +
+			"        local {\n" +
+			"        }\n" +
 			"    }\n" +
 			"}\n";
 		checkScopes(lava, expecting);
@@ -174,7 +179,7 @@ public class TestSymbolDefs {
 			"        local {\n" +
 			"            local.i:int\n" +
 			"            local {\n" +
-			"                local.c:char\n" +
+			"                local.c:string\n" +
 			"            }\n" +
 			"        }\n" +
 			"    }\n" +
@@ -189,7 +194,7 @@ public class TestSymbolDefs {
 
 	public void checkAllScopes(String input, boolean includePredefined, String expecting) {
 		SymbolTable symtab = new SymbolTable();
-		CompilerFacade.defineSymbols(input, symtab);
+		CompilerFacade.getAnnotatedParseTree(input, symtab);
 		Scope scope = symtab.getGlobalScope();
 		if ( includePredefined ) scope = symtab.getPredefinedScope();
 		String result = SymbolTable.dump(scope);

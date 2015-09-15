@@ -29,7 +29,9 @@ import org.antlr.symtab.Type;
 import org.antlr.symtab.TypedSymbol;
 import org.antlr.v4.runtime.misc.NotNull;
 import wich.semantics.SymbolTable;
-import wich.semantics.type.*;
+import wich.semantics.TypeHelper;
+import wich.semantics.type.WBuiltInTypeSymbol;
+import wich.semantics.type.WVector;
 
 import java.lang.Exception;
 import java.util.ArrayList;
@@ -50,20 +52,32 @@ public class TypeChecker extends WichBaseListener {
 	@Override
 	public void exitAssign(@NotNull WichParser.AssignContext ctx) {
 		Symbol s = currentScope.resolve(ctx.ID().getText());
-		Type left = ((TypedSymbol) s).getType();
-		Type right = ctx.expr().exprType;
+		WBuiltInTypeSymbol left = (WBuiltInTypeSymbol) s;
+		WBuiltInTypeSymbol right = ctx.expr().exprType;
 
-		//TODO checktype after type promotion
+		if (TypeHelper.isLegalAssign(left, right))
+			return;
+		else
+			error("Incompatible type in assignment.", new Exception());
 	}
 
 	@Override
 	public void exitElementAssign(@NotNull WichParser.ElementAssignContext ctx) {
+
 		WichParser.ExprContext index = ctx.expr(0);
 		WichParser.ExprContext elem = ctx.expr(1);
 
-		if (index.exprType != SymbolTable._int) //TODO: range of the index: 1 to length of the vector
-			error("Invalid vector index.", new Exception());
+		//index must be integer
+		if (index.exprType != SymbolTable._int)
+			error("Invalid vector index type.", new Exception());
+		// index must be in [1, length of vector]
+		int idx = Integer.parseInt(index.getText());
+		int len = ((WVector) currentScope.resolve(ctx.ID().getText())).getSize();
 
+		if(idx < 1 || idx > len)
+			error("Index of vector out of bound.", new Exception());
+
+		//element value must be int or float
 		if (elem.exprType != SymbolTable._float && elem.exprType != SymbolTable._int)
 			error("Invalid vector element.", new Exception());
 

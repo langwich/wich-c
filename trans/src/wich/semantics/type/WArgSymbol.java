@@ -27,4 +27,12 @@ public class WArgSymbol extends WVariableSymbol {
 	public WArgSymbol(String name) {
 		super(name);
 	}
+
+	@Override
+	public String toString() {
+		String s = "";
+		s = scope.getName() + ".";
+		if (type != null) return s + getName() + ":" + type ;
+		return s + getName();
+	}
 }

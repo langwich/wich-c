@@ -27,6 +27,7 @@ package wich.parser;
 import org.antlr.symtab.Scope;
 import org.antlr.symtab.Symbol;
 import org.antlr.symtab.TypedSymbol;
+import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.NotNull;
 import wich.parser.WichParser.ExprContext;
 import wich.semantics.SymbolTable;
@@ -51,13 +52,11 @@ public class TypeAnnotator extends WichBaseListener {
 	}
 
 	@Override
-	public void exitNegate(@NotNull WichParser.NegateContext ctx) {
-		ctx.exprType = ctx.expr().exprType;
-	}
+	public void exitNegate(@NotNull WichParser.NegateContext ctx) { ctx.exprType = ctx.expr().exprType; }
 
 	@Override
 	public void exitNot(@NotNull WichParser.NotContext ctx) {
-		//Not sure what it means, used in conditional to see if it's nonzero? Like a boolean?
+		//! expr, expr is a boolean
 		ctx.exprType = ctx.expr().exprType;
 	}
 
@@ -102,7 +101,33 @@ public class TypeAnnotator extends WichBaseListener {
 		//vector
 		else {
 			ctx.exprType = SymbolTable._vector;
+			//promote int to float in vector
+			for (ExprContext elem : ctx.primary().expr_list().expr()) {
+				if (elem.exprType == SymbolTable._int)
+					elem.promoteToType = SymbolTable._float;
+			}
 		}
+	}
+
+	@Override
+	public void exitVarDef(@NotNull WichParser.VarDefContext ctx) {
+		Symbol var = currentScope.resolve(ctx.ID().getText());
+		//type inference
+		((TypedSymbol) var).setType(ctx.expr().exprType);
+
+/*		//set size for WVector
+		if(((TypedSymbol) var).getType() == SymbolTable._vector) {
+			if(ctx.expr().getChild(0) instanceof WichParser.PrimaryContext) {
+				WichParser.PrimaryContext vector = (WichParser.PrimaryContext) ctx.expr().getChild(0);
+				if(vector.ID() != null) {
+					int size = ((WVector)currentScope.resolve(vector.ID().getText())).getSize();
+					((WVector)var).setSize(size);
+				}else if(vector.expr_list() != null) {
+					int size = (vector.expr_list().getChildCount()+1)/2;
+					((WVector) var).setSize(size);
+				}
+			}
+		}*/
 	}
 
 	@Override
