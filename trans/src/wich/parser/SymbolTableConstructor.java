@@ -23,10 +23,7 @@ SOFTWARE.
 */
 package wich.parser;
 
-import org.antlr.symtab.GlobalScope;
-import org.antlr.symtab.LocalScope;
-import org.antlr.symtab.Scope;
-import org.antlr.symtab.Type;
+import org.antlr.symtab.*;
 import org.antlr.v4.runtime.misc.NotNull;
 import wich.semantics.SymbolTable;
 import wich.semantics.TypeHelper;
@@ -54,7 +51,7 @@ public class SymbolTableConstructor extends WichBaseListener {
 	public void enterFormal_arg(@NotNull WichParser.Formal_argContext ctx) {
 		WArgSymbol arg = new WArgSymbol(ctx.ID().getText());
 		String typeName = ctx.type().getText();
-		arg.setType(TypeHelper.getTypeFromName(typeName));
+		arg.setType(TypeHelper.getTypeFromName(typeName, symtab));
 		currentScope.define(arg);
 	}
 

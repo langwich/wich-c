@@ -31,6 +31,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.NotNull;
 import wich.parser.WichParser.ExprContext;
 import wich.semantics.SymbolTable;
+import wich.semantics.TypeHelper;
 import wich.semantics.type.*;
 
 
@@ -101,11 +102,10 @@ public class TypeAnnotator extends WichBaseListener {
 		//vector
 		else {
 			ctx.exprType = SymbolTable._vector;
-			//promote int to float in vector
-			for (ExprContext elem : ctx.primary().expr_list().expr()) {
-				if (elem.exprType == SymbolTable._int)
-					elem.promoteToType = SymbolTable._float;
-			}
+			//promote element type to fit in a vector
+			int targetIndex = SymbolTable._float. getTypeIndex();
+			for (ExprContext elem : ctx.primary().expr_list().expr())
+				TypeHelper.promote(elem, targetIndex);
 		}
 	}
 
@@ -114,20 +114,6 @@ public class TypeAnnotator extends WichBaseListener {
 		Symbol var = currentScope.resolve(ctx.ID().getText());
 		//type inference
 		((TypedSymbol) var).setType(ctx.expr().exprType);
-
-/*		//set size for WVector
-		if(((TypedSymbol) var).getType() == SymbolTable._vector) {
-			if(ctx.expr().getChild(0) instanceof WichParser.PrimaryContext) {
-				WichParser.PrimaryContext vector = (WichParser.PrimaryContext) ctx.expr().getChild(0);
-				if(vector.ID() != null) {
-					int size = ((WVector)currentScope.resolve(vector.ID().getText())).getSize();
-					((WVector)var).setSize(size);
-				}else if(vector.expr_list() != null) {
-					int size = (vector.expr_list().getChildCount()+1)/2;
-					((WVector) var).setSize(size);
-				}
-			}
-		}*/
 	}
 
 	@Override

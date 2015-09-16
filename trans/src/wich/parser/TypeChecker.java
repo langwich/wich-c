@@ -25,13 +25,11 @@ package wich.parser;
 
 import org.antlr.symtab.Scope;
 import org.antlr.symtab.Symbol;
-import org.antlr.symtab.Type;
-import org.antlr.symtab.TypedSymbol;
+
 import org.antlr.v4.runtime.misc.NotNull;
 import wich.semantics.SymbolTable;
 import wich.semantics.TypeHelper;
 import wich.semantics.type.WBuiltInTypeSymbol;
-import wich.semantics.type.WVector;
 
 import java.lang.Exception;
 import java.util.ArrayList;
@@ -67,19 +65,25 @@ public class TypeChecker extends WichBaseListener {
 		WichParser.ExprContext index = ctx.expr(0);
 		WichParser.ExprContext elem = ctx.expr(1);
 
-		//index must be integer
+		//index must be expression of int type
 		if (index.exprType != SymbolTable._int)
 			error("Invalid vector index type.", new Exception());
-		// index must be in [1, length of vector]
-		int idx = Integer.parseInt(index.getText());
-		int len = ((WVector) currentScope.resolve(ctx.ID().getText())).getSize();
 
-		if(idx < 1 || idx > len)
-			error("Index of vector out of bound.", new Exception());
-
-		//element value must be int or float
-		if (elem.exprType != SymbolTable._float && elem.exprType != SymbolTable._int)
+		//element value must be expression of float type or can be promoted to float in equality
+		if (elem.exprType != SymbolTable._float && elem.promoteToType != SymbolTable._float)
 			error("Invalid vector element.", new Exception());
+	}
+
+	@Override
+	public void exitAtom(@NotNull WichParser.AtomContext ctx) {
+		//check vector element type
+		if (ctx.primary().expr_list() != null){
+			for (WichParser.ExprContext elem : ctx.primary().expr_list().expr()){
+				if (elem.exprType != SymbolTable._float ||
+						elem.promoteToType != SymbolTable._float)
+				error("Invalid vector element.", new Exception());
+			}
+		}
 
 	}
 

@@ -215,16 +215,18 @@ public class TypeHelper {
 		}
 	}
 
+	//This method is used to promote type during type annotation
+	public static void promote(ExprContext elem, int targetIndex) {
+		int selfIndex = elem.exprType.getTypeIndex();
+		elem.promoteToType = equalityPromoteFromTo[selfIndex][targetIndex];
+	}
+
 	//This method is used to get type of function arguments, which are explicitly specified.
-	public static Type getTypeFromName(String name) {
-		switch (name) {
-			case "int": return SymbolTable._int;
-			case "float": return SymbolTable._float;
-			case "string": return SymbolTable._string;
-			case "boolean": return SymbolTable._boolean;
-			case "[]": return SymbolTable._vector;
-			default: return null;
-		}
+	public static Type getTypeFromName(String name, SymbolTable symtab) {
+		if (name.equals("[]"))
+			return SymbolTable._vector;
+		else
+			return (Type)symtab.PREDEFINED.getSymbol(name);
 	}
 
 	public static String dumpWithType(ParserRuleContext tree) {
