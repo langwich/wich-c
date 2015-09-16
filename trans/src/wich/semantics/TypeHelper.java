@@ -221,14 +221,6 @@ public class TypeHelper {
 		elem.promoteToType = equalityPromoteFromTo[selfIndex][targetIndex];
 	}
 
-	//This method is used to get type of function arguments, which are explicitly specified.
-	public static Type getTypeFromName(String name, SymbolTable symtab) {
-		if (name.equals("[]"))
-			return SymbolTable._vector;
-		else
-			return (Type)symtab.PREDEFINED.getSymbol(name);
-	}
-
 	public static String dumpWithType(ParserRuleContext tree) {
 		if (tree == null) return "";
 		StringBuilder sb = new StringBuilder();

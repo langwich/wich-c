@@ -51,7 +51,7 @@ public class SymbolTableConstructor extends WichBaseListener {
 	public void enterFormal_arg(@NotNull WichParser.Formal_argContext ctx) {
 		WArgSymbol arg = new WArgSymbol(ctx.ID().getText());
 		String typeName = ctx.type().getText();
-		arg.setType(TypeHelper.getTypeFromName(typeName, symtab));
+		arg.setType((Type)symtab.PREDEFINED.getSymbol(typeName));
 		currentScope.define(arg);
 	}
 

@@ -40,7 +40,7 @@ public class TestSymbolDefs {
 			"    int\n" +
 			"    float\n" +
 			"    string\n" +
-			"    vector\n" +
+			"    []\n" +
 			"    boolean\n" +
 			"}\n";
 		boolean includePredefined = true;
@@ -76,7 +76,7 @@ public class TestSymbolDefs {
 			"global {\n" +
 			"    global.i:int\n" +
 			"    global.j:string\n" +
-			"    global.k:vector\n" +
+			"    global.k:[]\n" +
 			"}\n";
 		checkScopes(lava, expecting);
 	}
@@ -87,7 +87,7 @@ public class TestSymbolDefs {
 			"var i = [1,2,3]\n";
 		String expecting =
 			"global {\n" +
-			"    global.i:vector\n" +
+			"    global.i:[]\n" +
 			"}\n";
 		checkScopes(lava, expecting);
 	}
@@ -126,7 +126,7 @@ public class TestSymbolDefs {
 			"global {\n" +
 			"    f {\n" +
 			"        f.x:int\n" +
-			"        f.y:vector\n" +
+			"        f.y:[]\n" +
 			"        local {\n" +
 			"        }\n" +
 			"    }\n" +

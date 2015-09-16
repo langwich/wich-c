@@ -24,12 +24,8 @@ SOFTWARE.
 package wich.semantics.type;
 
 public class WVector extends WBuiltInTypeSymbol {
-	protected int size;
 	public WVector() {
-		super("vector", TYPE.VECTOR);
+		super("[]", TYPE.VECTOR);
 	}
 
-	public void setSize(int len){ this.size = len;}
-
-	public int getSize(){return this.size;}
 }

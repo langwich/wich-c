@@ -117,7 +117,7 @@ public class TestTypeAnnotation {
 				"var arr = [1, 2, 3, 4, 5]\n" +
 				"arr[3] = 1\n";
 		String expected =
-				"[1,2,3,4,5]:vector\n" +
+				"[1,2,3,4,5]:[]\n" +
 				"1:int => float\n" +
 				"2:int => float\n" +
 				"3:int => float\n" +
