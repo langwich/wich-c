@@ -25,11 +25,11 @@ package wich.parser;
 
 import org.antlr.symtab.Scope;
 import org.antlr.symtab.Symbol;
-import org.antlr.symtab.Type;
-import org.antlr.symtab.TypedSymbol;
+
 import org.antlr.v4.runtime.misc.NotNull;
 import wich.semantics.SymbolTable;
-import wich.semantics.type.*;
+import wich.semantics.TypeHelper;
+import wich.semantics.type.WBuiltInTypeSymbol;
 
 import java.lang.Exception;
 import java.util.ArrayList;
@@ -50,22 +50,40 @@ public class TypeChecker extends WichBaseListener {
 	@Override
 	public void exitAssign(@NotNull WichParser.AssignContext ctx) {
 		Symbol s = currentScope.resolve(ctx.ID().getText());
-		Type left = ((TypedSymbol) s).getType();
-		Type right = ctx.expr().exprType;
+		WBuiltInTypeSymbol left = (WBuiltInTypeSymbol) s;
+		WBuiltInTypeSymbol right = ctx.expr().exprType;
 
-		//TODO checktype after type promotion
+		if (TypeHelper.isLegalAssign(left, right))
+			return;
+		else
+			error("Incompatible type in assignment.", new Exception());
 	}
 
 	@Override
 	public void exitElementAssign(@NotNull WichParser.ElementAssignContext ctx) {
+
 		WichParser.ExprContext index = ctx.expr(0);
 		WichParser.ExprContext elem = ctx.expr(1);
 
-		if (index.exprType != SymbolTable._int) //TODO: range of the index: 1 to length of the vector
-			error("Invalid vector index.", new Exception());
+		//index must be expression of int type
+		if (index.exprType != SymbolTable._int)
+			error("Invalid vector index type.", new Exception());
 
-		if (elem.exprType != SymbolTable._float && elem.exprType != SymbolTable._int)
+		//element value must be expression of float type or can be promoted to float in equality
+		if (elem.exprType != SymbolTable._float && elem.promoteToType != SymbolTable._float)
 			error("Invalid vector element.", new Exception());
+	}
+
+	@Override
+	public void exitAtom(@NotNull WichParser.AtomContext ctx) {
+		//check vector element type
+		if (ctx.primary().expr_list() != null){
+			for (WichParser.ExprContext elem : ctx.primary().expr_list().expr()){
+				if (elem.exprType != SymbolTable._float ||
+						elem.promoteToType != SymbolTable._float)
+				error("Invalid vector element.", new Exception());
+			}
+		}
 
 	}
 

@@ -30,11 +30,12 @@ public class WVariableSymbol extends VariableSymbol {
 		super(name);
 	}
 
+
 	@Override
 	public String toString() {
 		String s = "";
 		s = scope.getName() + ".";
-		if (type != null) return '<' + s + getName() + ":" + type + '>';
+		if (type != null) return  s + getName() + ":" + type ;
 		return s + getName();
 	}
 }

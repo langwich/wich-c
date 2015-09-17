@@ -27,9 +27,11 @@ package wich.parser;
 import org.antlr.symtab.Scope;
 import org.antlr.symtab.Symbol;
 import org.antlr.symtab.TypedSymbol;
+import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.NotNull;
 import wich.parser.WichParser.ExprContext;
 import wich.semantics.SymbolTable;
+import wich.semantics.TypeHelper;
 import wich.semantics.type.*;
 
 
@@ -51,13 +53,11 @@ public class TypeAnnotator extends WichBaseListener {
 	}
 
 	@Override
-	public void exitNegate(@NotNull WichParser.NegateContext ctx) {
-		ctx.exprType = ctx.expr().exprType;
-	}
+	public void exitNegate(@NotNull WichParser.NegateContext ctx) { ctx.exprType = ctx.expr().exprType; }
 
 	@Override
 	public void exitNot(@NotNull WichParser.NotContext ctx) {
-		//Not sure what it means, used in conditional to see if it's nonzero? Like a boolean?
+		//! expr, expr is a boolean
 		ctx.exprType = ctx.expr().exprType;
 	}
 
@@ -102,7 +102,18 @@ public class TypeAnnotator extends WichBaseListener {
 		//vector
 		else {
 			ctx.exprType = SymbolTable._vector;
+			//promote element type to fit in a vector
+			int targetIndex = SymbolTable._float. getTypeIndex();
+			for (ExprContext elem : ctx.primary().expr_list().expr())
+				TypeHelper.promote(elem, targetIndex);
 		}
+	}
+
+	@Override
+	public void exitVarDef(@NotNull WichParser.VarDefContext ctx) {
+		Symbol var = currentScope.resolve(ctx.ID().getText());
+		//type inference
+		((TypedSymbol) var).setType(ctx.expr().exprType);
 	}
 
 	@Override
