@@ -23,13 +23,16 @@ SOFTWARE.
 */
 package wich.semantics;
 
-import org.antlr.symtab.Type;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import wich.parser.WichParser;
 import wich.parser.WichParser.ExprContext;
 import wich.semantics.type.WBuiltInTypeSymbol;
+
+import java.util.List;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 import static wich.parser.WichParser.ADD;
 import static wich.parser.WichParser.AND;
@@ -208,10 +211,7 @@ public class TypeHelper {
 		else  {
 			int li = ltype.getTypeIndex();
 			int ri = rtype.getTypeIndex();
-			if(equalityPromoteFromTo[li][ri].getTypeIndex() == li)
-				return true;
-			else
-				return false;
+			return equalityPromoteFromTo[li][ri].getTypeIndex() == li;
 		}
 	}
 
@@ -223,16 +223,17 @@ public class TypeHelper {
 
 	public static String dumpWithType(ParserRuleContext tree) {
 		if (tree == null) return "";
+		return String.valueOf(process(tree.children, (t)->t instanceof TerminalNode, (t)->"",
+						(t)->dumpNonTerminal((ParserRuleContext) t)));
+	}
+
+	private static String dumpNonTerminal(ParserRuleContext ctx) {
 		StringBuilder sb = new StringBuilder();
-		for (ParseTree child : tree.children) {
-			if (child instanceof TerminalNode) continue;
-			ParserRuleContext ctx = (ParserRuleContext) child;
-			if (ctx instanceof ExprContext) {
-				sb.append(dumpExprWithType(ctx));
-			}
-			else {
-				sb.append(dumpWithType((ParserRuleContext) child));
-			}
+		if (ctx instanceof ExprContext) {
+			sb.append(dumpExprWithType(ctx));
+		}
+		else {
+			sb.append(dumpWithType(ctx));
 		}
 		return sb.toString();
 	}
@@ -245,24 +246,31 @@ public class TypeHelper {
 		else if (ctx instanceof WichParser.OpContext) {
 			sb.append(dumpOpWithType((WichParser.OpContext) ctx));
 		}
+		else if (ctx instanceof WichParser.CallContext) {
+			sb.append(dumpCallWithType((WichParser.CallContext) ctx));
+		}
 		else {
 			ExprContext exprCtx = (ExprContext) ctx;
-			for (ParseTree parseTree : exprCtx.children) {
-				sb.append(dumpWithType((ParserRuleContext) parseTree));
-			}
+			sb.append(exprCtx.getText()).append(":").append(getPrintType(exprCtx)).append("\n");
+			sb.append(process(exprCtx.children, (t)->t instanceof ExprContext,
+					(t)->dumpExprWithType((ParserRuleContext) t),
+					(t)->""));
 		}
 		return sb.toString();
 	}
 
 	protected static String dumpOpWithType(WichParser.OpContext ctx) {
-		StringBuilder sb = new StringBuilder();
-		for (ParseTree parseTree : ctx.children) {
-			if (parseTree instanceof ExprContext)
-				sb.append(dumpExprWithType((ParserRuleContext) parseTree));
-		}
-		sb.append(ctx.operator().getText()).append(":");
-		sb.append(getPrintType(ctx)).append("\n");
-		return sb.toString();
+		return String.valueOf(process(ctx.children,
+				(t)->t instanceof ExprContext,
+				(t)->dumpExprWithType((ParserRuleContext) t),
+				(t)->"")) + ctx.operator().getText() + ":" + getPrintType(ctx) + "\n";
+	}
+
+	protected static String dumpCallWithType(WichParser.CallContext ctx) {
+		return ctx.getText() + ":" + getPrintType(ctx) + "\n" + process(ctx.children,
+				(t)->t instanceof ExprContext,
+				(t)->dumpExprWithType((ParserRuleContext) t),
+				(t)->"");
 	}
 
 	protected static String dumpPrimaryWithType(WichParser.AtomContext ctx) {
@@ -270,9 +278,7 @@ public class TypeHelper {
 		sb.append(ctx.getText()).append(":").append(getPrintType(ctx)).append("\n");
 		WichParser.VectorContext primary = (WichParser.VectorContext)ctx.primary();
 		if (primary.getChildCount() > 1) {
-			for (ExprContext exprContext : primary.expr_list().expr()) {
-				sb.append(dumpExprWithType(exprContext));
-			}
+			sb.append(process(primary.expr_list().expr(), (t)->true, TypeHelper::dumpExprWithType, (t)->""));
 		}
 		return sb.toString();
 	}
@@ -284,5 +290,21 @@ public class TypeHelper {
 			sb.append(" => ").append(ctx.promoteToType);
 		}
 		return sb.toString();
+	}
+
+	protected static <T, R> StringBuilder process(List<T> children,
+	                                              Predicate<T> pred,
+	                                              Function<T, R> func1,
+	                                              Function<T, R> func2) {
+		StringBuilder sb = new StringBuilder();
+		for (T child : children) {
+			if (pred.test(child)) {
+				sb.append(func1.apply(child));
+			}
+			else {
+				sb.append(func2.apply(child));
+			}
+		}
+		return sb;
 	}
 }

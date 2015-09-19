@@ -49,7 +49,6 @@ public class TestTypeAnnotation {
 		annotateTypeAndCheck(input, expected);
 	}
 
-
 	@Test
 	public void testThreeOperands() throws Exception {
 		String input = "var x = 1+2*3";
@@ -135,6 +134,90 @@ public class TestTypeAnnotation {
 				"1.2:float\n" +
 				"1:int => float\n" +
 				"+:float\n";
+		annotateTypeAndCheck(input, expected);
+	}
+
+	@Test
+	public void testRecursion() throws Exception {
+		String input =
+				"func fib(x:int) : int {\n" +
+				"   if (x == 0 || x == 1) {\n" +
+				"       return x\n" +
+				"   }\n" +
+				"   return fib(x-1) + fib(x-2)\n" +
+				"}\n" +
+				"print(fib(5))\n";
+		String expected =
+				"x:int\n" +
+				"0:int\n" +
+				"==:boolean\n" +
+				"x:int\n" +
+				"1:int\n" +
+				"==:boolean\n" +
+				"||:boolean\n" +
+				"x:int\n" +
+				"fib(x-1):int\n" +
+				"x:int\n" +
+				"1:int\n" +
+				"-:int\n" +
+				"fib(x-2):int\n" +
+				"x:int\n" +
+				"2:int\n" +
+				"-:int\n" +
+				"+:int\n" +
+				"fib(5):int\n"+
+				"5:int\n";
+		annotateTypeAndCheck(input, expected);
+	}
+
+	@Test
+	public void testExprInVector() throws Exception {
+		String input =
+				"func sum(x:int) : int {\n" +
+				"   if (x <= 0)\n" +
+				"       return 0\n" +
+				"   return sum(x-1)+x\n" +
+				"}\n" +
+				"var vec = [sum(5),1,2,3+3]\n" +
+				"print(vec)\n";
+		String expected =
+				"x:int\n" +
+				"0:int\n" +
+				"<=:boolean\n" +
+				"0:int\n" +
+				"sum(x-1):int\n" +
+				"x:int\n" +
+				"1:int\n" +
+				"-:int\n" +
+				"x:int\n" +
+				"+:int\n" +
+				"[sum(5),1,2,3+3]:[]\n" +
+				"sum(5):int => float\n" +
+				"5:int\n" +
+				"1:int => float\n" +
+				"2:int => float\n" +
+				"3:int\n" +
+				"3:int\n" +
+				"+:int => float\n";
+		annotateTypeAndCheck(input, expected);
+	}
+
+	@Test
+	public void testParenthesisExpr() throws Exception {
+		String input =
+				"var x = 1 * (2 + 3)\n" +
+				"var vec = [1.0,2.0,x]\n";
+		String expected =
+				"1:int\n" +
+				"(2+3):int\n" +
+				"2:int\n" +
+				"3:int\n" +
+				"+:int\n" +
+				"*:int\n" +
+				"[1.0,2.0,x]:[]\n" +
+				"1.0:float\n" +
+				"2.0:float\n" +
+				"x:int => float\n";
 		annotateTypeAndCheck(input, expected);
 	}
 
