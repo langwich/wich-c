@@ -79,35 +79,66 @@ public class TypeAnnotator extends WichBaseListener {
 	}
 
 	@Override
-	public void exitAtom(@NotNull WichParser.AtomContext ctx) {
-		WichParser.PrimaryContext primary = ctx.primary();
-		//ID
-		if (primary.ID() != null) {
-			Symbol s = currentScope.resolve(primary.ID().getText());
-			if (s != null)
-				ctx.exprType = (WBuiltInTypeSymbol) ((TypedSymbol) s).getType();
-		}
-		//INT
-		else if (primary.INT() != null) {
-			ctx.exprType = SymbolTable._int;
-		}
-		//FLOAT
-		else if (primary.FLOAT() != null) {
-			ctx.exprType = SymbolTable._float;
-		}
-		//STRING
-		else if (primary.STRING() != null) {
-			ctx.exprType = SymbolTable._string;
-		}
-		//vector
-		else {
-			ctx.exprType = SymbolTable._vector;
-			//promote element type to fit in a vector
-			int targetIndex = SymbolTable._float. getTypeIndex();
-			for (ExprContext elem : ctx.primary().expr_list().expr())
-				TypeHelper.promote(elem, targetIndex);
-		}
+	public void exitIdentifier(@NotNull WichParser.IdentifierContext ctx) {
+		Symbol s = currentScope.resolve(ctx.ID().getText());
+		if (s != null)
+			((ExprContext)ctx.getParent()).exprType = (WBuiltInTypeSymbol) ((TypedSymbol) s).getType();
 	}
+
+	@Override
+	public void exitInteger(@NotNull WichParser.IntegerContext ctx) {
+		((ExprContext)ctx.getParent()).exprType = SymbolTable._int;
+	}
+
+	@Override
+	public void exitFloat(@NotNull WichParser.FloatContext ctx) {
+		((ExprContext)ctx.getParent()).exprType = SymbolTable._float;
+	}
+
+	@Override
+	public void exitVector(@NotNull WichParser.VectorContext ctx) {
+		((ExprContext)ctx.getParent()).exprType = SymbolTable._vector;
+		//promote element type to fit in a vector
+		int targetIndex = SymbolTable._float. getTypeIndex();
+		for (ExprContext elem : ctx.expr_list().expr())
+			TypeHelper.promote(elem, targetIndex);
+	}
+
+	@Override
+	public void exitString(@NotNull WichParser.StringContext ctx) {
+		((ExprContext)ctx.getParent()).exprType = SymbolTable._string;
+	}
+
+//	@Override
+//	public void exitAtom(@NotNull WichParser.AtomContext ctx) {
+//		WichParser.PrimaryContext primary = ctx.primary();
+//		//ID
+//		if (primary.ID() != null) {
+//			Symbol s = currentScope.resolve(primary.ID().getText());
+//			if (s != null)
+//				ctx.exprType = (WBuiltInTypeSymbol) ((TypedSymbol) s).getType();
+//		}
+//		//INT
+//		else if (primary.INT() != null) {
+//			ctx.exprType = SymbolTable._int;
+//		}
+//		//FLOAT
+//		else if (primary.FLOAT() != null) {
+//			ctx.exprType = SymbolTable._float;
+//		}
+//		//STRING
+//		else if (primary.STRING() != null) {
+//			ctx.exprType = SymbolTable._string;
+//		}
+//		//vector
+//		else {
+//			ctx.exprType = SymbolTable._vector;
+//			//promote element type to fit in a vector
+//			int targetIndex = SymbolTable._float. getTypeIndex();
+//			for (ExprContext elem : ctx.primary().expr_list().expr())
+//				TypeHelper.promote(elem, targetIndex);
+//		}
+//	}
 
 	@Override
 	public void exitVarDef(@NotNull WichParser.VarDefContext ctx) {

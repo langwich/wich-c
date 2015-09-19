@@ -59,8 +59,8 @@ public class CompilerFacade {
 
 	public static String genCode(String input, SymbolTable symtab) {
 		ParserRuleContext tree = getAnnotatedParseTree(input, symtab);
-		CodeGenerator codeGenerator = new CodeGenerator(symtab);
-		OutputModelObject omo = codeGenerator.visit(tree);
+		CodeGenerator codeGenerator = new CodeGenerator(input,symtab);
+		OutputModelObject omo = codeGenerator.generate(tree);
 		STGroup templates = new STGroupFile("resources/wich.stg");
 		ModelConverter converter = new ModelConverter(templates);
 		ST wichST = converter.walk(omo);

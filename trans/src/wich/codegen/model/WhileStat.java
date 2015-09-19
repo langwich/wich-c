@@ -23,7 +23,10 @@ SOFTWARE.
 */
 package wich.codegen.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class WhileStat extends Stat {
-	@ModelElement Expr condition;
+	@ModelElement public Expr condition;
 	@ModelElement public Stat stat;
 }

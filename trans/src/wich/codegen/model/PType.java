@@ -23,9 +23,11 @@ SOFTWARE.
 */
 package wich.codegen.model;
 
-public class PType extends OutputModelObject {
-	public final String typeName;
-	public PType(String typeName) {
-		this.typeName = typeName;
+
+public abstract class PType extends OutputModelObject {
+	protected String name;
+	public PType(String name) {
+		this.name = name;
 	}
+	public abstract String getName();
 }

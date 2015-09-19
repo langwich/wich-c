@@ -30,6 +30,14 @@ import java.util.List;
  *  definitions.
  */
 public class Script extends OutputModelObject {
+	public final String scriptName;
 	@ModelElement public List<Func> functions = new ArrayList<Func>();
-	@ModelElement public MainMethod main;
+	@ModelElement public List<VarDefStat> varDefs = new ArrayList<>();
+	@ModelElement public List<Stat> stats = new ArrayList<>();
+	public List<String> localVars = new ArrayList<>();
+	public List<Integer> localTemps = new ArrayList<>();
+
+	public Script(String scriptName) {
+		this.scriptName = scriptName;
+	}
 }

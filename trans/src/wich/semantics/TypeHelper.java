@@ -268,7 +268,7 @@ public class TypeHelper {
 	protected static String dumpPrimaryWithType(WichParser.AtomContext ctx) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(ctx.getText()).append(":").append(getPrintType(ctx)).append("\n");
-		WichParser.PrimaryContext primary = ctx.primary();
+		WichParser.VectorContext primary = (WichParser.VectorContext)ctx.primary();
 		if (primary.getChildCount() > 1) {
 			for (ExprContext exprContext : primary.expr_list().expr()) {
 				sb.append(dumpExprWithType(exprContext));

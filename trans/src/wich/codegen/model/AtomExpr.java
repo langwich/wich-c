@@ -23,13 +23,10 @@ SOFTWARE.
 */
 package wich.codegen.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AtomExpr extends Expr{
-	public final String content;
-	@ModelElement public List<Expr> vector;
+	@ModelElement public Expr primaryExpr;
 
-	public AtomExpr(String content) {
-		this.content = content;
-	}
 }

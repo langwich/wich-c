@@ -29,10 +29,8 @@ import java.util.List;
 public class Func extends OutputModelObject{
 	public final String funcName;
 	@ModelElement public PType returnType;
-	@ModelElement public List<ArgsDef> args = new ArrayList<ArgsDef>();
-	@ModelElement public List<Stat> body = new ArrayList<Stat>();
-	@ModelElement public List<String> localVars = new ArrayList<String>();
-
+	@ModelElement public List<ArgDef> args = new ArrayList<ArgDef>();
+	@ModelElement public Block body;
 	public Func(String funcName) {
 		this.funcName = funcName;
 	}
