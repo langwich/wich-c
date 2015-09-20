@@ -23,5 +23,9 @@ SOFTWARE.
 */
 package wich.codegen.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public abstract class Expr extends OutputModelObject {
+	public List<TmpVarDef> tmpVarDefs = new ArrayList<>();
 }

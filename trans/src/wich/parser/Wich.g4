@@ -25,6 +25,7 @@ SOFTWARE.
 grammar Wich;
 
 @header {
+package wich.parser;
 import wich.semantics.type.*;
 import org.antlr.symtab.*;
 }
@@ -32,7 +33,7 @@ import org.antlr.symtab.*;
 file : script ;
 
 script returns [GlobalScope scope]
-    : (statement | function)* EOF ;
+	: (statement | function)* EOF ;
 
 function returns [WFunctionSymbol scope]
 	:	'func' ID '(' formal_args? ')' (':' type)? block
@@ -49,18 +50,18 @@ type:	'int'
 	;
 
 block returns [Scope scope]
-    :  '{' statement* '}';
+	:  '{' statement* '}';
 
 statement
 	:	'if' '(' expr ')' statement ('else' statement)?		# If
 	|	'while' '(' expr ')' statement						# While
 	|	'var' ID '=' expr									# VarDef
 	|	ID '=' expr											# Assign
-	|	ID '[' expr ']' '=' expr				            # ElementAssign
+	|	ID '[' expr ']' '=' expr							# ElementAssign
 	|	call_expr											# CallStatement
 	|	'return' expr										# Return
-	|	block              	 								# BlockStatement
-	|   'print' '(' expr? ')'                               # Print
+	|	block				 								# BlockStatement
+	|	'print' '(' expr? ')'								# Print
 	;
 
 expr returns [WBuiltInTypeSymbol exprType, WBuiltInTypeSymbol promoteToType]
@@ -74,15 +75,16 @@ expr returns [WBuiltInTypeSymbol exprType, WBuiltInTypeSymbol promoteToType]
 	;
 
 operator  : MUL|DIV|ADD|SUB|GT|LE|EQUAL_EQUAL|NOT_EQUAL|GT|GE|OR|AND|DOT ; // no precedence
-call_expr : ID '(' expr_list? ')';
+call_expr : ID '(' expr_list? ')' ;
+
 expr_list : expr (',' expr)* ;
 
 primary
-	:	ID
-	|	INT
-	|	FLOAT
-	|	STRING
-	|	'[' expr_list ']'
+	:	ID													#Identifier
+	|	INT													#Integer
+	|	FLOAT												#Float
+	|	STRING												#String
+	|	'[' expr_list ']'									#Vector
 	;
 
 LPAREN : '(' ;
@@ -99,6 +101,7 @@ WHILE : 'while' ;
 VAR : 'var' ;
 EQUAL : '=' ;
 RETURN : 'return' ;
+PRINT : 'print' ;
 SUB : '-' ;
 BANG : '!' ;
 MUL : '*' ;
@@ -120,9 +123,9 @@ COMMENT      : '/*' .*? '*/'    -> channel(HIDDEN) ;
 ID  : [a-zA-Z_] [a-zA-Z0-9_]* ;
 INT : [0-9]+ ;
 FLOAT
-    :   '-'? INT '.' INT EXP?   // 1.35, 1.35E-9, 0.3, -4.5
-    |   '-'? INT EXP            // 1e10 -3e4
-    ;
+	:   '-'? INT '.' INT EXP?   // 1.35, 1.35E-9, 0.3, -4.5
+	|   '-'? INT EXP            // 1e10 -3e4
+	;
 fragment EXP :   [Ee] [+\-]? INT ;
 
 STRING :  '"' (ESC | ~["\\])* '"' ;

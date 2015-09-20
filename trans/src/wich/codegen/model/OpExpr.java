@@ -23,12 +23,15 @@ SOFTWARE.
 */
 package wich.codegen.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class OpExpr extends Expr{
-	public final String operator;
-	@ModelElement public Expr lExp;
+	public final String op;
 	@ModelElement public Expr rExp;
+	@ModelElement public Expr lExp;
 
 	public OpExpr(String operator) {
-		this.operator = operator;
+		this.op = operator;
 	}
 }

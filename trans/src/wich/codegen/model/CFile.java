@@ -21,10 +21,9 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-package wich.semantics.type;
+package wich.codegen.model;
 
-public class WString extends WBuiltInTypeSymbol {
-	public WString() {
-		super("String", TYPE.STRING);
-	}
+
+public class CFile extends OutputModelObject{
+	@ModelElement public Script script;
 }

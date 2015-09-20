@@ -83,6 +83,21 @@ public class TestCodeGen {
 		genCodeAndCheck("t9.w");
 	}
 
+	@Test
+	public void testStringAndScope() throws Exception {
+		genCodeAndCheck("t10.w");
+	}
+
+	@Test
+	public void testStringOP() throws Exception {
+		genCodeAndCheck("t11.w");
+	}
+
+	@Test
+	public void testfunCall() throws Exception {
+		genCodeAndCheck("t12.w");
+	}
+
 	// TODO: use system command to compile and test the c code maybe?
 	private void genCodeAndCheck(String inputFileName) throws IOException {
 		SymbolTable symtab = new SymbolTable();

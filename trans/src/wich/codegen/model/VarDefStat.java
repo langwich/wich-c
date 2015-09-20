@@ -23,10 +23,15 @@ SOFTWARE.
 */
 package wich.codegen.model;
 
-public class VarDefStat extends OutputModelObject {
+import java.util.ArrayList;
+import java.util.List;
+
+public class VarDefStat extends Stat {
 	public final String name;
 	@ModelElement public PType type;
 	@ModelElement public Expr expr;
+	@ModelElement public List<TmpVarDef> localTemps = new ArrayList<>();
+	public String ref = null;
 
 	public VarDefStat(String name) {
 		this.name = name;

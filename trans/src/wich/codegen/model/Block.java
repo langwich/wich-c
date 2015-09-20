@@ -21,10 +21,18 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-package wich.semantics.type;
+package wich.codegen.model;
 
-public class WString extends WBuiltInTypeSymbol {
-	public WString() {
-		super("String", TYPE.STRING);
-	}
+import java.util.ArrayList;
+import java.util.List;
+
+
+public class Block extends OutputModelObject {
+	@ModelElement public List<VarDefStat> varDefs = new ArrayList<>();
+	@ModelElement public List<Stat> stats = new ArrayList<>();
+	@ModelElement public Stat returnStat;
+	public List<Integer> localTemps = new ArrayList<>();
+	public List<String> localVars = new ArrayList<>();
+	public List<String> argsRef = new ArrayList<>();
+	public String returnVar;
 }

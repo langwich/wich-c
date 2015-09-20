@@ -75,17 +75,28 @@ public class TypeChecker extends WichBaseListener {
 	}
 
 	@Override
-	public void exitAtom(@NotNull WichParser.AtomContext ctx) {
-		//check vector element type
-		if (ctx.primary().expr_list() != null){
-			for (WichParser.ExprContext elem : ctx.primary().expr_list().expr()){
+	public void exitVector(@NotNull WichParser.VectorContext ctx) {
+		if (ctx.expr_list() != null){
+			for (WichParser.ExprContext elem : ctx.expr_list().expr()){
 				if (elem.exprType != SymbolTable._float ||
 						elem.promoteToType != SymbolTable._float)
-				error("Invalid vector element.", new Exception());
+					error("Invalid vector element.", new Exception());
 			}
 		}
-
 	}
+
+//	@Override
+//	public void exitAtom(@NotNull WichParser.AtomContext ctx) {
+//		//check vector element type
+//		if (ctx.primary().expr_list() != null){
+//			for (WichParser.ExprContext elem : ctx.primary().expr_list().expr()){
+//				if (elem.exprType != SymbolTable._float ||
+//						elem.promoteToType != SymbolTable._float)
+//				error("Invalid vector element.", new Exception());
+//			}
+//		}
+//
+//	}
 
 	@Override
 	public void enterScript(@NotNull WichParser.ScriptContext ctx) {
