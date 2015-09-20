@@ -424,11 +424,13 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		if (((WFunctionSymbol) currentScope.resolve(funcName)).getType()!= null) {
 			fc.reType = ((WFunctionSymbol) currentScope.resolve(funcName)).getType().getName();
 		}
-		List<WichParser.ExprContext> expr = ctx.call_expr().expr_list().expr();
-		for (WichParser.ExprContext e : expr) {
-			fc.args.add((Expr)visit(e));
-			for (TmpVarDef t :((Expr)visit(e)).tmpVarDefs) {
-				fc.tmpVarDefs.add(t);
+		if(ctx.call_expr().expr_list() != null){
+			List<WichParser.ExprContext> expr = ctx.call_expr().expr_list().expr();
+			for (WichParser.ExprContext e : expr) {
+				fc.args.add((Expr)visit(e));
+				for (TmpVarDef t :((Expr)visit(e)).tmpVarDefs) {
+					fc.tmpVarDefs.add(t);
+				}
 			}
 		}
 		if (fc.reType != null && isTempVarNeeded(ctx.getParent())) {

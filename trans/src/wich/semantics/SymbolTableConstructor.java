@@ -38,6 +38,7 @@ public class SymbolTableConstructor extends WichBaseListener {
 
 	private final SymbolTable symtab;
 	private Scope currentScope;
+	private int numOfBlocks;
 
 	public SymbolTableConstructor(SymbolTable symtab) {
 		this.symtab = symtab;
@@ -65,7 +66,7 @@ public class SymbolTableConstructor extends WichBaseListener {
 		currentScope.define(f);
 		//resolve return type of the method
 		if (ctx.type() != null)
-			f.setType((Type) currentScope.resolve(ctx.type().getText()));
+			f.setType((Type) symtab.PREDEFINED.getSymbol(ctx.type().getText()));
 		else
 			f.setType(null);
 		pushScope(f);
@@ -78,7 +79,15 @@ public class SymbolTableConstructor extends WichBaseListener {
 
 	@Override
 	public void enterBlock(@NotNull WichParser.BlockContext ctx) {
-		WBlock l = new WBlock("local");
+		WBlock l;
+		if (currentScope instanceof WBlock)
+			l = new WBlock((WBlock)currentScope);
+		if (currentScope instanceof WFunctionSymbol)
+			l = new WBlock((WFunctionSymbol) currentScope);
+		else{
+			l = new WBlock(numOfBlocks);
+			numOfBlocks++;
+		}
 		ctx.scope = l;
 		currentScope.define(l);
 		pushScope(l);

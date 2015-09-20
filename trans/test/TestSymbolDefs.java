@@ -110,7 +110,7 @@ public class TestSymbolDefs {
 		String expecting =
 			"global {\n" +
 			"    f {\n" +
-			"        local {\n" +
+			"        local_0 {\n" +
 			"        }\n" +
 
 			"    }\n" +
@@ -127,7 +127,7 @@ public class TestSymbolDefs {
 			"    f {\n" +
 			"        f.x:int\n" +
 			"        f.y:[]\n" +
-			"        local {\n" +
+			"        local_0 {\n" +
 			"        }\n" +
 			"    }\n" +
 			"}\n";
@@ -141,9 +141,9 @@ public class TestSymbolDefs {
 		String expecting =
 			"global {\n" +
 			"    f {\n" +
-			"        local {\n" +
-			"            local.i:int\n" +
-			"            local.c:string\n" +
+			"        local_0 {\n" +
+			"            local_0.i:int\n" +
+			"            local_0.c:string\n" +
 			"        }\n" +
 			"    }\n" +
 			"}\n";
@@ -157,10 +157,10 @@ public class TestSymbolDefs {
 		String expecting =
 			"global {\n" +
 			"    f {\n" +
-			"        local {\n" +
-			"            local.i:int\n" +
-			"            local {\n" +
-			"                local.c:string\n" +
+			"        local_0 {\n" +
+			"            local_0.i:int\n" +
+			"            local_0 {\n" +
+			"                local_0.c:string\n" +
 			"            }\n" +
 			"        }\n" +
 			"    }\n" +
@@ -176,10 +176,10 @@ public class TestSymbolDefs {
 			"global {\n" +
 			"    f {\n" +
 			"        f.x:int\n" +
-			"        local {\n" +
-			"            local.i:int\n" +
-			"            local {\n" +
-			"                local.c:string\n" +
+			"        local_0 {\n" +
+			"            local_0.i:int\n" +
+			"            local_0 {\n" +
+			"                local_0.c:string\n" +
 			"            }\n" +
 			"        }\n" +
 			"    }\n" +
