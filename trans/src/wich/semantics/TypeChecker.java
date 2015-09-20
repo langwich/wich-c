@@ -21,17 +21,15 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-package wich.parser;
+package wich.semantics;
 
 import org.antlr.symtab.Scope;
 import org.antlr.symtab.Symbol;
-
 import org.antlr.v4.runtime.misc.NotNull;
-import wich.semantics.SymbolTable;
-import wich.semantics.TypeHelper;
+import wich.parser.WichBaseListener;
+import wich.parser.WichParser;
 import wich.semantics.type.WBuiltInTypeSymbol;
 
-import java.lang.Exception;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

@@ -22,7 +22,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.TokenStream;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
@@ -30,8 +33,11 @@ import org.stringtemplate.v4.STGroupFile;
 import wich.codegen.CodeGenerator;
 import wich.codegen.ModelConverter;
 import wich.codegen.model.OutputModelObject;
-import wich.parser.*;
+import wich.parser.WichLexer;
+import wich.parser.WichParser;
 import wich.semantics.SymbolTable;
+import wich.semantics.SymbolTableConstructor;
+import wich.semantics.TypeAnnotator;
 
 public class CompilerFacade {
 
