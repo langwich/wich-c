@@ -31,6 +31,7 @@ public class VarDefStat extends Stat {
 	@ModelElement public PType type;
 	@ModelElement public Expr expr;
 	@ModelElement public List<TmpVarDef> localTemps = new ArrayList<>();
+	public String ref = null;
 
 	public VarDefStat(String name) {
 		this.name = name;

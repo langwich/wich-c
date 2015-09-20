@@ -28,7 +28,7 @@ import org.antlr.symtab.Type;
 import wich.semantics.SymbolTable;
 
 public class WBuiltInTypeSymbol extends BaseSymbol implements Type {
-	public static enum TYPE { INT, FLOAT, BOOLEAN, STRING, VECTOR };
+	public static enum TYPE { INT, FLOAT, STRING, VECTOR ,BOOLEAN};
 	protected int typeIndex;
 
 	public WBuiltInTypeSymbol(String name, TYPE type) {

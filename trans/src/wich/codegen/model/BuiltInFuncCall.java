@@ -30,9 +30,10 @@ public class BuiltInFuncCall extends Expr{
 	public final String funcName;
 	public String stringNewLiteral = null;
 	public Integer vectorNewSize = null;
-	public String reType;
+	public Integer localTmp = null;
+	//public String reType;
 	@ModelElement public List<Expr> args = new ArrayList<>();
-	@ModelElement public TmpVarDef localTmp ;
+
 
 	public BuiltInFuncCall(String callName) {
 		this.funcName = callName;

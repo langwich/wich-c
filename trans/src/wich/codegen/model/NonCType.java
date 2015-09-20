@@ -32,6 +32,8 @@ public class NonCType extends PType {
 
 	@Override
 	public String getName() {
+		if (name .equals("[]"))
+			return "Vector";
 		return name;
 	}
 }

@@ -24,11 +24,17 @@ Func(f,returnType,args,body)::=<<
 Block(b,varDefs,stats,returnStat)::= <<
 {
 	<if(b.argsRef)><b.argsRef:{arg|REF(<arg>);};separator="\n"><endif>
+
 	<if(varDefs)><varDefs;separator="\n"><endif>
+
 	<if(stats)><stats;separator="\n"><endif>
+
 	<if(b.returnVar)>REF(<b.returnVar>);<endif>
+
 	<if(b.localVars)><b.localVars:{deRef|DEREF(<deRef>);};separator="\n"><endif>
+
 	<if(b.localTemps)><b.localTemps:{t|DEREF(tmp<t>);};separator="\n"><endif>
+
 	<if(returnStat)><returnStat><endif>
 }
 >>
@@ -67,6 +73,7 @@ return <rExpr>;
 VarDefStat(v,type,expr,localTemps) ::= <<
 <if(localTemps)><localTemps;separator="\n"><endif>
 <type><v.name> = <expr>;
+<if(v.ref)>REF(<v.ref>);<endif>
 >>
 
 BlockStat(b,block) ::= <<
@@ -87,18 +94,18 @@ AtomExpr(a,primaryExpr) ::= "<primaryExpr>"
 
 PrimaryExpr(p) ::= "<p.content>"
 
-FuncCall(c,localTmp,args) ::= <<
-<if(localTmp)>tmp<localTmp.(index)>=<c.funcName>(<args;separator=",">);
-<else><c.funcName>(<args;separator=",">);
-<endif>
+FuncCall(c,args) ::= <<
+<if(c.localTmp)>tmp<c.localTmp>=<c.funcName>(<args;separator=",">)<else><c.funcName>(<args;separator=",">)<endif>
 >>
 
-BuiltInFuncCall(b,localTmp,args) ::= <<
-<if(b.stringNewLiteral)><if(localTmp)>tmp<localTmp.(index)>=<b.funcName>(<b.stringNewLiteral>);
-<else><b.funcName>(<b.stringNewLiteral>)<endif>
-<elseif(b.vectorNewSize)>
-<if(localTmp)>tmp<localTmp.(index)>=<b.funcName>((double[]){<args;separator=",">},<b.vectorNewSize>);
-<else><b.funcName>((double []){<args;separator=",">}, <b.vectorNewSize>);<endif>
+BuiltInFuncCall(b,args) ::= <<
+<if(b.stringNewLiteral)><if(b.localTmp)>tmp<b.localTmp>=<b.funcName>(<b.stringNewLiteral>)<else><b.funcName>(<b.stringNewLiteral>)<endif>
+<elseif(b.vectorNewSize)><if(b.localTmp)>tmp<b.localTmp>=<b.funcName>((double[]){<args;separator=",">},<b.vectorNewSize>)
+<else><b.funcName>((double []){<args;separator=",">}, <b.vectorNewSize>)<endif>
+<else>
+<if(b.localTmp)>tmp<b.localTmp>=<b.funcName>(<args;separator=",">)
+<else><b.funcName>(<args;separator=",">)
+<endif>
 <endif>
 >>
 
@@ -110,7 +117,7 @@ NegateExpr(n,negateExpr) ::= "- <negateExpr>"
 
 NotExpr(ne,notExpr) ::= "! <notExpr>"
 
-OpExpr(o,lExpr,rExpr) ::= "(<lExpr>) <o.op> (<rExpr>)"
+OpExpr(o,lExp,rExp) ::= "(<lExp>) <o.op> (<rExp>)"
 
 ParensExpr(p,expression) ::= "(<expression>)"
 
@@ -118,4 +125,4 @@ ArgDef(arg,type) ::= "<type><arg.name>"
 
 CType(t) ::= "<t.name> "
 NonCType(nt) ::= "<nt.name> *"
-TmpVarDef(t) ::="<t.typeName> * tmp<t.index>;"
+TmpVarDef(t) ::="<t.typeName> *tmp<t.index>;"

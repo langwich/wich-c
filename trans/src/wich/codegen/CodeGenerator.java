@@ -214,6 +214,9 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		for (TmpVarDef t :varDef.localTemps) {
 			varDef.tmpVars.add(t.index);
 		}
+		if (!isTemporySymbol(ctx.expr().getText())) {
+			varDef.ref = varDef.name;
+		}
 		return varDef;
 	}
 
@@ -263,9 +266,9 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 				}
 			}
 		}
-		if (fc.reType != null && isTempVarNeeded(ctx.getParent())) {
+		if (isTempVarNeeded(ctx.getParent())) {
 			TmpVarDef t = new TmpVarDef(tmpIndex++, fc.reType);
-			fc.localTmp = t;
+			fc.localTmp = t.index;
 			fc.tmpVarDefs.add(t);
 		}
 		return fc;
@@ -284,7 +287,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 				case 1:
 					printStat.printFloat = "float";
 					break;
-				case 3:
+				case 2:
 					printStat.printStr = "string";
 					if (!isTemporySymbol(ctx.expr().getText())) break;
 					else {
@@ -294,7 +297,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 						}
 					}
 					break;
-				case 4:
+				case 3:
 					printStat.printVec = "vector";
 					if (!isTemporySymbol(ctx.expr().getText())) break;
 					else {
@@ -340,7 +343,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 			}
 			if (isTempVarNeeded(ctx.getParent())) {
 				TmpVarDef t = new TmpVarDef(tmpIndex++,ctx.exprType.getName());
-				fc.localTmp = t;
+				fc.localTmp = t.index;
 				fc.tmpVarDefs.add(t);
 			}
 			return fc;
@@ -397,7 +400,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		}
 		if (fc.reType != null && isTempVarNeeded(ctx.getParent())) {
 			TmpVarDef t = new TmpVarDef(tmpIndex++, fc.reType);
-			fc.localTmp = t;
+			fc.localTmp = t.index;
 			fc.tmpVarDefs.add(t);
 		}
 		return fc;
@@ -448,7 +451,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		builtInFuncCall.stringNewLiteral = ctx.getText();
 		if (isTempVarNeeded(ctx.getParent().getParent())) {
 			TmpVarDef t = new TmpVarDef(tmpIndex++,"String");
-			builtInFuncCall.localTmp = t;
+			builtInFuncCall.localTmp = t.index;
 			builtInFuncCall.tmpVarDefs.add(t);
 		}
 		return builtInFuncCall;
@@ -463,14 +466,14 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		builtInFuncCall.vectorNewSize = ctx.expr_list().expr().size();
 		if (isTempVarNeeded(ctx.getParent().getParent())) {
 			TmpVarDef t = new TmpVarDef(tmpIndex++,"Vector");
-			builtInFuncCall.localTmp = t;
+			builtInFuncCall.localTmp = t.index;
 			builtInFuncCall.tmpVarDefs.add(t);
 		}
 		return builtInFuncCall;
 	}
 
 	private boolean isTempVarNeeded(ParserRuleContext s){
-		return !(s instanceof WichParser.VarDefContext || s instanceof WichParser.AssignContext);
+		return !(s instanceof WichParser.VarDefContext || s instanceof WichParser.AssignContext || s instanceof WichParser.CallStatementContext);
 	}
 
 	@Override

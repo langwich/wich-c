@@ -4,7 +4,7 @@
 void f() {
 	String *x = String_new("cat");
 	{
-		String *y = String_new("dot");
+		String *y = String_new("dog");
 
 		String *z = x;
 		REF(z);

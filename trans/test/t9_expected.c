@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "wich.h"
 
 String *becomeSuper(String *name) {
