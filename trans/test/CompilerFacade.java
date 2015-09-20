@@ -39,7 +39,18 @@ import wich.semantics.SymbolTable;
 import wich.semantics.SymbolTableConstructor;
 import wich.semantics.TypeAnnotator;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 public class CompilerFacade {
+
+	public static final Charset FILE_ENCODING = StandardCharsets.UTF_8;
+	public static final String FOLDER = "./test/";
 
 	private static ParserRuleContext parse(ANTLRInputStream antlrInputStream) {
 		TokenStream tokens = new CommonTokenStream(new WichLexer(antlrInputStream));
@@ -47,7 +58,7 @@ public class CompilerFacade {
 		return parser.file();
 	}
 
-	public static ParserRuleContext defineSymbols(String input, SymbolTable symtab) {
+	static ParserRuleContext defineSymbols(String input, SymbolTable symtab) {
 		ParserRuleContext tree = parse(new ANTLRInputStream(input));
 		ParseTreeWalker walker = new ParseTreeWalker();
 		SymbolTableConstructor symtabConstructor = new SymbolTableConstructor(symtab);
@@ -55,7 +66,7 @@ public class CompilerFacade {
 		return tree;
 	}
 
-	public static ParserRuleContext getAnnotatedParseTree(String input, SymbolTable symtab) {
+	static ParserRuleContext getAnnotatedParseTree(String input, SymbolTable symtab) {
 		ParserRuleContext tree = defineSymbols(input, symtab);
 		TypeAnnotator typeAnnotator = new TypeAnnotator(symtab);
 		ParseTreeWalker walker = new ParseTreeWalker();
@@ -63,7 +74,7 @@ public class CompilerFacade {
 		return tree;
 	}
 
-	public static String genCode(String input, SymbolTable symtab) {
+	static String genCode(String input, SymbolTable symtab) {
 		ParserRuleContext tree = getAnnotatedParseTree(input, symtab);
 		CodeGenerator codeGenerator = new CodeGenerator(input,symtab);
 		OutputModelObject omo = codeGenerator.generate(tree);
@@ -71,5 +82,14 @@ public class CompilerFacade {
 		ModelConverter converter = new ModelConverter(templates);
 		ST wichST = converter.walk(omo);
 		return wichST.render();
+	}
+
+	static String readFile(String path, Charset encoding) throws IOException {
+		byte[] encoded = Files.readAllBytes(Paths.get(path));
+		return new String(encoded, encoding);
+	}
+
+	static void writeFile(String path, String output, Charset encoding) throws IOException {
+		Files.write(Paths.get(path), output.getBytes(encoding));
 	}
 }

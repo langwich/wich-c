@@ -22,6 +22,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+#include <stdio.h>
+#include <stdlib.h>
+
 typedef struct {
 	int refs;    		// refs to this object
 } heap_object;
@@ -77,10 +80,10 @@ void wich_free(heap_object *p);
 		((heap_object *)x)->refs = 1; \
 	}
 
+#ifdef DEBUG
 #define REF(x) \
 	if ( x!=NULL ) ((heap_object *)x)->refs++; \
 	printf("REF(" #x ") bumps refs to %d\n", ((heap_object *)x)->refs);
-
 #define DEREF(x) \
 	printf("DEREF(" #x ") has %d refs\n", ((heap_object *)x)->refs);\
 	if ( x!=NULL ) ((heap_object *)x)->refs--; \
@@ -89,3 +92,13 @@ void wich_free(heap_object *p);
         wich_free((heap_object *)x); \
 		x = NULL; \
 	}
+#else
+#define REF(x) \
+	if ( x!=NULL ) ((heap_object *)x)->refs++;
+#define DEREF(x) \
+	if ( x!=NULL ) ((heap_object *)x)->refs--; \
+	if ( x!=NULL && ((heap_object *)x)->refs==0 ) { \
+        wich_free((heap_object *)x); \
+		x = NULL; \
+	}
+#endif
