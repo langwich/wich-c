@@ -42,7 +42,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	public String fileName;
 	protected final SymbolTable symtab;
 	public Scope currentScope;
-	private int tmpIndex = 1;
+	private static int tmpIndex = 1;
 
 	public CodeGenerator(String fileName,SymbolTable symtab) {
 		this.templates = new STGroupFile("resources/wich.stg");
