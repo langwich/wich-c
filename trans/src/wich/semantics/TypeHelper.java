@@ -276,9 +276,10 @@ public class TypeHelper {
 	protected static String dumpPrimaryWithType(WichParser.AtomContext ctx) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(ctx.getText()).append(":").append(getPrintType(ctx)).append("\n");
-		WichParser.VectorContext primary = (WichParser.VectorContext)ctx.primary();
-		if (primary.getChildCount() > 1) {
-			sb.append(process(primary.expr_list().expr(), (t)->true, TypeHelper::dumpExprWithType, (t)->""));
+		WichParser.PrimaryContext primary = ctx.primary();
+		if (ctx.primary() instanceof WichParser.VectorContext) {
+			WichParser.VectorContext vectorContext = (WichParser.VectorContext) ctx.primary();
+			sb.append(process(vectorContext.expr_list().expr(), (t)->true, TypeHelper::dumpExprWithType, (t)->""));
 		}
 		return sb.toString();
 	}
