@@ -39,9 +39,7 @@ import wich.semantics.SymbolTable;
 import wich.semantics.SymbolTableConstructor;
 import wich.semantics.TypeAnnotator;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -78,7 +76,7 @@ public class CompilerFacade {
 		ParserRuleContext tree = getAnnotatedParseTree(input, symtab);
 		CodeGenerator codeGenerator = new CodeGenerator(input,symtab);
 		OutputModelObject omo = codeGenerator.generate(tree);
-		STGroup templates = new STGroupFile("resources/wich.stg");
+		STGroup templates = new STGroupFile("wich.stg");
 		ModelConverter converter = new ModelConverter(templates);
 		ST wichST = converter.walk(omo);
 		return wichST.render();

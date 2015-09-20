@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -44,14 +45,16 @@ import static org.junit.Assert.assertEquals;
 public class TestWichExecution {
 
 	protected static final String WORKING_DIR = "/tmp/";
-	protected static final String RUNTIME_DIR = "../runtime/src/";
+	protected static final String RUNTIME_DIR = "../../../runtime/src/";
 	protected static String folder = CompilerFacade.FOLDER;
 	protected static Charset encoding = CompilerFacade.FILE_ENCODING;
 	protected static String runtimePath;
 
 	@Before
 	public void setUp() throws Exception {
-		runtimePath = new File(RUNTIME_DIR).getAbsolutePath();
+		URL dirOfThisClass = getClass().getClassLoader().getResource(".");
+		String path = dirOfThisClass.getPath(); // something like /Users/parrt/github/wich-c/out/test/trans/ in intellij
+		runtimePath = new File(path+RUNTIME_DIR).getAbsolutePath();
 	}
 
 	@Test
@@ -107,13 +110,15 @@ public class TestWichExecution {
 	private String compileC(String wichInput) throws IOException, InterruptedException {
 		// Translate to C file.
 		SymbolTable symtab = new SymbolTable();
-		String actual = CompilerFacade.genCode(CompilerFacade.readFile(folder + wichInput, encoding), symtab);
+		URL WichInputURL = getClass().getClassLoader().getResource(wichInput);
+		String actual = CompilerFacade.genCode(CompilerFacade.readFile(WichInputURL.getPath(), encoding), symtab);
 		String baseName = wichInput.substring(0, wichInput.indexOf('.'));
 		String generated = WORKING_DIR + baseName + "_wich.c";
 		CompilerFacade.writeFile(generated, actual, StandardCharsets.UTF_8);
 		// Compile C code and return the path to the executable.
 		String executable = baseName + "_wich";
-		exec(new String[]{"gcc", "-o", executable, generated, runtimePath + "/wich.c", "-I", runtimePath, "-std=c99"});
+		URL CFileURL = getClass().getClassLoader().getResource(wichInput);
+		exec(new String[]{"cc", "-o", executable, generated, CFileURL.getFile(), "-I", runtimePath, "-std=c99"});
 		return executable;
 	}
 

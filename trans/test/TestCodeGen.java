@@ -26,6 +26,7 @@ import org.junit.Test;
 import wich.semantics.SymbolTable;
 
 import java.io.IOException;
+import java.net.URL;
 import java.nio.charset.Charset;
 
 import static org.junit.Assert.assertEquals;
@@ -94,12 +95,13 @@ public class TestCodeGen {
 
 	// TODO: use system command to compile and test the c code maybe?
 	private void genCodeAndCheck(String inputFileName) throws IOException {
-		String folder = CompilerFacade.FOLDER;
 		Charset encoding = CompilerFacade.FILE_ENCODING;
 		SymbolTable symtab = new SymbolTable();
-		String actual = CompilerFacade.genCode(CompilerFacade.readFile(folder + inputFileName, encoding), symtab);
+		URL WichFileURL = getClass().getClassLoader().getResource(inputFileName);
+		String actual = CompilerFacade.genCode(CompilerFacade.readFile(WichFileURL.getPath(), encoding), symtab);
 		String baseName = inputFileName.substring(0, inputFileName.indexOf('.'));
-		String expected = CompilerFacade.readFile(folder + baseName + "_expected.c", encoding);
+		URL CfileURL = getClass().getClassLoader().getResource(baseName + "_expected.c");
+		String expected = CompilerFacade.readFile(CfileURL.getPath(), encoding);
 		assertEquals(expected, actual);
 	}
 

@@ -110,7 +110,7 @@ public class Trans {
 			CFile omo = codeGenerator.generate(tree);
 
 			// using omo and string template to generate translated LLVM bitcode.
-			STGroup templates = new STGroupFile("resources/wich.stg");
+			STGroup templates = new STGroupFile("wich.stg");
 			ModelConverter converter = new ModelConverter(templates);
 			ST wichST = converter.walk(omo);
 			String wichC = wichST.render();
