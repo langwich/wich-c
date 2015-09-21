@@ -45,6 +45,7 @@ import static org.junit.Assert.assertEquals;
 public class TestWichExecution {
 
 	protected static final String WORKING_DIR = "/tmp/";
+	public static final String WICH_LIB = "wich.c";
 	protected static Charset encoding = CompilerFacade.FILE_ENCODING;
 	protected static String runtimePath;
 
@@ -121,7 +122,7 @@ public class TestWichExecution {
 		CompilerFacade.writeFile(generated, actual, StandardCharsets.UTF_8);
 		// Compile C code and return the path to the executable.
 		String executable = baseName + "_wich";
-		URL CFileURL = getClass().getClassLoader().getResource(wichInput);
+		URL CFileURL = getClass().getClassLoader().getResource(WICH_LIB);
 		exec(new String[]{"cc", "-o", executable, generated, CFileURL.getFile(), "-I", runtimePath, "-std=c99"});
 		return executable;
 	}
