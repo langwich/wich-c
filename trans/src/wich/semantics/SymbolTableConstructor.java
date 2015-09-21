@@ -21,12 +21,14 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-package wich.parser;
+package wich.semantics;
 
-import org.antlr.symtab.*;
+import org.antlr.symtab.GlobalScope;
+import org.antlr.symtab.Scope;
+import org.antlr.symtab.Type;
 import org.antlr.v4.runtime.misc.NotNull;
-import wich.semantics.SymbolTable;
-import wich.semantics.TypeHelper;
+import wich.parser.WichBaseListener;
+import wich.parser.WichParser;
 import wich.semantics.type.WArgSymbol;
 import wich.semantics.type.WBlock;
 import wich.semantics.type.WFunctionSymbol;
@@ -36,6 +38,7 @@ public class SymbolTableConstructor extends WichBaseListener {
 
 	private final SymbolTable symtab;
 	private Scope currentScope;
+	private int numOfBlocks;
 
 	public SymbolTableConstructor(SymbolTable symtab) {
 		this.symtab = symtab;
@@ -63,7 +66,7 @@ public class SymbolTableConstructor extends WichBaseListener {
 		currentScope.define(f);
 		//resolve return type of the method
 		if (ctx.type() != null)
-			f.setType((Type) currentScope.resolve(ctx.type().getText()));
+			f.setType((Type) symtab.PREDEFINED.getSymbol(ctx.type().getText()));
 		else
 			f.setType(null);
 		pushScope(f);
@@ -76,7 +79,15 @@ public class SymbolTableConstructor extends WichBaseListener {
 
 	@Override
 	public void enterBlock(@NotNull WichParser.BlockContext ctx) {
-		WBlock l = new WBlock("local");
+		WBlock l;
+		if (currentScope instanceof WBlock)
+			l = new WBlock((WBlock)currentScope);
+		if (currentScope instanceof WFunctionSymbol)
+			l = new WBlock((WFunctionSymbol) currentScope);
+		else{
+			l = new WBlock(numOfBlocks);
+			numOfBlocks++;
+		}
 		ctx.scope = l;
 		currentScope.define(l);
 		pushScope(l);

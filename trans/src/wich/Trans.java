@@ -24,23 +24,28 @@ SOFTWARE.
 
 package wich;
 
-import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.ANTLRFileStream;
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.RecognitionException;
+import org.antlr.v4.runtime.TokenStream;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
+import wich.codegen.CodeGenerator;
 import wich.codegen.ModelConverter;
 import wich.codegen.model.CFile;
-import wich.codegen.model.OutputModelObject;
-import wich.codegen.CodeGenerator;
-import wich.parser.*;
+import wich.parser.WichLexer;
+import wich.parser.WichParser;
 import wich.semantics.SymbolTable;
+import wich.semantics.SymbolTableConstructor;
+import wich.semantics.TypeAnnotator;
+import wich.semantics.TypeChecker;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class Trans {
 
@@ -105,7 +110,7 @@ public class Trans {
 			CFile omo = codeGenerator.generate(tree);
 
 			// using omo and string template to generate translated LLVM bitcode.
-			STGroup templates = new STGroupFile("resources/wich.stg");
+			STGroup templates = new STGroupFile("wich.stg");
 			ModelConverter converter = new ModelConverter(templates);
 			ST wichST = converter.walk(omo);
 			String wichC = wichST.render();

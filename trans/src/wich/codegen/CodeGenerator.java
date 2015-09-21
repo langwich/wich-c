@@ -30,11 +30,44 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
-import wich.codegen.model.*;
+import wich.codegen.model.ArgDef;
+import wich.codegen.model.AssignStat;
+import wich.codegen.model.AtomExpr;
+import wich.codegen.model.Block;
+import wich.codegen.model.BlockStat;
+import wich.codegen.model.BuiltInFuncCall;
+import wich.codegen.model.CFile;
+import wich.codegen.model.CType;
+import wich.codegen.model.CallStat;
+import wich.codegen.model.ElementAssignStat;
+import wich.codegen.model.Expr;
+import wich.codegen.model.Func;
+import wich.codegen.model.FuncCall;
+import wich.codegen.model.IfStat;
+import wich.codegen.model.NegateExpr;
+import wich.codegen.model.NonCType;
+import wich.codegen.model.NotExpr;
+import wich.codegen.model.OpExpr;
+import wich.codegen.model.OutputModelObject;
+import wich.codegen.model.ParensExpr;
+import wich.codegen.model.PrimaryExpr;
+import wich.codegen.model.PrintStat;
+import wich.codegen.model.ReturnStat;
+import wich.codegen.model.Script;
+import wich.codegen.model.Stat;
+import wich.codegen.model.StrIndexExpr;
+import wich.codegen.model.TmpVarDef;
+import wich.codegen.model.VarDefStat;
+import wich.codegen.model.VecIndexExpr;
+import wich.codegen.model.WhileStat;
 import wich.parser.WichBaseVisitor;
 import wich.parser.WichParser;
 import wich.semantics.SymbolTable;
-import wich.semantics.type.*;
+import wich.semantics.type.WFunctionSymbol;
+import wich.semantics.type.WString;
+import wich.semantics.type.WVariableSymbol;
+import wich.semantics.type.WVector;
+
 import java.util.List;
 
 public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
@@ -45,7 +78,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	private static int tmpIndex = 1;
 
 	public CodeGenerator(String fileName,SymbolTable symtab) {
-		this.templates = new STGroupFile("resources/wich.stg");
+		this.templates = new STGroupFile("wich.stg");
 		this.symtab = symtab;
 		this.fileName = fileName;
 	}
@@ -391,11 +424,13 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		if (((WFunctionSymbol) currentScope.resolve(funcName)).getType()!= null) {
 			fc.reType = ((WFunctionSymbol) currentScope.resolve(funcName)).getType().getName();
 		}
-		List<WichParser.ExprContext> expr = ctx.call_expr().expr_list().expr();
-		for (WichParser.ExprContext e : expr) {
-			fc.args.add((Expr)visit(e));
-			for (TmpVarDef t :((Expr)visit(e)).tmpVarDefs) {
-				fc.tmpVarDefs.add(t);
+		if(ctx.call_expr().expr_list() != null){
+			List<WichParser.ExprContext> expr = ctx.call_expr().expr_list().expr();
+			for (WichParser.ExprContext e : expr) {
+				fc.args.add((Expr)visit(e));
+				for (TmpVarDef t :((Expr)visit(e)).tmpVarDefs) {
+					fc.tmpVarDefs.add(t);
+				}
 			}
 		}
 		if (fc.reType != null && isTempVarNeeded(ctx.getParent())) {

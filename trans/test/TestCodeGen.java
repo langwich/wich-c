@@ -26,17 +26,12 @@ import org.junit.Test;
 import wich.semantics.SymbolTable;
 
 import java.io.IOException;
+import java.net.URL;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 import static org.junit.Assert.assertEquals;
 
 public class TestCodeGen {
-
-	private static final Charset FILE_ENCODING = StandardCharsets.UTF_8;
-	private static final String FOLDER = "./test/";
 
 	@Test
 	public void testSimpleVarDef() throws Exception {
@@ -100,15 +95,14 @@ public class TestCodeGen {
 
 	// TODO: use system command to compile and test the c code maybe?
 	private void genCodeAndCheck(String inputFileName) throws IOException {
+		Charset encoding = CompilerFacade.FILE_ENCODING;
 		SymbolTable symtab = new SymbolTable();
-		String actual = CompilerFacade.genCode(readFile(FOLDER + inputFileName, FILE_ENCODING), symtab);
+		URL WichFileURL = getClass().getClassLoader().getResource(inputFileName);
+		String actual = CompilerFacade.genCode(CompilerFacade.readFile(WichFileURL.getPath(), encoding), symtab);
 		String baseName = inputFileName.substring(0, inputFileName.indexOf('.'));
-		String expected = readFile(FOLDER + baseName + "_expected.c", FILE_ENCODING);
+		URL CfileURL = getClass().getClassLoader().getResource(baseName + "_expected.c");
+		String expected = CompilerFacade.readFile(CfileURL.getPath(), encoding);
 		assertEquals(expected, actual);
 	}
 
-	String readFile(String path, Charset encoding) throws IOException {
-		byte[] encoded = Files.readAllBytes(Paths.get(path));
-		return new String(encoded, encoding);
-	}
 }

@@ -25,7 +25,28 @@ SOFTWARE.
 import org.antlr.symtab.SymbolWithScope;
 
 public class WBlock extends SymbolWithScope {
-	public WBlock(String name) {
-		super(name);
+	public final int index;
+	public int numOfNested;
+
+	//when parent scope is global
+	public WBlock(int blocksInGlobal) {
+		super("local" + "_" + blocksInGlobal);
+		index = blocksInGlobal;
+		numOfNested = 0;
 	}
+
+	//when parent scope is function
+	public WBlock(WFunctionSymbol function) {
+		super("local" + "_" + function.numOfNested);
+		index = function.numOfNested++;
+		numOfNested = 0;
+	}
+
+	//when parent scope is local block
+	public WBlock(WBlock block) {
+		super("local" + "_" + block.numOfNested);
+		index = block.numOfNested++;
+		numOfNested = 0;
+	}
+
 }
