@@ -141,32 +141,34 @@ public class TestTypeAnnotation {
 	public void testRecursion() throws Exception {
 		String input =
 				"func fib(x:int) : int {\n" +
-				"   if (x == 0 || (x == 1)) {\n" +
+				"   if ((x == 0) || (x == 1)) {\n" +
 				"       return x\n" +
 				"   }\n" +
 				"   return fib(x-1) + fib(x-2)\n" +
 				"}\n" +
 				"print(fib(5))\n";
 		String expected =
+				"(x==0):boolean\n" +
 				"x:int\n" +
 				"0:int\n" +
 				"==:boolean\n" +
+				"(x==1):boolean\n" +
 				"x:int\n" +
 				"1:int\n" +
 				"==:boolean\n" +
 				"||:boolean\n" +
 				"x:int\n" +
+				"fib(x-1):int\n" +
 				"x:int\n" +
 				"1:int\n" +
 				"-:int\n" +
-				"fib(x-1):int\n" +
+				"fib(x-2):int\n" +
 				"x:int\n" +
 				"2:int\n" +
 				"-:int\n" +
-				"fib(x-2):int\n" +
 				"+:int\n" +
-				"5:int\n" +
-				"fib(5):int\n";
+				"fib(5):int\n" +
+				"5:int\n";
 
 				annotateTypeAndCheck(input, expected);
 	}
@@ -199,7 +201,8 @@ public class TestTypeAnnotation {
 				"2:int => float\n" +
 				"3:int\n" +
 				"3:int\n" +
-				"+:int => float\n";
+				"+:int => float\n" +
+				"vec:[]\n";
 		annotateTypeAndCheck(input, expected);
 	}
 

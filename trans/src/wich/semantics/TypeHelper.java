@@ -267,10 +267,11 @@ public class TypeHelper {
 	}
 
 	protected static String dumpCallWithType(WichParser.CallContext ctx) {
-		return ctx.getText() + ":" + getPrintType(ctx) + "\n" + process(ctx.children,
+		return ctx.getText() + ":" + getPrintType(ctx) + "\n" +
+				String.valueOf(process(ctx.call_expr().expr_list().children,
 				(t)->t instanceof ExprContext,
 				(t)->dumpExprWithType((ParserRuleContext) t),
-				(t)->"");
+				(t)->""));
 	}
 
 	protected static String dumpPrimaryWithType(WichParser.AtomContext ctx) {
