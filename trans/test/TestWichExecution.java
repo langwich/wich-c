@@ -52,9 +52,15 @@ public class TestWichExecution {
 
 	@Before
 	public void setUp() throws Exception {
-		URL dirOfThisClass = getClass().getClassLoader().getResource(".");
-		String path = dirOfThisClass.getPath(); // something like /Users/parrt/github/wich-c/out/test/trans/ in intellij
-		runtimePath = new File(path+RUNTIME_DIR).getAbsolutePath();
+		// find the include file we need from classpath. Make sure
+		// intellij or whatever knows runtime/src dir is a resources dir
+		URL which_h = getClass().getClassLoader().getResource("wich.h");
+		if ( which_h!=null ) {
+			runtimePath = new File(which_h.getPath()).getParent();
+		}
+		else {
+			throw new IllegalArgumentException("Can't find which.h directory");
+		}
 	}
 
 	@Test
