@@ -45,8 +45,6 @@ import static org.junit.Assert.assertEquals;
 public class TestWichExecution {
 
 	protected static final String WORKING_DIR = "/tmp/";
-	protected static final String RUNTIME_DIR = "../../../runtime/src/";
-	protected static String folder = CompilerFacade.FOLDER;
 	protected static Charset encoding = CompilerFacade.FILE_ENCODING;
 	protected static String runtimePath;
 
