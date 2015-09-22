@@ -45,16 +45,21 @@ import static org.junit.Assert.assertEquals;
 public class TestWichExecution {
 
 	protected static final String WORKING_DIR = "/tmp/";
-	protected static final String RUNTIME_DIR = "../../../runtime/src/";
-	protected static String folder = CompilerFacade.FOLDER;
+	public static final String WICH_LIB = "wich.c";
 	protected static Charset encoding = CompilerFacade.FILE_ENCODING;
 	protected static String runtimePath;
 
 	@Before
 	public void setUp() throws Exception {
-		URL dirOfThisClass = getClass().getClassLoader().getResource(".");
-		String path = dirOfThisClass.getPath(); // something like /Users/parrt/github/wich-c/out/test/trans/ in intellij
-		runtimePath = new File(path+RUNTIME_DIR).getAbsolutePath();
+		// find the include file we need from classpath. Make sure
+		// intellij or whatever knows runtime/src dir is a resources dir
+		URL which_h = getClass().getClassLoader().getResource("wich.h");
+		if ( which_h!=null ) {
+			runtimePath = new File(which_h.getPath()).getParent();
+		}
+		else {
+			throw new IllegalArgumentException("Can't find which.h directory");
+		}
 	}
 
 	@Test
@@ -117,7 +122,7 @@ public class TestWichExecution {
 		CompilerFacade.writeFile(generated, actual, StandardCharsets.UTF_8);
 		// Compile C code and return the path to the executable.
 		String executable = baseName + "_wich";
-		URL CFileURL = getClass().getClassLoader().getResource(wichInput);
+		URL CFileURL = getClass().getClassLoader().getResource(WICH_LIB);
 		exec(new String[]{"cc", "-o", executable, generated, CFileURL.getFile(), "-I", runtimePath, "-std=c99"});
 		return executable;
 	}
