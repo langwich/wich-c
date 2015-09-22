@@ -31,8 +31,9 @@ public class Block extends OutputModelObject {
 	@ModelElement public List<VarDefStat> varDefs = new ArrayList<>();
 	@ModelElement public List<Stat> stats = new ArrayList<>();
 	@ModelElement public Stat returnStat;
+	@ModelElement public List<TmpVarDef> returnTemps = new ArrayList<>();
 	public List<Integer> localTemps = new ArrayList<>();
 	public List<String> localVars = new ArrayList<>();
 	public List<String> argsRef = new ArrayList<>();
-	public String returnVar;
+	public String returnRefVar = null;
 }

@@ -33,6 +33,7 @@ import wich.parser.WichParser;
 import wich.parser.WichParser.ExprContext;
 import wich.semantics.type.WBuiltInTypeSymbol;
 import wich.semantics.type.WFunctionSymbol;
+import wich.semantics.type.WVariableSymbol;
 
 
 public class TypeAnnotator extends WichBaseListener {
@@ -70,7 +71,14 @@ public class TypeAnnotator extends WichBaseListener {
 
 	@Override
 	public void exitIndex(@NotNull WichParser.IndexContext ctx) {
-		ctx.exprType = SymbolTable._float;
+		Symbol s = currentScope.resolve(ctx.ID().getText());
+		//string[i] returns a single character string
+		if(((WVariableSymbol) s).getType() == SymbolTable._string)
+			ctx.exprType = SymbolTable._string;
+			//vector indexing
+		else
+			ctx.exprType = SymbolTable._float;
+//		ctx.exprType = SymbolTable._float;
 	}
 
 	@Override

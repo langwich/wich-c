@@ -67,8 +67,8 @@ public class SymbolTableConstructor extends WichBaseListener {
 		//resolve return type of the method
 		if (ctx.type() != null)
 			f.setType((Type) symtab.PREDEFINED.getSymbol(ctx.type().getText()));
-		else
-			f.setType(null);
+//		else
+//			f.setType(null);
 		pushScope(f);
 	}
 

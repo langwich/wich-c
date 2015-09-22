@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include "wich.h"
 
-void bar(Vector *x) {
+void bar(Vector *x)
+{
 	REF(x);
 
 	COPY_ON_WRITE(x);

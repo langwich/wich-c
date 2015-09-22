@@ -7,7 +7,8 @@ CFile(f, script) ::= <<
 
 Script(s,functions,varDefs,stats) ::= <<
 <if(functions)><functions;separator="\n"><endif>
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
 
 	<if(varDefs)><varDefs;separator="\n"><endif>
 	<if(stats)><stats;separator="\n"><endif>
@@ -18,21 +19,21 @@ int main(int argc, char *argv[]) {
 >>
 
 Func(f,returnType,args,body)::=<<
-<if(returnType)><returnType><else>void<endif> <f.funcName>(<if(args)><args ;separator=","><endif>) <body>
+<if(returnType)><returnType><else>void <endif><f.funcName>(<if(args)><args;separator=","><endif>)
+<body>
 >>
 
-Block(b,varDefs,stats,returnStat)::= <<
+Block(b,varDefs,stats,returnStat,returnTemps)::= <<
 {
 	<if(b.argsRef)><b.argsRef:{arg|REF(<arg>);};separator="\n"><endif>
 
 	<if(varDefs)><varDefs;separator="\n"><endif>
-
+	<if(returnTemps)><returnTemps;separator="\n"><endif>
 	<if(stats)><stats;separator="\n"><endif>
 
-	<if(b.returnVar)>REF(<b.returnVar>);<endif>
+	<if(b.returnRefVar)>REF(<b.returnRefVar>);<endif>
 
 	<if(b.localVars)><b.localVars:{deRef|DEREF(<deRef>);};separator="\n"><endif>
-
 	<if(b.localTemps)><b.localTemps:{t|DEREF(tmp<t>);};separator="\n"><endif>
 
 	<if(returnStat)><returnStat><endif>
@@ -57,16 +58,15 @@ COPY_ON_WRITE(<e.eName>);
 >>
 
 IfStat(i,condition,stat,elseStat) ::= <<
-if(<condition>) <stat>
+if (<condition>) <stat>
 <if(elseStat)> else <elseStat><endif>
 >>
 
 WhileStat(w,condition, stat) ::= <<
-while(<condition>)<stat;separator="\n">
+while (<condition>) <stat;separator="\n">
 >>
 
-ReturnStat(r,rExpr,localTemps)  ::= <<
-<if(localTemps)><localTemps;separator="\n"><endif>
+ReturnStat(r,rExpr)  ::= <<
 return <rExpr>;
 >>
 
@@ -82,10 +82,11 @@ BlockStat(b,block) ::= <<
 
 PrintStat(p,localTemps,expr) ::=<<
 <if(localTemps)><localTemps;separator="\n"><endif>
+
 <if(p.printStr)>print_<p.printStr>(<expr>);
 <elseif(p.printVec)>print_<p.printVec>(<expr>);
-<elseif(p.printInt)>print("%d\n",<expr>);
-<elseif(p.printFloat)>print("%1.2f\n",<expr>);
+<elseif(p.printInt)>printf("%d\n", <expr>);
+<elseif(p.printFloat)>printf("%1.2f\n", <expr>);
 <else>print();
 <endif>
 >>
@@ -109,7 +110,7 @@ BuiltInFuncCall(b,args) ::= <<
 <endif>
 >>
 
-StrIndexExpr(s,expr) ::= "<s.objectName>->str[(<expr>)-1]"
+StrIndexExpr(s,expr) ::= "<if(s.localTmp)>tmp<s.localTmp>=<endif><s.objectName>->str[(<expr>)-1]"
 
 VexIndexExpr(v,expr) ::= "<v.objectName>->data[(<expr>)-1]"
 
@@ -117,7 +118,7 @@ NegateExpr(n,negateExpr) ::= "- <negateExpr>"
 
 NotExpr(ne,notExpr) ::= "! <notExpr>"
 
-OpExpr(o,lExp,rExp) ::= "(<lExp>) <o.op> (<rExp>)"
+OpExpr(o,lExp,rExp) ::= "<lExp> <o.op> <rExp>"
 
 ParensExpr(p,expression) ::= "(<expression>)"
 
