@@ -75,10 +75,9 @@ public class TypeAnnotator extends WichBaseListener {
 		//string[i] returns a single character string
 		if(((WVariableSymbol) s).getType() == SymbolTable._string)
 			ctx.exprType = SymbolTable._string;
-			//vector indexing
+		//vector indexing
 		else
 			ctx.exprType = SymbolTable._float;
-//		ctx.exprType = SymbolTable._float;
 	}
 
 	@Override
