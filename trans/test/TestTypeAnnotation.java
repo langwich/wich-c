@@ -141,7 +141,7 @@ public class TestTypeAnnotation {
 	public void testRecursion() throws Exception {
 		String input =
 				"func fib(x:int) : int {\n" +
-				"   if (x == 0 || (x == 1)) {\n" +
+				"   if ((x == 0) || (x == 1)) {\n" +
 				"       return x\n" +
 				"   }\n" +
 				"   return fib(x-1) + fib(x-2)\n" +
