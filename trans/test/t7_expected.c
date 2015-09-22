@@ -1,14 +1,16 @@
+#include <stdio.h>
 #include "wich.h"
 
-Vector *foo() {
+Vector *foo()
+{
 
-	Vector *x = Vector_new((double[]){1,2,3,4,5}, 5);
+	Vector *y = Vector_new((double[]){1,2,3,4,5}, 5);
 
-	REF(x);
+	REF(y);
 
-	DEREF(x);
+	DEREF(y);
 
-	return x;
+	return y;
 }
 
 int main(int argc, char *argv[]) {
@@ -18,8 +20,8 @@ int main(int argc, char *argv[]) {
 
 	print_vector(tmp1=foo());
 
-	DEREF(x)
-	DEREF(tmp1)
+	DEREF(x);
+	DEREF(tmp1);
 
 	return 0;
 }

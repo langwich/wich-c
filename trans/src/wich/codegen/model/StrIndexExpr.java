@@ -26,6 +26,7 @@ package wich.codegen.model;
 
 public class StrIndexExpr extends Expr{
 	public final String objectName;
+	public Integer localTmp = null;
 	@ModelElement public Expr expr;
 
 	public StrIndexExpr(String object) {

@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include "wich.h"
 
-void f() {
+void f()
+{
 	String *x = String_new("cat");
 	{
 		String *y = String_new("dog");

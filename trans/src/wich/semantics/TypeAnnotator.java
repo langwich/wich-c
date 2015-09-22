@@ -33,7 +33,6 @@ import wich.parser.WichParser;
 import wich.parser.WichParser.ExprContext;
 import wich.semantics.type.WBuiltInTypeSymbol;
 import wich.semantics.type.WFunctionSymbol;
-import wich.semantics.type.WString;
 import wich.semantics.type.WVariableSymbol;
 
 

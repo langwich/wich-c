@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include "wich.h"
 
-String *becomeSuper(String *name) {
+String *becomeSuper(String *name)
+{
 	REF(name);
 
 	String *tmp1;
