@@ -176,6 +176,8 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 				String var = ((WichParser.ReturnContext) s).expr().getText();
 				if (isHeapObject(type) && (!isTemporySymbol(var))) {
 					block.returnRefVar = var;
+				}
+				else if (((ReturnStat)stat).localTemps != null){
 					block.returnTemps = ((ReturnStat)stat).localTemps;
 				}
 			}

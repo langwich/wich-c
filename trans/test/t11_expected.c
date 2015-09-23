@@ -21,7 +21,6 @@ void f()
 	DEREF(tmp4);
 	DEREF(tmp5);
 }
-
 int main(int argc, char *argv[])
 {
 	f();
