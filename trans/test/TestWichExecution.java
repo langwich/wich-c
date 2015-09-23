@@ -58,7 +58,7 @@ public class TestWichExecution {
 			runtimePath = new File(which_h.getPath()).getParent();
 		}
 		else {
-			throw new IllegalArgumentException("Can't find which.h directory");
+			throw new IllegalArgumentException("Can't find wich.h directory");
 		}
 	}
 
