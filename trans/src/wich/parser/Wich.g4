@@ -116,8 +116,8 @@ OR : '||' ;
 AND : '&&' ;
 DOT : ' . ' ;
 
-LINE_COMMENT : '//' .*? ('\n'|EOF) -> channel(HIDDEN) ;
-COMMENT      : '/*' .*? '*/'    -> channel(HIDDEN) ;
+LINE_COMMENT : '//' .*? ('\n'|EOF)	-> channel(HIDDEN) ;
+COMMENT      : '/*' .*? '*/'    	-> channel(HIDDEN) ;
 
 ID  : [a-zA-Z_] [a-zA-Z0-9_]* ;
 INT : [0-9]+ ;

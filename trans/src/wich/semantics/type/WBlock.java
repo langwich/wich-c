@@ -22,31 +22,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import org.antlr.symtab.SymbolWithScope;
+import org.antlr.symtab.LocalScope;
+import org.antlr.symtab.Scope;
 
-public class WBlock extends SymbolWithScope {
+public class WBlock extends LocalScope {
 	public final int index;
-	public int numOfNested;
 
-	//when parent scope is global
-	public WBlock(int blocksInGlobal) {
-		super("local" + "_" + blocksInGlobal);
-		index = blocksInGlobal;
-		numOfNested = 0;
+	public WBlock(Scope enclosingScope, int index) {
+		super(enclosingScope);
+		this.index = index;
 	}
-
-	//when parent scope is function
-	public WBlock(WFunctionSymbol function) {
-		super("local" + "_" + function.numOfNested);
-		index = function.numOfNested++;
-		numOfNested = 0;
-	}
-
-	//when parent scope is local block
-	public WBlock(WBlock block) {
-		super("local" + "_" + block.numOfNested);
-		index = block.numOfNested++;
-		numOfNested = 0;
-	}
-
 }

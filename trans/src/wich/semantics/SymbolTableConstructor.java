@@ -23,9 +23,7 @@ SOFTWARE.
 */
 package wich.semantics;
 
-import org.antlr.symtab.GlobalScope;
 import org.antlr.symtab.Scope;
-import org.antlr.symtab.Type;
 import org.antlr.v4.runtime.misc.NotNull;
 import wich.parser.WichBaseListener;
 import wich.parser.WichParser;
@@ -35,14 +33,11 @@ import wich.semantics.type.WFunctionSymbol;
 import wich.semantics.type.WVariableSymbol;
 
 public class SymbolTableConstructor extends WichBaseListener {
-
-	private final SymbolTable symtab;
 	private Scope currentScope;
-	private int numOfBlocks;
+	private static int numOfBlocks;
 
 	public SymbolTableConstructor(SymbolTable symtab) {
-		this.symtab = symtab;
-		this.currentScope = symtab.getGlobalScope();
+		pushScope(symtab.getGlobalScope());
 	}
 
 	@Override
@@ -53,20 +48,15 @@ public class SymbolTableConstructor extends WichBaseListener {
 	@Override
 	public void enterFormal_arg(@NotNull WichParser.Formal_argContext ctx) {
 		WArgSymbol arg = new WArgSymbol(ctx.ID().getText());
-		String typeName = ctx.type().getText();
-		arg.setType((Type)symtab.PREDEFINED.getSymbol(typeName));
-		currentScope.define(arg);
+		currentScope.define(arg); // type set after type computation phase
 	}
 
 	@Override
 	public void enterFunction(@NotNull WichParser.FunctionContext ctx) {
 		WFunctionSymbol f = new WFunctionSymbol(ctx.ID().getText());
-		ctx.scope = f;
 		f.setEnclosingScope(currentScope);
+		ctx.scope = f;
 		currentScope.define(f);
-		//resolve return type of the method
-		if (ctx.type() != null)
-			f.setType((Type) symtab.PREDEFINED.getSymbol(ctx.type().getText()));
 		pushScope(f);
 	}
 
@@ -77,18 +67,9 @@ public class SymbolTableConstructor extends WichBaseListener {
 
 	@Override
 	public void enterBlock(@NotNull WichParser.BlockContext ctx) {
-		WBlock l;
-		if (currentScope instanceof WBlock)
-			l = new WBlock((WBlock)currentScope);
-		if (currentScope instanceof WFunctionSymbol)
-			l = new WBlock((WFunctionSymbol) currentScope);
-		else{
-			l = new WBlock(numOfBlocks);
-			numOfBlocks++;
-		}
-		ctx.scope = l;
-		currentScope.define(l);
-		pushScope(l);
+		ctx.scope = new WBlock(currentScope, numOfBlocks);
+		pushScope(ctx.scope);
+		numOfBlocks++;
 	}
 
 	@Override
@@ -97,13 +78,8 @@ public class SymbolTableConstructor extends WichBaseListener {
 	}
 
 	@Override
-	public void enterScript(@NotNull WichParser.ScriptContext ctx) {
-		ctx.scope = (GlobalScope) currentScope;
-	}
-
-	@Override
 	public void exitScript(@NotNull WichParser.ScriptContext ctx) {
-		popScope();
+		popScope(); // pop off the global scope set in the constructor
 	}
 
 	private void pushScope(Scope s) {
@@ -111,7 +87,8 @@ public class SymbolTableConstructor extends WichBaseListener {
 	}
 
 	private void popScope() {
-		if (currentScope == null) return;
-		currentScope = currentScope.getEnclosingScope();
+		if (currentScope != null) {
+			currentScope = currentScope.getEnclosingScope();
+		}
 	}
 }
