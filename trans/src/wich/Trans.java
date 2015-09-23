@@ -39,8 +39,8 @@ import wich.codegen.ModelConverter;
 import wich.codegen.model.CFile;
 import wich.parser.WichLexer;
 import wich.parser.WichParser;
+import wich.semantics.DefineSymbols;
 import wich.semantics.SymbolTable;
-import wich.semantics.SymbolTableConstructor;
 import wich.semantics.TypeAnnotator;
 import wich.semantics.TypeChecker;
 
@@ -86,11 +86,11 @@ public class Trans {
 			WichParser parser = new WichParser(tokens);
 			ParserRuleContext tree = parser.file();
 
-			// trigger tree walk
+			// trigger tree walk to define symbols
 			SymbolTable symtab = new SymbolTable();
 			ParseTreeWalker walker = new ParseTreeWalker();
-			SymbolTableConstructor symtabConstructor = new SymbolTableConstructor(symtab);
-			walker.walk(symtabConstructor, tree);
+			DefineSymbols defSymbols = new DefineSymbols(symtab);
+			walker.walk(defSymbols, tree);
 
 			// use the TypeAnnotator listener to compute and
 			// and annotate the parse tree with type information

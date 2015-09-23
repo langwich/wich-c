@@ -31,12 +31,12 @@ import org.antlr.symtab.Scope;
 import org.antlr.symtab.Symbol;
 import org.antlr.symtab.Type;
 import wich.parser.WichParser.ExprContext;
-import wich.semantics.type.WBoolean;
-import wich.semantics.type.WBuiltInTypeSymbol;
-import wich.semantics.type.WFloat;
-import wich.semantics.type.WInt;
-import wich.semantics.type.WString;
-import wich.semantics.type.WVector;
+import wich.semantics.symbols.WBoolean;
+import wich.semantics.symbols.WBuiltInTypeSymbol;
+import wich.semantics.symbols.WFloat;
+import wich.semantics.symbols.WInt;
+import wich.semantics.symbols.WString;
+import wich.semantics.symbols.WVector;
 
 public class SymbolTable {
 	public BaseScope PREDEFINED = new PredefinedScope();

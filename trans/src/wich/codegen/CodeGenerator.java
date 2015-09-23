@@ -63,10 +63,10 @@ import wich.codegen.model.WhileStat;
 import wich.parser.WichBaseVisitor;
 import wich.parser.WichParser;
 import wich.semantics.SymbolTable;
-import wich.semantics.type.WFunctionSymbol;
-import wich.semantics.type.WString;
-import wich.semantics.type.WVariableSymbol;
-import wich.semantics.type.WVector;
+import wich.semantics.symbols.WFunctionSymbol;
+import wich.semantics.symbols.WString;
+import wich.semantics.symbols.WVariableSymbol;
+import wich.semantics.symbols.WVector;
 
 import java.util.List;
 

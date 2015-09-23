@@ -24,11 +24,10 @@ SOFTWARE.
 package wich.semantics;
 
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import wich.parser.WichParser;
 import wich.parser.WichParser.ExprContext;
-import wich.semantics.type.WBuiltInTypeSymbol;
+import wich.semantics.symbols.WBuiltInTypeSymbol;
 
 import java.util.List;
 import java.util.function.Function;

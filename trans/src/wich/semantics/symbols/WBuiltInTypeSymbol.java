@@ -1,4 +1,4 @@
-package wich.semantics.type;/*
+/*
 The MIT License (MIT)
 
 Copyright (c) 2015 Terence Parr, Hanzhou Shi, Shuai Yuan, Yuanyuan Zhang
@@ -21,15 +21,28 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+package wich.semantics.symbols;
 
-import org.antlr.symtab.LocalScope;
-import org.antlr.symtab.Scope;
+import org.antlr.symtab.BaseSymbol;
+import org.antlr.symtab.Type;
 
-public class WBlock extends LocalScope {
-	public final int index;
+public class WBuiltInTypeSymbol extends BaseSymbol implements Type {
+	public static enum TYPE { INT, FLOAT, STRING, VECTOR ,BOOLEAN};
+	protected int typeIndex;
 
-	public WBlock(Scope enclosingScope, int index) {
-		super(enclosingScope);
-		this.index = index;
+	public WBuiltInTypeSymbol(String name, TYPE type) {
+		super(name);
+		this.typeIndex = type.ordinal();
 	}
+
+	@Override
+	public String toString() {
+		return name;
+	}
+
+	public int getTypeIndex() {
+		return typeIndex;
+	}
+
+
 }

@@ -21,29 +21,21 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-package wich.semantics.type;
+package wich.semantics.symbols;
 
-import org.antlr.symtab.BaseSymbol;
-import org.antlr.symtab.Type;
-import wich.semantics.SymbolTable;
+import org.antlr.symtab.VariableSymbol;
 
-public class WBuiltInTypeSymbol extends BaseSymbol implements Type {
-	public static enum TYPE { INT, FLOAT, STRING, VECTOR ,BOOLEAN};
-	protected int typeIndex;
-
-	public WBuiltInTypeSymbol(String name, TYPE type) {
+public class WVariableSymbol extends VariableSymbol {
+	public WVariableSymbol(String name) {
 		super(name);
-		this.typeIndex = type.ordinal();
 	}
+
 
 	@Override
 	public String toString() {
-		return name;
+		String s = "";
+		s = scope.getName() + ".";
+		if (type != null) return  s + getName() + ":" + type ;
+		return s + getName();
 	}
-
-	public int getTypeIndex() {
-		return typeIndex;
-	}
-
-
 }

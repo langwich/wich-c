@@ -24,37 +24,53 @@ SOFTWARE.
 package wich.semantics;
 
 import org.antlr.symtab.Scope;
+import org.antlr.symtab.Symbol;
+import org.antlr.symtab.Type;
 import org.antlr.v4.runtime.misc.NotNull;
 import wich.parser.WichBaseListener;
 import wich.parser.WichParser;
-import wich.semantics.type.WArgSymbol;
-import wich.semantics.type.WBlock;
-import wich.semantics.type.WFunctionSymbol;
-import wich.semantics.type.WVariableSymbol;
+import wich.semantics.symbols.WArgSymbol;
+import wich.semantics.symbols.WBlock;
+import wich.semantics.symbols.WFunctionSymbol;
+import wich.semantics.symbols.WVariableSymbol;
 
-public class SymbolTableConstructor extends WichBaseListener {
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+public class DefineSymbols extends WichBaseListener {
+	public final List<String> errors = new ArrayList<>();
 	private Scope currentScope;
 	private static int numOfBlocks;
 
-	public SymbolTableConstructor(SymbolTable symtab) {
+	public DefineSymbols(SymbolTable symtab) {
 		pushScope(symtab.getGlobalScope());
 	}
 
 	@Override
 	public void enterVarDef(WichParser.VarDefContext ctx) {
-		currentScope.define(new WVariableSymbol(ctx.ID().getText()));
+		currentScope.define(new WVariableSymbol(ctx.ID().getText())); // type set after type computation phase
 	}
 
 	@Override
 	public void enterFormal_arg(@NotNull WichParser.Formal_argContext ctx) {
 		WArgSymbol arg = new WArgSymbol(ctx.ID().getText());
-		currentScope.define(arg); // type set after type computation phase
+		String typeName = ctx.type().getText();
+		Type type = resolveType(typeName);
+		if ( type!=null ) arg.setType(type);
+		currentScope.define(arg);
 	}
 
 	@Override
 	public void enterFunction(@NotNull WichParser.FunctionContext ctx) {
 		WFunctionSymbol f = new WFunctionSymbol(ctx.ID().getText());
 		f.setEnclosingScope(currentScope);
+		// resolve return type of the method since it's explicit
+		if ( ctx.type()!=null ) {
+			String typeName = ctx.type().getText();
+			Type type = resolveType(typeName);
+			if ( type!=null ) f.setType(type);
+		}
 		ctx.scope = f;
 		currentScope.define(f);
 		pushScope(f);
@@ -82,6 +98,17 @@ public class SymbolTableConstructor extends WichBaseListener {
 		popScope(); // pop off the global scope set in the constructor
 	}
 
+	public Type resolveType(@NotNull String typeName) {
+		Symbol typeSymbol = currentScope.resolve(typeName);
+		if ( typeSymbol instanceof Type ) {
+			return (Type)typeSymbol;
+		}
+		else {
+			error(typeName+" is not a type name");
+			return null;
+		}
+	}
+
 	private void pushScope(Scope s) {
 		currentScope = s;
 	}
@@ -90,5 +117,14 @@ public class SymbolTableConstructor extends WichBaseListener {
 		if (currentScope != null) {
 			currentScope = currentScope.getEnclosingScope();
 		}
+	}
+
+	// error support
+	private void error(String msg) {
+		errors.add(msg);
+	}
+
+	private void error(String msg, Exception e) {
+		errors.add(msg + "\n" + Arrays.toString(e.getStackTrace()));
 	}
 }

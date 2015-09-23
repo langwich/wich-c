@@ -31,18 +31,16 @@ import org.antlr.v4.runtime.misc.NotNull;
 import wich.parser.WichBaseListener;
 import wich.parser.WichParser;
 import wich.parser.WichParser.ExprContext;
-import wich.semantics.type.WBuiltInTypeSymbol;
-import wich.semantics.type.WFunctionSymbol;
-import wich.semantics.type.WVariableSymbol;
+import wich.semantics.symbols.WBuiltInTypeSymbol;
+import wich.semantics.symbols.WFunctionSymbol;
+import wich.semantics.symbols.WVariableSymbol;
 
 
 public class TypeAnnotator extends WichBaseListener {
-
-	private final SymbolTable symtab;
 	private Scope currentScope;
 
 	public TypeAnnotator(SymbolTable symtab) {
-		this.symtab = symtab;
+		pushScope(symtab.getGlobalScope());
 	}
 
 	@Override
@@ -155,12 +153,7 @@ public class TypeAnnotator extends WichBaseListener {
 	}
 
 	@Override
-	public void enterScript(@NotNull WichParser.ScriptContext ctx) {
-		pushScope(ctx.scope);
-	}
-
-	@Override
-	public void exitScript(@NotNull WichParser.ScriptContext ctx) {
+	public void exitScript(@NotNull WichParser.ScriptContext ctx) { // pop global scope set in ctor
 		popScope();
 	}
 

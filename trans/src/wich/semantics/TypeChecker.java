@@ -28,18 +28,16 @@ import org.antlr.symtab.Symbol;
 import org.antlr.v4.runtime.misc.NotNull;
 import wich.parser.WichBaseListener;
 import wich.parser.WichParser;
-import wich.semantics.type.WBuiltInTypeSymbol;
+import wich.semantics.symbols.WBuiltInTypeSymbol;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class TypeChecker extends WichBaseListener {
-
 	private final SymbolTable symtab;
 	private Scope currentScope;
 	public final List<String> errors = new ArrayList<>();
-
 
 	public TypeChecker(SymbolTable symtab) {
 		this.symtab = symtab;
@@ -135,7 +133,7 @@ public class TypeChecker extends WichBaseListener {
 		currentScope = currentScope.getEnclosingScope();
 	}
 
-	// Naive error support for typeChecker
+	// error support for typeChecker
 	private void error(String msg) {
 		errors.add(msg);
 	}

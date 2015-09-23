@@ -21,10 +21,13 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-package wich.semantics.type;
+package wich.semantics.symbols;
 
-public class WInt extends WBuiltInTypeSymbol {
-	public WInt() {
-		super("int", TYPE.INT);
+import org.antlr.symtab.FunctionSymbol;
+
+public class WFunctionSymbol extends FunctionSymbol {
+	public int numOfNested;
+	public WFunctionSymbol(String funcName) {
+		super(funcName);
 	}
 }

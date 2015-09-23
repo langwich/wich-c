@@ -1,4 +1,4 @@
-/*
+package wich.semantics.symbols;/*
 The MIT License (MIT)
 
 Copyright (c) 2015 Terence Parr, Hanzhou Shi, Shuai Yuan, Yuanyuan Zhang
@@ -21,21 +21,15 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-package wich.semantics.type;
 
-import org.antlr.symtab.VariableSymbol;
+import org.antlr.symtab.LocalScope;
+import org.antlr.symtab.Scope;
 
-public class WVariableSymbol extends VariableSymbol {
-	public WVariableSymbol(String name) {
-		super(name);
-	}
+public class WBlock extends LocalScope {
+	public final int index;
 
-
-	@Override
-	public String toString() {
-		String s = "";
-		s = scope.getName() + ".";
-		if (type != null) return  s + getName() + ":" + type ;
-		return s + getName();
+	public WBlock(Scope enclosingScope, int index) {
+		super(enclosingScope);
+		this.index = index;
 	}
 }
