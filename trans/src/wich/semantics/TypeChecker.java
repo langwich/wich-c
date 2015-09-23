@@ -25,6 +25,7 @@ package wich.semantics;
 
 import org.antlr.symtab.Scope;
 import org.antlr.symtab.Symbol;
+import org.antlr.symtab.Type;
 import org.antlr.v4.runtime.misc.NotNull;
 import wich.parser.WichBaseListener;
 import wich.parser.WichParser;
@@ -46,8 +47,8 @@ public class TypeChecker extends WichBaseListener {
 	@Override
 	public void exitAssign(@NotNull WichParser.AssignContext ctx) {
 		Symbol s = currentScope.resolve(ctx.ID().getText());
-		WBuiltInTypeSymbol left = (WBuiltInTypeSymbol) s;
-		WBuiltInTypeSymbol right = ctx.expr().exprType;
+		Type left = (WBuiltInTypeSymbol) s;
+		Type right = ctx.expr().exprType;
 
 		if (TypeHelper.isLegalAssign(left, right))
 			return;

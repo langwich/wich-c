@@ -23,6 +23,7 @@ SOFTWARE.
 */
 package wich.semantics;
 
+import org.antlr.symtab.Type;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import wich.parser.WichParser;
@@ -186,8 +187,9 @@ public class TypeHelper {
 		operandPromotionMap[OR]  = logicalPromoteFromTo;
 	}
 
-	// This method is the general helper method used to calculate result type.
-	// You should use the method in SymbolTable based on this method.
+	/** This method is the general helper method used to calculate result type.
+	 *  You should use the method in SymbolTable based on this method.
+	 */
 	public static WBuiltInTypeSymbol getResultType(int op,
 												   ExprContext le,
 												   ExprContext re)
@@ -200,21 +202,23 @@ public class TypeHelper {
 		return resultType;
 	}
 
-	//This method is used to promote type in assignment.
-	//Returns a boolean indicating whether the assignment is legal.
-	public static boolean isLegalAssign(WBuiltInTypeSymbol ltype,
-	                                    WBuiltInTypeSymbol rtype)
+	/** This method is used to promote type in assignment.
+	 *  Returns a boolean indicating whether the assignment is legal.
+	 */
+	public static boolean isLegalAssign(Type ltype,
+	                                    Type rtype)
 	{
-		if (ltype == rtype)
+		if (ltype == rtype) {
 			return true;
-		else  {
+		}
+		else {
 			int li = ltype.getTypeIndex();
 			int ri = rtype.getTypeIndex();
 			return equalityPromoteFromTo[li][ri].getTypeIndex() == li;
 		}
 	}
 
-	//This method is used to promote type during type annotation
+	/** This method is used to promote type during type annotation */
 	public static void promote(ExprContext elem, int targetIndex) {
 		int selfIndex = elem.exprType.getTypeIndex();
 		elem.promoteToType = equalityPromoteFromTo[selfIndex][targetIndex];

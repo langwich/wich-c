@@ -25,7 +25,7 @@ SOFTWARE.
 grammar Wich;
 
 @header {
-import wich.semantics.type.*;
+import wich.semantics.symbols.*;
 import org.antlr.symtab.*;
 }
 
@@ -63,7 +63,7 @@ statement
 	|	'print' '(' expr? ')'								# Print
 	;
 
-expr returns [WBuiltInTypeSymbol exprType, WBuiltInTypeSymbol promoteToType]
+expr returns [Type exprType, Type promoteToType]
 	:	expr operator expr									# Op
 	|	'-' expr											# Negate
 	|	'!' expr											# Not
@@ -74,16 +74,17 @@ expr returns [WBuiltInTypeSymbol exprType, WBuiltInTypeSymbol promoteToType]
 	;
 
 operator  : MUL|DIV|ADD|SUB|GT|LE|EQUAL_EQUAL|NOT_EQUAL|GT|GE|OR|AND|DOT ; // no precedence
+
 call_expr : ID '(' expr_list? ')' ;
 
 expr_list : expr (',' expr)* ;
 
-primary
-	:	ID													#Identifier
-	|	INT													#Integer
-	|	FLOAT												#Float
-	|	STRING												#String
-	|	'[' expr_list ']'									#Vector
+primary returns [Type exprType]
+	:	ID													# Identifier
+	|	INT													# Integer
+	|	FLOAT												# Float
+	|	STRING												# String
+	|	'[' expr_list ']'									# Vector
 	;
 
 LPAREN : '(' ;
