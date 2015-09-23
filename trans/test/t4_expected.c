@@ -3,11 +3,8 @@
 
 int main(int argc, char *argv[])
 {
-
 	int x = 2;
-
 	int y = 1;
-
 	if (x > y) {
 		String *tmp1;
 		print_string(tmp1 = String_new("TRUE"));

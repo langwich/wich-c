@@ -9,10 +9,8 @@ Script(s,functions,varDefs,stats) ::= <<
 <if(functions)><functions;separator="\n"><endif>
 int main(int argc, char *argv[])
 {
-
 	<if(varDefs)><varDefs;separator="\n"><endif>
-	<if(stats)><stats;separator="\n"><endif>
-	<if(s.localVars)><s.localVars:{v|DEREF(<v>);};separator="\n"><endif>
+	<if(stats)><stats;separator="\n"><endif><if(s.localVars)>	<s.localVars:{v|DEREF(<v>);};separator="\n"><endif>
 	<if(s.localTemps)><s.localTemps:{t|DEREF(tmp<t>);};separator="\n"><endif>
 	return 0;
 }
@@ -26,24 +24,19 @@ Func(f,returnType,args,body)::=<<
 Block(b,varDefs,stats,returnStat,returnTemps)::= <<
 {
 	<if(b.argsRef)><b.argsRef:{arg|REF(<arg>);};separator="\n"><endif>
-
 	<if(varDefs)><varDefs;separator="\n"><endif>
 	<if(returnTemps)><returnTemps;separator="\n"><endif>
 	<if(stats)><stats;separator="\n"><endif>
-
 	<if(b.returnRefVar)>REF(<b.returnRefVar>);<endif>
-
 	<if(b.localVars)><b.localVars:{deRef|DEREF(<deRef>);};separator="\n"><endif>
 	<if(b.localTemps)><b.localTemps:{t|DEREF(tmp<t>);};separator="\n"><endif>
-
 	<if(returnStat)><returnStat><endif>
 }
 >>
 
 AssignStat(a,right,localTemps)::=<<
 <if(localTemps)><localTemps;separator="\n">
-COPY_ON_WRITE(<a.varName>);
-<endif>
+COPY_ON_WRITE(<a.varName>);<endif>
 <a.varName> = <right>;
 >>
 
@@ -58,8 +51,8 @@ COPY_ON_WRITE(<e.eName>);
 >>
 
 IfStat(i,condition,stat,elseStat) ::= <<
-if (<condition>) <stat>
-<if(elseStat)> else <elseStat><endif>
+if (<condition>) <stat><if(elseStat)>
+else <elseStat><endif>
 >>
 
 WhileStat(w,condition, stat) ::= <<
@@ -72,8 +65,8 @@ return <rExpr>;
 
 VarDefStat(v,type,expr,localTemps) ::= <<
 <if(localTemps)><localTemps;separator="\n"><endif>
-<type><v.name> = <expr>;
-<if(v.ref)>REF(<v.ref>);<endif>
+<type><v.name> = <expr>;<if(v.ref)>
+REF(<v.ref>);<endif>
 >>
 
 BlockStat(b,block) ::= <<
@@ -82,13 +75,11 @@ BlockStat(b,block) ::= <<
 
 PrintStat(p,localTemps,expr) ::=<<
 <if(localTemps)><localTemps;separator="\n"><endif>
-
 <if(p.printStr)>print_<p.printStr>(<expr>);
 <elseif(p.printVec)>print_<p.printVec>(<expr>);
 <elseif(p.printInt)>printf("%d\n", <expr>);
 <elseif(p.printFloat)>printf("%1.2f\n", <expr>);
-<else>print();
-<endif>
+<else>print();<endif>
 >>
 
 AtomExpr(a,primaryExpr) ::= "<primaryExpr>"
