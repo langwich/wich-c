@@ -159,8 +159,8 @@ public class TestSymbolDefs {
 			"    f {\n" +
 			"        local_0 {\n" +
 			"            local_0.i:int\n" +
-			"            local_0 {\n" +
-			"                local_0.c:string\n" +
+			"            local_1 {\n" +
+			"                local_1.c:string\n" +
 			"            }\n" +
 			"        }\n" +
 			"    }\n" +
@@ -178,8 +178,8 @@ public class TestSymbolDefs {
 			"        f.x:int\n" +
 			"        local_0 {\n" +
 			"            local_0.i:int\n" +
-			"            local_0 {\n" +
-			"                local_0.c:string\n" +
+			"            local_1 {\n" +
+			"                local_1.c:string\n" +
 			"            }\n" +
 			"        }\n" +
 			"    }\n" +

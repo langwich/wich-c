@@ -26,7 +26,8 @@ package wich.semantics.symbols;
 import org.antlr.symtab.FunctionSymbol;
 
 public class WFunctionSymbol extends FunctionSymbol {
-	public int numOfNested;
+	public WBlock block; // code block of the function
+
 	public WFunctionSymbol(String funcName) {
 		super(funcName);
 	}

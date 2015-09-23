@@ -41,7 +41,7 @@ import java.util.List;
 public class DefineSymbols extends WichBaseListener {
 	public final List<String> errors = new ArrayList<>();
 	private Scope currentScope;
-	private static int numOfBlocks;
+	private int numOfBlocks;
 
 	public DefineSymbols(SymbolTable symtab) {
 		pushScope(symtab.getGlobalScope());
@@ -83,7 +83,14 @@ public class DefineSymbols extends WichBaseListener {
 
 	@Override
 	public void enterBlock(@NotNull WichParser.BlockContext ctx) {
-		ctx.scope = new WBlock(currentScope, numOfBlocks);
+		WBlock blk = new WBlock(currentScope, numOfBlocks);
+		if ( currentScope instanceof WBlock ) {
+			((WBlock)currentScope).addNestedBlock(blk);
+		}
+		else if ( currentScope instanceof WFunctionSymbol ) {
+			((WFunctionSymbol)currentScope).block = blk;
+		}
+		ctx.scope = blk;
 		pushScope(ctx.scope);
 		numOfBlocks++;
 	}

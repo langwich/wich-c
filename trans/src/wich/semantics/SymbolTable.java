@@ -31,9 +31,11 @@ import org.antlr.symtab.Scope;
 import org.antlr.symtab.Symbol;
 import org.antlr.symtab.Type;
 import wich.parser.WichParser.ExprContext;
+import wich.semantics.symbols.WBlock;
 import wich.semantics.symbols.WBoolean;
 import wich.semantics.symbols.WBuiltInTypeSymbol;
 import wich.semantics.symbols.WFloat;
+import wich.semantics.symbols.WFunctionSymbol;
 import wich.semantics.symbols.WInt;
 import wich.semantics.symbols.WString;
 import wich.semantics.symbols.WVector;
@@ -84,8 +86,16 @@ public class SymbolTable {
 				buf.append(tab(level));	buf.append(sym + "\n");
 			}
 		}
-		for (Scope nested : s.getNestedScopes()) {
+		for (Scope nested : s.getNestedScopedSymbols()) {
 			dump(buf, nested, level);
+		}
+		if ( s instanceof WBlock ) {
+			for (WBlock blk : ((WBlock)s).nestedBlocks) {
+				dump(buf, blk, level);
+			}
+		}
+		if ( s instanceof WFunctionSymbol ) {
+			dump(buf, ((WFunctionSymbol)s).block, level);
 		}
 		level--;
 		buf.append(tab(level));
