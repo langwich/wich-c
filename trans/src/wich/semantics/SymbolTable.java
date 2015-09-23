@@ -49,10 +49,7 @@ public class SymbolTable {
 	public static final WVector _vector = new WVector();
 	public static final WBoolean _boolean = new WBoolean();
 
-	protected final GlobalScope GLOBAL;
-
 	public SymbolTable() {
-		GLOBAL = new GlobalScope(null);
 		initTypeSystem();
 	}
 
@@ -65,7 +62,7 @@ public class SymbolTable {
 	}
 
 	public GlobalScope getGlobalScope() {
-		return GLOBAL;
+		return GLOBALS;
 	}
 
 	public Scope getPredefinedScope() {
