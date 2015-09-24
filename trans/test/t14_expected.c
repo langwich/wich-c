@@ -1,9 +1,8 @@
 #include <stdio.h>
 #include "wich.h"
 
-extern void f();
+void f();
 
-extern
 void f()
 {
 	Vector *x = Vector_new((double []){1,2,3}, 3);
@@ -11,6 +10,7 @@ void f()
 	DEREF(x);
 	return x;
 }
+
 int main(int argc, char *argv[])
 {
 	Vector *tmp1;

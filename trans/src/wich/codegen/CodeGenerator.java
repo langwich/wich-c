@@ -71,7 +71,6 @@ import wich.codegen.model.WhileStat;
 import wich.parser.WichBaseVisitor;
 import wich.parser.WichParser;
 import wich.semantics.SymbolTable;
-import wich.semantics.symbols.WBuiltInTypeSymbol;
 import wich.semantics.symbols.WFunctionSymbol;
 import wich.semantics.symbols.WString;
 import wich.semantics.symbols.WVariableSymbol;
@@ -112,6 +111,25 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	public OutputModelObject visitScript(@NotNull WichParser.ScriptContext ctx) {
 		pushScope(symtab.getGlobalScope());
 		Script script = new Script(fileName);
+
+		// Handle global variable defs
+		final List<WichParser.VardefContext> vardefs = ctx.vardef();
+		for (WichParser.VardefContext v : vardefs) {
+			VarDefStat varDefStat = (VarDefStat)visit(v);
+			script.varDefs.add(varDefStat);
+			Type t =((WVariableSymbol) currentScope.resolve(v.ID().getText())).getType();
+			if( isHeapObject(t) ) {
+				script.localVars.add(v.ID().getText());
+			}
+		}
+
+		// Handle function definitions
+		final List<WichParser.FunctionContext> funcs = ctx.function();
+		for (WichParser.FunctionContext f:funcs) {
+			script.functions.add((Func)visit(f));
+		}
+
+		// Handle statements
 		final List<WichParser.Outer_statementContext> stats = ctx.outer_statement();
 		for (WichParser.Outer_statementContext s:stats) {
 			Stat stat = (Stat)visit(s);
@@ -121,20 +139,6 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 			script.stats.add(stat);
 		}
 
-		final List<WichParser.VardefContext> vardefs = ctx.vardef();
-		for (WichParser.VardefContext v : vardefs) {
-			VarDefStat varDefStat = (VarDefStat)visit(v);
-			script.varDefs.add(varDefStat);
-			Type t =((WVariableSymbol) currentScope.resolve(v.ID().getText())).getType();
-			if( isHeapObject(t)) {
-				script.localVars.add(v.ID().getText());
-			}
-		}
-
-		final List<WichParser.FunctionContext> funcs = ctx.function();
-		for (WichParser.FunctionContext f:funcs) {
-			script.functions.add((Func)visit(f));
-		}
 		tmpIndex =1;
 		return script;
 	}
@@ -213,11 +217,8 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		}
 	}
 
-	private boolean isHeapObject(Type type) {
-		if (type instanceof WString || type instanceof WVector) {
-			return true;
-		}
-		return false;
+	public static boolean isHeapObject(Type type) {
+		return type instanceof WString || type instanceof WVector;
 	}
 
 	private void addFunArgsRef(@NotNull WichParser.BlockContext ctx, Block block) {
@@ -349,7 +350,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		PrintStat printStat = new PrintStat();
 		if (ctx.expr() != null) {
 			Expr expr = (Expr)visit(ctx.expr());
-			int type = ((WBuiltInTypeSymbol)ctx.expr().exprType).getTypeIndex();
+			int type = ctx.expr().exprType.getTypeIndex();
 			switch (type) {
 				case 0:
 					PrintIntStat printIntStat = new PrintIntStat();

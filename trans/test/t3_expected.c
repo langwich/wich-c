@@ -1,9 +1,11 @@
 #include <stdio.h>
 #include "wich.h"
 
+String * x;
+
 int main(int argc, char *argv[])
 {
-	String *x = String_new("Hello World!");
+	x = String_new("Hello World!");
 	DEREF(x);
 	return 0;
 }
