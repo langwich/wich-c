@@ -1,4 +1,4 @@
-/*
+package wich.semantics.symbols;/*
 The MIT License (MIT)
 
 Copyright (c) 2015 Terence Parr, Hanzhou Shi, Shuai Yuan, Yuanyuan Zhang
@@ -21,29 +21,26 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-package wich.semantics.type;
 
-import org.antlr.symtab.BaseSymbol;
-import org.antlr.symtab.Type;
-import wich.semantics.SymbolTable;
+import org.antlr.symtab.LocalScope;
+import org.antlr.symtab.Scope;
 
-public class WBuiltInTypeSymbol extends BaseSymbol implements Type {
-	public static enum TYPE { INT, FLOAT, STRING, VECTOR ,BOOLEAN};
-	protected int typeIndex;
+import java.util.ArrayList;
+import java.util.List;
 
-	public WBuiltInTypeSymbol(String name, TYPE type) {
-		super(name);
-		this.typeIndex = type.ordinal();
+public class WBlock extends LocalScope {
+	public List<WBlock> nestedBlocks = new ArrayList<>();
+	public final int index;
+
+	public WBlock(Scope enclosingScope, int index) {
+		super(enclosingScope);
+		this.index = index;
 	}
 
 	@Override
-	public String toString() {
-		return name;
+	public String getName() {
+		return super.getName()+"_"+index;
 	}
 
-	public int getTypeIndex() {
-		return typeIndex;
-	}
-
-
+	public void addNestedBlock(WBlock blk) { nestedBlocks.add(blk); }
 }

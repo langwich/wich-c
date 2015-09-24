@@ -23,125 +23,48 @@ SOFTWARE.
 */
 package wich.semantics;
 
-import org.antlr.symtab.Scope;
 import org.antlr.symtab.Symbol;
+import org.antlr.symtab.Type;
 import org.antlr.v4.runtime.misc.NotNull;
-import wich.parser.WichBaseListener;
 import wich.parser.WichParser;
-import wich.semantics.type.WBuiltInTypeSymbol;
+import wich.semantics.symbols.WBuiltInTypeSymbol;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-public class TypeChecker extends WichBaseListener {
-
-	private final SymbolTable symtab;
-	private Scope currentScope;
-	public final List<String> errors = new ArrayList<>();
-
-
-	public TypeChecker(SymbolTable symtab) {
-		this.symtab = symtab;
-	}
-
+public class TypeChecker extends MaintainScopeListener {
 	@Override
 	public void exitAssign(@NotNull WichParser.AssignContext ctx) {
 		Symbol s = currentScope.resolve(ctx.ID().getText());
-		WBuiltInTypeSymbol left = (WBuiltInTypeSymbol) s;
-		WBuiltInTypeSymbol right = ctx.expr().exprType;
+		Type left = (WBuiltInTypeSymbol) s;
+		Type right = ctx.expr().exprType;
 
-		if (TypeHelper.isLegalAssign(left, right))
-			return;
-		else
-			error("Incompatible type in assignment.", new Exception());
+		if ( !TypeHelper.isLegalAssign(left, right) ) {
+			error("Incompatible type in assignment: "+left.getName()+"="+right.getName());
+		}
 	}
 
 	@Override
 	public void exitElementAssign(@NotNull WichParser.ElementAssignContext ctx) {
-
 		WichParser.ExprContext index = ctx.expr(0);
 		WichParser.ExprContext elem = ctx.expr(1);
 
-		//index must be expression of int type
-		if (index.exprType != SymbolTable._int)
-			error("Invalid vector index type.", new Exception());
+		// index must be expression of int type
+		if (index.exprType != SymbolTable._int) {
+			error("Invalid vector index type: "+index.exprType.getName());
+		}
 
-		//element value must be expression of float type or can be promoted to float in equality
-		if (elem.exprType != SymbolTable._float && elem.promoteToType != SymbolTable._float)
-			error("Invalid vector element.", new Exception());
+		// element value must be expression of float type or can be promoted to float
+		if ( !TypeHelper.typesAreCompatible(elem, SymbolTable._float) ) {
+			error("Invalid vector element type: "+elem.exprType.getName());
+		}
 	}
 
 	@Override
 	public void exitVector(@NotNull WichParser.VectorContext ctx) {
-		if (ctx.expr_list() != null){
+		if (ctx.expr_list() != null) {
 			for (WichParser.ExprContext elem : ctx.expr_list().expr()){
-				if (elem.exprType != SymbolTable._float ||
-						elem.promoteToType != SymbolTable._float)
-					error("Invalid vector element.", new Exception());
+				if ( !TypeHelper.typesAreCompatible(elem, SymbolTable._float) ) {
+					error("Invalid vector element type: "+elem.exprType.getName());
+				}
 			}
 		}
 	}
-
-//	@Override
-//	public void exitAtom(@NotNull WichParser.AtomContext ctx) {
-//		//check vector element type
-//		if (ctx.primary().expr_list() != null){
-//			for (WichParser.ExprContext elem : ctx.primary().expr_list().expr()){
-//				if (elem.exprType != SymbolTable._float ||
-//						elem.promoteToType != SymbolTable._float)
-//				error("Invalid vector element.", new Exception());
-//			}
-//		}
-//
-//	}
-
-	@Override
-	public void enterScript(@NotNull WichParser.ScriptContext ctx) {
-		pushScope(ctx.scope);
-	}
-
-	@Override
-	public void exitScript(@NotNull WichParser.ScriptContext ctx) {
-		popScope();
-	}
-
-	@Override
-	public void enterFunction(@NotNull WichParser.FunctionContext ctx) {
-		pushScope(ctx.scope);
-	}
-
-	@Override
-	public void exitFunction(@NotNull WichParser.FunctionContext ctx) {
-		popScope();
-	}
-
-	@Override
-	public void enterBlock(@NotNull WichParser.BlockContext ctx) {
-		pushScope(ctx.scope);
-	}
-
-	@Override
-	public void exitBlock(@NotNull WichParser.BlockContext ctx) {
-		popScope();
-	}
-
-	private void pushScope(Scope s) {
-		currentScope = s;
-	}
-
-	private void popScope() {
-		if (currentScope == null) return;
-		currentScope = currentScope.getEnclosingScope();
-	}
-
-	// Naive error support for typeChecker
-	private void error(String msg) {
-		errors.add(msg);
-	}
-
-	private void error(String msg, Exception e) {
-		errors.add(msg + "\n" + Arrays.toString(e.getStackTrace()));
-	}
-
 }

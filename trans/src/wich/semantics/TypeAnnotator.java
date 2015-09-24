@@ -24,27 +24,17 @@ SOFTWARE.
 package wich.semantics;
 
 
-import org.antlr.symtab.Scope;
 import org.antlr.symtab.Symbol;
+import org.antlr.symtab.Type;
 import org.antlr.symtab.TypedSymbol;
 import org.antlr.v4.runtime.misc.NotNull;
-import wich.parser.WichBaseListener;
 import wich.parser.WichParser;
 import wich.parser.WichParser.ExprContext;
-import wich.semantics.type.WBuiltInTypeSymbol;
-import wich.semantics.type.WFunctionSymbol;
-import wich.semantics.type.WVariableSymbol;
+import wich.semantics.symbols.WFunctionSymbol;
+import wich.semantics.symbols.WVariableSymbol;
 
 
-public class TypeAnnotator extends WichBaseListener {
-
-	private final SymbolTable symtab;
-	private Scope currentScope;
-
-	public TypeAnnotator(SymbolTable symtab) {
-		this.symtab = symtab;
-	}
-
+public class TypeAnnotator extends MaintainScopeListener {
 	@Override
 	public void exitOp(@NotNull WichParser.OpContext ctx) {
 		int op = ctx.operator().start.getType();
@@ -54,7 +44,9 @@ public class TypeAnnotator extends WichBaseListener {
 	}
 
 	@Override
-	public void exitNegate(@NotNull WichParser.NegateContext ctx) { ctx.exprType = ctx.expr().exprType; }
+	public void exitNegate(@NotNull WichParser.NegateContext ctx) {
+		ctx.exprType = ctx.expr().exprType;
+	}
 
 	@Override
 	public void exitNot(@NotNull WichParser.NotContext ctx) {
@@ -65,19 +57,28 @@ public class TypeAnnotator extends WichBaseListener {
 	@Override
 	public void exitCall(@NotNull WichParser.CallContext ctx) {
 		Symbol s = currentScope.resolve(ctx.call_expr().ID().getText());
-		if (s != null)
-			ctx.exprType = (WBuiltInTypeSymbol) ((WFunctionSymbol) s).getType();
+		if ( s!=null && s instanceof WFunctionSymbol ) {
+			ctx.exprType = ((WFunctionSymbol) s).getType();
+		} else {
+			// TODO: add error here
+		}
 	}
 
 	@Override
 	public void exitIndex(@NotNull WichParser.IndexContext ctx) {
 		Symbol s = currentScope.resolve(ctx.ID().getText());
-		//string[i] returns a single character string
-		if(((WVariableSymbol) s).getType() == SymbolTable._string)
+		if ( s==null || s instanceof WVariableSymbol ) {
+			// TODO: add error here
+		}
+		// string[i] returns a single character string
+		Type idType = ((WVariableSymbol) s).getType();
+		if ( idType==SymbolTable._string ) {
 			ctx.exprType = SymbolTable._string;
-		//vector indexing
-		else
+		} else if ( idType==SymbolTable._vector ) {
 			ctx.exprType = SymbolTable._float;
+		} else {
+			// TODO: add error here
+		}
 	}
 
 	@Override
@@ -88,108 +89,49 @@ public class TypeAnnotator extends WichBaseListener {
 	@Override
 	public void exitIdentifier(@NotNull WichParser.IdentifierContext ctx) {
 		Symbol s = currentScope.resolve(ctx.ID().getText());
-		if (s != null)
-			((ExprContext)ctx.getParent()).exprType = (WBuiltInTypeSymbol) ((TypedSymbol) s).getType();
+		if ( s!=null && s instanceof WVariableSymbol ) {
+			ctx.exprType = ((TypedSymbol) s).getType();
+		} else {
+			// TODO: add error here
+		}
 	}
 
 	@Override
 	public void exitInteger(@NotNull WichParser.IntegerContext ctx) {
-		((ExprContext)ctx.getParent()).exprType = SymbolTable._int;
+		ctx.exprType = SymbolTable._int;
 	}
 
 	@Override
 	public void exitFloat(@NotNull WichParser.FloatContext ctx) {
-		((ExprContext)ctx.getParent()).exprType = SymbolTable._float;
+		ctx.exprType = SymbolTable._float;
 	}
 
 	@Override
 	public void exitVector(@NotNull WichParser.VectorContext ctx) {
-		((ExprContext)ctx.getParent()).exprType = SymbolTable._vector;
-		//promote element type to fit in a vector
-		int targetIndex = SymbolTable._float. getTypeIndex();
-		for (ExprContext elem : ctx.expr_list().expr())
+		ctx.exprType = SymbolTable._vector;
+		// promote element type to fit in a vector
+		int targetIndex = SymbolTable._float.getTypeIndex();
+		for (ExprContext elem : ctx.expr_list().expr()) {
 			TypeHelper.promote(elem, targetIndex);
+		}
 	}
 
 	@Override
 	public void exitString(@NotNull WichParser.StringContext ctx) {
-		((ExprContext)ctx.getParent()).exprType = SymbolTable._string;
+		ctx.exprType = SymbolTable._string;
 	}
 
-//	@Override
-//	public void exitAtom(@NotNull WichParser.AtomContext ctx) {
-//		WichParser.PrimaryContext primary = ctx.primary();
-//		//ID
-//		if (primary.ID() != null) {
-//			Symbol s = currentScope.resolve(primary.ID().getText());
-//			if (s != null)
-//				ctx.exprType = (WBuiltInTypeSymbol) ((TypedSymbol) s).getType();
-//		}
-//		//INT
-//		else if (primary.INT() != null) {
-//			ctx.exprType = SymbolTable._int;
-//		}
-//		//FLOAT
-//		else if (primary.FLOAT() != null) {
-//			ctx.exprType = SymbolTable._float;
-//		}
-//		//STRING
-//		else if (primary.STRING() != null) {
-//			ctx.exprType = SymbolTable._string;
-//		}
-//		//vector
-//		else {
-//			ctx.exprType = SymbolTable._vector;
-//			//promote element type to fit in a vector
-//			int targetIndex = SymbolTable._float. getTypeIndex();
-//			for (ExprContext elem : ctx.primary().expr_list().expr())
-//				TypeHelper.promote(elem, targetIndex);
-//		}
-//	}
+	@Override
+	public void exitAtom(@NotNull WichParser.AtomContext ctx) {
+		ctx.exprType = ctx.primary().exprType; // bubble up primary's type to expr node
+	}
 
 	@Override
 	public void exitVarDef(@NotNull WichParser.VarDefContext ctx) {
 		Symbol var = currentScope.resolve(ctx.ID().getText());
-		//type inference
-		((TypedSymbol) var).setType(ctx.expr().exprType);
-	}
-
-	@Override
-	public void enterScript(@NotNull WichParser.ScriptContext ctx) {
-		pushScope(ctx.scope);
-	}
-
-	@Override
-	public void exitScript(@NotNull WichParser.ScriptContext ctx) {
-		popScope();
-	}
-
-	@Override
-	public void enterFunction(@NotNull WichParser.FunctionContext ctx) {
-		pushScope(ctx.scope);
-	}
-
-	@Override
-	public void exitFunction(@NotNull WichParser.FunctionContext ctx) {
-		popScope();
-	}
-
-	@Override
-	public void enterBlock(@NotNull WichParser.BlockContext ctx) {
-		pushScope(ctx.scope);
-	}
-
-	@Override
-	public void exitBlock(@NotNull WichParser.BlockContext ctx) {
-		popScope();
-	}
-
-	private void pushScope(Scope s) {
-		currentScope = s;
-	}
-
-	private void popScope() {
-		if (currentScope == null) return;
-		currentScope = currentScope.getEnclosingScope();
+		// type inference
+		if ( var!=null && var instanceof WVariableSymbol ) { // avoid cascading errors
+			((TypedSymbol) var).setType(ctx.expr().exprType);
+		}
 	}
 }

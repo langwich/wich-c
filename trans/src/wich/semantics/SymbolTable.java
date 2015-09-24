@@ -31,12 +31,14 @@ import org.antlr.symtab.Scope;
 import org.antlr.symtab.Symbol;
 import org.antlr.symtab.Type;
 import wich.parser.WichParser.ExprContext;
-import wich.semantics.type.WBoolean;
-import wich.semantics.type.WBuiltInTypeSymbol;
-import wich.semantics.type.WFloat;
-import wich.semantics.type.WInt;
-import wich.semantics.type.WString;
-import wich.semantics.type.WVector;
+import wich.semantics.symbols.WBlock;
+import wich.semantics.symbols.WBoolean;
+import wich.semantics.symbols.WBuiltInTypeSymbol;
+import wich.semantics.symbols.WFloat;
+import wich.semantics.symbols.WFunctionSymbol;
+import wich.semantics.symbols.WInt;
+import wich.semantics.symbols.WString;
+import wich.semantics.symbols.WVector;
 
 public class SymbolTable {
 	public BaseScope PREDEFINED = new PredefinedScope();
@@ -49,10 +51,7 @@ public class SymbolTable {
 	public static final WVector _vector = new WVector();
 	public static final WBoolean _boolean = new WBoolean();
 
-	protected final GlobalScope GLOBAL;
-
 	public SymbolTable() {
-		GLOBAL = new GlobalScope(null);
 		initTypeSystem();
 	}
 
@@ -65,7 +64,7 @@ public class SymbolTable {
 	}
 
 	public GlobalScope getGlobalScope() {
-		return GLOBAL;
+		return GLOBALS;
 	}
 
 	public Scope getPredefinedScope() {
@@ -87,8 +86,16 @@ public class SymbolTable {
 				buf.append(tab(level));	buf.append(sym + "\n");
 			}
 		}
-		for (Scope nested : s.getNestedScopes()) {
+		for (Scope nested : s.getNestedScopedSymbols()) {
 			dump(buf, nested, level);
+		}
+		if ( s instanceof WBlock ) {
+			for (WBlock blk : ((WBlock)s).nestedBlocks) {
+				dump(buf, blk, level);
+			}
+		}
+		if ( s instanceof WFunctionSymbol ) {
+			dump(buf, ((WFunctionSymbol)s).block, level);
 		}
 		level--;
 		buf.append(tab(level));

@@ -21,21 +21,14 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-package wich.semantics.type;
+package wich.semantics.symbols;
 
-import org.antlr.symtab.VariableSymbol;
+import org.antlr.symtab.FunctionSymbol;
 
-public class WVariableSymbol extends VariableSymbol {
-	public WVariableSymbol(String name) {
-		super(name);
-	}
+public class WFunctionSymbol extends FunctionSymbol {
+	public WBlock block; // code block of the function
 
-
-	@Override
-	public String toString() {
-		String s = "";
-		s = scope.getName() + ".";
-		if (type != null) return  s + getName() + ":" + type ;
-		return s + getName();
+	public WFunctionSymbol(String funcName) {
+		super(funcName);
 	}
 }
