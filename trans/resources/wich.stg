@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
 {
 	<if(varDefs)><varDefs;separator="\n"><endif>
 	<if(stats)><stats;separator="\n"><endif><if(s.localVars)>	<s.localVars:{v|DEREF(<v>);};separator="\n"><endif>
-	<if(s.localTemps)><s.localTemps:{t|DEREF(tmp<t>);};separator="\n"><endif>
+	<s.localTemps:{t|DEREF(tmp<t>);};separator="\n">
 	return 0;
 }
 >>
@@ -90,18 +90,28 @@ FuncCall(c,args) ::= <<
 <if(c.localTmp)>tmp<c.localTmp>=<c.funcName>(<args;separator=",">)<else><c.funcName>(<args;separator=",">)<endif>
 >>
 
-BuiltInFuncCall(b,args) ::= <<
-<if(b.stringNewLiteral)><if(b.localTmp)>tmp<b.localTmp>=<b.funcName>(<b.stringNewLiteral>)<else><b.funcName>(<b.stringNewLiteral>)<endif>
-<elseif(b.vectorNewSize)><if(b.localTmp)>tmp<b.localTmp>=<b.funcName>((double[]){<args;separator=",">},<b.vectorNewSize>)
-<else><b.funcName>((double []){<args;separator=",">}, <b.vectorNewSize>)<endif>
-<else>
-<if(b.localTmp)>tmp<b.localTmp>=<b.funcName>(<args;separator=",">)
-<else><b.funcName>(<args;separator=",">)
-<endif>
+StringNewFunCall(s) ::= <<
+<if(s.localTmp)>tmp<s.localTmp>=<s.funcName>(<s.literal>)<else><s.funcName>(<s.literal>)<endif>
+>>
+
+VectorNewFunCall(v,args) ::= <<
+<if(v.localTmp)>tmp<v.localTmp>=<v.funcName>((double[]){<args;separator=",">},<v.vectorNewSize>)
+<else><v.funcName>((double []){<args;separator=",">}, <v.vectorNewSize>)<endif>
+>>
+
+OpFunCall(op,args) ::= <<
+<if(op.localTmp)>tmp<op.localTmp>=<op.funcName>(<args;separator=",">)<\\>
+<else><op.funcName>(<args;separator=",">)<\\>
 <endif>
 >>
 
-StrIndexExpr(s,expr) ::= "<if(s.localTmp)>tmp<s.localTmp>=<endif><s.objectName>->str[(<expr>)-1]"
+StrToCharFunCall(str,arg) ::= <<
+<if(str.localTmp)>tmp<str.localTmp>=<str.funcName>(<arg>)<endif>
+>>
+
+StrIndexExpr(s,expr) ::= <<
+<if(s.localTmp)>tmp<s.localTmp>=<endif><s.objectName>->str[(<expr>)-1]
+>>
 
 VexIndexExpr(v,expr) ::= "<v.objectName>->data[(<expr>)-1]"
 

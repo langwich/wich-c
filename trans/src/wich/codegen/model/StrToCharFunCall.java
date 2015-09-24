@@ -26,17 +26,12 @@ package wich.codegen.model;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BuiltInFuncCall extends Expr{
+public class StrToCharFunCall extends Expr{
 	public final String funcName;
-	public String stringNewLiteral = null;
-	public Integer vectorNewSize = null;
 	public Integer localTmp = null;
-	//public String reType;
-	@ModelElement public List<Expr> args = new ArrayList<>();
+	@ModelElement public Expr arg;
 
-
-	public BuiltInFuncCall(String callName) {
-		this.funcName = callName;
+	public StrToCharFunCall(){
+		this.funcName = "String_from_char";
 	}
-
 }

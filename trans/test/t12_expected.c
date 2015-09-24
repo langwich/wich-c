@@ -14,6 +14,7 @@ int main(int argc, char *argv[])
 	Vector *tmp2;
 	Vector *tmp3;
 	print_vector(tmp3=Vector_add(tmp1=f(),tmp2=f()));
+
 	DEREF(tmp1);
 	DEREF(tmp2);
 	DEREF(tmp3);

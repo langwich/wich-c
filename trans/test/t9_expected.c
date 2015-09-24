@@ -12,12 +12,11 @@ String *becomeSuper(String *name)
 	DEREF(tmp6);
 	return tmp6;
 }
-
 int main(int argc, char *argv[])
 {
 	String *tmp1;
 	String *tmp2;
-	print_string(tmp1=becomeSuper(tmp2=String_new("man")));
+	print_string(tmp2=becomeSuper(tmp1=String_new("man")));
 
 	String *tmp3;
 	String *tmp4;
