@@ -36,8 +36,10 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 // Assuming the program is running on Unix-like operating systems.
 // Please make sure gcc is on the program searching path.
@@ -109,7 +111,23 @@ public class TestWichExecution {
 	private void executeAndCheck(String inputFileName, String expected) throws IOException, InterruptedException {
 		String executable = compileC(inputFileName);
 		String output = executeC(executable);
+		valgrindCheck(executable);
 		assertEquals(expected, output);
+	}
+
+	private void valgrindCheck(String executable) throws IOException, InterruptedException {
+		// For Intellij users you need to set PATH environment variable in Run/Debug configuration,
+		// since Intellij doesn't inherit environment variables from system.
+		String errSummary = exec(new String[]{"valgrind", executable}).getValue();
+		assertEquals("Valgrind memcheck failed...", 0, getErrorNumFromSummary(errSummary));
+	}
+
+	private int getErrorNumFromSummary(String errSummary) {
+		if (errSummary == null || errSummary.length() == 0) return -1;
+		String[] lines = errSummary.split("\n");
+		//Sample: ==15358== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+		String summary = lines[lines.length-1];
+		return Integer.parseInt(summary.substring(summary.indexOf(":") + 1, summary.lastIndexOf("errors")).trim());
 	}
 
 	private String compileC(String wichInput) throws IOException, InterruptedException {
@@ -121,9 +139,10 @@ public class TestWichExecution {
 		String generated = WORKING_DIR + baseName + "_wich.c";
 		CompilerFacade.writeFile(generated, actual, StandardCharsets.UTF_8);
 		// Compile C code and return the path to the executable.
-		String executable = baseName + "_wich";
+		String executable = "./" + baseName + "_wich";
 		URL CFileURL = getClass().getClassLoader().getResource(WICH_LIB);
-		exec(new String[]{"cc", "-o", executable, generated, CFileURL.getFile(), "-I", runtimePath, "-std=c99"});
+		System.out.println(exec(new String[]{"cc", "-g", "-o", executable,
+				generated, CFileURL.getFile(), "-I", runtimePath, "-std=c99", "-O0"}).getValue());
 		return executable;
 	}
 
@@ -132,7 +151,6 @@ public class TestWichExecution {
 		pb.command(Arrays.asList(cmd)).directory(new File(WORKING_DIR));
 		Process process = pb.start();
 		Pair<String, String> ret = new Pair<>(dump(process.getInputStream()), dump(process.getErrorStream()));
-		System.out.println(ret.getValue());
 		process.waitFor();
 		return ret;
 	}
