@@ -22,12 +22,13 @@ Func(f,returnType,args,body)::=<<
 <body>
 >>
 
-Block(b,varDefs,stats,returnStat,returnTemps)::= <<
+Block(b,varDefs,stats,returnStat,returnTemps,returnTmpAssign)::= <<
 {
 	<if(b.argsRef)><b.argsRef:{arg|REF(<arg>);};separator="\n"><endif>
 	<if(varDefs)><varDefs;separator="\n"><endif>
 	<if(returnTemps)><returnTemps;separator="\n"><endif>
 	<if(stats)><stats;separator="\n"><endif>
+	<returnTmpAssign>
 	<if(b.returnRefVar)>REF(<b.returnRefVar>);<endif>
 	<if(b.localVars)><b.localVars:{deRef|DEREF(<deRef>);};separator="\n"><endif>
 	<if(b.localTemps)><b.localTemps:{t|DEREF(tmp<t>);};separator="\n"><endif>
@@ -61,7 +62,7 @@ while (<condition>) <stat;separator="\n">
 >>
 
 ReturnStat(r,rExpr)  ::= <<
-return <rExpr>;
+<if(r.tmpIndex)>return tmp<r.tmpIndex>;<else>return <rExpr>;<endif>
 >>
 
 VarDefStat(v,type,expr,localTemps) ::= <<
@@ -126,6 +127,8 @@ StrToCharFunCall(str,arg) ::= <<
 StrIndexExpr(s,expr) ::= <<
 <if(s.localTmp)>tmp<s.localTmp>=<endif><s.objectName>->str[(<expr>)-1]
 >>
+
+ReturnTmpExpr(r,expr) ::= "<expr>;"
 
 VexIndexExpr(v,expr) ::= "<v.objectName>->data[(<expr>)-1]"
 

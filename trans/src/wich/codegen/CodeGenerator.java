@@ -154,6 +154,11 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		block.returnStat = stat;
 		Type type = s.expr().exprType;
 		String var = s.expr().getText();
+		if (((ReturnStat)stat).tmpIndex != null){
+			ReturnTmpExpr e =new ReturnTmpExpr();
+			e.expr = ((ReturnStat)stat).rExpr;
+			block.returnTmpAssign = e;
+		}
 		if (isHeapObject(type) && (!isTemporySymbol(var))) {
 			block.returnRefVar = var;
 		}
@@ -349,6 +354,12 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		returnStat.localTemps = (returnStat.rExpr).tmpVarDefs;
 		for(TmpVarDef t:returnStat.localTemps){
 			returnStat.tmpVars.add(t.index);
+		}
+		if (isHeapObject(ctx.expr().exprType) && ctx.expr() instanceof WichParser.OpContext ) {
+			returnStat.tmpIndex = ((OpFunCall)returnStat.rExpr).localTmp;
+		}
+		if (isHeapObject(ctx.expr().exprType) && ctx.expr() instanceof WichParser.CallContext) {
+			returnStat.tmpIndex = ((FuncCall)returnStat.rExpr).localTmp;
 		}
 		return returnStat;
 	}
