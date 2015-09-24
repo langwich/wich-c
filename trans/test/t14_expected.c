@@ -7,7 +7,7 @@ void f();
 
 void f()
 {
-	g();
+	printf("??");
 }
 
 int main(int argc, char *argv[])
