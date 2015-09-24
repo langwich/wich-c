@@ -312,4 +312,8 @@ public class TypeHelper {
 		}
 		return sb;
 	}
+
+	public static boolean typesAreCompatible(ExprContext elem, Type type) {
+		return elem.exprType == type || elem.promoteToType == type;
+	}
 }

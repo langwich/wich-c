@@ -24,25 +24,17 @@ SOFTWARE.
 package wich.semantics;
 
 
-import org.antlr.symtab.Scope;
 import org.antlr.symtab.Symbol;
 import org.antlr.symtab.Type;
 import org.antlr.symtab.TypedSymbol;
 import org.antlr.v4.runtime.misc.NotNull;
-import wich.parser.WichBaseListener;
 import wich.parser.WichParser;
 import wich.parser.WichParser.ExprContext;
 import wich.semantics.symbols.WFunctionSymbol;
 import wich.semantics.symbols.WVariableSymbol;
 
 
-public class TypeAnnotator extends WichBaseListener {
-	private Scope currentScope;
-
-	public TypeAnnotator(SymbolTable symtab) {
-		pushScope(symtab.getGlobalScope());
-	}
-
+public class TypeAnnotator extends MaintainScopeListener {
 	@Override
 	public void exitOp(@NotNull WichParser.OpContext ctx) {
 		int op = ctx.operator().start.getType();
@@ -52,7 +44,9 @@ public class TypeAnnotator extends WichBaseListener {
 	}
 
 	@Override
-	public void exitNegate(@NotNull WichParser.NegateContext ctx) { ctx.exprType = ctx.expr().exprType; }
+	public void exitNegate(@NotNull WichParser.NegateContext ctx) {
+		ctx.exprType = ctx.expr().exprType;
+	}
 
 	@Override
 	public void exitNot(@NotNull WichParser.NotContext ctx) {
@@ -63,10 +57,9 @@ public class TypeAnnotator extends WichBaseListener {
 	@Override
 	public void exitCall(@NotNull WichParser.CallContext ctx) {
 		Symbol s = currentScope.resolve(ctx.call_expr().ID().getText());
-		if ( s != null && s instanceof WFunctionSymbol ) {
+		if ( s!=null && s instanceof WFunctionSymbol ) {
 			ctx.exprType = ((WFunctionSymbol) s).getType();
-		}
-		else {
+		} else {
 			// TODO: add error here
 		}
 	}
@@ -79,13 +72,11 @@ public class TypeAnnotator extends WichBaseListener {
 		}
 		// string[i] returns a single character string
 		Type idType = ((WVariableSymbol) s).getType();
-		if( idType== SymbolTable._string) {
+		if ( idType==SymbolTable._string ) {
 			ctx.exprType = SymbolTable._string;
-		}
-		else if(idType== SymbolTable._vector) {
+		} else if ( idType==SymbolTable._vector ) {
 			ctx.exprType = SymbolTable._float;
-		}
-		else {
+		} else {
 			// TODO: add error here
 		}
 	}
@@ -98,10 +89,9 @@ public class TypeAnnotator extends WichBaseListener {
 	@Override
 	public void exitIdentifier(@NotNull WichParser.IdentifierContext ctx) {
 		Symbol s = currentScope.resolve(ctx.ID().getText());
-		if ( s != null && s instanceof WVariableSymbol ) {
+		if ( s!=null && s instanceof WVariableSymbol ) {
 			ctx.exprType = ((TypedSymbol) s).getType();
-		}
-		else {
+		} else {
 			// TODO: add error here
 		}
 	}
@@ -143,39 +133,5 @@ public class TypeAnnotator extends WichBaseListener {
 		if ( var!=null && var instanceof WVariableSymbol ) { // avoid cascading errors
 			((TypedSymbol) var).setType(ctx.expr().exprType);
 		}
-	}
-
-	@Override
-	public void exitScript(@NotNull WichParser.ScriptContext ctx) { // pop global scope set in ctor
-		popScope();
-	}
-
-	@Override
-	public void enterFunction(@NotNull WichParser.FunctionContext ctx) {
-		pushScope(ctx.scope);
-	}
-
-	@Override
-	public void exitFunction(@NotNull WichParser.FunctionContext ctx) {
-		popScope();
-	}
-
-	@Override
-	public void enterBlock(@NotNull WichParser.BlockContext ctx) {
-		pushScope(ctx.scope);
-	}
-
-	@Override
-	public void exitBlock(@NotNull WichParser.BlockContext ctx) {
-		popScope();
-	}
-
-	private void pushScope(Scope s) {
-		currentScope = s;
-	}
-
-	private void popScope() {
-		if (currentScope == null) return;
-		currentScope = currentScope.getEnclosingScope();
 	}
 }

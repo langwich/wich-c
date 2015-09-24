@@ -23,33 +23,25 @@ SOFTWARE.
 */
 package wich.semantics;
 
-import org.antlr.symtab.Scope;
-import org.antlr.symtab.Symbol;
 import org.antlr.symtab.Type;
 import org.antlr.v4.runtime.misc.NotNull;
-import wich.parser.WichBaseListener;
 import wich.parser.WichParser;
 import wich.semantics.symbols.WArgSymbol;
 import wich.semantics.symbols.WBlock;
 import wich.semantics.symbols.WFunctionSymbol;
 import wich.semantics.symbols.WVariableSymbol;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-public class DefineSymbols extends WichBaseListener {
-	public final List<String> errors = new ArrayList<>();
-	private Scope currentScope;
-	private int numOfBlocks;
+public class DefineSymbols extends CommonWichListener {
+	protected SymbolTable symtab;
+	protected int numOfBlocks;
 
 	public DefineSymbols(SymbolTable symtab) {
-		pushScope(symtab.getGlobalScope());
+		this.symtab = symtab;
 	}
 
 	@Override
 	public void enterVarDef(WichParser.VarDefContext ctx) {
-		currentScope.define(new WVariableSymbol(ctx.ID().getText())); // type set after type computation phase
+		currentScope.define(new WVariableSymbol(ctx.ID().getText())); // type set in type computation phase
 	}
 
 	@Override
@@ -101,37 +93,13 @@ public class DefineSymbols extends WichBaseListener {
 	}
 
 	@Override
+	public void enterScript(@NotNull WichParser.ScriptContext ctx) {
+		ctx.scope = symtab.getGlobalScope();
+		pushScope(ctx.scope);
+	}
+
+	@Override
 	public void exitScript(@NotNull WichParser.ScriptContext ctx) {
 		popScope(); // pop off the global scope set in the constructor
-	}
-
-	public Type resolveType(@NotNull String typeName) {
-		Symbol typeSymbol = currentScope.resolve(typeName);
-		if ( typeSymbol instanceof Type ) {
-			return (Type)typeSymbol;
-		}
-		else {
-			error(typeName+" is not a type name");
-			return null;
-		}
-	}
-
-	private void pushScope(Scope s) {
-		currentScope = s;
-	}
-
-	private void popScope() {
-		if (currentScope != null) {
-			currentScope = currentScope.getEnclosingScope();
-		}
-	}
-
-	// error support
-	private void error(String msg) {
-		errors.add(msg);
-	}
-
-	private void error(String msg, Exception e) {
-		errors.add(msg + "\n" + Arrays.toString(e.getStackTrace()));
 	}
 }

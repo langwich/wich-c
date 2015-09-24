@@ -46,9 +46,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class CompilerFacade {
-
 	public static final Charset FILE_ENCODING = StandardCharsets.UTF_8;
-	public static final String FOLDER = "./test/";
 
 	private static ParserRuleContext parse(ANTLRInputStream antlrInputStream) {
 		TokenStream tokens = new CommonTokenStream(new WichLexer(antlrInputStream));
@@ -66,7 +64,7 @@ public class CompilerFacade {
 
 	static ParserRuleContext getAnnotatedParseTree(String input, SymbolTable symtab) {
 		ParserRuleContext tree = defineSymbols(input, symtab);
-		TypeAnnotator typeAnnotator = new TypeAnnotator(symtab);
+		TypeAnnotator typeAnnotator = new TypeAnnotator();
 		ParseTreeWalker walker = new ParseTreeWalker();
 		walker.walk(typeAnnotator, tree);
 		return tree;

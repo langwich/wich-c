@@ -95,12 +95,12 @@ public class Trans {
 			// use the TypeAnnotator listener to compute and
 			// and annotate the parse tree with type information
 			// also, it deals with type inference and type promotion
-			TypeAnnotator typeAnnotator = new TypeAnnotator(symtab);
+			TypeAnnotator typeAnnotator = new TypeAnnotator();
 			walker = new ParseTreeWalker();
 			walker.walk(typeAnnotator, tree);
 
 			// use TypeChecker listener to do static type checking
-			TypeChecker typeChecker = new TypeChecker(symtab);
+			TypeChecker typeChecker = new TypeChecker();
 			walker = new ParseTreeWalker();
 			walker.walk(typeChecker, tree);
 
