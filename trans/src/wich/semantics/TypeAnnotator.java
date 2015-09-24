@@ -127,7 +127,7 @@ public class TypeAnnotator extends MaintainScopeListener {
 	}
 
 	@Override
-	public void exitVarDef(@NotNull WichParser.VarDefContext ctx) {
+	public void exitVardef(WichParser.VardefContext ctx) {
 		Symbol var = currentScope.resolve(ctx.ID().getText());
 		// type inference
 		if ( var!=null && var instanceof WVariableSymbol ) { // avoid cascading errors
