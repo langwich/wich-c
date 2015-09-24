@@ -32,7 +32,8 @@ import org.antlr.symtab.*;
 file : script ;
 
 script returns [GlobalScope scope]
-	: (statement | function)* EOF ;
+	: (outer_statement | vardef | function)* EOF
+	;
 
 function returns [WFunctionSymbol scope]
 	:	'func' ID '(' formal_args? ')' (':' type)? block
@@ -51,17 +52,23 @@ type:	'int'
 block returns [Scope scope]
 	:  '{' statement* '}';
 
-statement
+outer_statement
 	:	'if' '(' expr ')' statement ('else' statement)?		# If
 	|	'while' '(' expr ')' statement						# While
-	|	'var' ID '=' expr									# VarDef
 	|	ID '=' expr											# Assign
 	|	ID '[' expr ']' '=' expr							# ElementAssign
 	|	call_expr											# CallStatement
-	|	'return' expr										# Return
-	|	block				 								# BlockStatement
 	|	'print' '(' expr? ')'								# Print
 	;
+
+statement
+	:	outer_statement                                     # OuterStuff
+	|   vardef									            # VarDefStatement
+	|	'return' expr										# Return
+	|	block				 								# BlockStatement
+	;
+
+vardef : 'var' ID '=' expr ;
 
 expr returns [Type exprType, Type promoteToType]
 	:	expr operator expr									# Op

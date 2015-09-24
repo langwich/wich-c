@@ -30,11 +30,52 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
-import wich.codegen.model.*;
+import wich.codegen.model.ArgDef;
+import wich.codegen.model.AssignStat;
+import wich.codegen.model.AtomExpr;
+import wich.codegen.model.Block;
+import wich.codegen.model.BlockStat;
+import wich.codegen.model.CFile;
+import wich.codegen.model.CType;
+import wich.codegen.model.CallStat;
+import wich.codegen.model.ElementAssignStat;
+import wich.codegen.model.Expr;
+import wich.codegen.model.Func;
+import wich.codegen.model.FuncCall;
+import wich.codegen.model.IfStat;
+import wich.codegen.model.NegateExpr;
+import wich.codegen.model.NonCType;
+import wich.codegen.model.NotExpr;
+import wich.codegen.model.OpExpr;
+import wich.codegen.model.OpFunCall;
+import wich.codegen.model.OutputModelObject;
+import wich.codegen.model.ParensExpr;
+import wich.codegen.model.PrimaryExpr;
+import wich.codegen.model.PrintFloatStat;
+import wich.codegen.model.PrintIntStat;
+import wich.codegen.model.PrintStat;
+import wich.codegen.model.PrintStrStat;
+import wich.codegen.model.PrintVecStat;
+import wich.codegen.model.ReturnStat;
+import wich.codegen.model.ReturnTmpExpr;
+import wich.codegen.model.Script;
+import wich.codegen.model.Stat;
+import wich.codegen.model.StrIndexExpr;
+import wich.codegen.model.StrToCharFunCall;
+import wich.codegen.model.StringNewFunCall;
+import wich.codegen.model.TmpVarDef;
+import wich.codegen.model.VarDefStat;
+import wich.codegen.model.VecIndexExpr;
+import wich.codegen.model.VectorNewFunCall;
+import wich.codegen.model.WhileStat;
 import wich.parser.WichBaseVisitor;
 import wich.parser.WichParser;
 import wich.semantics.SymbolTable;
-import wich.semantics.symbols.*;
+import wich.semantics.symbols.WBuiltInTypeSymbol;
+import wich.semantics.symbols.WFunctionSymbol;
+import wich.semantics.symbols.WString;
+import wich.semantics.symbols.WVariableSymbol;
+import wich.semantics.symbols.WVector;
 
 import java.util.List;
 
@@ -71,24 +112,26 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	public OutputModelObject visitScript(@NotNull WichParser.ScriptContext ctx) {
 		pushScope(symtab.getGlobalScope());
 		Script script = new Script(fileName);
-		List<WichParser.StatementContext> stats = ctx.statement();
-		for (WichParser.StatementContext s:stats) {
+		final List<WichParser.Outer_statementContext> stats = ctx.outer_statement();
+		for (WichParser.Outer_statementContext s:stats) {
 			Stat stat = (Stat)visit(s);
 			for(Integer i: stat.tmpVars){
 				script.localTemps.add(i);
 			}
-			if (s instanceof WichParser.VarDefContext) {
-				script.varDefs.add((VarDefStat) stat);
-				Type t =((WVariableSymbol) currentScope.resolve(((WichParser.VarDefContext) s).ID().getText())).getType();
-				if( isHeapObject(t)) {
-					script.localVars.add(((WichParser.VarDefContext) s).ID().getText());
-				}
-			}
-			else {
-				script.stats.add(stat);
+			script.stats.add(stat);
+		}
+
+		final List<WichParser.VardefContext> vardefs = ctx.vardef();
+		for (WichParser.VardefContext v : vardefs) {
+			VarDefStat varDefStat = (VarDefStat)visit(v);
+			script.varDefs.add(varDefStat);
+			Type t =((WVariableSymbol) currentScope.resolve(v.ID().getText())).getType();
+			if( isHeapObject(t)) {
+				script.localVars.add(v.ID().getText());
 			}
 		}
-		List<WichParser.FunctionContext> funcs = ctx.function();
+
+		final List<WichParser.FunctionContext> funcs = ctx.function();
 		for (WichParser.FunctionContext f:funcs) {
 			script.functions.add((Func)visit(f));
 		}
@@ -131,11 +174,11 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 			for(Integer i: stat.tmpVars){
 				block.localTemps.add(i);
 			}
-			if (s instanceof WichParser.VarDefContext) {
+			if (s instanceof WichParser.VarDefStatementContext) {
 				block.varDefs.add((VarDefStat) stat);
-				Type t =((WVariableSymbol) currentScope.resolve(((WichParser.VarDefContext) s).ID().getText())).getType();
+				Type t =((WVariableSymbol) currentScope.resolve(((WichParser.VarDefStatementContext) s).vardef().ID().getText())).getType();
 				if( isHeapObject(t)) {
-					block.localVars.add(((WichParser.VarDefContext) s).ID().getText());
+					block.localVars.add(((WichParser.VarDefStatementContext) s).vardef().ID().getText());
 				}
 			}
 			else if (s instanceof WichParser.ReturnContext) {
@@ -224,7 +267,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	}
 
 	@Override
-	public OutputModelObject visitVarDef(@NotNull WichParser.VarDefContext ctx) {
+	public OutputModelObject visitVardef(@NotNull WichParser.VardefContext ctx) {
 		VarDefStat varDef = new VarDefStat(ctx.ID().getText());
 		WVariableSymbol v= ((WVariableSymbol)currentScope.resolve(ctx.ID().getText()));
 		if (isHeapObject(v.getType())) {
@@ -524,7 +567,9 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	}
 
 	private boolean isTempVarNeeded(ParserRuleContext s){
-		return !(s instanceof WichParser.VarDefContext || s instanceof WichParser.AssignContext || s instanceof WichParser.CallStatementContext);
+		return !(s instanceof WichParser.VardefContext ||
+				 s instanceof WichParser.AssignContext ||
+				 s instanceof WichParser.CallStatementContext);
 	}
 
 	@Override

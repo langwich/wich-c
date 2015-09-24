@@ -260,6 +260,26 @@ public class TestTypeAnnotation {
 		annotateTypeAndCheck(input, expected);
 	}
 
+	@Test
+	public void testForwardRefs() throws Exception {
+		String input =
+			"func f() { print(x) }\n" +
+			"var x = 3\n";
+		String expecting =
+			"??";
+		annotateTypeAndCheck(input, expecting);
+	}
+
+	@Test
+	public void testForwardFuncRefs() throws Exception {
+		String input =
+			"func f() : string { g() }\n" +
+			"func g() : float { f() }\n";
+		String expecting =
+			"??";
+		annotateTypeAndCheck(input, expecting);
+	}
+
 	private String getExpressionDump(String input) {
 		SymbolTable symtab = new SymbolTable();
 		ParserRuleContext tree = CompilerFacade.getAnnotatedParseTree(input, symtab);
