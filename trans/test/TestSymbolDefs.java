@@ -104,23 +104,6 @@ public class TestSymbolDefs {
 	}
 
 	@Test
-	public void testGlobalBlockVariables() throws Exception {
-		String input =
-			"{" +
-			"var i = 1\n" +
-			"var j = \"hi\"\n" +
-			"}";
-		String expecting =
-			"global {\n" +
-			"    local_0 {\n" +
-			"        local_0.i:int\n" +
-			"        local_0.j:string\n" +
-			"    }\n" +
-			"}\n";
-		checkScopes(input, expecting);
-	}
-
-	@Test
 	public void testFuncNoArgs() throws Exception {
 		String input =
 			"func f() { }\n";
