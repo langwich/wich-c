@@ -30,7 +30,6 @@ import wich.semantics.TypeHelper;
 import static org.junit.Assert.assertEquals;
 
 public class TestTypeAnnotation {
-
 	@Test
 	public void testDefineVar() throws Exception {
 		String input = "var x = 1";
@@ -222,6 +221,42 @@ public class TestTypeAnnotation {
 				"1.0:float\n" +
 				"2.0:float\n" +
 				"x:int => float\n";
+		annotateTypeAndCheck(input, expected);
+	}
+
+	@Test
+	public void testVarInference() throws Exception {
+		String input =
+			"var x = 1\n"+
+			"var y = x";
+		String expected =
+			"1:int\n"+
+			"x:int\n";
+		annotateTypeAndCheck(input, expected);
+	}
+
+	@Test
+	public void testVarInferenceFromArg() throws Exception {
+		String input =
+			"func sum(x:string) {\n" +
+			"   var y = x\n" +
+			"   print(y)\n" +
+			"}\n";
+		String expected =
+			"x:string\n"+
+			"y:string\n";
+		annotateTypeAndCheck(input, expected);
+	}
+
+	@Test
+	public void testVarInferenceFromRetValue() throws Exception {
+		String input =
+			"func f() : float { }\n" +
+			"var y = f()\n" +
+			"print(y)\n";
+		String expected =
+			"f():float\n"+
+			"y:float\n";
 		annotateTypeAndCheck(input, expected);
 	}
 

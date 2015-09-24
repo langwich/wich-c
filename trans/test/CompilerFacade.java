@@ -35,8 +35,8 @@ import wich.codegen.ModelConverter;
 import wich.codegen.model.OutputModelObject;
 import wich.parser.WichLexer;
 import wich.parser.WichParser;
+import wich.semantics.DefineSymbols;
 import wich.semantics.SymbolTable;
-import wich.semantics.SymbolTableConstructor;
 import wich.semantics.TypeAnnotator;
 
 import java.io.IOException;
@@ -46,9 +46,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class CompilerFacade {
-
 	public static final Charset FILE_ENCODING = StandardCharsets.UTF_8;
-	public static final String FOLDER = "./test/";
 
 	private static ParserRuleContext parse(ANTLRInputStream antlrInputStream) {
 		TokenStream tokens = new CommonTokenStream(new WichLexer(antlrInputStream));
@@ -59,14 +57,14 @@ public class CompilerFacade {
 	static ParserRuleContext defineSymbols(String input, SymbolTable symtab) {
 		ParserRuleContext tree = parse(new ANTLRInputStream(input));
 		ParseTreeWalker walker = new ParseTreeWalker();
-		SymbolTableConstructor symtabConstructor = new SymbolTableConstructor(symtab);
+		DefineSymbols symtabConstructor = new DefineSymbols(symtab);
 		walker.walk(symtabConstructor, tree);
 		return tree;
 	}
 
 	static ParserRuleContext getAnnotatedParseTree(String input, SymbolTable symtab) {
 		ParserRuleContext tree = defineSymbols(input, symtab);
-		TypeAnnotator typeAnnotator = new TypeAnnotator(symtab);
+		TypeAnnotator typeAnnotator = new TypeAnnotator();
 		ParseTreeWalker walker = new ParseTreeWalker();
 		walker.walk(typeAnnotator, tree);
 		return tree;

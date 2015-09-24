@@ -1,4 +1,4 @@
-package wich.semantics.type;/*
+/*
 The MIT License (MIT)
 
 Copyright (c) 2015 Terence Parr, Hanzhou Shi, Shuai Yuan, Yuanyuan Zhang
@@ -21,32 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+package wich.semantics.symbols;
 
-import org.antlr.symtab.SymbolWithScope;
-
-public class WBlock extends SymbolWithScope {
-	public final int index;
-	public int numOfNested;
-
-	//when parent scope is global
-	public WBlock(int blocksInGlobal) {
-		super("local" + "_" + blocksInGlobal);
-		index = blocksInGlobal;
-		numOfNested = 0;
-	}
-
-	//when parent scope is function
-	public WBlock(WFunctionSymbol function) {
-		super("local" + "_" + function.numOfNested);
-		index = function.numOfNested++;
-		numOfNested = 0;
-	}
-
-	//when parent scope is local block
-	public WBlock(WBlock block) {
-		super("local" + "_" + block.numOfNested);
-		index = block.numOfNested++;
-		numOfNested = 0;
+public class WVector extends WBuiltInTypeSymbol {
+	public WVector() {
+		super("[]", TYPE.VECTOR);
 	}
 
 }
