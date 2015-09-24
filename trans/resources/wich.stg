@@ -10,7 +10,8 @@ Script(s,functions,varDefs,stats) ::= <<
 int main(int argc, char *argv[])
 {
 	<if(varDefs)><varDefs;separator="\n"><endif>
-	<if(stats)><stats;separator="\n"><endif><if(s.localVars)>	<s.localVars:{v|DEREF(<v>);};separator="\n"><endif>
+	<if(stats)><stats;separator="\n"><endif>
+	<if(s.localVars)><s.localVars:{v|DEREF(<v>);};separator="\n"><endif>
 	<s.localTemps:{t|DEREF(tmp<t>);};separator="\n">
 	return 0;
 }
@@ -73,13 +74,26 @@ BlockStat(b,block) ::= <<
 <block>
 >>
 
-PrintStat(p,localTemps,expr) ::=<<
+PrintStat(p) ::= <<
+print();
+>>
+
+PrintStrStat(ps,expr,localTemps) ::= <<
 <if(localTemps)><localTemps;separator="\n"><endif>
-<if(p.printStr)>print_<p.printStr>(<expr>);
-<elseif(p.printVec)>print_<p.printVec>(<expr>);
-<elseif(p.printInt)>printf("%d\n", <expr>);
-<elseif(p.printFloat)>printf("%1.2f\n", <expr>);
-<else>print();<endif>
+print_<ps.type>(<expr>);
+>>
+
+PrintVecStat(pv,expr,localTemps) ::= <<
+<if(localTemps)><localTemps;separator="\n"><endif>
+print_<pv.type>(<expr>);
+>>
+
+PrintIntStat(pi,expr) ::= <<
+printf("%d\n", <expr>);
+>>
+
+PrintFloatStat(pf,expr) ::= <<
+printf("%1.2f\n", <expr>);
 >>
 
 AtomExpr(a,primaryExpr) ::= "<primaryExpr>"

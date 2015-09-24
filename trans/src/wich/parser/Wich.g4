@@ -25,6 +25,7 @@ SOFTWARE.
 grammar Wich;
 
 @header {
+package wich.parser;
 import wich.semantics.symbols.*;
 import org.antlr.symtab.*;
 }

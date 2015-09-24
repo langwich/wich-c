@@ -8,7 +8,6 @@ void bar(Vector *x)
 	x->data[1-1] = 100;
 
 	print_vector(x);
-
 	DEREF(x);
 }
 int main(int argc, char *argv[])

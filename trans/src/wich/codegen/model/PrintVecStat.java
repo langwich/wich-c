@@ -24,6 +24,15 @@ SOFTWARE.
 package wich.codegen.model;
 
 
-public class PrintStat extends Stat{
+import java.util.ArrayList;
+import java.util.List;
 
+public class PrintVecStat extends Stat{
+	public final String type;
+	@ModelElement public Expr expr;
+	@ModelElement public List<TmpVarDef> localTemps = new ArrayList<>();
+
+	public PrintVecStat(String type) {
+		this.type = type;
+	}
 }

@@ -86,9 +86,9 @@ public class SymbolTable {
 				buf.append(tab(level));	buf.append(sym + "\n");
 			}
 		}
-		for (Scope nested : s.getNestedScopedSymbols()) {
-			dump(buf, nested, level);
-		}
+//		for (Scope nested : s.getNestedScopedSymbols()) {
+//			dump(buf, nested, level);
+//		}
 		if ( s instanceof WBlock ) {
 			for (WBlock blk : ((WBlock)s).nestedBlocks) {
 				dump(buf, blk, level);

@@ -195,8 +195,8 @@ public class TypeHelper {
 												   ExprContext le,
 												   ExprContext re)
 	{
-		int li = le.exprType.getTypeIndex();
-		int ri = re.exprType.getTypeIndex();
+		int li = ((WBuiltInTypeSymbol)le.exprType).getTypeIndex();
+		int ri = ((WBuiltInTypeSymbol)re.exprType).getTypeIndex();
 		WBuiltInTypeSymbol resultType = opResultTypeMap[op][li][ri];
 		le.promoteToType = operandPromotionMap[op][li][resultType.getTypeIndex()];
 		re.promoteToType = operandPromotionMap[op][ri][resultType.getTypeIndex()];
@@ -213,15 +213,15 @@ public class TypeHelper {
 			return true;
 		}
 		else {
-			int li = ltype.getTypeIndex();
-			int ri = rtype.getTypeIndex();
+			int li = ((WBuiltInTypeSymbol)ltype).getTypeIndex();
+			int ri = ((WBuiltInTypeSymbol)rtype).getTypeIndex();
 			return equalityPromoteFromTo[li][ri].getTypeIndex() == li;
 		}
 	}
 
 	/** This method is used to promote type during type annotation */
 	public static void promote(ExprContext elem, int targetIndex) {
-		int selfIndex = elem.exprType.getTypeIndex();
+		int selfIndex = ((WBuiltInTypeSymbol)elem.exprType).getTypeIndex();
 		elem.promoteToType = equalityPromoteFromTo[selfIndex][targetIndex];
 	}
 
