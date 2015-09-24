@@ -29,6 +29,7 @@ import java.util.List;
 
 public class Block extends OutputModelObject {
 	@ModelElement public List<VarDefStat> varDefs = new ArrayList<>();
+	@ModelElement public ReturnTmpExpr returnTmpAssign;
 	@ModelElement public List<Stat> stats = new ArrayList<>();
 	@ModelElement public Stat returnStat;
 	@ModelElement public List<TmpVarDef> returnTemps = new ArrayList<>();

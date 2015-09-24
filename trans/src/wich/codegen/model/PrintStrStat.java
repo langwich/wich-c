@@ -23,7 +23,15 @@ SOFTWARE.
 */
 package wich.codegen.model;
 
+import java.util.ArrayList;
+import java.util.List;
 
-public class PrintStat extends Stat{
+public class PrintStrStat extends Stat {
+	public final String type;
+	@ModelElement public Expr expr;
+	@ModelElement public List<TmpVarDef> localTemps = new ArrayList<>();
 
+	public PrintStrStat(String type) {
+		this.type = type;
+	}
 }

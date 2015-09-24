@@ -30,43 +30,11 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
-import wich.codegen.model.ArgDef;
-import wich.codegen.model.AssignStat;
-import wich.codegen.model.AtomExpr;
-import wich.codegen.model.Block;
-import wich.codegen.model.BlockStat;
-import wich.codegen.model.BuiltInFuncCall;
-import wich.codegen.model.CFile;
-import wich.codegen.model.CType;
-import wich.codegen.model.CallStat;
-import wich.codegen.model.ElementAssignStat;
-import wich.codegen.model.Expr;
-import wich.codegen.model.Func;
-import wich.codegen.model.FuncCall;
-import wich.codegen.model.IfStat;
-import wich.codegen.model.NegateExpr;
-import wich.codegen.model.NonCType;
-import wich.codegen.model.NotExpr;
-import wich.codegen.model.OpExpr;
-import wich.codegen.model.OutputModelObject;
-import wich.codegen.model.ParensExpr;
-import wich.codegen.model.PrimaryExpr;
-import wich.codegen.model.PrintStat;
-import wich.codegen.model.ReturnStat;
-import wich.codegen.model.Script;
-import wich.codegen.model.Stat;
-import wich.codegen.model.StrIndexExpr;
-import wich.codegen.model.TmpVarDef;
-import wich.codegen.model.VarDefStat;
-import wich.codegen.model.VecIndexExpr;
-import wich.codegen.model.WhileStat;
+import wich.codegen.model.*;
 import wich.parser.WichBaseVisitor;
 import wich.parser.WichParser;
 import wich.semantics.SymbolTable;
-import wich.semantics.symbols.WFunctionSymbol;
-import wich.semantics.symbols.WString;
-import wich.semantics.symbols.WVariableSymbol;
-import wich.semantics.symbols.WVector;
+import wich.semantics.symbols.*;
 
 import java.util.List;
 
@@ -112,7 +80,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 			if (s instanceof WichParser.VarDefContext) {
 				script.varDefs.add((VarDefStat) stat);
 				Type t =((WVariableSymbol) currentScope.resolve(((WichParser.VarDefContext) s).ID().getText())).getType();
-				if( t instanceof WString || t instanceof WVector) {
+				if( isHeapObject(t)) {
 					script.localVars.add(((WichParser.VarDefContext) s).ID().getText());
 				}
 			}
@@ -171,15 +139,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 				}
 			}
 			else if (s instanceof WichParser.ReturnContext) {
-				block.returnStat = stat;
-				Type type = ((WichParser.ReturnContext) s).expr().exprType;
-				String var = ((WichParser.ReturnContext) s).expr().getText();
-				if (isHeapObject(type) && (!isTemporySymbol(var))) {
-					block.returnRefVar = var;
-				}
-				else if (((ReturnStat)stat).localTemps != null){
-					block.returnTemps = ((ReturnStat)stat).localTemps;
-				}
+				SetupReturnStat(block, (WichParser.ReturnContext) s, stat);
 			}
 			else {
 				block.stats.add(stat);
@@ -188,6 +148,26 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		addFunArgsRef(ctx, block);
 		popScope();
 		return block;
+	}
+
+	private void SetupReturnStat(Block block, WichParser.ReturnContext s, Stat stat) {
+		block.returnStat = stat;
+		Type type = s.expr().exprType;
+		String var = s.expr().getText();
+		if (((ReturnStat)stat).tmpIndex != null){
+			ReturnTmpExpr e =new ReturnTmpExpr();
+			e.expr = ((ReturnStat)stat).rExpr;
+			block.returnTmpAssign = e;
+		}
+		if (isHeapObject(type) && (!isTemporySymbol(var))) {
+			block.returnRefVar = var;
+		}
+		else if (((ReturnStat)stat).localTemps != null) {
+			block.returnTemps = ((ReturnStat) stat).localTemps;
+			if (block.returnTemps.size() >= 1) {
+				block.returnRefVar = "tmp" + (block.returnTemps.get(block.returnTemps.size() - 1)).index;
+			}
+		}
 	}
 
 	private boolean isHeapObject(Type type) {
@@ -326,35 +306,42 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		PrintStat printStat = new PrintStat();
 		if (ctx.expr() != null) {
 			Expr expr = (Expr)visit(ctx.expr());
-			printStat.expr = expr;
-			int type = (ctx.expr().exprType).getTypeIndex();
+			int type = ((WBuiltInTypeSymbol)ctx.expr().exprType).getTypeIndex();
 			switch (type) {
 				case 0:
-					printStat.printInt = "int";
-					break;
+					PrintIntStat printIntStat = new PrintIntStat();
+					printIntStat.expr = expr;
+					return printIntStat;
 				case 1:
-					printStat.printFloat = "float";
-					break;
+					PrintFloatStat printFloatStat = new PrintFloatStat();
+					printFloatStat.expr = expr;
+					return printFloatStat;
 				case 2:
-					printStat.printStr = "string";
-					if (!isTemporySymbol(ctx.expr().getText())) break;
-					else {
-						printStat.localTemps = (expr).tmpVarDefs;
-						for (TmpVarDef t :printStat.localTemps) {
-							printStat.tmpVars.add(t.index);
-						}
+					PrintStrStat printStrStat = new PrintStrStat(ctx.expr().exprType.getName());
+					printStrStat.expr = expr;
+					if (!isTemporySymbol(ctx.expr().getText())) {
+						return printStrStat;
 					}
-					break;
+					else {
+						printStrStat.localTemps = (expr).tmpVarDefs;
+						for (TmpVarDef t :printStrStat.localTemps) {
+							printStrStat.tmpVars.add(t.index);
+						}
+						return printStrStat;
+					}
 				case 3:
-					printStat.printVec = "vector";
-					if (!isTemporySymbol(ctx.expr().getText())) break;
-					else {
-						printStat.localTemps = (expr).tmpVarDefs;
-						for (TmpVarDef t :printStat.localTemps) {
-							printStat.tmpVars.add(t.index);
-						}
+					PrintVecStat printVecStat = new PrintVecStat(typeNameConvert(ctx.expr().exprType.getName()).toLowerCase());
+					printVecStat.expr = expr;
+					if (!isTemporySymbol(ctx.expr().getText())) {
+						return printVecStat;
 					}
-					break;
+					else {
+						printVecStat.localTemps = (expr).tmpVarDefs;
+						for (TmpVarDef t :printVecStat.localTemps) {
+							printVecStat.tmpVars.add(t.index);
+						}
+						return printVecStat;
+					}
 			}
 		}
 		return printStat;
@@ -367,6 +354,12 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		returnStat.localTemps = (returnStat.rExpr).tmpVarDefs;
 		for(TmpVarDef t:returnStat.localTemps){
 			returnStat.tmpVars.add(t.index);
+		}
+		if (isHeapObject(ctx.expr().exprType) && ctx.expr() instanceof WichParser.OpContext ) {
+			returnStat.tmpIndex = ((OpFunCall)returnStat.rExpr).localTmp;
+		}
+		if (isHeapObject(ctx.expr().exprType) && ctx.expr() instanceof WichParser.CallContext) {
+			returnStat.tmpIndex = ((FuncCall)returnStat.rExpr).localTmp;
 		}
 		return returnStat;
 	}
@@ -381,7 +374,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	@Override
 	public OutputModelObject visitOp(@NotNull WichParser.OpContext ctx) {
 		if (ctx.exprType instanceof WVector ||ctx.exprType instanceof WString) {
-			BuiltInFuncCall fc = new BuiltInFuncCall(typeNameConvert(ctx.exprType.getName()) +"_"+getOperatorName(ctx));
+			OpFunCall fc = new OpFunCall(typeNameConvert(ctx.exprType.getName()) +"_"+getOperatorName(ctx));
 			List<WichParser.ExprContext> exprs = ctx.expr();
 			for (WichParser.ExprContext e: exprs) {
 				Expr expr = (Expr)visit(e);
@@ -472,14 +465,14 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		else {
 			StrIndexExpr strIndexExpr = new StrIndexExpr(symbolName);
 			strIndexExpr.expr = (Expr)visit(ctx.expr());
-			BuiltInFuncCall builtInFuncCall = new BuiltInFuncCall("String_from_char");
-			builtInFuncCall.args.add(strIndexExpr);
+			StrToCharFunCall strToCharFunCall = new StrToCharFunCall();
+			strToCharFunCall.arg = strIndexExpr;
 			if (isTempVarNeeded(ctx.getParent())) {
 				TmpVarDef t = new TmpVarDef(getTmpIndex(),typeNameConvert(SymbolTable._string.getName()));
-				builtInFuncCall.localTmp = t.index;
-				builtInFuncCall.tmpVarDefs.add(t);
+				strToCharFunCall.localTmp = t.index;
+				strToCharFunCall.tmpVarDefs.add(t);
 			}
-			return builtInFuncCall;
+			return strToCharFunCall;
 		}
 	}
 
@@ -507,29 +500,27 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 
 	@Override
 	public OutputModelObject visitString(@NotNull WichParser.StringContext ctx) {
-		BuiltInFuncCall builtInFuncCall = new BuiltInFuncCall("String_new");
-		builtInFuncCall.stringNewLiteral = ctx.getText();
+		StringNewFunCall s = new StringNewFunCall(ctx.getText());
 		if (isTempVarNeeded(ctx.getParent().getParent())) {
 			TmpVarDef t = new TmpVarDef(getTmpIndex(),typeNameConvert(SymbolTable._string.getName()));
-			builtInFuncCall.localTmp = t.index;
-			builtInFuncCall.tmpVarDefs.add(t);
+			s.localTmp = t.index;
+			s.tmpVarDefs.add(t);
 		}
-		return builtInFuncCall;
+		return s;
 	}
 
 	@Override
 	public OutputModelObject visitVector(@NotNull WichParser.VectorContext ctx) {
-		BuiltInFuncCall builtInFuncCall = new BuiltInFuncCall("Vector_new");
+		VectorNewFunCall v = new VectorNewFunCall(ctx.expr_list().expr().size());
 		for (WichParser.ExprContext e: ctx.expr_list().expr()){
-			builtInFuncCall.args.add((Expr)visit(e));
+			v.args.add((Expr)visit(e));
 		}
-		builtInFuncCall.vectorNewSize = ctx.expr_list().expr().size();
 		if (isTempVarNeeded(ctx.getParent().getParent())) {
 			TmpVarDef t = new TmpVarDef(getTmpIndex(),typeNameConvert(SymbolTable._vector.getName()));
-			builtInFuncCall.localTmp = t.index;
-			builtInFuncCall.tmpVarDefs.add(t);
+			v.localTmp = t.index;
+			v.tmpVarDefs.add(t);
 		}
-		return builtInFuncCall;
+		return v;
 	}
 
 	private boolean isTempVarNeeded(ParserRuleContext s){

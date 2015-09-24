@@ -24,6 +24,15 @@ SOFTWARE.
 package wich.codegen.model;
 
 
-public class PrintStat extends Stat{
+import java.util.ArrayList;
+import java.util.List;
 
+public class OpFunCall extends Expr{
+	public final String funcName;
+	public Integer localTmp = null;
+	@ModelElement public List<Expr> args = new ArrayList<>();
+
+	public OpFunCall(String funcName) {
+		this.funcName = funcName;
+	}
 }

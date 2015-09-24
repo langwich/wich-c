@@ -10,8 +10,9 @@ Script(s,functions,varDefs,stats) ::= <<
 int main(int argc, char *argv[])
 {
 	<if(varDefs)><varDefs;separator="\n"><endif>
-	<if(stats)><stats;separator="\n"><endif><if(s.localVars)>	<s.localVars:{v|DEREF(<v>);};separator="\n"><endif>
-	<if(s.localTemps)><s.localTemps:{t|DEREF(tmp<t>);};separator="\n"><endif>
+	<if(stats)><stats;separator="\n"><endif>
+	<if(s.localVars)><s.localVars:{v|DEREF(<v>);};separator="\n"><endif>
+	<s.localTemps:{t|DEREF(tmp<t>);};separator="\n">
 	return 0;
 }
 >>
@@ -21,12 +22,13 @@ Func(f,returnType,args,body)::=<<
 <body>
 >>
 
-Block(b,varDefs,stats,returnStat,returnTemps)::= <<
+Block(b,varDefs,stats,returnStat,returnTemps,returnTmpAssign)::= <<
 {
 	<if(b.argsRef)><b.argsRef:{arg|REF(<arg>);};separator="\n"><endif>
 	<if(varDefs)><varDefs;separator="\n"><endif>
 	<if(returnTemps)><returnTemps;separator="\n"><endif>
 	<if(stats)><stats;separator="\n"><endif>
+	<returnTmpAssign>
 	<if(b.returnRefVar)>REF(<b.returnRefVar>);<endif>
 	<if(b.localVars)><b.localVars:{deRef|DEREF(<deRef>);};separator="\n"><endif>
 	<if(b.localTemps)><b.localTemps:{t|DEREF(tmp<t>);};separator="\n"><endif>
@@ -60,7 +62,7 @@ while (<condition>) <stat;separator="\n">
 >>
 
 ReturnStat(r,rExpr)  ::= <<
-return <rExpr>;
+<if(r.tmpIndex)>return tmp<r.tmpIndex>;<else>return <rExpr>;<endif>
 >>
 
 VarDefStat(v,type,expr,localTemps) ::= <<
@@ -73,13 +75,26 @@ BlockStat(b,block) ::= <<
 <block>
 >>
 
-PrintStat(p,localTemps,expr) ::=<<
+PrintStat(p) ::= <<
+print();
+>>
+
+PrintStrStat(ps,expr,localTemps) ::= <<
 <if(localTemps)><localTemps;separator="\n"><endif>
-<if(p.printStr)>print_<p.printStr>(<expr>);
-<elseif(p.printVec)>print_<p.printVec>(<expr>);
-<elseif(p.printInt)>printf("%d\n", <expr>);
-<elseif(p.printFloat)>printf("%1.2f\n", <expr>);
-<else>print();<endif>
+print_<ps.type>(<expr>);
+>>
+
+PrintVecStat(pv,expr,localTemps) ::= <<
+<if(localTemps)><localTemps;separator="\n"><endif>
+print_<pv.type>(<expr>);
+>>
+
+PrintIntStat(pi,expr) ::= <<
+printf("%d\n", <expr>);
+>>
+
+PrintFloatStat(pf,expr) ::= <<
+printf("%1.2f\n", <expr>);
 >>
 
 AtomExpr(a,primaryExpr) ::= "<primaryExpr>"
@@ -90,18 +105,30 @@ FuncCall(c,args) ::= <<
 <if(c.localTmp)>tmp<c.localTmp>=<c.funcName>(<args;separator=",">)<else><c.funcName>(<args;separator=",">)<endif>
 >>
 
-BuiltInFuncCall(b,args) ::= <<
-<if(b.stringNewLiteral)><if(b.localTmp)>tmp<b.localTmp>=<b.funcName>(<b.stringNewLiteral>)<else><b.funcName>(<b.stringNewLiteral>)<endif>
-<elseif(b.vectorNewSize)><if(b.localTmp)>tmp<b.localTmp>=<b.funcName>((double[]){<args;separator=",">},<b.vectorNewSize>)
-<else><b.funcName>((double []){<args;separator=",">}, <b.vectorNewSize>)<endif>
-<else>
-<if(b.localTmp)>tmp<b.localTmp>=<b.funcName>(<args;separator=",">)
-<else><b.funcName>(<args;separator=",">)
-<endif>
+StringNewFunCall(s) ::= <<
+<if(s.localTmp)>tmp<s.localTmp>=<s.funcName>(<s.literal>)<else><s.funcName>(<s.literal>)<endif>
+>>
+
+VectorNewFunCall(v,args) ::= <<
+<if(v.localTmp)>tmp<v.localTmp>=<v.funcName>((double[]){<args;separator=",">},<v.vectorNewSize>)
+<else><v.funcName>((double []){<args;separator=",">}, <v.vectorNewSize>)<endif>
+>>
+
+OpFunCall(op,args) ::= <<
+<if(op.localTmp)>tmp<op.localTmp>=<op.funcName>(<args;separator=",">)<\\>
+<else><op.funcName>(<args;separator=",">)<\\>
 <endif>
 >>
 
-StrIndexExpr(s,expr) ::= "<if(s.localTmp)>tmp<s.localTmp>=<endif><s.objectName>->str[(<expr>)-1]"
+StrToCharFunCall(str,arg) ::= <<
+<if(str.localTmp)>tmp<str.localTmp>=<str.funcName>(<arg>)<endif>
+>>
+
+StrIndexExpr(s,expr) ::= <<
+<if(s.localTmp)>tmp<s.localTmp>=<endif><s.objectName>->str[(<expr>)-1]
+>>
+
+ReturnTmpExpr(r,expr) ::= "<expr>;"
 
 VexIndexExpr(v,expr) ::= "<v.objectName>->data[(<expr>)-1]"
 

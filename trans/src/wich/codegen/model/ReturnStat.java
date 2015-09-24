@@ -29,4 +29,5 @@ import java.util.List;
 public class ReturnStat extends Stat {
 	@ModelElement public Expr rExpr;
 	public List<TmpVarDef> localTemps = new ArrayList<>();
+	public Integer tmpIndex = null;
 }

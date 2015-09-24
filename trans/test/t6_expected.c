@@ -11,6 +11,5 @@ int fib(int x)
 int main(int argc, char *argv[])
 {
 	printf("%d\n", fib(5));
-
 	return 0;
 }
