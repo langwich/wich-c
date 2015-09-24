@@ -1,11 +1,13 @@
 #include <stdio.h>
 #include "wich.h"
 
+int x;
+int y;
+
 int main(int argc, char *argv[])
 {
-	int x = 2;
-
-	int y = 1;
+	x = 2;
+	y = 1;
 	if (x > y) {
 		String *tmp1;
 		print_string(tmp1=String_new("TRUE"));

@@ -1,7 +1,11 @@
 #include <stdio.h>
 #include "wich.h"
 
-void bar(Vector *x)
+Vector * x;
+
+void bar(Vector * x);
+
+void bar(Vector * x)
 {
 	REF(x);
 	COPY_ON_WRITE(x);
@@ -10,9 +14,10 @@ void bar(Vector *x)
 	print_vector(x);
 	DEREF(x);
 }
+
 int main(int argc, char *argv[])
 {
-	Vector *x = Vector_new((double []){1,2,3}, 3);
+	x = Vector_new((double []){1,2,3}, 3);
 	bar(x);
 	COPY_ON_WRITE(x);
 	x->data[1-1] = 99;

@@ -1,13 +1,16 @@
 #include <stdio.h>
 #include "wich.h"
 
-Vector *f()
+Vector * f();
+
+Vector * f()
 {
 	Vector *x = Vector_new((double []){1,2,3}, 3);
 	REF(x);
 	DEREF(x);
 	return x;
 }
+
 int main(int argc, char *argv[])
 {
 	Vector *tmp1;

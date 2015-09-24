@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include "wich.h"
 
+void f();
+
 void f()
 {
 	String *tmp1;
@@ -18,6 +20,7 @@ void f()
 	DEREF(tmp4);
 	DEREF(tmp5);
 }
+
 int main(int argc, char *argv[])
 {
 	f();

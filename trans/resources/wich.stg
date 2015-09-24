@@ -6,20 +6,30 @@ CFile(f, script) ::= <<
 >>
 
 Script(s,functions,varDefs,stats) ::= <<
-<if(functions)><functions;separator="\n"><endif>
+<varDefs:varDefine()>
+<functions:funcDecl()>
+<functions>
 int main(int argc, char *argv[])
 {
-	<if(varDefs)><varDefs;separator="\n"><endif>
-	<if(stats)><stats;separator="\n"><endif>
-	<if(s.localVars)><s.localVars:{v|DEREF(<v>);};separator="\n"><endif>
-	<s.localTemps:{t|DEREF(tmp<t>);};separator="\n">
+	<varDefs:varInit();separator="\n">
+	<stats;separator="\n">
+	<s.localVars:{v|DEREF(<v>);}; separator="\n">
+	<s.localTemps:{t|DEREF(tmp<t>);}; separator="\n">
 	return 0;
-}
+}<\n>
+>>
+
+varDefine(varDefTemplate)  ::= "<varDefTemplate.type> <varDefTemplate.v.name>;<\n>"
+varInit(varDefTemplate)    ::= "<varDefTemplate.v.name> = <varDefTemplate.expr>;"
+
+funcDecl(funcTemplate)     ::= <<
+<funcTemplate.returnType; null="void"> <funcTemplate.f.funcName>(<funcTemplate.args;separator=",">);<\n>
 >>
 
 Func(f,returnType,args,body)::=<<
-<if(returnType)><returnType><else>void <endif><f.funcName>(<if(args)><args;separator=","><endif>)
+<returnType; null="void"> <f.funcName>(<args;separator=",">)
 <body>
+
 >>
 
 Block(b,varDefs,stats,returnStat,returnTemps,returnTmpAssign)::= <<
@@ -140,8 +150,8 @@ OpExpr(o,lExp,rExp) ::= "<lExp> <o.op> <rExp>"
 
 ParensExpr(p,expression) ::= "(<expression>)"
 
-ArgDef(arg,type) ::= "<type><arg.name>"
+ArgDef(arg,type) ::= "<type> <arg.name>"
 
-CType(t) ::= "<t.name> "
+CType(t) ::= "<t.name>"
 NonCType(nt) ::= "<nt.name> *"
 TmpVarDef(t) ::="<t.typeName> *tmp<t.index>;"
