@@ -30,6 +30,7 @@ import wich.parser.WichParser;
 import wich.parser.WichParser.ExprContext;
 import wich.semantics.symbols.WBuiltInTypeSymbol;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -256,8 +257,8 @@ public class TypeHelper {
 			ExprContext exprCtx = (ExprContext) ctx;
 			sb.append(exprCtx.getText()).append(":").append(getPrintType(exprCtx)).append("\n");
 			sb.append(process(exprCtx.children, (t)->t instanceof ExprContext,
-					(t)->dumpExprWithType((ParserRuleContext) t),
-					(t)->""));
+			                  (t)->dumpExprWithType((ParserRuleContext) t),
+			                  (t)->""));
 		}
 		return sb.toString();
 	}
@@ -270,17 +271,17 @@ public class TypeHelper {
 	}
 
 	protected static String dumpCallWithType(WichParser.CallContext ctx) {
+		WichParser.Expr_listContext args = ctx.call_expr().expr_list();
 		return ctx.getText() + ":" + getPrintType(ctx) + "\n" +
-				String.valueOf(process(ctx.call_expr().expr_list().children,
-				(t)->t instanceof ExprContext,
-				(t)->dumpExprWithType((ParserRuleContext) t),
-				(t)->""));
+				String.valueOf(process(args!=null ? args.children : Collections.emptyList(),
+				                       (t) -> t instanceof ExprContext,
+				                       (t) -> dumpExprWithType((ParserRuleContext) t),
+				                       (t) -> ""));
 	}
 
 	protected static String dumpPrimaryWithType(WichParser.AtomContext ctx) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(ctx.getText()).append(":").append(getPrintType(ctx)).append("\n");
-		WichParser.PrimaryContext primary = ctx.primary();
 		if (ctx.primary() instanceof WichParser.VectorContext) {
 			WichParser.VectorContext vectorContext = (WichParser.VectorContext) ctx.primary();
 			sb.append(process(vectorContext.expr_list().expr(), (t)->true, TypeHelper::dumpExprWithType, (t)->""));
