@@ -60,6 +60,10 @@ public class WichErrorHandler {
 		}
 	}
 
+	public int getErrorNum() {
+		return errQueue.size();
+	}
+
 	public void dump(OutputStream os, Charset cs) {
 		for (Error error : errQueue) {
 			try {
@@ -72,7 +76,7 @@ public class WichErrorHandler {
 
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		errQueue.forEach((e) -> sb.append(e.getMsg()));
+		while (!errQueue.isEmpty()) sb.append(errQueue.poll().getMsg());
 		return sb.toString();
 	}
 }

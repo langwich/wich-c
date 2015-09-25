@@ -21,17 +21,21 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-package wich.errors;
 
-abstract class Error {
-	protected String msg = "Error occurred.";
-	protected String custom = null;
+import org.junit.Test;
 
-	public String getMsg() {
-		return msg + " " + custom + "\n";
+public class TestTranslatorError {
+	@Test
+	public void testIncompatibleOp() throws Exception {
+		String input =
+				"var x = 1\n" +
+				"x = 1.0";
+		String expected = "Incompatible variable type. int=float";
+		compileAndCheckError(input, expected);
 	}
 
-	public void setCustomMsg(String str) {
-		custom = str;
+	private void compileAndCheckError(String input, String expected) {
 	}
+
+
 }

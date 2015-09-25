@@ -10,7 +10,7 @@ import wich.parser.WichBaseListener;
 import java.util.Arrays;
 
 public class CommonWichListener extends WichBaseListener {
-	protected final WichErrorHandler errorHandler = new WichErrorHandler();
+	protected static final WichErrorHandler errorHandler = new WichErrorHandler();
 	protected Scope currentScope;
 
 	protected void pushScope(Scope s) {
@@ -42,5 +42,13 @@ public class CommonWichListener extends WichBaseListener {
 
 	protected void error(int type, String msg, Exception e) {
 		errorHandler.aggregate(type, msg + "\n" + Arrays.toString(e.getStackTrace()));
+	}
+
+	public int getErrorNum() {
+		return errorHandler.getErrorNum();
+	}
+
+	public String getErrorMessages() {
+		return errorHandler.toString();
 	}
 }
