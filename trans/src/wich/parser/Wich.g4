@@ -43,10 +43,10 @@ formal_args : formal_arg (',' formal_arg)* ;
 
 formal_arg : ID ':' type ;
 
-type:	'int'
-	|	'float'
-	|	'string'
-	|	'[' ']'
+type:	'int'                                               # IntTypeSpec
+	|	'float'                                             # FloatTypeSpec
+	|	'string'                                            # StringTypeSpec
+	|	'[' ']'                                             # VectorTypeSpec
 	;
 
 block returns [Scope scope]

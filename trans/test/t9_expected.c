@@ -6,8 +6,8 @@ String * becomeSuper(String * name);
 String * becomeSuper(String * name)
 {
 	REF(name);
-	String *tmp1;
-	String *tmp2;
+	String * tmp1;
+	String * tmp2;
 	tmp2=String_add(tmp1=String_new("super"),name);
 	REF(tmp2);
 	DEREF(name);
@@ -18,11 +18,11 @@ String * becomeSuper(String * name)
 
 int main(int argc, char *argv[])
 {
-	String *tmp3;
-	String *tmp4;
+	String * tmp3;
+	String * tmp4;
 	print_string(tmp4=becomeSuper(tmp3=String_new("man")));
-	String *tmp5;
-	String *tmp6;
+	String * tmp5;
+	String * tmp6;
 	print_string(tmp6=becomeSuper(tmp5=String_new("duper")));
 	DEREF(tmp3);
 	DEREF(tmp4);

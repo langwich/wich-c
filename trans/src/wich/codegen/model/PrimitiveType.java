@@ -23,14 +23,5 @@ SOFTWARE.
 */
 package wich.codegen.model;
 
-
-public class PrimitiveType extends WichType {
-	protected String name;
-	public PrimitiveType(String name) {
-		this.name = name;
-	}
-
-	public String getName() {
-		return name;
-	}
+public abstract class PrimitiveType extends WichType {
 }

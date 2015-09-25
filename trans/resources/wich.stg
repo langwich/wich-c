@@ -111,7 +111,7 @@ AtomExpr(a,primaryExpr) ::= "<primaryExpr>"
 
 PrimaryExpr(p) ::= "<p.content>"
 
-FuncCall(c,args) ::= <<
+FuncCall(c,retType,args) ::= <<
 <if(c.localTmp)>tmp<c.localTmp>=<endif><c.funcName>(<args;separator=",">)
 >>
 
@@ -149,7 +149,8 @@ ParensExpr(p,expression) ::= "(<expression>)"
 
 ArgDef(arg,type) ::= "<type> <arg.name>"
 
-PrimitiveType(t) ::= "<t.name>"
+IntType(t) ::= "int"
+FloatType(t) ::= "double"
 VectorType(t) ::= "Vector *"
 StringType(t) ::= "String *"
-TmpVarDef(t) ::="<t.typeName> *tmp<t.index>;"
+TmpVarDef(t,type) ::="<type> tmp<t.index>;"

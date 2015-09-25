@@ -25,11 +25,15 @@ package wich.codegen.model;
 
 
 public class TmpVarDef extends OutputModelObject{
-	public final int index;
-	public final String typeName;
+	protected final int index;
+	@ModelElement public final WichType type;
 
-	public TmpVarDef(int index, String typeName) {
+	public TmpVarDef(int index, WichType type) {
 		this.index = index;
-		this.typeName = typeName;
+		this.type = type;
+	}
+
+	public int getIndex() {
+		return index;
 	}
 }

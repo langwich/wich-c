@@ -2,13 +2,13 @@
 #include "wich.h"
 
 String * f();
-float g();
+double g();
 
 String * f()
 {
 	g();
 }
-float g()
+double g()
 {
 	f();
 }
