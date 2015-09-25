@@ -23,9 +23,6 @@ SOFTWARE.
 */
 package wich.codegen.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class BlockStat extends Stat{
+public class BlockStat extends Stat {
 	@ModelElement public Block block;
 }

@@ -38,6 +38,7 @@ import wich.codegen.model.BlockStat;
 import wich.codegen.model.CFile;
 import wich.codegen.model.CallStat;
 import wich.codegen.model.ElementAssignStat;
+import wich.codegen.model.EmptyPrintStat;
 import wich.codegen.model.Expr;
 import wich.codegen.model.Func;
 import wich.codegen.model.FuncCall;
@@ -53,7 +54,6 @@ import wich.codegen.model.PrimaryExpr;
 import wich.codegen.model.PrimitiveType;
 import wich.codegen.model.PrintFloatStat;
 import wich.codegen.model.PrintIntStat;
-import wich.codegen.model.PrintStat;
 import wich.codegen.model.PrintStrStat;
 import wich.codegen.model.PrintVecStat;
 import wich.codegen.model.ReturnStat;
@@ -347,7 +347,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 
 	@Override
 	public OutputModelObject visitPrint(@NotNull WichParser.PrintContext ctx) {
-		PrintStat printStat = new PrintStat();
+		EmptyPrintStat printStat = new EmptyPrintStat();
 		if (ctx.expr() != null) {
 			Expr expr = (Expr)visit(ctx.expr());
 			int type = ctx.expr().exprType.getTypeIndex();

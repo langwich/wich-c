@@ -24,6 +24,6 @@ SOFTWARE.
 package wich.codegen.model;
 
 
-public class PrintIntStat extends Stat{
+public class PrintIntStat extends Stat {
 	@ModelElement public Expr expr;
 }

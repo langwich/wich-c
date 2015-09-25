@@ -23,10 +23,7 @@ SOFTWARE.
 */
 package wich.codegen.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class IfStat extends Stat{
+public class IfStat extends Stat {
 	@ModelElement public Expr condition;
 	@ModelElement public Stat stat;
 	@ModelElement public Stat elseStat;
