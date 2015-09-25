@@ -24,9 +24,9 @@ SOFTWARE.
 package wich.codegen.model;
 
 
-public class CType extends PType{
+public class PrimitiveType extends PType{
 
-	public CType(String name) {
+	public PrimitiveType(String name) {
 		super(name);
 	}
 

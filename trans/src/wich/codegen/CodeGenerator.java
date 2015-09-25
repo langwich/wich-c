@@ -36,21 +36,21 @@ import wich.codegen.model.AtomExpr;
 import wich.codegen.model.Block;
 import wich.codegen.model.BlockStat;
 import wich.codegen.model.CFile;
-import wich.codegen.model.CType;
 import wich.codegen.model.CallStat;
 import wich.codegen.model.ElementAssignStat;
 import wich.codegen.model.Expr;
 import wich.codegen.model.Func;
 import wich.codegen.model.FuncCall;
+import wich.codegen.model.HeapType;
 import wich.codegen.model.IfStat;
 import wich.codegen.model.NegateExpr;
-import wich.codegen.model.NonCType;
 import wich.codegen.model.NotExpr;
 import wich.codegen.model.OpExpr;
 import wich.codegen.model.OpFunCall;
 import wich.codegen.model.OutputModelObject;
 import wich.codegen.model.ParensExpr;
 import wich.codegen.model.PrimaryExpr;
+import wich.codegen.model.PrimitiveType;
 import wich.codegen.model.PrintFloatStat;
 import wich.codegen.model.PrintIntStat;
 import wich.codegen.model.PrintStat;
@@ -156,12 +156,12 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		}
 		if (ctx.type() != null) {
 			if (ctx.type().getText().equals(SymbolTable._vector.getName())) {
-				func.returnType = new NonCType(typeNameConvert(SymbolTable._vector.getName()));
+				func.returnType = new HeapType(typeNameConvert(SymbolTable._vector.getName()));
 			}
 			else if (ctx.type().getText().equals(SymbolTable._string.getName())) {
-				func.returnType = new NonCType(typeNameConvert(SymbolTable._string.getName()));
+				func.returnType = new HeapType(typeNameConvert(SymbolTable._string.getName()));
 			} else{
-				func.returnType = new CType(ctx.type().getText());
+				func.returnType = new PrimitiveType(ctx.type().getText());
 			}
 		}
 		popScope();
@@ -238,12 +238,12 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	public OutputModelObject visitFormal_arg(@NotNull WichParser.Formal_argContext ctx) {
 		ArgDef arg = new ArgDef(ctx.ID().getText());
 		if (ctx.type().getText().equals(SymbolTable._vector.getName())) {
-			arg.type = new NonCType(typeNameConvert(SymbolTable._vector.getName()));
+			arg.type = new HeapType(typeNameConvert(SymbolTable._vector.getName()));
 		}
 		else if (ctx.type().getText().equals(SymbolTable._string.getName())) {
-			arg.type = new NonCType(typeNameConvert(SymbolTable._string.getName()));
+			arg.type = new HeapType(typeNameConvert(SymbolTable._string.getName()));
 		} else {
-			arg.type = new CType(ctx.type().getText());
+			arg.type = new PrimitiveType(ctx.type().getText());
 		}
 		return arg;
 	}
@@ -272,10 +272,10 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		VarDefStat varDef = new VarDefStat(ctx.ID().getText());
 		WVariableSymbol v= ((WVariableSymbol)currentScope.resolve(ctx.ID().getText()));
 		if (isHeapObject(v.getType())) {
-			varDef.type = new NonCType(typeNameConvert(v.getType().getName()));
+			varDef.type = new HeapType(typeNameConvert(v.getType().getName()));
 		}
 		else {
-			varDef.type = new CType(v.getType().getName());
+			varDef.type = new PrimitiveType(v.getType().getName());
 		}
 		varDef.expr = (Expr)visit(ctx.expr());
 		varDef.localTemps = varDef.expr.tmpVarDefs;

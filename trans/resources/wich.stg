@@ -34,15 +34,15 @@ Func(f,returnType,args,body)::=<<
 
 Block(b,varDefs,stats,returnStat,returnTemps,returnTmpAssign)::= <<
 {
-	<if(b.argsRef)><b.argsRef:{arg|REF(<arg>);};separator="\n"><endif>
-	<if(varDefs)><varDefs;separator="\n"><endif>
-	<if(returnTemps)><returnTemps;separator="\n"><endif>
-	<if(stats)><stats;separator="\n"><endif>
+	<b.argsRef:{arg|REF(<arg>);};separator="\n">
+	<varDefs;separator="\n">
+	<returnTemps;separator="\n">
+	<stats;separator="\n">
 	<returnTmpAssign>
 	<if(b.returnRefVar)>REF(<b.returnRefVar>);<endif>
-	<if(b.localVars)><b.localVars:{deRef|DEREF(<deRef>);};separator="\n"><endif>
-	<if(b.localTemps)><b.localTemps:{t|DEREF(tmp<t>);};separator="\n"><endif>
-	<if(returnStat)><returnStat><endif>
+	<b.localVars:{deRef|DEREF(<deRef>);};separator="\n">
+	<b.localTemps:{t|DEREF(tmp<t>);};separator="\n">
+	<returnStat>
 }
 >>
 
@@ -76,7 +76,7 @@ ReturnStat(r,rExpr)  ::= <<
 >>
 
 VarDefStat(v,type,expr,localTemps) ::= <<
-<if(localTemps)><localTemps;separator="\n"><endif>
+<localTemps;separator="\n">
 <type><v.name> = <expr>;<if(v.ref)>
 REF(<v.ref>);<endif>
 >>
@@ -90,12 +90,12 @@ print();
 >>
 
 PrintStrStat(ps,expr,localTemps) ::= <<
-<if(localTemps)><localTemps;separator="\n"><endif>
+<localTemps;separator="\n">
 print_<ps.type>(<expr>);
 >>
 
 PrintVecStat(pv,expr,localTemps) ::= <<
-<if(localTemps)><localTemps;separator="\n"><endif>
+<localTemps;separator="\n">
 print_<pv.type>(<expr>);
 >>
 
@@ -112,22 +112,19 @@ AtomExpr(a,primaryExpr) ::= "<primaryExpr>"
 PrimaryExpr(p) ::= "<p.content>"
 
 FuncCall(c,args) ::= <<
-<if(c.localTmp)>tmp<c.localTmp>=<c.funcName>(<args;separator=",">)<else><c.funcName>(<args;separator=",">)<endif>
+<if(c.localTmp)>tmp<c.localTmp>=<endif><c.funcName>(<args;separator=",">)
 >>
 
 StringNewFunCall(s) ::= <<
-<if(s.localTmp)>tmp<s.localTmp>=<s.funcName>(<s.literal>)<else><s.funcName>(<s.literal>)<endif>
+<if(s.localTmp)>tmp<s.localTmp>=<endif><s.funcName>(<s.literal>)
 >>
 
 VectorNewFunCall(v,args) ::= <<
-<if(v.localTmp)>tmp<v.localTmp>=<v.funcName>((double[]){<args;separator=",">},<v.vectorNewSize>)
-<else><v.funcName>((double []){<args;separator=",">}, <v.vectorNewSize>)<endif>
+<if(v.localTmp)>tmp<v.localTmp>=<endif><v.funcName>((double []){<args;separator=",">}, <v.vectorNewSize>)
 >>
 
 OpFunCall(op,args) ::= <<
-<if(op.localTmp)>tmp<op.localTmp>=<op.funcName>(<args;separator=",">)<\\>
-<else><op.funcName>(<args;separator=",">)<\\>
-<endif>
+<if(op.localTmp)>tmp<op.localTmp>=<endif><op.funcName>(<args;separator=",">)
 >>
 
 StrToCharFunCall(str,arg) ::= <<
@@ -142,9 +139,9 @@ ReturnTmpExpr(r,expr) ::= "<expr>;"
 
 VexIndexExpr(v,expr) ::= "<v.objectName>->data[(<expr>)-1]"
 
-NegateExpr(n,negateExpr) ::= "- <negateExpr>"
+NegateExpr(n,negateExpr) ::= "-<negateExpr>"
 
-NotExpr(ne,notExpr) ::= "! <notExpr>"
+NotExpr(ne,notExpr) ::= "!<notExpr>"
 
 OpExpr(o,lExp,rExp) ::= "<lExp> <o.op> <rExp>"
 
@@ -152,6 +149,6 @@ ParensExpr(p,expression) ::= "(<expression>)"
 
 ArgDef(arg,type) ::= "<type> <arg.name>"
 
-CType(t) ::= "<t.name>"
-NonCType(nt) ::= "<nt.name> *"
+PrimitiveType(t) ::= "<t.name>"
+HeapType(nt) ::= "<nt.name> *"
 TmpVarDef(t) ::="<t.typeName> *tmp<t.index>;"

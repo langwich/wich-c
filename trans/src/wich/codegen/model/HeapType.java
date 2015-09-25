@@ -24,9 +24,9 @@ SOFTWARE.
 package wich.codegen.model;
 
 
-public class NonCType extends PType {
+public class HeapType extends PType {
 
-	public NonCType(String name) {
+	public HeapType(String name) {
 		super(name);
 	}
 
