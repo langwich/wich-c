@@ -25,6 +25,7 @@ SOFTWARE.
 import javafx.util.Pair;
 import org.junit.Before;
 import org.junit.Test;
+import wich.errors.WichErrorHandler;
 import wich.semantics.SymbolTable;
 
 import java.io.BufferedReader;
@@ -133,8 +134,9 @@ public class TestWichExecution {
 	private String compileC(String wichInput) throws IOException, InterruptedException {
 		// Translate to C file.
 		SymbolTable symtab = new SymbolTable();
+		WichErrorHandler err = new WichErrorHandler();
 		URL WichInputURL = getClass().getClassLoader().getResource(wichInput);
-		String actual = CompilerFacade.genCode(CompilerFacade.readFile(WichInputURL.getPath(), encoding), symtab);
+		String actual = CompilerFacade.genCode(CompilerFacade.readFile(WichInputURL.getPath(), encoding), symtab, err);
 		String baseName = wichInput.substring(0, wichInput.indexOf('.'));
 		String generated = WORKING_DIR + baseName + "_wich.c";
 		CompilerFacade.writeFile(generated, actual, StandardCharsets.UTF_8);

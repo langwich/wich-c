@@ -24,6 +24,7 @@ SOFTWARE.
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.junit.Test;
+import wich.errors.WichErrorHandler;
 import wich.semantics.SymbolTable;
 import wich.semantics.TypeHelper;
 
@@ -282,7 +283,8 @@ public class TestTypeAnnotation {
 
 	private String getExpressionDump(String input) {
 		SymbolTable symtab = new SymbolTable();
-		ParserRuleContext tree = CompilerFacade.getAnnotatedParseTree(input, symtab);
+		WichErrorHandler err = new WichErrorHandler();
+		ParserRuleContext tree = CompilerFacade.getAnnotatedParseTree(input, symtab, err);
 		return TypeHelper.dumpWithType(tree);
 	}
 

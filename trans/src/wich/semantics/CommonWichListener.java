@@ -10,11 +10,17 @@ import wich.parser.WichBaseListener;
 import java.util.Arrays;
 
 public class CommonWichListener extends WichBaseListener {
-	protected static final WichErrorHandler errorHandler = new WichErrorHandler();
+	protected final WichErrorHandler errorHandler;
+
+
 	protected Scope currentScope;
 
 	protected void pushScope(Scope s) {
 		currentScope = s;
+	}
+
+	public CommonWichListener(WichErrorHandler errorHandler) {
+		this.errorHandler = errorHandler;
 	}
 
 	protected void popScope() {

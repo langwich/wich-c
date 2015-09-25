@@ -35,6 +35,10 @@ import static wich.errors.WichErrorHandler.INVALID_ELEMENT;
 import static wich.errors.WichErrorHandler.INVALID_VECTOR_INDEX;
 
 public class TypeChecker extends MaintainScopeListener {
+	public TypeChecker(WichErrorHandler errorHandler) {
+		super(errorHandler);
+	}
+
 	@Override
 	public void exitAssign(@NotNull WichParser.AssignContext ctx) {
 		Symbol s = currentScope.resolve(ctx.ID().getText());

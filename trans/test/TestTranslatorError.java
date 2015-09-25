@@ -23,6 +23,10 @@ SOFTWARE.
 */
 
 import org.junit.Test;
+import wich.errors.WichErrorHandler;
+import wich.semantics.SymbolTable;
+
+import static junit.framework.Assert.assertEquals;
 
 public class TestTranslatorError {
 	@Test
@@ -35,7 +39,9 @@ public class TestTranslatorError {
 	}
 
 	private void compileAndCheckError(String input, String expected) {
+		SymbolTable symtab = new SymbolTable();
+		WichErrorHandler errorHandler = new WichErrorHandler();
+		CompilerFacade.checkCorrectness(input, symtab, errorHandler);
+		assertEquals(expected, errorHandler.toString());
 	}
-
-
 }

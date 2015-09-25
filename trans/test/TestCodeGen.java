@@ -23,6 +23,7 @@ SOFTWARE.
 */
 
 import org.junit.Test;
+import wich.errors.WichErrorHandler;
 import wich.semantics.SymbolTable;
 
 import java.io.IOException;
@@ -108,7 +109,8 @@ public class TestCodeGen {
 		Charset encoding = CompilerFacade.FILE_ENCODING;
 		SymbolTable symtab = new SymbolTable();
 		URL WichFileURL = getClass().getClassLoader().getResource(inputFileName);
-		String actual = CompilerFacade.genCode(CompilerFacade.readFile(WichFileURL.getPath(), encoding), symtab);
+		WichErrorHandler err = new WichErrorHandler();
+		String actual = CompilerFacade.genCode(CompilerFacade.readFile(WichFileURL.getPath(), encoding), symtab, err);
 		String baseName = inputFileName.substring(0, inputFileName.indexOf('.'));
 		URL CfileURL = getClass().getClassLoader().getResource(baseName + "_expected.c");
 		String expected = CompilerFacade.readFile(CfileURL.getPath(), encoding);
