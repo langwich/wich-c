@@ -153,7 +153,7 @@ public class TestTranslatorError {
 	private void compileAndCheckError(String input, String expected) {
 		SymbolTable symtab = new SymbolTable();
 		WichErrorHandler errorHandler = new WichErrorHandler();
-		CompilerFacade.checkCorrectness(input, symtab, errorHandler);
+		CompilerUtils.checkCorrectness(input, symtab, errorHandler);
 		assertEquals(expected, errorHandler.toString());
 	}
 }

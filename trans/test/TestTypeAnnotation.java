@@ -284,7 +284,7 @@ public class TestTypeAnnotation {
 	private String getExpressionDump(String input) {
 		SymbolTable symtab = new SymbolTable();
 		WichErrorHandler err = new WichErrorHandler();
-		ParserRuleContext tree = CompilerFacade.getAnnotatedParseTree(input, symtab, err);
+		ParserRuleContext tree = CompilerUtils.getAnnotatedParseTree(input, symtab, err);
 		return TypeHelper.dumpWithType(tree);
 	}
 
