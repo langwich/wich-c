@@ -67,21 +67,6 @@ public class TestSymbolDefs {
 	}
 
 	@Test
-	public void testMultipleGlobal() throws Exception {
-		String lava =
-			"var i = 1\n" +
-			"var j = \"hi\"\n" +
-			"var k = [1,2,3.3]\n";
-		String expecting =
-			"global {\n" +
-			"    global.i:int\n" +
-			"    global.j:string\n" +
-			"    global.k:[]\n" +
-			"}\n";
-		checkScopes(lava, expecting);
-	}
-
-	@Test
 	public void testGlobalVector() throws Exception {
 		String lava =
 			"var i = [1,2,3]\n";
@@ -100,6 +85,55 @@ public class TestSymbolDefs {
 			"global {\n" +
 			"    global.s:string\n" +
 			"}\n";
+		checkScopes(lava, expecting);
+	}
+
+	@Test
+	public void testGlobalBoolean() throws Exception {
+		String lava =
+				"var s = (1 == 1)";
+		String expecting =
+				"global {\n" +
+						"    global.s:boolean\n" +
+						"}\n";
+		checkScopes(lava, expecting);
+	}
+
+
+	@Test
+	public void testMultipleGlobal() throws Exception {
+		String lava =
+				"var i = 1\n" +
+				"var f = 3.14" +
+				"var j = \"hi\"\n" +
+				"var k = [1,2,3.3]\n" +
+				"var b = (1 == 1)\n";
+		String expecting =
+				"global {\n" +
+				"    global.i:int\n" +
+				"    global.f:float\n" +
+				"    global.j:string\n" +
+				"    global.k:[]\n" +
+				"    global.b:boolean\n" +
+				"}\n";
+		checkScopes(lava, expecting);
+	}
+
+
+	@Test
+	public void testGlobalBlockVariables() throws Exception {
+		String lava =
+				"{" +
+				"var i = 1\n" +
+				"var j = \"hi\"\n" +
+				"}";
+		String expecting =
+				"global {\n" +
+				"    local_0 {\n" +
+				"        local_0.i:int\n" +
+				"        local_0.j:string\n" +
+				"    }\n" +
+				"}\n";
 		checkScopes(lava, expecting);
 	}
 
