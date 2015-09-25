@@ -26,6 +26,9 @@ package wich.codegen.model;
 import java.util.ArrayList;
 import java.util.List;
 
+/** Represents a var x = <expr> statement. For globals, the C templates split
+ *  these model objects into def and init so generated functions can see them.
+ */
 public class VarDefStat extends Stat {
 	public final String name;
 	@ModelElement public PType type;
