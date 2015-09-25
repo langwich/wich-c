@@ -24,6 +24,13 @@ SOFTWARE.
 package wich.codegen.model;
 
 
-public class PrintStat extends Stat{
+public class StringNewFunCall extends Expr{
+	public final String literal;
+	public final String funcName;
+	public Integer localTmp = null;
 
+	public StringNewFunCall(String literal) {
+		this.literal = literal;
+		this.funcName = "String_new";
+	}
 }

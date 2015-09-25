@@ -93,6 +93,16 @@ public class TestCodeGen {
 		genCodeAndCheck("t12.w");
 	}
 
+	@Test
+	public void testForwardFuncRef() throws Exception {
+		genCodeAndCheck("t13.w");
+	}
+
+	@Test
+	public void testFuncRefsForwardGlobal() throws Exception {
+		genCodeAndCheck("t14.w");
+	}
+
 	// TODO: use system command to compile and test the c code maybe?
 	private void genCodeAndCheck(String inputFileName) throws IOException {
 		Charset encoding = CompilerFacade.FILE_ENCODING;

@@ -40,7 +40,7 @@ public class DefineSymbols extends CommonWichListener {
 	}
 
 	@Override
-	public void enterVarDef(WichParser.VarDefContext ctx) {
+	public void enterVardef(WichParser.VardefContext ctx) {
 		currentScope.define(new WVariableSymbol(ctx.ID().getText())); // type set in type computation phase
 	}
 

@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include "wich.h"
 
+void f();
+
 void f()
 {
 	String *x = String_new("cat");
@@ -14,6 +16,7 @@ void f()
 	}
 	DEREF(x);
 }
+
 int main(int argc, char *argv[])
 {
 	f();

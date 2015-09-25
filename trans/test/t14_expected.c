@@ -1,11 +1,17 @@
 #include <stdio.h>
 #include "wich.h"
 
-Vector * x;
+int x;
+
+void f();
+
+void f()
+{
+	printf("??");
+}
 
 int main(int argc, char *argv[])
 {
-	x = Vector_new((double []){1,2,3,4,5}, 5);
-	DEREF(x);
+    x = 99;
 	return 0;
 }

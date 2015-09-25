@@ -1,11 +1,19 @@
 #include <stdio.h>
 #include "wich.h"
 
-Vector * x;
+String * f();
+float g();
+
+String * f()
+{
+	g();
+}
+float g()
+{
+	f();
+}
 
 int main(int argc, char *argv[])
 {
-	x = Vector_new((double []){1,2,3,4,5}, 5);
-	DEREF(x);
 	return 0;
 }

@@ -67,25 +67,40 @@ public class TestSymbolDefs {
 	}
 
 	@Test
+	public void testMultipleGlobal() throws Exception {
+		String input =
+			"var i = 1\n" +
+			"var j = \"hi\"\n" +
+			"var k = [1,2,3.3]\n";
+		String expecting =
+			"global {\n" +
+			"    global.i:int\n" +
+			"    global.j:string\n" +
+			"    global.k:[]\n" +
+			"}\n";
+		checkScopes(input, expecting);
+	}
+
+	@Test
 	public void testGlobalVector() throws Exception {
-		String lava =
+		String input =
 			"var i = [1,2,3]\n";
 		String expecting =
 			"global {\n" +
 			"    global.i:[]\n" +
 			"}\n";
-		checkScopes(lava, expecting);
+		checkScopes(input, expecting);
 	}
 
 	@Test
 	public void testGlobalString() throws Exception {
-		String lava =
+		String input =
 			"var s = \"hi\"\n";
 		String expecting =
 			"global {\n" +
 			"    global.s:string\n" +
 			"}\n";
-		checkScopes(lava, expecting);
+		checkScopes(input, expecting);
 	}
 
 	@Test
@@ -139,7 +154,7 @@ public class TestSymbolDefs {
 
 	@Test
 	public void testFuncNoArgs() throws Exception {
-		String lava =
+		String input =
 			"func f() { }\n";
 		String expecting =
 			"global {\n" +
@@ -149,12 +164,12 @@ public class TestSymbolDefs {
 
 			"    }\n" +
 			"}\n";
-		checkScopes(lava, expecting);
+		checkScopes(input, expecting);
 	}
 
 	@Test
 	public void testFuncArgs() throws Exception {
-		String lava =
+		String input =
 			"func f(x : int, y : []) { }\n";
 		String expecting =
 			"global {\n" +
@@ -165,12 +180,12 @@ public class TestSymbolDefs {
 			"        }\n" +
 			"    }\n" +
 			"}\n";
-		checkScopes(lava, expecting);
+		checkScopes(input, expecting);
 	}
 
 	@Test
 	public void testFuncLocals() throws Exception {
-		String lava =
+		String input =
 			"func f() { var i = 3 var c = \"hi\" }\n";
 		String expecting =
 			"global {\n" +
@@ -181,12 +196,12 @@ public class TestSymbolDefs {
 			"        }\n" +
 			"    }\n" +
 			"}\n";
-		checkScopes(lava, expecting);
+		checkScopes(input, expecting);
 	}
 
 	@Test
 	public void testFuncNestedLocals() throws Exception {
-		String lava =
+		String input =
 			"func f() { var i = 3 if ( i>3 ) { var c = \"hi\" } }\n";
 		String expecting =
 			"global {\n" +
@@ -199,12 +214,12 @@ public class TestSymbolDefs {
 			"        }\n" +
 			"    }\n" +
 			"}\n";
-		checkScopes(lava, expecting);
+		checkScopes(input, expecting);
 	}
 
 	@Test
 	public void testFuncArgsLocals() throws Exception {
-		String lava =
+		String input =
 			"func f(x : int) { var i = 3 if ( i>3 ) { var c = \"hi\" } }\n";
 		String expecting =
 			"global {\n" +
@@ -218,7 +233,7 @@ public class TestSymbolDefs {
 			"        }\n" +
 			"    }\n" +
 			"}\n";
-		checkScopes(lava, expecting);
+		checkScopes(input, expecting);
 	}
 
 	public void checkScopes(String input, String expecting) throws IOException {
