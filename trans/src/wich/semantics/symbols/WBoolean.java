@@ -25,6 +25,6 @@ package wich.semantics.symbols;
 
 public class WBoolean extends WBuiltInTypeSymbol {
 	public WBoolean() {
-		super("boolean", TYPE.BOOLEAN);
+		super("boolean", TYPENAME.BOOLEAN);
 	}
 }

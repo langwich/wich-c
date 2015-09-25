@@ -31,7 +31,7 @@ import java.util.List;
  */
 public class VarDefStat extends Stat {
 	public final String name;
-	@ModelElement public PType type;
+	@ModelElement public WichType type;
 	@ModelElement public Expr expr;
 	@ModelElement public List<TmpVarDef> localTemps = new ArrayList<>();
 	public String ref = null;

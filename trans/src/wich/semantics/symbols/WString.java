@@ -25,6 +25,6 @@ package wich.semantics.symbols;
 
 public class WString extends WBuiltInTypeSymbol {
 	public WString() {
-		super("string", TYPE.STRING);
+		super("string", TYPENAME.STRING);
 	}
 }

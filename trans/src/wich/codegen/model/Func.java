@@ -28,7 +28,7 @@ import java.util.List;
 
 public class Func extends OutputModelObject{
 	public final String funcName;
-	@ModelElement public PType returnType;
+	@ModelElement public WichType returnType;
 	@ModelElement public List<ArgDef> args = new ArrayList<ArgDef>();
 	@ModelElement public Block body;
 	public Func(String funcName) {

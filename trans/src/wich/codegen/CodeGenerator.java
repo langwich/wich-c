@@ -42,7 +42,6 @@ import wich.codegen.model.EmptyPrintStat;
 import wich.codegen.model.Expr;
 import wich.codegen.model.Func;
 import wich.codegen.model.FuncCall;
-import wich.codegen.model.HeapType;
 import wich.codegen.model.IfStat;
 import wich.codegen.model.NegateExpr;
 import wich.codegen.model.NotExpr;
@@ -63,14 +62,18 @@ import wich.codegen.model.Stat;
 import wich.codegen.model.StrIndexExpr;
 import wich.codegen.model.StrToCharFunCall;
 import wich.codegen.model.StringNewFunCall;
+import wich.codegen.model.StringType;
 import wich.codegen.model.TmpVarDef;
 import wich.codegen.model.VarDefStat;
 import wich.codegen.model.VecIndexExpr;
 import wich.codegen.model.VectorNewFunCall;
+import wich.codegen.model.VectorType;
 import wich.codegen.model.WhileStat;
+import wich.codegen.model.WichType;
 import wich.parser.WichBaseVisitor;
 import wich.parser.WichParser;
 import wich.semantics.SymbolTable;
+import wich.semantics.symbols.WBuiltInTypeSymbol;
 import wich.semantics.symbols.WFunctionSymbol;
 import wich.semantics.symbols.WString;
 import wich.semantics.symbols.WVariableSymbol;
@@ -89,7 +92,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		return tmpIndex++;
 	}
 
-	public CodeGenerator(String fileName,SymbolTable symtab) {
+	public CodeGenerator(String fileName, SymbolTable symtab) {
 		this.templates = new STGroupFile("wich.stg");
 		this.symtab = symtab;
 		this.fileName = fileName;
@@ -155,14 +158,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 			}
 		}
 		if (ctx.type() != null) {
-			if (ctx.type().getText().equals(SymbolTable._vector.getName())) {
-				func.returnType = new HeapType(typeNameConvert(SymbolTable._vector.getName()));
-			}
-			else if (ctx.type().getText().equals(SymbolTable._string.getName())) {
-				func.returnType = new HeapType(typeNameConvert(SymbolTable._string.getName()));
-			} else{
-				func.returnType = new PrimitiveType(ctx.type().getText());
-			}
+			func.returnType = getTypeModel(ctx.type().getText());
 		}
 		popScope();
 		return func;
@@ -217,10 +213,6 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		}
 	}
 
-	public static boolean isHeapObject(Type type) {
-		return type instanceof WString || type instanceof WVector;
-	}
-
 	private void addFunArgsRef(@NotNull WichParser.BlockContext ctx, Block block) {
 		if (ctx.getParent() instanceof WichParser.FunctionContext) {
 			if (((WichParser.FunctionContext) ctx.getParent()).formal_args() == null) return;
@@ -237,14 +229,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	@Override
 	public OutputModelObject visitFormal_arg(@NotNull WichParser.Formal_argContext ctx) {
 		ArgDef arg = new ArgDef(ctx.ID().getText());
-		if (ctx.type().getText().equals(SymbolTable._vector.getName())) {
-			arg.type = new HeapType(typeNameConvert(SymbolTable._vector.getName()));
-		}
-		else if (ctx.type().getText().equals(SymbolTable._string.getName())) {
-			arg.type = new HeapType(typeNameConvert(SymbolTable._string.getName()));
-		} else {
-			arg.type = new PrimitiveType(ctx.type().getText());
-		}
+		arg.type = getTypeModel(ctx.type().getText());
 		return arg;
 	}
 
@@ -271,12 +256,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	public OutputModelObject visitVardef(@NotNull WichParser.VardefContext ctx) {
 		VarDefStat varDef = new VarDefStat(ctx.ID().getText());
 		WVariableSymbol v= ((WVariableSymbol)currentScope.resolve(ctx.ID().getText()));
-		if (isHeapObject(v.getType())) {
-			varDef.type = new HeapType(typeNameConvert(v.getType().getName()));
-		}
-		else {
-			varDef.type = new PrimitiveType(v.getType().getName());
-		}
+		varDef.type = getTypeModel(v.getType().getName());
 		varDef.expr = (Expr)visit(ctx.expr());
 		varDef.localTemps = varDef.expr.tmpVarDefs;
 		for (TmpVarDef t :varDef.localTemps) {
@@ -600,6 +580,26 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		else {
 			return origin;
 		}
+	}
+
+	public static boolean isHeapObject(Type type) {
+		return type instanceof WString || type instanceof WVector;
+	}
+
+	public WichType getTypeModel(String typeName) {
+		final Symbol typeSymbol = symtab.getPredefinedScope().resolve(typeName);
+		if ( typeSymbol instanceof WBuiltInTypeSymbol ) {
+			WBuiltInTypeSymbol type = (WBuiltInTypeSymbol)typeSymbol;
+			switch ( type.typename ) {
+				case VECTOR :
+					return new VectorType();
+				case STRING :
+					return new StringType();
+				default :
+					return new PrimitiveType(typeName);
+			}
+		}
+		return null;
 	}
 
 	private void pushScope(Scope s) {currentScope = s;}

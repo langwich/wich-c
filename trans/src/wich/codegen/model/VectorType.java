@@ -24,16 +24,5 @@ SOFTWARE.
 package wich.codegen.model;
 
 
-public class HeapType extends PType {
-
-	public HeapType(String name) {
-		super(name);
-	}
-
-	@Override
-	public String getName() {
-		if (name .equals("[]"))
-			return "Vector";
-		return name;
-	}
+public class VectorType extends WichType {
 }

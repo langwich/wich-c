@@ -24,13 +24,12 @@ SOFTWARE.
 package wich.codegen.model;
 
 
-public class PrimitiveType extends PType{
-
+public class PrimitiveType extends WichType {
+	protected String name;
 	public PrimitiveType(String name) {
-		super(name);
+		this.name = name;
 	}
 
-	@Override
 	public String getName() {
 		return name;
 	}

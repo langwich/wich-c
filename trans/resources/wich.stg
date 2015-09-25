@@ -150,5 +150,6 @@ ParensExpr(p,expression) ::= "(<expression>)"
 ArgDef(arg,type) ::= "<type> <arg.name>"
 
 PrimitiveType(t) ::= "<t.name>"
-HeapType(nt) ::= "<nt.name> *"
+VectorType(t) ::= "Vector *"
+StringType(t) ::= "String *"
 TmpVarDef(t) ::="<t.typeName> *tmp<t.index>;"

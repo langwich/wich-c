@@ -25,7 +25,7 @@ package wich.codegen.model;
 
 public class ArgDef extends OutputModelObject{
 	public final String name;
-	@ModelElement public PType type;
+	@ModelElement public WichType type;
 
 	public ArgDef(String name) {
 		this.name = name;

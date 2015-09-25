@@ -25,6 +25,6 @@ package wich.semantics.symbols;
 
 public class WFloat extends WBuiltInTypeSymbol {
 	public WFloat() {
-		super("float", TYPE.FLOAT);
+		super("float", TYPENAME.FLOAT);
 	}
 }

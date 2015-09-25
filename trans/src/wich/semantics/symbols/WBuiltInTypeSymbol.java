@@ -27,12 +27,12 @@ import org.antlr.symtab.BaseSymbol;
 import org.antlr.symtab.Type;
 
 public class WBuiltInTypeSymbol extends BaseSymbol implements Type {
-	public enum TYPE { INT, FLOAT, STRING, VECTOR ,BOOLEAN}
-	protected int typeIndex;
+	public enum TYPENAME { INT, FLOAT, STRING, VECTOR, BOOLEAN }
+	public TYPENAME typename;
 
-	public WBuiltInTypeSymbol(String name, TYPE type) {
+	public WBuiltInTypeSymbol(String name, TYPENAME type) {
 		super(name);
-		this.typeIndex = type.ordinal();
+		this.typename = type;
 	}
 
 	@Override
@@ -41,6 +41,6 @@ public class WBuiltInTypeSymbol extends BaseSymbol implements Type {
 	}
 
 	public int getTypeIndex() {
-		return typeIndex;
+		return typename.ordinal();
 	}
 }
