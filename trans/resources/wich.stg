@@ -6,12 +6,12 @@ CFile(f, script) ::= <<
 >>
 
 Script(s,functions,varDefs,stats) ::= <<
-<varDefs:varDefine()>
+<varDefs:globalVarDefine()>
 <functions:funcDecl()>
 <functions>
 int main(int argc, char *argv[])
 {
-	<varDefs:varInit();separator="\n">
+	<varDefs:globalVarInit();separator="\n">
 	<stats;separator="\n">
 	<s.localVars:{v|DEREF(<v>);}; separator="\n">
 	<s.localTemps:{t|DEREF(tmp<t>);}; separator="\n">
@@ -19,8 +19,8 @@ int main(int argc, char *argv[])
 }<\n>
 >>
 
-varDefine(varDefTemplate)  ::= "<varDefTemplate.type> <varDefTemplate.v.name>;<\n>"
-varInit(varDefTemplate)    ::= "<varDefTemplate.v.name> = <varDefTemplate.expr>;"
+globalVarDefine(varDefTemplate)  ::= "<varDefTemplate.type> <varDefTemplate.v.name>;<\n>"
+globalVarInit(varDefTemplate)    ::= "<varDefTemplate.v.name> = <varDefTemplate.expr>;"
 
 funcDecl(funcTemplate)     ::= <<
 <funcTemplate.returnType; null="void"> <funcTemplate.f.funcName>(<funcTemplate.args;separator=",">);<\n>
