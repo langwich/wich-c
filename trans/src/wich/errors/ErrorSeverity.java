@@ -23,6 +23,17 @@ SOFTWARE.
 */
 package wich.errors;
 
-class IncompOpError extends Error {
-	protected String msg = "Incompatible operand types.";
+public enum ErrorSeverity {
+	WARNING("warning"),
+	ERROR("error");
+
+	private String severityName;
+
+	ErrorSeverity(String name) {
+		severityName = name;
+	}
+
+	public String getName() {
+		return severityName;
+	}
 }

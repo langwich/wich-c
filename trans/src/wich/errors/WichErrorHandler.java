@@ -23,60 +23,59 @@ SOFTWARE.
 */
 package wich.errors;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.charset.Charset;
-import java.util.HashMap;
+import org.stringtemplate.v4.ST;
+
+import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Queue;
 
+import static wich.errors.ErrorSeverity.WARNING;
+
 public class WichErrorHandler {
-	public static final int INCOMPATIBLE_OPERAND = 1;
-	public static final int INCOMPATIBLE_ASSIGNMENT = 2;
-	public static final int INVALID_ELEMENT = 3;
-	public static final int INVALID_VECTOR_INDEX = 4;
-	public static final int UNDEFINED_TYPE = 5;
 
-	protected static final Map<Integer, Class<?>> _errorMap = new HashMap<>();
-	static {
-		_errorMap.put(INCOMPATIBLE_OPERAND, IncompOpError.class);
-		_errorMap.put(INCOMPATIBLE_ASSIGNMENT, IncompAssignError.class);
-		_errorMap.put(INVALID_ELEMENT, InvalidElemError.class);
-		_errorMap.put(INVALID_VECTOR_INDEX, InvalidVecIndexError.class);
-		_errorMap.put(UNDEFINED_TYPE, UndefinedTypeError.class);
-	}
+	protected boolean terminate = false;
 
-	protected Queue<Error> errQueue = new LinkedList<>();
+	protected Queue<String> errQueue = new LinkedList<>();
 
 	// aggregate error messages. set
-	public void aggregate(int type, String customMsg) {
+	public void aggregate(ErrorType type, String... args) {
 		try {
-			Error err = (Error) _errorMap.get(type).getConstructor().newInstance();
-			err.setCustomMsg(customMsg);
-			errQueue.offer(err);
+			String msg = getErrorMessage(type, args);
+			errQueue.offer(type.getSeverity().getName() + ": " + msg);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	// aggregate error messages.
+	public void aggregate(ErrorType type, Exception e, String... args) {
+		try {
+			String msg = getErrorMessage(type, args);
+			errQueue.offer(type.getSeverity().getName() + ": " + msg + "\n" + Arrays.toString(e.getStackTrace()));
+		} catch (Exception _e) {
+			_e.printStackTrace();
+		}
+	}
+
+	protected String getErrorMessage(ErrorType type, String[] args) {
+		ST template = new ST(type.getMessageTemplate());
+		for (int i = 0; i < args.length; ++i) {
+			template.add("arg" + String.valueOf(i + 1), args[i]);
+		}
+		if (type.severity.ordinal() > WARNING.ordinal()) {
+			terminate = true;
+		}
+		return template.render();
 	}
 
 	public int getErrorNum() {
 		return errQueue.size();
 	}
 
-	public void dump(OutputStream os, Charset cs) {
-		for (Error error : errQueue) {
-			try {
-				os.write(error.getMsg().getBytes(cs));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
+	// destructive operation, will leave the error message queue empty.
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		while (!errQueue.isEmpty()) sb.append(errQueue.poll().getMsg());
+		while (!errQueue.isEmpty()) sb.append(errQueue.poll()).append("\n");
 		return sb.toString();
 	}
 }

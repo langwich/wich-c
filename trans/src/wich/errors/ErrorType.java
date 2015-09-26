@@ -23,6 +23,32 @@ SOFTWARE.
 */
 package wich.errors;
 
-class IncompAssignError extends Error {
-	protected String msg = "Incompatible type in assignment.";
+
+import static wich.errors.ErrorSeverity.ERROR;
+
+public enum ErrorType {
+	INCOMPATIBLE_ASSIGNMENT_ERROR("incompatible type in assignment (cannot promote from <arg2> to <arg1>)", ERROR),
+	INCOMPATIBLE_ARGUMENT_ERROR("incompatible argument type (cannot promote from <arg2> to <arg1>)", ERROR),
+	INVALID_CONDITION_ERROR("invalid condition type (boolean expected but <arg1> was given)", ERROR),
+	INCOMPATIBLE_OPERAND_ERROR("incompatible operand types (<arg1> <arg2> <arg3>)", ERROR),
+	INVALID_ELEMENT_ERROR("incorrect element type (should be float, but <arg1> was given)", ERROR),
+	INVALID_INDEX_ERROR("invalid vector index type (should be int, but <arg1> was given)", ERROR),
+	INVALID_OPERATION("invalid operation (<arg1> expected, but <arg2> was given)", ERROR),
+	SYMBOL_NOT_FOUND("symbol not found (<arg1>)", ERROR);
+
+	protected String template;
+	protected ErrorSeverity severity;
+
+	ErrorType(String template, ErrorSeverity severity) {
+		this.template = template;
+		this.severity = severity;
+	}
+
+	public String getMessageTemplate() {
+		return template;
+	}
+
+	public ErrorSeverity getSeverity() {
+		return severity;
+	}
 }
