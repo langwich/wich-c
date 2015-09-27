@@ -35,11 +35,11 @@ import wich.codegen.model.AssignStat;
 import wich.codegen.model.AtomExpr;
 import wich.codegen.model.Block;
 import wich.codegen.model.BlockStat;
-import wich.codegen.model.CFile;
 import wich.codegen.model.CallStat;
 import wich.codegen.model.ElementAssignStat;
 import wich.codegen.model.EmptyPrintStat;
 import wich.codegen.model.Expr;
+import wich.codegen.model.File;
 import wich.codegen.model.FloatLiteral;
 import wich.codegen.model.FloatType;
 import wich.codegen.model.Func;
@@ -88,7 +88,9 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	protected STGroup templates;
 	protected String fileName;
 	protected final SymbolTable symtab;
+	protected File file;
 	protected Scope currentScope;
+	protected Block currentBlock; // used by expr model construction to track tmp vars needed
 	protected int tmpIndex = 1;
 
 	private int getTmpIndex(){
@@ -101,16 +103,16 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		this.fileName = fileName;
 	}
 
-	public CFile generate(ParserRuleContext tree) {
-		CFile cFile = (CFile)visit(tree);
-		return cFile;
+	public File generate(ParserRuleContext tree) {
+		File file = (File)visit(tree);
+		return file;
 	}
 
 	@Override
 	public OutputModelObject visitFile(@NotNull WichParser.FileContext ctx) {
-		CFile cFile = new CFile();
-		cFile.script = (Script)visit(ctx.script());
-		return cFile;
+		this.file = new File();
+		this.file.script = (Script)visit(ctx.script());
+		return file;
 	}
 
 	@Override
@@ -132,7 +134,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		// Handle function definitions
 		final List<WichParser.FunctionContext> funcs = ctx.function();
 		for (WichParser.FunctionContext f:funcs) {
-			script.functions.add((Func)visit(f));
+			file.functions.add((Func)visit(f));
 		}
 
 		// Handle statements

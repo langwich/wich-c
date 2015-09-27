@@ -1,14 +1,14 @@
-CFile(f, script) ::= <<
+File(f, script, functions) ::= <<
 #include \<stdio.h>
 #include "wich.h"
 
+<script.varDefs:globalVarDefine()>
+<functions:funcDecl()>
+<functions>
 <script>
 >>
 
-Script(s,functions,varDefs,stats) ::= <<
-<varDefs:globalVarDefine()>
-<functions:funcDecl()>
-<functions>
+Script(s,stats,varDefs, /* to avoid warning for now */ returnTmpAssign, returnStat, returnTemps) ::= <<
 int main(int argc, char *argv[])
 {
 	<varDefs:globalVarInit();separator="\n">

@@ -24,6 +24,10 @@ SOFTWARE.
 package wich.codegen.model;
 
 
-public class CFile extends OutputModelObject{
+import java.util.ArrayList;
+import java.util.List;
+
+public class File extends OutputModelObject{
 	@ModelElement public Script script;
+	@ModelElement public List<Func> functions = new ArrayList<>();
 }
