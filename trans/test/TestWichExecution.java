@@ -34,85 +34,45 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 // Assuming the program is running on Unix-like operating systems.
 // Please make sure gcc is on the program searching path.
-// TODO: Add valgrind check
-public class TestWichExecution {
+public class TestWichExecution extends WichBaseTest {
 
 	protected static final String WORKING_DIR = "/tmp/";
-	public static final String WICH_LIB = "wich.c";
-	protected static Charset encoding = CompilerFacade.FILE_ENCODING;
+	protected static final String WICH_LIB = "wich.c";
 	protected static String runtimePath;
 
 	@Before
 	public void setUp() throws Exception {
-		// find the include file we need from classpath. Make sure
-		// intellij or whatever knows runtime/src dir is a resources dir
-		URL which_h = getClass().getClassLoader().getResource("wich.h");
-		if ( which_h!=null ) {
-			runtimePath = new File(which_h.getPath()).getParent();
+		URL wichLib = CompilerUtils.getResourceFile(WICH_LIB);
+		if (wichLib != null) runtimePath = new File(wichLib.getPath()).getParent();
+		else throw new IllegalArgumentException("Can't find wich runtime library.");
+	}
+
+	public TestWichExecution(File input, String baseName) {
+		super(input, baseName);
+	}
+
+	@Test
+	public void testExecution() throws Exception {
+		URL expectedFile = CompilerUtils.getResourceFile(baseName + "_output");
+		String expected = "";
+		if (expectedFile != null) {
+			expected = CompilerUtils.readFile(expectedFile.getPath(), CompilerUtils.FILE_ENCODING);
 		}
-		else {
-			throw new IllegalArgumentException("Can't find wich.h directory");
-		}
-	}
-
-	@Test
-	public void testIfStat() throws Exception {
-		executeAndCheck("t4.w", "TRUE\n");
-	}
-
-	@Test
-	public void testLoop() throws Exception {
-		executeAndCheck("t5.w",
-				"11.00\n" +
-				"10.00\n" +
-				"9.00\n" +
-				"8.00\n" +
-				"7.00\n" +
-				"6.00\n" +
-				"5.00\n" +
-				"4.00\n" +
-				"3.00\n" +
-				"2.00\n");
-	}
-
-	@Test
-	public void testRecursion() throws Exception {
-		executeAndCheck("t6.w", "5\n");
-	}
-
-	@Test
-	public void testVectorPrint() throws Exception {
-		executeAndCheck("t7.w", "[1.00, 2.00, 3.00, 4.00, 5.00]\n");
-	}
-
-	@Test
-	public void testArgumentPassing() throws Exception {
-		executeAndCheck("t8.w",
-				"[100.00, 2.00, 3.00]\n" +
-				"[99.00, 2.00, 3.00]\n");
-	}
-
-	@Test
-	public void testStringConcat() throws Exception {
-		executeAndCheck("t9.w",
-				"superman\n" +
-				"superduper\n");
+		executeAndCheck(input.getAbsolutePath(), expected);
 	}
 
 	private void executeAndCheck(String inputFileName, String expected) throws IOException, InterruptedException {
 		String executable = compileC(inputFileName);
 		String output = executeC(executable);
 		valgrindCheck(executable);
+		System.out.println(output);
 		assertEquals(expected, output);
 	}
 
@@ -135,16 +95,14 @@ public class TestWichExecution {
 		// Translate to C file.
 		SymbolTable symtab = new SymbolTable();
 		WichErrorHandler err = new WichErrorHandler();
-		URL WichInputURL = getClass().getClassLoader().getResource(wichInput);
-		String actual = CompilerFacade.genCode(CompilerFacade.readFile(WichInputURL.getPath(), encoding), symtab, err);
-		String baseName = wichInput.substring(0, wichInput.indexOf('.'));
+		String actual = CompilerUtils.genCode(CompilerUtils.readFile(wichInput, CompilerUtils.FILE_ENCODING), symtab, err);
 		String generated = WORKING_DIR + baseName + "_wich.c";
-		CompilerFacade.writeFile(generated, actual, StandardCharsets.UTF_8);
+		CompilerUtils.writeFile(generated, actual, StandardCharsets.UTF_8);
 		// Compile C code and return the path to the executable.
 		String executable = "./" + baseName + "_wich";
-		URL CFileURL = getClass().getClassLoader().getResource(WICH_LIB);
 		System.out.println(exec(new String[]{"cc", "-g", "-o", executable,
-				generated, CFileURL.getFile(), "-I", runtimePath, "-std=c99", "-O0"}).getValue());
+				generated, runtimePath + "/" + WICH_LIB,
+				"-I", runtimePath, "-std=c99", "-O0"}).getValue());
 		return executable;
 	}
 
