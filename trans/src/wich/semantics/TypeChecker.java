@@ -28,11 +28,12 @@ import org.antlr.symtab.Type;
 import org.antlr.v4.runtime.misc.NotNull;
 import wich.errors.WichErrorHandler;
 import wich.parser.WichParser;
-import wich.semantics.symbols.WBuiltInTypeSymbol;
+import wich.semantics.symbols.WVariableSymbol;
 
 import static wich.errors.ErrorType.INCOMPATIBLE_ASSIGNMENT_ERROR;
 import static wich.errors.ErrorType.INVALID_ELEMENT_ERROR;
 import static wich.errors.ErrorType.INVALID_INDEX_ERROR;
+import static wich.errors.ErrorType.INVALID_LEFT_SIDE_ERROR;
 
 public class TypeChecker extends MaintainScopeListener {
 	public TypeChecker(WichErrorHandler errorHandler) {
@@ -42,7 +43,11 @@ public class TypeChecker extends MaintainScopeListener {
 	@Override
 	public void exitAssign(@NotNull WichParser.AssignContext ctx) {
 		Symbol s = currentScope.resolve(ctx.ID().getText());
-		Type left = (WBuiltInTypeSymbol) s;
+		if ( !(s instanceof WVariableSymbol) ) {
+			error(INVALID_LEFT_SIDE_ERROR);
+			return;
+		}
+		Type left = ((WVariableSymbol)s).getType();
 		Type right = ctx.expr().exprType;
 
 		if ( !TypeHelper.isLegalAssign(left, right) ) {
