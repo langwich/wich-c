@@ -63,13 +63,13 @@ import wich.codegen.model.Script;
 import wich.codegen.model.Stat;
 import wich.codegen.model.StrIndexExpr;
 import wich.codegen.model.StrToCharFunCall;
-import wich.codegen.model.StringNewFunCall;
+import wich.codegen.model.StringLiteral;
 import wich.codegen.model.StringType;
 import wich.codegen.model.TmpVarDef;
 import wich.codegen.model.VarDefStat;
 import wich.codegen.model.VarRef;
 import wich.codegen.model.VecIndexExpr;
-import wich.codegen.model.VectorNewFunCall;
+import wich.codegen.model.VectorLiteral;
 import wich.codegen.model.VectorType;
 import wich.codegen.model.WhileStat;
 import wich.codegen.model.WichType;
@@ -547,7 +547,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 
 	@Override
 	public OutputModelObject visitString(@NotNull WichParser.StringContext ctx) {
-		StringNewFunCall s = new StringNewFunCall(ctx.getText());
+		StringLiteral s = new StringLiteral(ctx.getText());
 		if (isTempVarNeeded(ctx.getParent().getParent())) {
 			TmpVarDef t = new TmpVarDef(getTmpIndex(), new StringType());
 			s.localTmp = t.getIndex();
@@ -558,7 +558,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 
 	@Override
 	public OutputModelObject visitVector(@NotNull WichParser.VectorContext ctx) {
-		VectorNewFunCall v = new VectorNewFunCall(ctx.expr_list().expr().size());
+		VectorLiteral v = new VectorLiteral(ctx.expr_list().expr().size());
 		for (WichParser.ExprContext e: ctx.expr_list().expr()){
 			v.args.add((Expr)visit(e));
 		}

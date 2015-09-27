@@ -113,16 +113,16 @@ IntLiteral(i)	::= "<i.value>"
 FloatLiteral(f)	::= "<f.value>"
 VarRef(v)		::= "<v.name>"
 
-FuncCall(c,retType,args) ::= <<
-<if(c.localTmp)>tmp<c.localTmp>=<endif><c.funcName>(<args;separator=",">)
->>
-
-StringNewFunCall(s) ::= <<
+StringLiteral(s) ::= <<
 <if(s.localTmp)>tmp<s.localTmp>=<endif><s.funcName>(<s.literal>)
 >>
 
-VectorNewFunCall(v,args) ::= <<
+VectorLiteral(v,args) ::= <<
 <if(v.localTmp)>tmp<v.localTmp>=<endif><v.funcName>((double []){<args;separator=",">}, <v.vectorNewSize>)
+>>
+
+FuncCall(c,retType,args) ::= <<
+<if(c.localTmp)>tmp<c.localTmp>=<endif><c.funcName>(<args;separator=",">)
 >>
 
 OpFunCall(op,args) ::= <<
