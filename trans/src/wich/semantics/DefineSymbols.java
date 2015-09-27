@@ -25,6 +25,7 @@ package wich.semantics;
 
 import org.antlr.symtab.Type;
 import org.antlr.v4.runtime.misc.NotNull;
+import wich.errors.WichErrorHandler;
 import wich.parser.WichParser;
 import wich.semantics.symbols.WArgSymbol;
 import wich.semantics.symbols.WBlock;
@@ -35,7 +36,8 @@ public class DefineSymbols extends CommonWichListener {
 	protected SymbolTable symtab;
 	protected int numOfBlocks;
 
-	public DefineSymbols(SymbolTable symtab) {
+	public DefineSymbols(SymbolTable symtab, WichErrorHandler errorHandler) {
+		super(errorHandler);
 		this.symtab = symtab;
 	}
 
