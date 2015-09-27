@@ -41,13 +41,15 @@ import wich.semantics.SymbolTable;
 import wich.semantics.TypeAnnotator;
 import wich.semantics.TypeChecker;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-public class CompilerFacade {
+public class CompilerUtils {
 	public static final Charset FILE_ENCODING = StandardCharsets.UTF_8;
 
 	private static ParserRuleContext parse(ANTLRInputStream antlrInputStream) {
@@ -97,5 +99,9 @@ public class CompilerFacade {
 
 	static void writeFile(String path, String output, Charset encoding) throws IOException {
 		Files.write(Paths.get(path), output.getBytes(encoding));
+	}
+
+	static URL getResourceFile(String resName) {
+		return WichBaseTest.class.getClassLoader().getResource(resName);
 	}
 }
