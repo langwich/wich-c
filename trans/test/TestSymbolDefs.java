@@ -24,6 +24,7 @@ SOFTWARE.
 
 import org.antlr.symtab.Scope;
 import org.junit.Test;
+import wich.errors.WichErrorHandler;
 import wich.semantics.SymbolTable;
 
 import java.io.IOException;
@@ -194,7 +195,8 @@ public class TestSymbolDefs {
 
 	public void checkAllScopes(String input, boolean includePredefined, String expecting) {
 		SymbolTable symtab = new SymbolTable();
-		CompilerFacade.getAnnotatedParseTree(input, symtab);
+		WichErrorHandler err = new WichErrorHandler();
+		CompilerFacade.getAnnotatedParseTree(input, symtab, err);
 		Scope scope = symtab.getGlobalScope();
 		if ( includePredefined ) scope = symtab.getPredefinedScope();
 		String result = SymbolTable.dump(scope);

@@ -26,10 +26,19 @@ package wich.semantics;
 import org.antlr.symtab.Symbol;
 import org.antlr.symtab.Type;
 import org.antlr.v4.runtime.misc.NotNull;
+import wich.errors.WichErrorHandler;
 import wich.parser.WichParser;
 import wich.semantics.symbols.WBuiltInTypeSymbol;
 
+import static wich.errors.ErrorType.INCOMPATIBLE_ASSIGNMENT_ERROR;
+import static wich.errors.ErrorType.INVALID_ELEMENT_ERROR;
+import static wich.errors.ErrorType.INVALID_INDEX_ERROR;
+
 public class TypeChecker extends MaintainScopeListener {
+	public TypeChecker(WichErrorHandler errorHandler) {
+		super(errorHandler);
+	}
+
 	@Override
 	public void exitAssign(@NotNull WichParser.AssignContext ctx) {
 		Symbol s = currentScope.resolve(ctx.ID().getText());
@@ -37,7 +46,7 @@ public class TypeChecker extends MaintainScopeListener {
 		Type right = ctx.expr().exprType;
 
 		if ( !TypeHelper.isLegalAssign(left, right) ) {
-			error("Incompatible type in assignment: "+left.getName()+"="+right.getName());
+			error(INCOMPATIBLE_ASSIGNMENT_ERROR, left.getName(), right.getName());
 		}
 	}
 
@@ -48,12 +57,12 @@ public class TypeChecker extends MaintainScopeListener {
 
 		// index must be expression of int type
 		if (index.exprType != SymbolTable._int) {
-			error("Invalid vector index type: "+index.exprType.getName());
+			error(INVALID_INDEX_ERROR, index.exprType.getName());
 		}
 
 		// element value must be expression of float type or can be promoted to float
 		if ( !TypeHelper.typesAreCompatible(elem, SymbolTable._float) ) {
-			error("Invalid vector element type: "+elem.exprType.getName());
+			error(INVALID_ELEMENT_ERROR, elem.exprType.getName());
 		}
 	}
 
@@ -62,7 +71,7 @@ public class TypeChecker extends MaintainScopeListener {
 		if (ctx.expr_list() != null) {
 			for (WichParser.ExprContext elem : ctx.expr_list().expr()){
 				if ( !TypeHelper.typesAreCompatible(elem, SymbolTable._float) ) {
-					error("Invalid vector element type: "+elem.exprType.getName());
+					error(INVALID_ELEMENT_ERROR, elem.exprType.getName());
 				}
 			}
 		}

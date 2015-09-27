@@ -28,6 +28,7 @@ import org.antlr.symtab.Symbol;
 import org.antlr.symtab.Type;
 import org.antlr.symtab.TypedSymbol;
 import org.antlr.v4.runtime.misc.NotNull;
+import wich.errors.WichErrorHandler;
 import wich.parser.WichParser;
 import wich.parser.WichParser.ExprContext;
 import wich.semantics.symbols.WFunctionSymbol;
@@ -35,6 +36,10 @@ import wich.semantics.symbols.WVariableSymbol;
 
 
 public class TypeAnnotator extends MaintainScopeListener {
+	public TypeAnnotator(WichErrorHandler errorHandler) {
+		super(errorHandler);
+	}
+
 	@Override
 	public void exitOp(@NotNull WichParser.OpContext ctx) {
 		int op = ctx.operator().start.getType();

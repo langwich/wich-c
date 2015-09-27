@@ -37,6 +37,7 @@ import org.stringtemplate.v4.STGroupFile;
 import wich.codegen.CodeGenerator;
 import wich.codegen.ModelConverter;
 import wich.codegen.model.CFile;
+import wich.errors.WichErrorHandler;
 import wich.parser.WichLexer;
 import wich.parser.WichParser;
 import wich.semantics.DefineSymbols;
@@ -88,19 +89,20 @@ public class Trans {
 
 			// trigger tree walk to define symbols
 			SymbolTable symtab = new SymbolTable();
+			WichErrorHandler err = new WichErrorHandler();
 			ParseTreeWalker walker = new ParseTreeWalker();
-			DefineSymbols defSymbols = new DefineSymbols(symtab);
+			DefineSymbols defSymbols = new DefineSymbols(symtab, err);
 			walker.walk(defSymbols, tree);
 
 			// use the TypeAnnotator listener to compute and
 			// and annotate the parse tree with type information
 			// also, it deals with type inference and type promotion
-			TypeAnnotator typeAnnotator = new TypeAnnotator();
+			TypeAnnotator typeAnnotator = new TypeAnnotator(err);
 			walker = new ParseTreeWalker();
 			walker.walk(typeAnnotator, tree);
 
 			// use TypeChecker listener to do static type checking
-			TypeChecker typeChecker = new TypeChecker();
+			TypeChecker typeChecker = new TypeChecker(err);
 			walker = new ParseTreeWalker();
 			walker.walk(typeChecker, tree);
 

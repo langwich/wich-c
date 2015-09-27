@@ -33,11 +33,13 @@ import org.stringtemplate.v4.STGroupFile;
 import wich.codegen.CodeGenerator;
 import wich.codegen.ModelConverter;
 import wich.codegen.model.OutputModelObject;
+import wich.errors.WichErrorHandler;
 import wich.parser.WichLexer;
 import wich.parser.WichParser;
 import wich.semantics.DefineSymbols;
 import wich.semantics.SymbolTable;
 import wich.semantics.TypeAnnotator;
+import wich.semantics.TypeChecker;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -54,25 +56,33 @@ public class CompilerFacade {
 		return parser.file();
 	}
 
-	static ParserRuleContext defineSymbols(String input, SymbolTable symtab) {
+	static ParserRuleContext defineSymbols(String input, SymbolTable symtab, WichErrorHandler err) {
 		ParserRuleContext tree = parse(new ANTLRInputStream(input));
 		ParseTreeWalker walker = new ParseTreeWalker();
-		DefineSymbols symtabConstructor = new DefineSymbols(symtab);
+		DefineSymbols symtabConstructor = new DefineSymbols(symtab, err);
 		walker.walk(symtabConstructor, tree);
 		return tree;
 	}
 
-	static ParserRuleContext getAnnotatedParseTree(String input, SymbolTable symtab) {
-		ParserRuleContext tree = defineSymbols(input, symtab);
-		TypeAnnotator typeAnnotator = new TypeAnnotator();
+	static ParserRuleContext getAnnotatedParseTree(String input, SymbolTable symtab, WichErrorHandler err) {
+		ParserRuleContext tree = defineSymbols(input, symtab, err);
+		TypeAnnotator typeAnnotator = new TypeAnnotator(err);
 		ParseTreeWalker walker = new ParseTreeWalker();
 		walker.walk(typeAnnotator, tree);
 		return tree;
 	}
 
-	static String genCode(String input, SymbolTable symtab) {
-		ParserRuleContext tree = getAnnotatedParseTree(input, symtab);
-		CodeGenerator codeGenerator = new CodeGenerator(input,symtab);
+	static ParserRuleContext checkCorrectness(String input, SymbolTable symtab, WichErrorHandler err) {
+		ParserRuleContext tree = getAnnotatedParseTree(input, symtab, err);
+		TypeChecker checker = new TypeChecker(err);
+		ParseTreeWalker walker = new ParseTreeWalker();
+		walker.walk(checker, tree);
+		return tree;
+	}
+
+	static String genCode(String input, SymbolTable symtab, WichErrorHandler err) {
+		ParserRuleContext tree = checkCorrectness(input, symtab, err);
+		CodeGenerator codeGenerator = new CodeGenerator(input, symtab);
 		OutputModelObject omo = codeGenerator.generate(tree);
 		STGroup templates = new STGroupFile("wich.stg");
 		ModelConverter converter = new ModelConverter(templates);

@@ -4,18 +4,23 @@ import org.antlr.symtab.Scope;
 import org.antlr.symtab.Symbol;
 import org.antlr.symtab.Type;
 import org.antlr.v4.runtime.misc.NotNull;
+import wich.errors.ErrorType;
+import wich.errors.WichErrorHandler;
 import wich.parser.WichBaseListener;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import static wich.errors.ErrorType.SYMBOL_NOT_FOUND;
 
 public class CommonWichListener extends WichBaseListener {
-	public final List<String> errors = new ArrayList<>();
+	protected final WichErrorHandler errorHandler;
+
 	protected Scope currentScope;
 
 	protected void pushScope(Scope s) {
 		currentScope = s;
+	}
+
+	public CommonWichListener(WichErrorHandler errorHandler) {
+		this.errorHandler = errorHandler;
 	}
 
 	protected void popScope() {
@@ -30,18 +35,26 @@ public class CommonWichListener extends WichBaseListener {
 			return (Type)typeSymbol;
 		}
 		else {
-			error(typeName+" is not a type name");
+			error(SYMBOL_NOT_FOUND, typeName);
 			return null;
 		}
 	}
 
 	// error support
 
-	protected void error(String msg) {
-		errors.add(msg);
+	protected void error(ErrorType type, String... args) {
+		errorHandler.aggregate(type, args);
 	}
 
-	protected void error(String msg, Exception e) {
-		errors.add(msg + "\n" + Arrays.toString(e.getStackTrace()));
+	protected void error(ErrorType type, Exception e, String... args) {
+		errorHandler.aggregate(type, e, args);
+	}
+
+	public int getErrorNum() {
+		return errorHandler.getErrorNum();
+	}
+
+	public String getErrorMessages() {
+		return errorHandler.toString();
 	}
 }
