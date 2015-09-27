@@ -109,7 +109,9 @@ printf("%1.2f\n", <expr>);
 
 AtomExpr(a,primaryExpr) ::= "<primaryExpr>"
 
-PrimaryExpr(p) ::= "<p.content>"
+IntLiteral(i)	::= "<i.value>"
+FloatLiteral(f)	::= "<f.value>"
+VarRef(v)		::= "<v.name>"
 
 FuncCall(c,retType,args) ::= <<
 <if(c.localTmp)>tmp<c.localTmp>=<endif><c.funcName>(<args;separator=",">)

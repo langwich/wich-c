@@ -40,10 +40,12 @@ import wich.codegen.model.CallStat;
 import wich.codegen.model.ElementAssignStat;
 import wich.codegen.model.EmptyPrintStat;
 import wich.codegen.model.Expr;
+import wich.codegen.model.FloatLiteral;
 import wich.codegen.model.FloatType;
 import wich.codegen.model.Func;
 import wich.codegen.model.FuncCall;
 import wich.codegen.model.IfStat;
+import wich.codegen.model.IntLiteral;
 import wich.codegen.model.IntType;
 import wich.codegen.model.NegateExpr;
 import wich.codegen.model.NotExpr;
@@ -51,7 +53,6 @@ import wich.codegen.model.OpExpr;
 import wich.codegen.model.OpFunCall;
 import wich.codegen.model.OutputModelObject;
 import wich.codegen.model.ParensExpr;
-import wich.codegen.model.PrimaryExpr;
 import wich.codegen.model.PrintFloatStat;
 import wich.codegen.model.PrintIntStat;
 import wich.codegen.model.PrintStrStat;
@@ -66,6 +67,7 @@ import wich.codegen.model.StringNewFunCall;
 import wich.codegen.model.StringType;
 import wich.codegen.model.TmpVarDef;
 import wich.codegen.model.VarDefStat;
+import wich.codegen.model.VarRef;
 import wich.codegen.model.VecIndexExpr;
 import wich.codegen.model.VectorNewFunCall;
 import wich.codegen.model.VectorType;
@@ -540,8 +542,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 
 	@Override
 	public OutputModelObject visitIdentifier(@NotNull WichParser.IdentifierContext ctx) {
-		PrimaryExpr primaryExpr = new PrimaryExpr(ctx.getText());
-		return primaryExpr;
+		return new VarRef(ctx.getText());
 	}
 
 	@Override
@@ -577,14 +578,12 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 
 	@Override
 	public OutputModelObject visitInteger(@NotNull WichParser.IntegerContext ctx) {
-		PrimaryExpr primaryExpr = new PrimaryExpr(ctx.getText());
-		return primaryExpr;
+		return new IntLiteral(ctx.getText());
 	}
 
 	@Override
 	public OutputModelObject visitFloat(@NotNull WichParser.FloatContext ctx) {
-		PrimaryExpr primaryExpr = new PrimaryExpr(ctx.getText());
-		return primaryExpr;
+		return new FloatLiteral(ctx.getText());
 	}
 
 	private boolean isTemporySymbol(String s) {
