@@ -29,13 +29,9 @@ import java.util.List;
 /** A model object that represents a complete script with possibly function
  *  definitions.
  */
-public class Script extends OutputModelObject {
+public class Script extends Block {
 	public final String scriptName;
 	@ModelElement public List<Func> functions = new ArrayList<Func>();
-	@ModelElement public List<VarDefStat> varDefs = new ArrayList<>();
-	@ModelElement public List<Stat> stats = new ArrayList<>();
-	public List<String> localVars = new ArrayList<>();
-	public List<Integer> localTemps = new ArrayList<>();
 
 	public Script(String scriptName) {
 		this.scriptName = scriptName;

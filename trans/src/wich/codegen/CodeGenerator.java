@@ -85,11 +85,11 @@ import wich.semantics.symbols.WVector;
 import java.util.List;
 
 public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
-	public STGroup templates;
-	public String fileName;
+	protected STGroup templates;
+	protected String fileName;
 	protected final SymbolTable symtab;
-	public Scope currentScope;
-	private static int tmpIndex = 1;
+	protected Scope currentScope;
+	protected int tmpIndex = 1;
 
 	private int getTmpIndex(){
 		return tmpIndex++;
