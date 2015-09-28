@@ -25,7 +25,6 @@ SOFTWARE.
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
 import wich.errors.WichErrorHandler;
 import wich.semantics.SymbolTable;
 
@@ -61,7 +60,7 @@ public class WichBaseTest {
 		assertEquals(expected, actual);
 	}
 
-	@Parameters(name="{1}")
+	@Parameterized.Parameters(name="{1}")
 	public static Collection<Object[]> findInputFiles() {
 		URL testFolder = CompilerUtils.getResourceFile(TEST_RES);
 		Collection<Object[]> result = new ArrayList<>();

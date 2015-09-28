@@ -75,8 +75,7 @@ ReturnStat(r,rExpr)  ::= <<
 <if(r.tmpIndex)>return tmp<r.tmpIndex>;<else>return <rExpr>;<endif>
 >>
 
-VarDefStat(v,type,expr,localTemps) ::= <<
-<localTemps;separator="\n">
+VarDefStat(v,type,expr) ::= <<
 <type><v.name> = <expr>;<if(v.ref)>
 REF(<v.ref>);<endif>
 >>
@@ -84,6 +83,8 @@ REF(<v.ref>);<endif>
 BlockStat(b,block) ::= <<
 <block>
 >>
+
+StatList(stats) ::= "<stats>"
 
 PrintStat(p) ::= <<
 print();
@@ -155,4 +156,6 @@ IntType(t) ::= "int"
 FloatType(t) ::= "double"
 VectorType(t) ::= "Vector *"
 StringType(t) ::= "String *"
-TmpVarDef(t,type) ::="<type> tmp<t.index>;"
+TmpVarDef(t,type) ::="<type> tmp<t.varIndex>;"
+
+RefCountREF(v) ::= "REF(<v.ref>);"

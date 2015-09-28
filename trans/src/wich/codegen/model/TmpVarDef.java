@@ -23,17 +23,17 @@ SOFTWARE.
 */
 package wich.codegen.model;
 
-
-public class TmpVarDef extends OutputModelObject{
-	protected final int index;
+public class TmpVarDef extends VarDefStat {
+	protected final int varIndex;
 	@ModelElement public final WichType type;
 
-	public TmpVarDef(int index, WichType type) {
-		this.index = index;
+	public TmpVarDef(int varIndex, WichType type) {
+		super(""); // we don't use var name for tmp vars
+		this.varIndex = varIndex;
 		this.type = type;
 	}
 
-	public int getIndex() {
-		return index;
+	public int getVarIndex() {
+		return varIndex;
 	}
 }
