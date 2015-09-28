@@ -35,6 +35,7 @@ import java.util.Collection;
 import java.util.regex.Pattern;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 
 @RunWith(Parameterized.class)
 public class WichBaseTest {
@@ -53,6 +54,7 @@ public class WichBaseTest {
 		WichErrorHandler err = new WichErrorHandler();
 		SymbolTable symtab = new SymbolTable();
 		URL expURL = CompilerUtils.getResourceFile(baseName + "_expected.c");
+		assertNotNull(expURL);
 		String expPath = expURL.getPath();
 		String expected = CompilerUtils.readFile(expPath, CompilerUtils.FILE_ENCODING);
 		String contents = CompilerUtils.readFile(input.getAbsolutePath(), CompilerUtils.FILE_ENCODING);
