@@ -26,10 +26,16 @@ package wich.semantics;
 import org.antlr.symtab.Symbol;
 import org.antlr.symtab.Type;
 import org.antlr.v4.runtime.misc.NotNull;
+import wich.errors.WichErrorHandler;
 import wich.parser.WichParser;
 import wich.semantics.symbols.WBuiltInTypeSymbol;
+import wich.semantics.symbols.WVariableSymbol;
 
-public class TypeChecker extends MaintainScopeListener {
+import static wich.errors.WichErrorHandler.INCOMPATIBLE_ASSIGNMENT;
+import static wich.errors.WichErrorHandler.INVALID_ELEMENT;
+import static wich.errors.WichErrorHandler.INVALID_VECTOR_INDEX;
+
+public class CheckTypeInAssignment extends MaintainScopeListener {
 	@Override
 	public void exitAssign(@NotNull WichParser.AssignContext ctx) {
 		Symbol s = currentScope.resolve(ctx.ID().getText());
@@ -37,10 +43,25 @@ public class TypeChecker extends MaintainScopeListener {
 		Type right = ctx.expr().exprType;
 
 		if ( !TypeHelper.isLegalAssign(left, right) ) {
-			error("Incompatible type in assignment: "+left.getName()+"="+right.getName());
+			error(INCOMPATIBLE_ASSIGNMENT, left.getName()+"="+right.getName());
 		}
 	}
+	/*
+	@Override
+	public void exitAssign(@NotNull WichParser.AssignContext ctx) {
+		Symbol s = currentScope.resolve(ctx.ID().getText());
+		if ( !(s instanceof WVariableSymbol) ) {
+			error(INVALID_LEFT_SIDE_ERROR);
+			return;
+		}
+		Type left = ((WVariableSymbol)s).getType();
+		Type right = ctx.expr().exprType;
 
+		if ( !TypeHelper.isLegalAssign(left, right) ) {
+			error(INCOMPATIBLE_ASSIGNMENT_ERROR, left.getName(), right.getName());
+		}
+	}
+	*/
 	@Override
 	public void exitElementAssign(@NotNull WichParser.ElementAssignContext ctx) {
 		WichParser.ExprContext index = ctx.expr(0);
@@ -48,12 +69,12 @@ public class TypeChecker extends MaintainScopeListener {
 
 		// index must be expression of int type
 		if (index.exprType != SymbolTable._int) {
-			error("Invalid vector index type: "+index.exprType.getName());
+			error(INVALID_VECTOR_INDEX, index.exprType.getName());
 		}
 
 		// element value must be expression of float type or can be promoted to float
 		if ( !TypeHelper.typesAreCompatible(elem, SymbolTable._float) ) {
-			error("Invalid vector element type: "+elem.exprType.getName());
+			error(INVALID_ELEMENT, elem.exprType.getName());
 		}
 	}
 
@@ -62,7 +83,7 @@ public class TypeChecker extends MaintainScopeListener {
 		if (ctx.expr_list() != null) {
 			for (WichParser.ExprContext elem : ctx.expr_list().expr()){
 				if ( !TypeHelper.typesAreCompatible(elem, SymbolTable._float) ) {
-					error("Invalid vector element type: "+elem.exprType.getName());
+					error(INVALID_ELEMENT, elem.exprType.getName());
 				}
 			}
 		}

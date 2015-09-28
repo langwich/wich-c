@@ -266,7 +266,8 @@ public class TestTypeAnnotation {
 			"func f() { print(x) }\n" +
 			"var x = 3\n";
 		String expecting =
-			"??";
+			"x:int\n" +
+			"3:int\n";
 		annotateTypeAndCheck(input, expecting);
 	}
 
@@ -276,7 +277,8 @@ public class TestTypeAnnotation {
 			"func f() : string { g() }\n" +
 			"func g() : float { f() }\n";
 		String expecting =
-			"??";
+			"g():float\n" +
+			"f():string\n";
 		annotateTypeAndCheck(input, expecting);
 	}
 

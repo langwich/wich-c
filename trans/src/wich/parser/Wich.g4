@@ -82,7 +82,8 @@ expr returns [Type exprType, Type promoteToType]
 
 operator  : MUL|DIV|ADD|SUB|GT|LE|EQUAL_EQUAL|NOT_EQUAL|GT|GE|OR|AND|DOT ; // no precedence
 
-call_expr : ID '(' expr_list? ')' ;
+call_expr returns [Type exprType, Type promoteToType]
+	: ID '(' expr_list? ')' ;
 
 expr_list : expr (',' expr)* ;
 

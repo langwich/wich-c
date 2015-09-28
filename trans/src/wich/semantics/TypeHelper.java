@@ -233,7 +233,7 @@ public class TypeHelper {
 
 	private static String dumpNonTerminal(ParserRuleContext ctx) {
 		StringBuilder sb = new StringBuilder();
-		if (ctx instanceof ExprContext) {
+		if (ctx instanceof ExprContext || ctx instanceof WichParser.Call_exprContext) {
 			sb.append(dumpExprWithType(ctx));
 		}
 		else {
@@ -252,6 +252,9 @@ public class TypeHelper {
 		}
 		else if (ctx instanceof WichParser.CallContext) {
 			sb.append(dumpCallWithType((WichParser.CallContext) ctx));
+		}
+		else if (ctx instanceof WichParser.Call_exprContext){
+			sb.append(dumpCallWithType((WichParser.Call_exprContext) ctx));
 		}
 		else {
 			ExprContext exprCtx = (ExprContext) ctx;
@@ -279,6 +282,16 @@ public class TypeHelper {
 				                       (t) -> ""));
 	}
 
+	//overloading to dump call statement with type
+	protected static String dumpCallWithType(WichParser.Call_exprContext ctx) {
+		WichParser.Expr_listContext args = ctx.expr_list();
+		return ctx.getText() + ":" + getPrintType(ctx) + "\n" +
+				String.valueOf(process(args!=null ? args.children : Collections.emptyList(),
+						(t) -> t instanceof ExprContext,
+						(t) -> dumpExprWithType((ParserRuleContext) t),
+						(t) -> ""));
+	}
+
 	protected static String dumpPrimaryWithType(WichParser.AtomContext ctx) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(ctx.getText()).append(":").append(getPrintType(ctx)).append("\n");
@@ -290,6 +303,15 @@ public class TypeHelper {
 	}
 
 	protected static String getPrintType(ExprContext ctx) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(ctx.exprType.getName());
+		if (ctx.promoteToType != null) {
+			sb.append(" => ").append(ctx.promoteToType);
+		}
+		return sb.toString();
+	}
+	//overloading to get print type for call statement
+	protected static String getPrintType(WichParser.Call_exprContext ctx) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(ctx.exprType.getName());
 		if (ctx.promoteToType != null) {

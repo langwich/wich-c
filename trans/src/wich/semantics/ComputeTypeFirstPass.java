@@ -32,15 +32,17 @@ import wich.parser.WichParser;
 import wich.parser.WichParser.ExprContext;
 import wich.semantics.symbols.WFunctionSymbol;
 import wich.semantics.symbols.WVariableSymbol;
+import static wich.errors.WichErrorHandler.UNDEFINED_FUNCTION;
 
-
-public class TypeAnnotator extends MaintainScopeListener {
+/*First pass of commputing types, compute expression types wherever possible.*/
+public class ComputeTypeFirstPass extends MaintainScopeListener {
 	@Override
 	public void exitOp(@NotNull WichParser.OpContext ctx) {
 		int op = ctx.operator().start.getType();
 		ExprContext lExpr = ctx.expr(0);
 		ExprContext rExpr = ctx.expr(1);
-		ctx.exprType = SymbolTable.op(op, lExpr, rExpr);
+		if(lExpr.exprType != null && rExpr.exprType != null)
+			ctx.exprType = SymbolTable.op(op, lExpr, rExpr);
 	}
 
 	@Override
@@ -55,19 +57,31 @@ public class TypeAnnotator extends MaintainScopeListener {
 	}
 
 	@Override
+	public void exitCall_expr(@NotNull WichParser.Call_exprContext ctx) {
+		Symbol s = currentScope.resolve(ctx.ID().getText());
+		if ( s!=null && s instanceof WFunctionSymbol ) {
+			ctx.exprType = ((WFunctionSymbol) s).getType();
+		} else {
+			// TODO: add error here
+			error(UNDEFINED_FUNCTION, ctx.ID().getText());
+		}
+	}
+
+	@Override
 	public void exitCall(@NotNull WichParser.CallContext ctx) {
 		Symbol s = currentScope.resolve(ctx.call_expr().ID().getText());
 		if ( s!=null && s instanceof WFunctionSymbol ) {
 			ctx.exprType = ((WFunctionSymbol) s).getType();
 		} else {
 			// TODO: add error here
+			error(UNDEFINED_FUNCTION, ctx.call_expr().ID().getText());
 		}
 	}
 
 	@Override
 	public void exitIndex(@NotNull WichParser.IndexContext ctx) {
 		Symbol s = currentScope.resolve(ctx.ID().getText());
-		if ( s==null || s instanceof WVariableSymbol ) {
+		if ( s==null || s instanceof WVariableSymbol ) {//  ??
 			// TODO: add error here
 		}
 		// string[i] returns a single character string
@@ -112,7 +126,8 @@ public class TypeAnnotator extends MaintainScopeListener {
 		// promote element type to fit in a vector
 		int targetIndex = SymbolTable._float.getTypeIndex();
 		for (ExprContext elem : ctx.expr_list().expr()) {
-			TypeHelper.promote(elem, targetIndex);
+			if(elem.exprType != null) // may not be known at this stage
+				TypeHelper.promote(elem, targetIndex);
 		}
 	}
 
@@ -126,12 +141,4 @@ public class TypeAnnotator extends MaintainScopeListener {
 		ctx.exprType = ctx.primary().exprType; // bubble up primary's type to expr node
 	}
 
-	@Override
-	public void exitVardef(WichParser.VardefContext ctx) {
-		Symbol var = currentScope.resolve(ctx.ID().getText());
-		// type inference
-		if ( var!=null && var instanceof WVariableSymbol ) { // avoid cascading errors
-			((TypedSymbol) var).setType(ctx.expr().exprType);
-		}
-	}
 }

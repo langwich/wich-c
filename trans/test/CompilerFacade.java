@@ -35,9 +35,7 @@ import wich.codegen.ModelConverter;
 import wich.codegen.model.OutputModelObject;
 import wich.parser.WichLexer;
 import wich.parser.WichParser;
-import wich.semantics.DefineSymbols;
-import wich.semantics.SymbolTable;
-import wich.semantics.TypeAnnotator;
+import wich.semantics.*;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -64,9 +62,20 @@ public class CompilerFacade {
 
 	static ParserRuleContext getAnnotatedParseTree(String input, SymbolTable symtab) {
 		ParserRuleContext tree = defineSymbols(input, symtab);
-		TypeAnnotator typeAnnotator = new TypeAnnotator();
+
+		ComputeTypeFirstPass firstPass = new ComputeTypeFirstPass();
+		AssignVarTypes assignVarTypes = new AssignVarTypes();
+
 		ParseTreeWalker walker = new ParseTreeWalker();
-		walker.walk(typeAnnotator, tree);
+		while (!assignVarTypes.isAssignFinished) {
+			walker.walk(firstPass, tree);
+			walker = new ParseTreeWalker();
+			assignVarTypes.isAssignFinished = true;
+			walker.walk(assignVarTypes, tree);
+		}
+		ComputeTypeSecondPass secondPass = new ComputeTypeSecondPass();
+		walker = new ParseTreeWalker();
+		walker.walk(secondPass, tree);
 		return tree;
 	}
 

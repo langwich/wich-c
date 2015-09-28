@@ -31,6 +31,7 @@ import wich.semantics.symbols.WBlock;
 import wich.semantics.symbols.WFunctionSymbol;
 import wich.semantics.symbols.WVariableSymbol;
 
+/*Define symbols, annotate explicit type information for function and args.*/
 public class DefineSymbols extends CommonWichListener {
 	protected SymbolTable symtab;
 	protected int numOfBlocks;

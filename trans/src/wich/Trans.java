@@ -39,10 +39,7 @@ import wich.codegen.ModelConverter;
 import wich.codegen.model.CFile;
 import wich.parser.WichLexer;
 import wich.parser.WichParser;
-import wich.semantics.DefineSymbols;
-import wich.semantics.SymbolTable;
-import wich.semantics.TypeAnnotator;
-import wich.semantics.TypeChecker;
+import wich.semantics.*;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -92,15 +89,29 @@ public class Trans {
 			DefineSymbols defSymbols = new DefineSymbols(symtab);
 			walker.walk(defSymbols, tree);
 
-			// use the TypeAnnotator listener to compute and
-			// and annotate the parse tree with type information
-			// also, it deals with type inference and type promotion
-			TypeAnnotator typeAnnotator = new TypeAnnotator();
+			/*use the listener to compute and
+			and annotate the parse tree with type information
+			also, it deals with type inference and type promotion
+			to support forward reference, three passes are used.*/
+
+			//First pass to compute types of expressions when possible
+			ComputeTypeFirstPass firstPassCompute = new ComputeTypeFirstPass();
 			walker = new ParseTreeWalker();
-			walker.walk(typeAnnotator, tree);
+			walker.walk(firstPassCompute, tree);
+
+			//Second pass to assign variable types
+			AssignVarTypes assignVarTypes = new AssignVarTypes();
+			walker = new ParseTreeWalker();
+			walker.walk(assignVarTypes, tree);
+
+			//third pass to collect computed type for forward referenced expressions
+			ComputeTypeSecondPass secondPassCompute = new ComputeTypeSecondPass();
+			walker = new ParseTreeWalker();
+			walker.walk(secondPassCompute, tree);
+
 
 			// use TypeChecker listener to do static type checking
-			TypeChecker typeChecker = new TypeChecker();
+			CheckTypeInAssignment typeChecker = new CheckTypeInAssignment();
 			walker = new ParseTreeWalker();
 			walker.walk(typeChecker, tree);
 
