@@ -96,13 +96,13 @@ public class TestWichExecution extends WichBaseTest {
 		SymbolTable symtab = new SymbolTable();
 		WichErrorHandler err = new WichErrorHandler();
 		String actual = CompilerUtils.genCode(CompilerUtils.readFile(wichInput, CompilerUtils.FILE_ENCODING), symtab, err);
-		String generated = WORKING_DIR + baseName + "_wich.c";
-		CompilerUtils.writeFile(generated, actual, StandardCharsets.UTF_8);
+		String generatedFileName = WORKING_DIR + baseName + ".c";
+		CompilerUtils.writeFile(generatedFileName, actual, StandardCharsets.UTF_8);
 		// Compile C code and return the path to the executable.
-		String executable = "./" + baseName + "_wich";
+		String executable = "./" + baseName;
 		System.out.println(exec(new String[]{"cc", "-g", "-o", executable,
-				generated, runtimePath + "/" + WICH_LIB,
-				"-I", runtimePath, "-std=c99", "-O0"}).getValue());
+		generatedFileName, runtimePath+"/"+WICH_LIB,
+		"-I", runtimePath, "-std=c99", "-O0"}).getValue());
 		return executable;
 	}
 
