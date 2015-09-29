@@ -1,6 +1,8 @@
-package wich.codegen.model;
+package wich.codegen;
 
 import org.antlr.symtab.Utils;
+import wich.codegen.model.ModelElement;
+import wich.codegen.model.OutputModelObject;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

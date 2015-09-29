@@ -21,7 +21,6 @@ import wich.codegen.model.Func;
 import wich.codegen.model.IfStat;
 import wich.codegen.model.InjectRefCounting;
 import wich.codegen.model.IntType;
-import wich.codegen.model.ModelWalker;
 import wich.codegen.model.OutputModelObject;
 import wich.codegen.model.PrintFloatStat;
 import wich.codegen.model.PrintIntStat;
@@ -126,7 +125,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 				script.functions.add((Func)visit(child));
 			}
 			else { // statement
-				script.add((Stat)visit(child));
+				script.add((Stat) visit(child));
 			}
 		}
 
