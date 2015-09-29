@@ -12,12 +12,12 @@ import java.util.List;
 import java.util.Map;
 
 public class ModelWalker {
-	protected final Object visitor;
+	protected final Object listener;
 	protected final Map<Class<?>, Method> visitorMethodCache = new HashMap<>();
 	protected Method visitEveryModelObjectMethodCache = null;
 
-	public ModelWalker(Object visitor) {
-		this.visitor = visitor;
+	public ModelWalker(Object listener) {
+		this.listener = listener;
 	}
 
 	public OutputModelObject walk(OutputModelObject omo) {
@@ -100,7 +100,7 @@ public class ModelWalker {
 		Object result = null;
 		if ( m!=null ) {
 			try {
-				result = m.invoke(visitor, omo);
+				result = m.invoke(listener, omo);
 			}
 			catch (Exception e) {
 				throw new RuntimeException(e);
@@ -113,7 +113,7 @@ public class ModelWalker {
 		Method m = visitorMethodCache.get(cl); // reflection is slow; cache.
 		if ( m!=null ) return m;
 		try {
-			m = visitor.getClass().getMethod("visit", cl);
+			m = listener.getClass().getMethod("visit", cl);
 			visitorMethodCache.put(cl, m);
 		}
 		catch (NoSuchMethodException nsme) {
@@ -128,7 +128,7 @@ public class ModelWalker {
 		}
 		Method m;
 		try {
-			m = visitor.getClass().getMethod("visitEveryModelObject", OutputModelObject.class);
+			m = listener.getClass().getMethod("visitEveryModelObject", OutputModelObject.class);
 			visitEveryModelObjectMethodCache = m;
 		}
 		catch (NoSuchMethodException nsme) {
