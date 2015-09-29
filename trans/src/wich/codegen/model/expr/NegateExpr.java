@@ -21,18 +21,14 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-package wich.codegen.model;
+package wich.codegen.model.expr;
 
+import wich.codegen.model.ModelElement;
 
-import java.util.ArrayList;
-import java.util.List;
+public class NegateExpr extends Expr{
+	@ModelElement public Expr expr;
 
-public class OpFunCall extends Expr{
-	public final String funcName;
-	public Integer localTmp = null;
-	@ModelElement public List<Expr> args = new ArrayList<>();
-
-	public OpFunCall(String funcName) {
-		this.funcName = funcName;
+	public NegateExpr(Expr expr) {
+		this.expr = expr;
 	}
 }

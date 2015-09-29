@@ -21,17 +21,23 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-package wich.codegen.model;
+package wich.codegen.model.expr;
 
-import java.util.ArrayList;
-import java.util.List;
+import wich.codegen.model.ModelElement;
 
-public class OpExpr extends Expr{
-	public final String op;
-	@ModelElement public Expr rExp;
-	@ModelElement public Expr lExp;
+/** An operation on two operands. Split out the operation into subclasses
+ *  for primitive, string, vector operand types so the auto-template-construction
+ *  allows a different template per operand type. See maps such as
+ *  CPrimitiveBinaryOpMap in wich.stg, for example.
+ */
+public abstract class BinaryOpExpr extends Expr {
+	public String wichOp;
+	@ModelElement public Expr left;
+	@ModelElement public Expr right;
 
-	public OpExpr(String operator) {
-		this.op = operator;
+	public BinaryOpExpr(Expr left, String op, Expr right) {
+		this.left = left;
+		this.wichOp = op;
+		this.right = right;
 	}
 }

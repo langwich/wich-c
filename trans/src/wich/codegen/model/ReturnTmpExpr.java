@@ -24,6 +24,8 @@ SOFTWARE.
 
 package wich.codegen.model;
 
-public class ReturnTmpExpr extends Expr{
+import wich.codegen.model.expr.Expr;
+
+public class ReturnTmpExpr extends Expr {
 	@ModelElement public Expr expr;
 }

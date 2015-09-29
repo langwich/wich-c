@@ -23,7 +23,8 @@ SOFTWARE.
 */
 package wich.codegen.model;
 
+import wich.codegen.model.expr.Expr;
+
 public class CallStat extends Stat {
 	@ModelElement public Expr callExpr;
-//	@ModelElement public List<TmpVarDef> localTemps = new ArrayList<>();
 }

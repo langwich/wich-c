@@ -23,6 +23,8 @@ SOFTWARE.
 */
 package wich.codegen.model;
 
+import wich.codegen.model.expr.Expr;
+
 public class IfStat extends Stat {
 	@ModelElement public Expr condition;
 	@ModelElement public Stat stat;

@@ -24,7 +24,12 @@ SOFTWARE.
 package wich.codegen.model;
 
 
+import wich.codegen.model.expr.Expr;
 
 public class PrintFloatStat extends Stat {
 	@ModelElement public Expr expr;
+
+	public PrintFloatStat(Expr expr) {
+		this.expr = expr;
+	}
 }

@@ -23,6 +23,11 @@ SOFTWARE.
 */
 package wich.codegen.model;
 
-public class NegateExpr extends Expr{
-	@ModelElement public Expr negateExpr;
+import wich.codegen.model.expr.Expr;
+
+/** Represents the init part of var x = <expr> statement. */
+public class VarInitStat extends AssignStat {
+	public VarInitStat(String name, Expr expr) {
+		super(name, expr);
+	}
 }

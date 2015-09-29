@@ -23,10 +23,6 @@ SOFTWARE.
 */
 package wich.codegen.model;
 
-import java.util.ArrayList;
-import java.util.List;
 
-public class AtomExpr extends Expr{
-	@ModelElement public Expr primaryExpr;
-
+public class PrintNewLine extends Stat {
 }

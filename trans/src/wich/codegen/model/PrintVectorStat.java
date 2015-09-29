@@ -23,15 +23,13 @@ SOFTWARE.
 */
 package wich.codegen.model;
 
-import java.util.ArrayList;
-import java.util.List;
 
-public class CallExpr extends Expr{
-	public final String callName;
-	@ModelElement public List<Expr> exprs = new ArrayList<Expr>();
-	@ModelElement public List<Expr> printExpr = new ArrayList<Expr>();
+import wich.codegen.model.expr.Expr;
 
-	public CallExpr(String callName) {
-		this.callName = callName;
+public class PrintVectorStat extends Stat {
+	@ModelElement public Expr expr;
+
+	public PrintVectorStat(Expr expr) {
+		this.expr = expr;
 	}
 }

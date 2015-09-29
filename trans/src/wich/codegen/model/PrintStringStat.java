@@ -23,15 +23,12 @@ SOFTWARE.
 */
 package wich.codegen.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import wich.codegen.model.expr.Expr;
 
-public class StrToCharFunCall extends Expr{
-	public final String funcName;
-	public Integer localTmp = null;
-	@ModelElement public Expr arg;
+public class PrintStringStat extends Stat {
+	@ModelElement public Expr expr;
 
-	public StrToCharFunCall(){
-		this.funcName = "String_from_char";
+	public PrintStringStat(Expr expr) {
+		this.expr = expr;
 	}
 }

@@ -108,10 +108,10 @@ public class Trans {
 
 			// use CodeGenerator tree visitor to generate the target
 			// language (C).
-			CodeGenerator codeGenerator = new CodeGenerator(filename,symtab);
+			CodeGenerator codeGenerator = new CodeGenerator(symtab);
 			File omo = codeGenerator.generate(tree);
 
-			// using omo and string template to generate translated LLVM bitcode.
+			// using omo and string template to generate translated code
 			STGroup templates = new STGroupFile("wich.stg");
 			ModelConverter converter = new ModelConverter(templates);
 			ST wichST = converter.walk(omo);

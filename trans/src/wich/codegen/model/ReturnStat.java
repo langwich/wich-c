@@ -23,11 +23,12 @@ SOFTWARE.
 */
 package wich.codegen.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import wich.codegen.model.expr.Expr;
 
 public class ReturnStat extends Stat {
-	@ModelElement public Expr rExpr;
-	public List<TmpVarDef> localTemps = new ArrayList<>();
-	public Integer tmpIndex = null;
+	@ModelElement public Expr expr;
+
+	public ReturnStat(Expr expr) {
+		this.expr = expr;
+	}
 }

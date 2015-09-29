@@ -21,8 +21,14 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-package wich.codegen.model;
+package wich.codegen.model.expr;
 
-public class BlockStat extends Stat {
-	@ModelElement public Block block;
+import wich.codegen.model.ModelElement;
+
+public class NotExpr extends Expr {
+	@ModelElement public Expr expr;
+
+	public NotExpr(Expr expr) {
+		this.expr = expr;
+	}
 }

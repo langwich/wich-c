@@ -23,14 +23,14 @@ SOFTWARE.
 */
 package wich.codegen.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import wich.codegen.model.expr.Expr;
 
 public class AssignStat extends Stat {
 	public final String varName;
-	@ModelElement public Expr right;
-	@ModelElement public List<TmpVarDef> localTemps = new ArrayList<>();
-	public AssignStat(String varName) {
+	@ModelElement public Expr expr;
+
+	public AssignStat(String varName, Expr expr) {
 		this.varName = varName;
+		this.expr = expr;
 	}
 }

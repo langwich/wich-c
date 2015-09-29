@@ -39,6 +39,7 @@ import wich.semantics.symbols.WFunctionSymbol;
 import wich.semantics.symbols.WInt;
 import wich.semantics.symbols.WString;
 import wich.semantics.symbols.WVector;
+import wich.semantics.symbols.WVoid;
 
 public class SymbolTable {
 	public BaseScope PREDEFINED = new PredefinedScope();
@@ -50,6 +51,7 @@ public class SymbolTable {
 	public static final WString _string = new WString();
 	public static final WVector _vector = new WVector();
 	public static final WBoolean _boolean = new WBoolean();
+	public static final WVoid _void = new WVoid();
 
 	public SymbolTable() {
 		initTypeSystem();

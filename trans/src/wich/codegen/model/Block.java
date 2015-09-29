@@ -26,15 +26,10 @@ package wich.codegen.model;
 import java.util.ArrayList;
 import java.util.List;
 
-
-public class Block extends OutputModelObject {
-	@ModelElement public List<VarDefStat> varDefs = new ArrayList<>();
-	@ModelElement public ReturnTmpExpr returnTmpAssign;
-	@ModelElement public List<Stat> stats = new ArrayList<>();
-	@ModelElement public Stat returnStat;
-	@ModelElement public List<TmpVarDef> returnTemps = new ArrayList<>();
-	public List<Integer> localTemps = new ArrayList<>();
-	public List<String> localVars = new ArrayList<>();
-	public List<String> argsRef = new ArrayList<>();
-	public String returnRefVar = null;
+/** A block of variable definitions and statements not at the outermost
+ *  script level.  Split apart the defs from inits of variables.
+ */
+public class Block extends Stat {
+	@ModelElement public List<Stat> varDefs  = new ArrayList<>();
+	@ModelElement public List<Stat> stats    = new ArrayList<>();
 }

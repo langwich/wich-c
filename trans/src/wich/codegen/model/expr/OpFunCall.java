@@ -21,8 +21,21 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-package wich.codegen.model;
+package wich.codegen.model.expr;
 
-public abstract class Expr extends OutputModelObject {
-//	public List<TmpVarDef> tmpVarDefs = new ArrayList<>();
+
+import wich.codegen.model.ModelElement;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class OpFunCall extends Expr{
+	public final String funcName;
+	public Integer localTmp = null;
+	@ModelElement
+	public List<Expr> args = new ArrayList<>();
+
+	public OpFunCall(String funcName) {
+		this.funcName = funcName;
+	}
 }

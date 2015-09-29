@@ -24,13 +24,12 @@ SOFTWARE.
 package wich.codegen.model;
 
 
+import wich.codegen.model.expr.Expr;
+
 public class StringLiteral extends Expr {
 	public final String literal;
-	public final String funcName;
-	public Integer localTmp = null;
 
 	public StringLiteral(String literal) {
 		this.literal = literal;
-		this.funcName = "String_new";
 	}
 }

@@ -21,20 +21,17 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+package wich.codegen.model.expr;
 
-package wich.codegen.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import wich.codegen.model.ModelElement;
 
-public class VectorLiteral extends Expr {
-	public final Integer vectorNewSize;
-	public String funcName;
-	public Integer localTmp = null;
-	@ModelElement public List<Expr> args = new ArrayList<>();
+public class VectorIndexExpr extends Expr {
+	public final String varName;
+	@ModelElement public Expr expr;
 
-	public VectorLiteral(Integer vectorNewSize) {
-		this.vectorNewSize = vectorNewSize;
-		this.funcName = "Vector_new";
+	public VectorIndexExpr(String object, Expr indexExpr) {
+		this.varName = object;
+		this.expr = indexExpr;
 	}
 }

@@ -23,13 +23,12 @@ SOFTWARE.
 */
 package wich.codegen.model;
 
-/** A model object that represents a complete script with possibly function
- *  definitions.
+import java.util.ArrayList;
+import java.util.List;
+
+/** A model object that represents a complete script including function
+ *  and var definitions.
  */
 public class Script extends Block {
-	public final String scriptName;
-
-	public Script(String scriptName) {
-		this.scriptName = scriptName;
-	}
+	@ModelElement public List<Func> functions = new ArrayList<>();
 }

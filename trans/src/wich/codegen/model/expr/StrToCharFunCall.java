@@ -21,13 +21,17 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-package wich.codegen.model;
+package wich.codegen.model.expr;
 
-public class IndexExpr extends Expr {
-	public final String varName;
-	@ModelElement public Expr expr;
+import wich.codegen.model.ModelElement;
 
-	public IndexExpr(String varName) {
-		this.varName = varName;
+public class StrToCharFunCall extends Expr{
+	public final String funcName;
+	public Integer localTmp = null;
+	@ModelElement
+	public Expr arg;
+
+	public StrToCharFunCall(){
+		this.funcName = "String_from_char";
 	}
 }

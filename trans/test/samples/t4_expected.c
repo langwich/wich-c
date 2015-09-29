@@ -8,7 +8,7 @@ int main(int argc, char *argv[])
 {
 	x = 2;
 	y = 1;
-	if (x > y) {
+	if ((x > y)) {
 		String * tmp1;
 		print_string(tmp1=String_new("TRUE"));
 		DEREF(tmp1);

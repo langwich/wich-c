@@ -29,10 +29,10 @@ import wich.semantics.symbols.*;
 import org.antlr.symtab.*;
 }
 
-file : script ;
+file : script EOF ;
 
 script returns [GlobalScope scope]
-	: (outer_statement | vardef | function)* EOF
+	:	(outer_statement | vardef | function)*
 	;
 
 function returns [WFunctionSymbol scope]
@@ -80,7 +80,7 @@ expr returns [Type exprType, Type promoteToType]
 	|	primary												# Atom
 	;
 
-operator  : MUL|DIV|ADD|SUB|GT|LE|EQUAL_EQUAL|NOT_EQUAL|GT|GE|OR|AND|DOT ; // no precedence
+operator  : MUL|DIV|ADD|SUB|GT|GE|LT|LE|EQUAL_EQUAL|NOT_EQUAL|OR|AND|DOT ; // no implicit precedence
 
 call_expr : ID '(' expr_list? ')' ;
 

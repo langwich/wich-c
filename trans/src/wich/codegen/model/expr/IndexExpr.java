@@ -21,17 +21,16 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-package wich.codegen.model;
+package wich.codegen.model.expr;
 
-import java.util.ArrayList;
-import java.util.List;
+import wich.codegen.model.ModelElement;
 
-public class PrintStrStat extends Stat {
-	public final String type;
-	@ModelElement public Expr expr;
-	@ModelElement public List<TmpVarDef> localTemps = new ArrayList<>();
+public class IndexExpr extends Expr {
+	public final String varName;
+	@ModelElement
+	public Expr expr;
 
-	public PrintStrStat(String type) {
-		this.type = type;
+	public IndexExpr(String varName) {
+		this.varName = varName;
 	}
 }

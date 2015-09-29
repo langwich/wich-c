@@ -41,7 +41,6 @@ import wich.semantics.SymbolTable;
 import wich.semantics.TypeAnnotator;
 import wich.semantics.TypeChecker;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -84,7 +83,7 @@ public class CompilerUtils {
 
 	static String genCode(String input, SymbolTable symtab, WichErrorHandler err) {
 		ParserRuleContext tree = checkCorrectness(input, symtab, err);
-		CodeGenerator codeGenerator = new CodeGenerator(input, symtab);
+		CodeGenerator codeGenerator = new CodeGenerator(symtab);
 		OutputModelObject omo = codeGenerator.generate(tree);
 		STGroup templates = new STGroupFile("wich.stg");
 		ModelConverter converter = new ModelConverter(templates);

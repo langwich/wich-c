@@ -27,7 +27,8 @@ public class ArgDef extends OutputModelObject{
 	public final String name;
 	@ModelElement public WichType type;
 
-	public ArgDef(String name) {
+	public ArgDef(String name, WichType type) {
 		this.name = name;
+		this.type = type;
 	}
 }

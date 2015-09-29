@@ -27,7 +27,7 @@ import org.antlr.symtab.BaseSymbol;
 import org.antlr.symtab.Type;
 
 public class WBuiltInTypeSymbol extends BaseSymbol implements Type {
-	public enum TYPENAME { INT, FLOAT, STRING, VECTOR, BOOLEAN }
+	public enum TYPENAME { INT, FLOAT, STRING, VECTOR, BOOLEAN, VOID }
 	public TYPENAME typename;
 
 	public WBuiltInTypeSymbol(String name, TYPENAME type) {

@@ -1,4 +1,4 @@
-package wich.codegen.model;
+package wich.codegen.model.expr;
 
 public class FloatLiteral extends Expr {
 	public String value;
