@@ -30,6 +30,21 @@ import java.util.List;
  *  script level.  Split apart the defs from inits of variables.
  */
 public class Block extends Stat {
-	@ModelElement public List<Stat> varDefs  = new ArrayList<>();
+	@ModelElement public List<VarDefStat> varDefs  = new ArrayList<>();
 	@ModelElement public List<Stat> stats    = new ArrayList<>();
+
+	public void add(Stat stat) {
+		if ( stat instanceof CompositeModelObject ) {
+			final List<?> substats = ((CompositeModelObject) stat).modelObjects;
+			// cast to force addition even if substats might not be Stat at runtime
+			stats.addAll((List<Stat>)substats);
+		}
+		else {
+			stats.add(stat);
+		}
+	}
+
+	public void add(VarDefStat varDef) {
+		varDefs.add(varDef);
+	}
 }

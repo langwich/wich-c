@@ -126,7 +126,7 @@ VarDefStat(v,type) ::= <<
 <type> <v.name>;
 >>
 
-CompositeStat(cs, modelObjects) ::= <<
+CompositeModelObject(cs, modelObjects) ::= <<
 <modelObjects; separator="\n">
 >>
 

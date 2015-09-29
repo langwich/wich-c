@@ -13,13 +13,15 @@ import wich.codegen.model.ArgDef;
 import wich.codegen.model.AssignStat;
 import wich.codegen.model.Block;
 import wich.codegen.model.CallStat;
-import wich.codegen.model.CompositeStat;
+import wich.codegen.model.CompositeModelObject;
 import wich.codegen.model.ElementAssignStat;
 import wich.codegen.model.File;
 import wich.codegen.model.FloatType;
 import wich.codegen.model.Func;
 import wich.codegen.model.IfStat;
+import wich.codegen.model.InjectRefCounting;
 import wich.codegen.model.IntType;
+import wich.codegen.model.ModelWalker;
 import wich.codegen.model.OutputModelObject;
 import wich.codegen.model.PrintFloatStat;
 import wich.codegen.model.PrintIntStat;
@@ -83,7 +85,10 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	}
 
 	public File generate(ParserRuleContext tree) {
-		return (File)visit(tree);
+		File f = (File)visit(tree);
+		ModelWalker modelWalker = new ModelWalker(new InjectRefCounting());
+		modelWalker.walk(f);
+		return f;
 	}
 
 	// TODO: try to add aggregate value thing
@@ -107,21 +112,21 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		// more flexible model.
 		for (ParseTree child : ctx.children) {
 			if ( child instanceof VardefContext ) {
-				CompositeStat varStats = visitVardef((VardefContext)child);
-				Stat def = varStats.modelObjects.get(0);
-				script.varDefs.add(def);
-				Stat init = varStats.modelObjects.get(1);
-				script.stats.add(init);
+				CompositeModelObject varStats = visitVardef((VardefContext)child);
+				VarDefStat def = (VarDefStat)varStats.modelObjects.get(0);
+				script.add(def);
+				Stat init = (Stat)varStats.modelObjects.get(1);
+				script.add(init);
 				if ( varStats.modelObjects.size()>2 ) {
-					Stat refCountingStat = varStats.modelObjects.get(2); // TODO: maybe we can create here
-					script.stats.add(refCountingStat);
+					Stat refCountingStat = (Stat)varStats.modelObjects.get(2); // TODO: maybe we can create here
+					script.add(refCountingStat);
 				}
 			}
 			else if ( child instanceof FunctionContext ) {
 				script.functions.add((Func)visit(child));
 			}
 			else { // statement
-				script.stats.add((Stat)visit(child));
+				script.add((Stat)visit(child));
 			}
 		}
 
@@ -154,7 +159,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 					refCountArgs.add(new RefCountREF(arg.ID().getText()));
 				}
 			}
-			
+
 			// rewrite function body to have REF(x) for all heap arg x at start
 			refCountArgs.addAll(func.body.stats);
 			func.body.stats = refCountArgs;
@@ -203,10 +208,10 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		for (WichParser.StatementContext s : ctx.statement()) {
 			Stat stat = (Stat)visit(s);
 			if ( s instanceof VarDefStatementContext ) { // target language might need all vardefs first
-				block.varDefs.add(stat);
+				block.add(stat);
 			}
 			else {
-				block.stats.add(stat);
+				block.add(stat);
 			}
 		}
 
@@ -245,7 +250,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	}
 
 	@Override
-	public CompositeStat visitVardef(@NotNull WichParser.VardefContext ctx) {
+	public CompositeModelObject visitVardef(@NotNull WichParser.VardefContext ctx) {
 		String varName = ctx.ID().getText();
 		WVariableSymbol v = (WVariableSymbol)currentScope.resolve(varName);
 		WichType type = getTypeModel(v.getType());
@@ -256,7 +261,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 			// TODO
 //			return new CompositeStat(varDef, varInit, new RefCountREF(varDef.name));
 		}
-		return new CompositeStat(varDef, varInit);
+		return new CompositeModelObject(varDef, varInit);
 	}
 
 	@Override
@@ -265,7 +270,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 
 		// add DEREF for all heap vars
 		final List<Stat> DEREFs = getDEREFs(currentScope);
-		final CompositeStat compositeStat = new CompositeStat();
+		final CompositeModelObject compositeStat = new CompositeModelObject();
 		compositeStat.modelObjects.addAll(DEREFs);
 		compositeStat.modelObjects.add(ret);
 
