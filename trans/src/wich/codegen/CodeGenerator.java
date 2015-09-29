@@ -154,9 +154,14 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 					refCountArgs.add(new RefCountREF(arg.ID().getText()));
 				}
 			}
-			// rewrite function body to have REF(x) for all arg x at start
+			
+			// rewrite function body to have REF(x) for all heap arg x at start
 			refCountArgs.addAll(func.body.stats);
 			func.body.stats = refCountArgs;
+
+			// add DEREF for all heap args at the end
+			final List<Stat> DEREFs = getDEREFs(currentScope);
+			func.body.stats.addAll(DEREFs);
 		}
 
 		popScope();
