@@ -5,7 +5,8 @@ Vector * f();
 
 Vector * f()
 {
-	Vector *x = Vector_new((double []){1,2,3}, 3);
+	Vector * x;
+	x = Vector_new((double []){1,2,3}, 3);
 	REF(x);
 	DEREF(x);
 	return x;

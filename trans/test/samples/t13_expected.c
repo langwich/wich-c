@@ -8,6 +8,7 @@ String * f()
 {
 	g();
 }
+
 double g()
 {
 	f();

@@ -64,7 +64,6 @@ File(f, script) ::= <<
 <script.varDefs; separator="\n">
 <script.functions:funcDecl()>
 <script.functions>
-
 <script>
 >>
 
@@ -83,7 +82,7 @@ funcDecl(funcTemplate)     ::= <<
 Func(f,returnType,args,body)::=<<
 <returnType; null="void"> <f.funcName>(<args;separator=",">)
 <body>
-
+<\n>
 >>
 
 Block(b,varDefs,stats)::= <<
@@ -193,3 +192,4 @@ StringType(t) ::= "String *"
 TmpVarDef(t,type) ::="<type> tmp<t.varIndex>;"
 
 RefCountREF(v) ::= "REF(<v.varName>);"
+RefCountDEREF(v) ::= "DEREF(<v.varName>);"

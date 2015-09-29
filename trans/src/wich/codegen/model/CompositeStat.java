@@ -7,8 +7,16 @@ import java.util.List;
 public class CompositeStat extends Stat {
 	@ModelElement public List<Stat> modelObjects = new ArrayList<>();
 	public void add(Stat stat) { modelObjects.add(stat); }
+	public void addAll(CompositeStat stat) { modelObjects.addAll(stat.modelObjects); }
 
 	public CompositeStat(Stat... stats) {
-		for (Stat o : stats) add(o);
+		if ( stats!=null ) {
+			for (Stat o : stats) {
+				if ( o instanceof CompositeStat ) {
+					addAll((CompositeStat)o);
+				}
+				add(o);
+			}
+		}
 	}
 }
