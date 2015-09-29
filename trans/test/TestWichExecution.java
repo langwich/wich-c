@@ -60,7 +60,7 @@ public class TestWichExecution extends WichBaseTest {
 
 	@Test
 	public void testExecution() throws Exception {
-		URL expectedFile = CompilerUtils.getResourceFile(baseName + "_output");
+		URL expectedFile = CompilerUtils.getResourceFile(baseName + ".output");
 		String expected = "";
 		if (expectedFile != null) {
 			expected = CompilerUtils.readFile(expectedFile.getPath(), CompilerUtils.FILE_ENCODING);
