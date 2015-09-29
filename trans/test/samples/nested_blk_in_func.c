@@ -5,11 +5,13 @@ void f();
 
 void f()
 {
-	String *x = String_new("cat");
+	String * x;
+	x = String_new("cat");
 	{
-		String *y = String_new("dog");
-
-		String *z = x;
+		String * y;
+		y = String_new("dog");
+		String * z;
+		z = x;
 		REF(z);
 		DEREF(y);
 		DEREF(z);

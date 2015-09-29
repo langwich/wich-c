@@ -53,7 +53,7 @@ public class WichBaseTest {
 	public void testCodeGen() throws Exception {
 		WichErrorHandler err = new WichErrorHandler();
 		SymbolTable symtab = new SymbolTable();
-		URL expURL = CompilerUtils.getResourceFile(baseName + "_expected.c");
+		URL expURL = CompilerUtils.getResourceFile(baseName + ".c");
 		assertNotNull(expURL);
 		String expPath = expURL.getPath();
 		String expected = CompilerUtils.readFile(expPath, CompilerUtils.FILE_ENCODING);
