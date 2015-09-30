@@ -275,7 +275,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	public OutputModelObject visitOp(@NotNull WichParser.OpContext ctx) {
 		Expr left  = (Expr)visit(ctx.expr(0));
 		Expr right = (Expr)visit(ctx.expr(1));
-		return getBinaryOperationModel(ctx.operator(), ctx.exprType, left, right);
+		return getBinaryOperationModel(ctx.operator(), ctx.promoteToType, left, right);
 	}
 
 	@Override
@@ -356,7 +356,8 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 
 	@Override
 	public OutputModelObject visitIdentifier(@NotNull WichParser.IdentifierContext ctx) {
-		return new VarRef(ctx.getText());
+		final WVariableSymbol varSym = (WVariableSymbol)currentScope.resolve(ctx.getText());
+		return new VarRef(varSym);
 	}
 
 
@@ -369,14 +370,19 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	{
 		Token opToken = opCtx.getStart();
 		String wichOp = opToken.getText();
+		BinaryOpExpr opExpr;
 		// split into granularity sufficient for most potential target languages
 		if ( operandType == SymbolTable._vector ) {
-			return new BinaryVectorOp(left, wichOp, right);
+			opExpr = new BinaryVectorOp(left, wichOp, right);
 		}
-		if ( operandType ==SymbolTable._string ) {
-			return new BinaryStringOp(left, wichOp, right);
+		else if ( operandType ==SymbolTable._string ) {
+			opExpr = new BinaryStringOp(left, wichOp, right);
 		}
-		return new BinaryPrimitiveOp(left, wichOp, right);
+		else {
+			opExpr = new BinaryPrimitiveOp(left, wichOp, right);
+		}
+		opExpr.resultType = operandType;
+		return opExpr;
 	}
 
 	public static Stat getPrintModel(Type type, Expr expr) {

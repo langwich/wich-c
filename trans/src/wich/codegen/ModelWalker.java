@@ -25,6 +25,7 @@ package wich.codegen;
 
 import org.antlr.symtab.Utils;
 import org.antlr.v4.runtime.misc.Pair;
+import wich.codegen.model.CompositeModelObject;
 import wich.codegen.model.ModelElement;
 import wich.codegen.model.OutputModelObject;
 
@@ -40,6 +41,9 @@ import java.util.function.Predicate;
 
 // listener methods:
 // return null means delete. return same object means don't replace. return diff object means replace.
+
+// invokes exact enter/exitModel(T); doesn't work for T subclasses. enter called at node discovery
+// and then visitEveryModelObject(). After children, exitModel().
 
 public class ModelWalker {
 	public static final Object NOTFOUND = new Object(); // can't use exact type here as we can't create MethodHandle for sentinel
@@ -92,7 +96,10 @@ public class ModelWalker {
 			String fieldName = fi.getName();
 			try {
 				Object o = fi.get(omo);
-				if ( o instanceof OutputModelObject ) {  // SINGLE MODEL OBJECT?
+				if ( o instanceof CompositeModelObject ) {
+					walkList(((CompositeModelObject)o).modelObjects);
+				}
+				else if ( o instanceof OutputModelObject ) {  // SINGLE MODEL OBJECT?
 					OutputModelObject nestedOmo = (OutputModelObject)o;
 					replacement = walk(nestedOmo);
 					if ( replacement!=NO_RESULT && replacement!=nestedOmo ) {
@@ -100,13 +107,13 @@ public class ModelWalker {
 					}
 				}
 				else if ( o instanceof OutputModelObject[] ) {
-					walkArray((OutputModelObject[])o);
+					walkArray((OutputModelObject[]) o);
 				}
 				else if ( o instanceof List ) {
-					walkList((List<OutputModelObject>)o);
+					walkList((List<OutputModelObject>) o);
 				}
 				else if ( o instanceof Map ) {
-					walkMap((Map<Object, OutputModelObject>)o);
+					walkMap((Map<Object, OutputModelObject>) o);
 				}
 				else if ( o!=null ) {
 					System.err.println("type of "+fieldName+"'s model element isn't recognized: "+o.getClass().getSimpleName());

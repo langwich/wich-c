@@ -36,13 +36,15 @@ public class InjectRefCounting {
 //		return o;
 //	}
 
-	public OutputModelObject enterModel(AssignStat assign) {
-		System.out.println("enterModel assignment");
-		return assign;
+	public OutputModelObject exitModel(VarInitStat init) {
+		return exitModel((AssignStat)init);
 	}
 
-	public OutputModelObject exitModel(VarInitStat assign) {
-		System.out.println("exitModel assignment for var init");
+	public OutputModelObject exitModel(AssignStat assign) {
+		System.out.println("exitModel assignment");
+		if ( CodeGenerator.isHeapType(assign.expr.getType()) ) {
+			return new CompositeModelObject(assign, new RefCountREF(assign.varName));
+		}
 		return assign;
 	}
 
@@ -60,7 +62,8 @@ public class InjectRefCounting {
 	}
 
 	public OutputModelObject exitModel(Script script) {
-		return exitModel((Block) script);
+		exitModel((Block)script);
+		return script;
 	}
 
 	public OutputModelObject exitModel(Block block) {

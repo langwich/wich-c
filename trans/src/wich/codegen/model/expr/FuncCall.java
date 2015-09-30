@@ -1,6 +1,7 @@
 package wich.codegen.model.expr;
 
 
+import org.antlr.symtab.Type;
 import wich.codegen.model.ModelElement;
 import wich.codegen.model.WichType;
 
@@ -15,5 +16,10 @@ public class FuncCall extends Expr {
 	public FuncCall(String funcName, WichType retType) {
 		this.funcName = funcName;
 		this.retType = retType;
+	}
+
+	@Override
+	public Type getType() {
+		return retType.type;
 	}
 }

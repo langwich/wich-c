@@ -24,12 +24,19 @@ SOFTWARE.
 package wich.codegen.model;
 
 
+import org.antlr.symtab.Type;
 import wich.codegen.model.expr.Expr;
+import wich.semantics.SymbolTable;
 
 public class StringLiteral extends Expr {
 	public final String literal;
 
 	public StringLiteral(String literal) {
 		this.literal = literal;
+	}
+
+	@Override
+	public Type getType() {
+		return SymbolTable._string;
 	}
 }

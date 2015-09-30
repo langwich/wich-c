@@ -23,6 +23,7 @@ SOFTWARE.
 */
 package wich.codegen.model.expr;
 
+import org.antlr.symtab.Type;
 import wich.codegen.model.ModelElement;
 
 public class NegateExpr extends Expr{
@@ -30,5 +31,10 @@ public class NegateExpr extends Expr{
 
 	public NegateExpr(Expr expr) {
 		this.expr = expr;
+	}
+
+	@Override
+	public Type getType() {
+		return expr.getType();
 	}
 }

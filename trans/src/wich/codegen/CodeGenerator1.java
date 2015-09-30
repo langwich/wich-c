@@ -45,7 +45,6 @@ import wich.codegen.model.WichType;
 import wich.codegen.model.expr.Expr;
 import wich.codegen.model.expr.FloatLiteral;
 import wich.codegen.model.expr.IntLiteral;
-import wich.codegen.model.expr.VarRef;
 import wich.parser.WichBaseVisitor;
 import wich.parser.WichParser;
 import wich.semantics.SymbolTable;
@@ -467,10 +466,10 @@ public class CodeGenerator1 extends WichBaseVisitor<OutputModelObject> {
 //		return atomExpr;
 //	}
 
-	@Override
-	public OutputModelObject visitIdentifier(@NotNull WichParser.IdentifierContext ctx) {
-		return new VarRef(ctx.getText());
-	}
+//	@Override
+//	public OutputModelObject visitIdentifier(@NotNull WichParser.IdentifierContext ctx) {
+//		return new VarRef(ctx.getText());
+//	}
 
 //	@Override
 //	public OutputModelObject visitString(@NotNull WichParser.StringContext ctx) {

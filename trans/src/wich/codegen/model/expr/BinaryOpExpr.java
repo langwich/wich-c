@@ -23,6 +23,7 @@ SOFTWARE.
 */
 package wich.codegen.model.expr;
 
+import org.antlr.symtab.Type;
 import wich.codegen.model.ModelElement;
 
 /** An operation on two operands. Split out the operation into subclasses
@@ -31,6 +32,7 @@ import wich.codegen.model.ModelElement;
  *  CPrimitiveBinaryOpMap in wich.stg, for example.
  */
 public abstract class BinaryOpExpr extends Expr {
+	public Type resultType;
 	public String wichOp;
 	@ModelElement public Expr left;
 	@ModelElement public Expr right;
@@ -39,5 +41,10 @@ public abstract class BinaryOpExpr extends Expr {
 		this.left = left;
 		this.wichOp = op;
 		this.right = right;
+	}
+
+	@Override
+	public Type getType() {
+		return resultType;
 	}
 }
