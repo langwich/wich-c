@@ -27,8 +27,10 @@ import org.antlr.symtab.Utils;
 import wich.codegen.model.ModelElement;
 import wich.codegen.model.OutputModelObject;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,7 +40,7 @@ import java.util.Map;
 // return null means delete. return same object means don't replace. return diff object means replace.
 
 public class ModelWalker {
-	public static final Object NOTFOUND = new Object();
+	public static final Object NOTFOUND = new Object(); // can't use exact type here as we can't create MethodHandle for sentinel
 	public static final OutputModelObject NO_RESULT = new OutputModelObject();
 
 	protected final Object listener;
@@ -153,63 +155,69 @@ public class ModelWalker {
 
 	/** Use reflection to find & invoke overloaded visit(modeltype) method */
 	protected OutputModelObject visit(OutputModelObject omo) {
-		final Method m = getVisitorMethodForType(omo.getClass());
+		final MethodHandle m = getVisitorMethodForType(omo.getClass());
 		return execVisit(omo, m);
 	}
 
 	protected OutputModelObject visitEveryModelObject(OutputModelObject omo) {
-		final Method m = getVisitEveryNodeMethod();
+		final MethodHandle m = getVisitEveryNodeMethod();
 		return execVisit(omo, m);
 	}
 
-	protected OutputModelObject execVisit(OutputModelObject omo, Method m) {
+	protected OutputModelObject execVisit(OutputModelObject omo, MethodHandle m) {
 		Object result = NO_RESULT;
 		if ( m!=null ) {
 			try {
+				// can't use invokeExact as listener looks like an Object but we bound to listener.getClass()
 				result = m.invoke(listener, omo);
 			}
-			catch (Exception e) {
+			catch (Throwable e) {
 				throw new RuntimeException(e);
 			}
 		}
 		return (OutputModelObject)result;
 	}
 
-	protected Method getVisitorMethodForType(Class cl) {
-		Object m = visitorMethodCache.get(cl); // reflection is slow; cache.
-		if ( m!=null ) {
-			if ( m==NOTFOUND ) {
+	protected MethodHandle getVisitorMethodForType(Class cl) {
+		Object mh = visitorMethodCache.get(cl); // reflection is slow; cache.
+		if ( mh!=null ) {
+			if ( mh==NOTFOUND ) {
 				return null;
 			}
-			return (Method)m;
+			return (MethodHandle)mh;
 		}
+		MethodHandles.Lookup lookup = MethodHandles.lookup();
+		final MethodType mType = MethodType.methodType(OutputModelObject.class, cl);
 		try {
-			m = listener.getClass().getMethod("visit", cl);
-			visitorMethodCache.put(cl, m);
+			mh = lookup.findVirtual(listener.getClass(), "visit", mType);
+			visitorMethodCache.put(cl, mh);
 		}
-		catch (NoSuchMethodException nsme) {
-			m = null;
+		catch (Exception e) {
+			mh = null;
 			visitorMethodCache.put(cl, NOTFOUND);
 		}
-		return (Method)m;
+		return (MethodHandle)mh;
 	}
 
-	protected Method getVisitEveryNodeMethod() {
+	protected MethodHandle getVisitEveryNodeMethod() {
 		if ( visitEveryModelObjectMethodCache!=null ) {
 			if ( visitEveryModelObjectMethodCache==NOTFOUND ) {
 				return null;
 			}
-			return (Method)visitEveryModelObjectMethodCache;
+			return (MethodHandle)visitEveryModelObjectMethodCache;
 		}
-		Method m;
+		MethodHandles.Lookup lookup = MethodHandles.lookup();
+		final MethodType mType = MethodType.methodType(OutputModelObject.class,
+													   OutputModelObject.class);
+		MethodHandle mh;
 		try {
-			m = listener.getClass().getMethod("visitEveryModelObject", OutputModelObject.class);
-			visitEveryModelObjectMethodCache = m;
+			mh = lookup.findVirtual(listener.getClass(), "visitEveryModelObject", mType);
+			visitEveryModelObjectMethodCache = mh;
 		}
-		catch (NoSuchMethodException nsme) {
-			m = null;
+		catch (Exception e) {
+			mh = null;
 			visitEveryModelObjectMethodCache = NOTFOUND;
 		}
-		return m;
+		return mh;
 	}
 }
