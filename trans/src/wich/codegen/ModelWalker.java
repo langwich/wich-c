@@ -1,3 +1,26 @@
+/*
+The MIT License (MIT)
+
+Copyright (c) 2015 Terence Parr, Hanzhou Shi, Shuai Yuan, Yuanyuan Zhang
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
 package wich.codegen;
 
 import org.antlr.symtab.Utils;
@@ -60,52 +83,13 @@ public class ModelWalker {
 					}
 				}
 				else if ( o instanceof OutputModelObject[] ) {
-					OutputModelObject[] elems = (OutputModelObject[])o;
-					int i = 0;
-					while ( i < elems.length ) {
-						OutputModelObject nestedOmo = elems[i];
-						if ( nestedOmo==null ) continue;
-						final OutputModelObject replacement = walk(nestedOmo);
-						if ( replacement==null ) { // null means delete (shift array elements down) (expensive)
-							System.arraycopy(elems,i+1,elems, i,elems.length-i-1);
-							continue; // skip i++ as we deleted
-						}
-						else if ( replacement!=NO_RESULT && replacement!=nestedOmo ) {
-							elems[i] = replacement;
-						}
-						i++;
-					}
+					walkArray((OutputModelObject[])o);
 				}
 				else if ( o instanceof List ) {
-					List<OutputModelObject> nestedOmos = (List<OutputModelObject>)o;
-					int i = 0;
-					while ( i < nestedOmos.size() ) {
-						OutputModelObject nestedOmo = nestedOmos.get(i);
-						if ( nestedOmo!=null ) {
-							final OutputModelObject replacement = walk(nestedOmo);
-							if ( replacement==null ) { // null means delete
-								nestedOmos.remove(i);
-								continue; // skip i++ as we deleted
-							}
-							else if ( replacement!=NO_RESULT && replacement != nestedOmo ) {
-								nestedOmos.set(i, replacement);
-							}
-						}
-						i++;
-					}
+					walkList((List<OutputModelObject>)o);
 				}
 				else if ( o instanceof Map ) {
-					Map<Object, OutputModelObject> nestedOmoMap = (Map<Object, OutputModelObject>)o;
-					for (Map.Entry<?, OutputModelObject> entry : nestedOmoMap.entrySet()) {
-						final OutputModelObject nestedOmo = entry.getValue();
-						final OutputModelObject replacement = walk(nestedOmo);
-						if ( replacement==null ) { // null means delete
-							nestedOmoMap.remove(entry.getKey());
-						}
-						else if ( replacement!=NO_RESULT && replacement!=nestedOmo ) {
-							nestedOmoMap.put(entry.getKey(), replacement);
-						}
-					}
+					walkMap((Map<Object, OutputModelObject>)o);
 				}
 				else if ( o!=null ) {
 					System.err.println("type of "+fieldName+"'s model element isn't recognized: "+o.getClass().getSimpleName());
@@ -117,6 +101,54 @@ public class ModelWalker {
 		}
 
 		return result1!=NO_RESULT ? result1 : result2;
+	}
+
+	protected void walkArray(OutputModelObject[] elems) {
+		int i = 0;
+		while ( i < elems.length ) {
+			OutputModelObject nestedOmo = elems[i];
+			if ( nestedOmo==null ) continue;
+			final OutputModelObject replacement = walk(nestedOmo);
+			if ( replacement==null ) { // null means delete (shift array elements down) (expensive)
+				System.arraycopy(elems,i+1,elems, i,elems.length-i-1);
+				continue; // skip i++ as we deleted
+			}
+			else if ( replacement!=NO_RESULT && replacement!=nestedOmo ) {
+				elems[i] = replacement;
+			}
+			i++;
+		}
+	}
+
+	protected void walkList(List<OutputModelObject> nestedOmos) {
+		int i = 0;
+		while ( i < nestedOmos.size() ) {
+			OutputModelObject nestedOmo = nestedOmos.get(i);
+			if ( nestedOmo!=null ) {
+				final OutputModelObject replacement = walk(nestedOmo);
+				if ( replacement==null ) { // null means delete
+					nestedOmos.remove(i);
+					continue; // skip i++ as we deleted
+				}
+				else if ( replacement!=NO_RESULT && replacement != nestedOmo ) {
+					nestedOmos.set(i, replacement);
+				}
+			}
+			i++;
+		}
+	}
+
+	protected void walkMap(Map<Object, OutputModelObject> nestedOmoMap) {
+		for (Map.Entry<?, OutputModelObject> entry : nestedOmoMap.entrySet()) {
+			final OutputModelObject nestedOmo = entry.getValue();
+			final OutputModelObject replacement = walk(nestedOmo);
+			if ( replacement==null ) { // null means delete
+				nestedOmoMap.remove(entry.getKey());
+			}
+			else if ( replacement!=NO_RESULT && replacement!=nestedOmo ) {
+				nestedOmoMap.put(entry.getKey(), replacement);
+			}
+		}
 	}
 
 	/** Use reflection to find & invoke overloaded visit(modeltype) method */
