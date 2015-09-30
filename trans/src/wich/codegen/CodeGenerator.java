@@ -275,7 +275,8 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	public OutputModelObject visitOp(@NotNull WichParser.OpContext ctx) {
 		Expr left  = (Expr)visit(ctx.expr(0));
 		Expr right = (Expr)visit(ctx.expr(1));
-		return getBinaryOperationModel(ctx.operator(), ctx.promoteToType, left, right);
+		final Type resultType = ctx.promoteToType!=null ? ctx.promoteToType : ctx.exprType;
+		return getBinaryOperationModel(ctx.operator(), resultType, left, right);
 	}
 
 	@Override
@@ -375,7 +376,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		if ( operandType == SymbolTable._vector ) {
 			opExpr = new BinaryVectorOp(left, wichOp, right);
 		}
-		else if ( operandType ==SymbolTable._string ) {
+		else if ( operandType == SymbolTable._string ) {
 			opExpr = new BinaryStringOp(left, wichOp, right);
 		}
 		else {
