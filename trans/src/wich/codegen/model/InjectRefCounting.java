@@ -1,15 +1,10 @@
 package wich.codegen.model;
 
 public class InjectRefCounting {
-	public OutputModelObject visitEveryModelObject(OutputModelObject o) {
-		System.out.println("visit every node: "+o.getClass().getSimpleName());
-		return o;
-	}
-
-	public OutputModelObject visit(File f) {
-		System.out.println("visit file");
-		return f;
-	}
+//	public OutputModelObject visitEveryModelObject(OutputModelObject o) {
+//		System.out.println("visit every node: "+o.getClass().getSimpleName());
+//		return o;
+//	}
 
 	public OutputModelObject visit(AssignStat assign) {
 		System.out.println("visit assignment");
@@ -18,7 +13,7 @@ public class InjectRefCounting {
 
 	public OutputModelObject visit(VarInitStat assign) {
 		System.out.println("visit assignment for var init");
-		return assign;
+		return null;
 	}
 
 	public OutputModelObject visit(Func func) {

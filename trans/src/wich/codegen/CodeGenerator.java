@@ -87,6 +87,15 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		File f = (File)visit(tree);
 		ModelWalker modelWalker = new ModelWalker(new InjectRefCounting());
 		modelWalker.walk(f);
+		modelWalker = new ModelWalker(new Object() {
+			public OutputModelObject visitEveryModelObject(OutputModelObject o) {
+				System.out.println("visit every node: "+o.getClass().getSimpleName());
+				return o;
+			}
+		});
+		System.out.println("\nfinal model:");
+		modelWalker.walk(f);
+
 		return f;
 	}
 

@@ -7,7 +7,6 @@ import wich.codegen.model.OutputModelObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +16,7 @@ import java.util.Map;
 
 public class ModelWalker {
 	public static final Object NOTFOUND = new Object();
+	public static final OutputModelObject NO_RESULT = new OutputModelObject();
 
 	protected final Object listener;
 	protected final Map<Class<?>, Object> visitorMethodCache = new HashMap<>();
@@ -27,7 +27,7 @@ public class ModelWalker {
 	}
 
 	public OutputModelObject walk(OutputModelObject omo) {
-		if ( omo==null ) return null;
+		if ( omo==null ) return NO_RESULT;
 
 		final OutputModelObject result1 = visit(omo);
 		final OutputModelObject result2 = visitEveryModelObject(omo);
@@ -55,36 +55,56 @@ public class ModelWalker {
 				if ( o instanceof OutputModelObject ) {  // SINGLE MODEL OBJECT?
 					OutputModelObject nestedOmo = (OutputModelObject)o;
 					final OutputModelObject replacement = walk(nestedOmo);
-					if ( replacement!=null ) {
+					if ( replacement!=NO_RESULT && replacement!=nestedOmo ) {
 						fi.set(omo, replacement);
 					}
-//					System.out.println("set ModelElement "+fieldName+"="+nestedST+" in "+templateName);
 				}
 				else if ( o instanceof OutputModelObject[] ) {
 					OutputModelObject[] elems = (OutputModelObject[])o;
-					for (int i = 0; i < elems.length; i++) {
+					int i = 0;
+					while ( i < elems.length ) {
 						OutputModelObject nestedOmo = elems[i];
 						if ( nestedOmo==null ) continue;
-						final OutputModelObject replacement = walk((OutputModelObject) nestedOmo);
-						if ( replacement!=null ) {
-							fi.set(omo, replacement);
+						final OutputModelObject replacement = walk(nestedOmo);
+						if ( replacement==null ) { // null means delete (shift array elements down) (expensive)
+							System.arraycopy(elems,i+1,elems, i,elems.length-i-1);
+							continue; // skip i++ as we deleted
 						}
-//						System.out.println("set ModelElement "+fieldName+"="+nestedST+" in "+templateName);
+						else if ( replacement!=NO_RESULT && replacement!=nestedOmo ) {
+							elems[i] = replacement;
+						}
+						i++;
 					}
 				}
-				else if ( o instanceof Collection ) {
-					Collection<?> nestedOmos = (Collection<?>)o;
-					for (Object nestedOmo : nestedOmos) {
-						if ( nestedOmo==null ) continue;
-						walk((OutputModelObject)nestedOmo);
-//						System.out.println("set ModelElement "+fieldName+"="+nestedST+" in "+templateName);
+				else if ( o instanceof List ) {
+					List<OutputModelObject> nestedOmos = (List<OutputModelObject>)o;
+					int i = 0;
+					while ( i < nestedOmos.size() ) {
+						OutputModelObject nestedOmo = nestedOmos.get(i);
+						if ( nestedOmo!=null ) {
+							final OutputModelObject replacement = walk(nestedOmo);
+							if ( replacement==null ) { // null means delete
+								nestedOmos.remove(i);
+								continue; // skip i++ as we deleted
+							}
+							else if ( replacement!=NO_RESULT && replacement != nestedOmo ) {
+								nestedOmos.set(i, replacement);
+							}
+						}
+						i++;
 					}
 				}
 				else if ( o instanceof Map ) {
-					Map<?, ?> nestedOmoMap = (Map<?, ?>)o;
-					for (Map.Entry<?, ?> entry : nestedOmoMap.entrySet()) {
-						walk((OutputModelObject)entry.getValue());
-//						System.out.println("set ModelElement "+fieldName+"="+nestedST+" in "+templateName);
+					Map<Object, OutputModelObject> nestedOmoMap = (Map<Object, OutputModelObject>)o;
+					for (Map.Entry<?, OutputModelObject> entry : nestedOmoMap.entrySet()) {
+						final OutputModelObject nestedOmo = entry.getValue();
+						final OutputModelObject replacement = walk(nestedOmo);
+						if ( replacement==null ) { // null means delete
+							nestedOmoMap.remove(entry.getKey());
+						}
+						else if ( replacement!=NO_RESULT && replacement!=nestedOmo ) {
+							nestedOmoMap.put(entry.getKey(), replacement);
+						}
 					}
 				}
 				else if ( o!=null ) {
@@ -96,7 +116,7 @@ public class ModelWalker {
 			}
 		}
 
-		return result1!=null ? result1 : result2;
+		return result1!=NO_RESULT ? result1 : result2;
 	}
 
 	/** Use reflection to find & invoke overloaded visit(modeltype) method */
@@ -111,7 +131,7 @@ public class ModelWalker {
 	}
 
 	protected OutputModelObject execVisit(OutputModelObject omo, Method m) {
-		Object result = null;
+		Object result = NO_RESULT;
 		if ( m!=null ) {
 			try {
 				result = m.invoke(listener, omo);
