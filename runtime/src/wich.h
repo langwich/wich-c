@@ -66,7 +66,6 @@ Vector *Vector_sub(Vector *a, Vector *b);
 Vector *Vector_mul(Vector *a, Vector *b);
 Vector *Vector_div(Vector *a, Vector *b);
 
-char *Vector_as_string(Vector *a);
 void print_vector(Vector *a);
 
 // Following malloc/free our the hook where we create our own malloc/free or use the system's

@@ -17,6 +17,7 @@ void bar(Vector * x)
 int main(int argc, char *argv[])
 {
 	x = Vector_new((double []){1,2,3}, 3);
+    REF(x);
 	bar(x);
 	COPY_ON_WRITE(x);
 	x->data[1-1] = 99;

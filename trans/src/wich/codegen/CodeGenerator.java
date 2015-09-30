@@ -68,8 +68,6 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	protected final SymbolTable symtab;
 	protected File currentFile;
 	protected Scope currentScope;
-	protected Block currentBlock;   // used by expr model construction to track tmp vars needed
-	protected int tmpIndex = 1;     // track how many temp vars we create
 
 	public CodeGenerator(SymbolTable symtab) {
 		this.templates = new STGroupFile("wich.stg");

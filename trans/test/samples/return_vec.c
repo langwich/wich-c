@@ -18,9 +18,8 @@ Vector * foo()
 int main(int argc, char *argv[])
 {
 	x = foo();
-	Vector * tmp1;
-	print_vector(tmp1=foo());
+    REF(x);
+	print_vector(foo());
 	DEREF(x);
-	DEREF(tmp1);
 	return 0;
 }

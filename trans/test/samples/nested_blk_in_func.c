@@ -7,10 +7,12 @@ void f()
 {
 	String * x;
 	x = String_new("cat");
+    REF(x);
 	{
 		String * y;
 		String * z;
 		y = String_new("dog");
+    	REF(y);
 		z = x;
 		REF(z);
 		DEREF(y);
