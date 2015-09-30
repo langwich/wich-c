@@ -24,6 +24,7 @@ SOFTWARE.
 package wich.codegen;
 
 import org.antlr.symtab.Utils;
+import org.antlr.v4.runtime.misc.Pair;
 import wich.codegen.model.ModelElement;
 import wich.codegen.model.OutputModelObject;
 
@@ -36,15 +37,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-// visitor methods:
+// listener methods:
 // return null means delete. return same object means don't replace. return diff object means replace.
 
 public class ModelWalker {
 	public static final Object NOTFOUND = new Object(); // can't use exact type here as we can't create MethodHandle for sentinel
 	public static final OutputModelObject NO_RESULT = new OutputModelObject();
+	public final String ENTER_METHOD_NAME = "enterModel";
+	public final String EXIT_METHOD_NAME = "exitModel";
 
 	protected final Object listener;
-	protected final Map<Class<?>, Object> visitorMethodCache = new HashMap<>();
+
+	/** Track (methodname,argtype) -> method handle for firing listener events */
+	protected final Map<Pair<String,Class<?>>, Object> listenerMethodCache = new HashMap<>();
 	protected Object visitEveryModelObjectMethodCache = null;
 
 	public ModelWalker(Object listener) {
@@ -54,8 +59,20 @@ public class ModelWalker {
 	public OutputModelObject walk(OutputModelObject omo) {
 		if ( omo==null ) return NO_RESULT;
 
-		final OutputModelObject result1 = visit(omo);
+		// Exec the exit/every node methods.
+		// If there is a result for the specific node type (exitModel), return that
+		// else return visitEveryModelObject result.
+		// Returning null from either indicates caller should drop this node
+		// from its field.
+		final OutputModelObject result1 = enterModel(omo);
 		final OutputModelObject result2 = visitEveryModelObject(omo);
+		OutputModelObject replacement = result1 != NO_RESULT ? result1 : result2;
+		if ( replacement==null ) { // null means delete so nothing to walk and return nothing
+			return null;
+		}
+		if ( replacement!=NO_RESULT && replacement!=omo ) {
+			omo = replacement;
+		}
 
 		Class<? extends OutputModelObject> cl = omo.getClass();
 		Field[] allAnnotatedFields = Utils.getAllAnnotatedFields(cl);
@@ -70,16 +87,13 @@ public class ModelWalker {
 		// WALK EACH NESTED MODEL OBJECT MARKED WITH @ModelElement
 		for (Field fi : modelFields) {
 			ModelElement annotation = fi.getAnnotation(ModelElement.class);
-			if (annotation == null) {
-				continue;
-			}
-
+			if (annotation == null) continue;
 			String fieldName = fi.getName();
 			try {
 				Object o = fi.get(omo);
 				if ( o instanceof OutputModelObject ) {  // SINGLE MODEL OBJECT?
 					OutputModelObject nestedOmo = (OutputModelObject)o;
-					final OutputModelObject replacement = walk(nestedOmo);
+					replacement = walk(nestedOmo);
 					if ( replacement!=NO_RESULT && replacement!=nestedOmo ) {
 						fi.set(omo, replacement);
 					}
@@ -102,7 +116,11 @@ public class ModelWalker {
 			}
 		}
 
-		return result1!=NO_RESULT ? result1 : result2;
+ 		// Null from enter and exit both mean delete from parent node
+		// but enter returning null means children of omo aren't visited.
+		// So, to delete and avoid visiting children, have enter return null
+		// rather than this exit call.
+		return exitModel(omo);
 	}
 
 	protected void walkArray(OutputModelObject[] elems) {
@@ -153,18 +171,23 @@ public class ModelWalker {
 		}
 	}
 
-	/** Use reflection to find & invoke overloaded visit(modeltype) method */
-	protected OutputModelObject visit(OutputModelObject omo) {
-		final MethodHandle m = getVisitorMethodForType(omo.getClass());
-		return execVisit(omo, m);
+	/** Use reflection to find & invoke overloaded enter/exitModel(modeltype) method */
+	protected OutputModelObject enterModel(OutputModelObject omo) {
+		final MethodHandle m = getListenerMethodForType(omo.getClass(), ENTER_METHOD_NAME);
+		return execListenerMethod(omo, m);
+	}
+
+	protected OutputModelObject exitModel(OutputModelObject omo) {
+		final MethodHandle m = getListenerMethodForType(omo.getClass(), EXIT_METHOD_NAME);
+		return execListenerMethod(omo, m);
 	}
 
 	protected OutputModelObject visitEveryModelObject(OutputModelObject omo) {
 		final MethodHandle m = getVisitEveryNodeMethod();
-		return execVisit(omo, m);
+		return execListenerMethod(omo, m);
 	}
 
-	protected OutputModelObject execVisit(OutputModelObject omo, MethodHandle m) {
+	protected OutputModelObject execListenerMethod(OutputModelObject omo, MethodHandle m) {
 		Object result = NO_RESULT;
 		if ( m!=null ) {
 			try {
@@ -178,8 +201,9 @@ public class ModelWalker {
 		return (OutputModelObject)result;
 	}
 
-	protected MethodHandle getVisitorMethodForType(Class cl) {
-		Object mh = visitorMethodCache.get(cl); // reflection is slow; cache.
+	protected MethodHandle getListenerMethodForType(Class<?> argType, String methodName) {
+		final Pair<String,Class<?>> key = new Pair<>(methodName, argType);
+		Object mh = listenerMethodCache.get(key); // reflection is slow; cache.
 		if ( mh!=null ) {
 			if ( mh==NOTFOUND ) {
 				return null;
@@ -187,14 +211,14 @@ public class ModelWalker {
 			return (MethodHandle)mh;
 		}
 		MethodHandles.Lookup lookup = MethodHandles.lookup();
-		final MethodType mType = MethodType.methodType(OutputModelObject.class, cl);
+		final MethodType mType = MethodType.methodType(OutputModelObject.class, argType);
 		try {
-			mh = lookup.findVirtual(listener.getClass(), "visit", mType);
-			visitorMethodCache.put(cl, mh);
+			mh = lookup.findVirtual(listener.getClass(), methodName, mType);
+			listenerMethodCache.put(key, mh);
 		}
 		catch (Exception e) {
 			mh = null;
-			visitorMethodCache.put(cl, NOTFOUND);
+			listenerMethodCache.put(key, NOTFOUND);
 		}
 		return (MethodHandle)mh;
 	}

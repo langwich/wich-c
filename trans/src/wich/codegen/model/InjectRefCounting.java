@@ -31,18 +31,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class InjectRefCounting {
-	public OutputModelObject visit(AssignStat assign) {
-		System.out.println("visit assignment");
+//	public OutputModelObject visitEveryModelObject(OutputModelObject o) {
+//		System.out.println("visit every node: "+o.getClass().getSimpleName());
+//		return o;
+//	}
+
+	public OutputModelObject enterModel(AssignStat assign) {
+		System.out.println("enterModel assignment");
 		return assign;
 	}
 
-	public OutputModelObject visit(VarInitStat assign) {
-		System.out.println("visit assignment for var init");
+	public OutputModelObject enterModel(VarInitStat assign) {
+		System.out.println("enterModel assignment for var init");
 		return assign;
 	}
 
-	public OutputModelObject visit(Func func) {
-		System.out.println("visit func");
+	public OutputModelObject enterModel(Func func) {
+		System.out.println("enterModel func");
 		// Inject REF(x) for all heap args x at start of function, DEREF at end
 		for (ArgDef arg : func.args) {
 			if ( CodeGenerator.isHeapType(arg.type.type) ) {
@@ -54,11 +59,11 @@ public class InjectRefCounting {
 		return func;
 	}
 
-	public OutputModelObject visit(Script script) {
-		return visit((Block)script);
+	public OutputModelObject enterModel(Script script) {
+		return enterModel((Block) script);
 	}
 
-	public OutputModelObject visit(Block block) {
+	public OutputModelObject enterModel(Block block) {
 		for (VarDefStat varDef : block.varDefs) {
 			if ( CodeGenerator.isHeapType(varDef.type.type) ) {
 				block.stats.add(new RefCountDEREF(varDef.name));
@@ -67,7 +72,8 @@ public class InjectRefCounting {
 		return block;
 	}
 
-	public OutputModelObject visit(ReturnStat retStat) {
+	public OutputModelObject exitModel(ReturnStat retStat) {
+		System.out.println("exitModel return stat");
 		// add DEREF for all heap vars
 		final List<Stat> DEREFs = new ArrayList<>();
 		for (Symbol sym : retStat.enclosingScope.getSymbols()) {
@@ -78,8 +84,8 @@ public class InjectRefCounting {
 			}
 		}
 		final CompositeModelObject retWithDEREFs = new CompositeModelObject();
-		retWithDEREFs.modelObjects.addAll(DEREFs);
-		retWithDEREFs.modelObjects.add(retStat);
+		retWithDEREFs.addAll(DEREFs);
+		retWithDEREFs.add(retStat);
 
 		return retWithDEREFs;
 	}

@@ -8,6 +8,7 @@ public class CompositeModelObject extends Stat {
 	@ModelElement public List<OutputModelObject> modelObjects = new ArrayList<>();
 	public void add(OutputModelObject stat) { modelObjects.add(stat); }
 	public void addAll(CompositeModelObject stat) { modelObjects.addAll(stat.modelObjects); }
+	public void addAll(List<? extends OutputModelObject> stats) { modelObjects.addAll(stats); }
 
 	public CompositeModelObject(OutputModelObject... objects) {
 		if ( objects!=null ) {
