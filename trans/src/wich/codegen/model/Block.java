@@ -23,6 +23,8 @@ SOFTWARE.
 */
 package wich.codegen.model;
 
+import wich.codegen.ModelWalker;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,21 +32,35 @@ import java.util.List;
  *  script level.  Split apart the defs from inits of variables.
  */
 public class Block extends Stat {
+	/** Track vardefs separately. Using add() method ensures this.
+	 */
 	@ModelElement public List<VarDefStat> varDefs  = new ArrayList<>();
 	@ModelElement public List<Stat> stats    	   = new ArrayList<>();
 
 	public void add(Stat stat) {
 		if ( stat instanceof CompositeModelObject ) {
-			final List<?> substats = ((CompositeModelObject) stat).modelObjects;
+			final List<OutputModelObject> substats = ((CompositeModelObject) stat).modelObjects;
 			// cast to force addition even if substats might not be Stat at runtime
-			stats.addAll((List<Stat>)substats);
+			for (OutputModelObject ss : substats) {
+				if ( ss instanceof VarDefStat ) {
+					varDefs.add((VarDefStat)ss);
+				}
+				else {
+					stats.add((Stat) ss);
+				}
+			}
 		}
 		else {
-			stats.add(stat);
+			if ( stat instanceof VarDefStat ) {
+				varDefs.add((VarDefStat)stat);
+			}
+			else {
+				stats.add(stat);
+			}
 		}
 	}
 
-	public void add(VarDefStat varDef) {
-		varDefs.add(varDef);
+	public List<OutputModelObject> getStatementsNoVarDefs() {
+		return ModelWalker.findAll(this, (o) -> !(o instanceof VarDefStat));
 	}
 }

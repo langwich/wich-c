@@ -12,6 +12,7 @@ Vector * foo()
 	REF(y);
 	DEREF(y);
 	return y;
+    DEREF(y);
 }
 
 int main(int argc, char *argv[])

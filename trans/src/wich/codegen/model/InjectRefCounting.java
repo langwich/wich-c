@@ -41,13 +41,13 @@ public class InjectRefCounting {
 		return assign;
 	}
 
-	public OutputModelObject enterModel(VarInitStat assign) {
-		System.out.println("enterModel assignment for var init");
+	public OutputModelObject exitModel(VarInitStat assign) {
+		System.out.println("exitModel assignment for var init");
 		return assign;
 	}
 
-	public OutputModelObject enterModel(Func func) {
-		System.out.println("enterModel func");
+	public OutputModelObject exitModel(Func func) {
+		System.out.println("exitModel func");
 		// Inject REF(x) for all heap args x at start of function, DEREF at end
 		for (ArgDef arg : func.args) {
 			if ( CodeGenerator.isHeapType(arg.type.type) ) {
@@ -59,14 +59,15 @@ public class InjectRefCounting {
 		return func;
 	}
 
-	public OutputModelObject enterModel(Script script) {
-		return enterModel((Block) script);
+	public OutputModelObject exitModel(Script script) {
+		return exitModel((Block) script);
 	}
 
-	public OutputModelObject enterModel(Block block) {
+	public OutputModelObject exitModel(Block block) {
+		System.out.println("exitModel Block");
 		for (VarDefStat varDef : block.varDefs) {
 			if ( CodeGenerator.isHeapType(varDef.type.type) ) {
-				block.stats.add(new RefCountDEREF(varDef.name));
+				block.add(new RefCountDEREF(varDef.name));
 			}
 		}
 		return block;

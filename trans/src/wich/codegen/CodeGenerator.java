@@ -61,7 +61,6 @@ import wich.semantics.symbols.WVariableSymbol;
 import wich.semantics.symbols.WVector;
 
 import static wich.parser.WichParser.FunctionContext;
-import static wich.parser.WichParser.VarDefStatementContext;
 import static wich.parser.WichParser.VardefContext;
 
 public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
@@ -84,7 +83,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		System.out.println("\nfinal model walk:");
 		modelWalker = new ModelWalker(new Object() {
 			public OutputModelObject visitEveryModelObject(OutputModelObject o) {
-				System.out.println("visit every node: "+o.getClass().getSimpleName());
+//				System.out.println("visit every node: "+o.getClass().getSimpleName());
 				return o;
 			}
 		});
@@ -187,12 +186,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		Block block = new Block();
 		for (WichParser.StatementContext s : ctx.statement()) {
 			Stat stat = (Stat)visit(s);
-			if ( s instanceof VarDefStatementContext ) { // target language might need all vardefs first
-				block.add(stat);
-			}
-			else {
-				block.add(stat);
-			}
+			block.add(stat);
 		}
 
 		popScope();

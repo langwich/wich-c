@@ -9,8 +9,8 @@ void f()
 	x = String_new("cat");
 	{
 		String * y;
-		y = String_new("dog");
 		String * z;
+		y = String_new("dog");
 		z = x;
 		REF(z);
 		DEREF(y);

@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 // listener methods:
 // return null means delete. return same object means don't replace. return diff object means replace.
@@ -243,5 +244,27 @@ public class ModelWalker {
 			visitEveryModelObjectMethodCache = NOTFOUND;
 		}
 		return mh;
+	}
+
+	/** Starting at node model, find all nodes at or below model that
+	 *  test true for predicate (including model root itself).
+	 */
+	public static List<OutputModelObject> findAll(OutputModelObject model,
+												  Predicate<OutputModelObject> predicate)
+	{
+		List<OutputModelObject> nodes = new ArrayList<>();
+		if ( predicate.test(model) ) {
+			nodes.add(model);
+		}
+		ModelWalker walker = new ModelWalker(new Object() {
+			public OutputModelObject visitEveryModelObject(OutputModelObject o) {
+				if ( predicate.test(model) ) {
+					nodes.add(o);
+				}
+				return o;
+			}
+		});
+		walker.walk(model);
+		return nodes;
 	}
 }
