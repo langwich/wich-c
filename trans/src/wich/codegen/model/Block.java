@@ -31,7 +31,7 @@ import java.util.List;
  */
 public class Block extends Stat {
 	@ModelElement public List<VarDefStat> varDefs  = new ArrayList<>();
-	@ModelElement public List<Stat> stats    = new ArrayList<>();
+	@ModelElement public List<Stat> stats    	   = new ArrayList<>();
 
 	public void add(Stat stat) {
 		if ( stat instanceof CompositeModelObject ) {

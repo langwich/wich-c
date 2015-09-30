@@ -23,9 +23,12 @@ SOFTWARE.
 */
 package wich.codegen.model;
 
+import org.antlr.symtab.Scope;
 import wich.codegen.model.expr.Expr;
 
 public class ReturnStat extends Stat {
+	/** Needed for reference counting only; used to inject DEREFs before return */
+	public Scope enclosingScope;
 	@ModelElement public Expr expr;
 
 	public ReturnStat(Expr expr) {

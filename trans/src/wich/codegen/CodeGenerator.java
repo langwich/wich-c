@@ -1,7 +1,6 @@
 package wich.codegen;
 
 import org.antlr.symtab.Scope;
-import org.antlr.symtab.Symbol;
 import org.antlr.symtab.Type;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
@@ -27,8 +26,6 @@ import wich.codegen.model.PrintIntStat;
 import wich.codegen.model.PrintNewLine;
 import wich.codegen.model.PrintStringStat;
 import wich.codegen.model.PrintVectorStat;
-import wich.codegen.model.RefCountDEREF;
-import wich.codegen.model.RefCountREF;
 import wich.codegen.model.ReturnStat;
 import wich.codegen.model.Script;
 import wich.codegen.model.Stat;
@@ -63,9 +60,6 @@ import wich.semantics.symbols.WString;
 import wich.semantics.symbols.WVariableSymbol;
 import wich.semantics.symbols.WVector;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static wich.parser.WichParser.FunctionContext;
 import static wich.parser.WichParser.VarDefStatementContext;
 import static wich.parser.WichParser.VardefContext;
@@ -93,7 +87,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 				return o;
 			}
 		});
-		System.out.println("\nfinal model:");
+		System.out.println("\nfinal model walk:");
 		modelWalker.walk(f);
 
 		return f;
@@ -125,10 +119,6 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 				script.add(def);
 				Stat init = (Stat)varStats.modelObjects.get(1);
 				script.add(init);
-				if ( varStats.modelObjects.size()>2 ) {
-					Stat refCountingStat = (Stat)varStats.modelObjects.get(2); // TODO: maybe we can create here
-					script.add(refCountingStat);
-				}
 			}
 			else if ( child instanceof FunctionContext ) {
 				script.functions.add((Func)visit(child));
@@ -137,10 +127,6 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 				script.add((Stat) visit(child));
 			}
 		}
-
-		// add DEREF for all heap vars
-		final List<Stat> DEREFs = getDEREFs(currentScope);
-		script.stats.addAll(DEREFs);
 
 		return script;
 	}
@@ -157,24 +143,10 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		Block body = (Block)visit(ctx.block());
 		Func func = new Func(funcName, returnType, body);
 		if ( ctx.formal_args()!=null ) {
-			List<Stat> refCountArgs = new ArrayList<>();
 			for (WichParser.Formal_argContext arg : ctx.formal_args().formal_arg()) {
 				ArgDef argDefModel = (ArgDef) visit(arg);
 				func.args.add(argDefModel);
-				String argTypeName = arg.type().getText();
-				Type argType = (Type)currentScope.resolve(argTypeName);
-				if ( isHeapType(argType) ) {
-					refCountArgs.add(new RefCountREF(arg.ID().getText()));
-				}
 			}
-
-			// rewrite function body to have REF(x) for all heap arg x at start
-			refCountArgs.addAll(func.body.stats);
-			func.body.stats = refCountArgs;
-
-			// add DEREF for all heap args at the end
-			final List<Stat> DEREFs = getDEREFs(currentScope);
-			func.body.stats.addAll(DEREFs);
 		}
 
 		popScope();
@@ -223,10 +195,6 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 			}
 		}
 
-		// add DEREF for all heap vars
-		final List<Stat> DEREFs = getDEREFs(currentScope);
-		block.stats.addAll(DEREFs);
-
 		popScope();
 		return block;
 	}
@@ -265,24 +233,14 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		Expr expr = (Expr)visit(ctx.expr());
 		VarInitStat varInit = new VarInitStat(varName, expr);
 		VarDefStat varDef = new VarDefStat(varName, type);
-		if ( isHeapType(v.getType()) ) {
-			// TODO
-//			return new CompositeStat(varDef, varInit, new RefCountREF(varDef.name));
-		}
 		return new CompositeModelObject(varDef, varInit);
 	}
 
 	@Override
 	public OutputModelObject visitReturn(@NotNull WichParser.ReturnContext ctx) {
 		ReturnStat ret = new ReturnStat( (Expr)visit(ctx.expr()) );
-
-		// add DEREF for all heap vars
-		final List<Stat> DEREFs = getDEREFs(currentScope);
-		final CompositeModelObject compositeStat = new CompositeModelObject();
-		compositeStat.modelObjects.addAll(DEREFs);
-		compositeStat.modelObjects.add(ret);
-
-		return compositeStat;
+		ret.enclosingScope = currentScope;
+		return ret;
 	}
 
 	@Override
@@ -448,18 +406,6 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 
 	public static boolean isPrimitiveType(Type type) {
 		return type instanceof WString || type instanceof WVector;
-	}
-
-	public static List<Stat> getDEREFs(Scope scope) {
-		List<Stat> stats = new ArrayList<>();
-		for (Symbol sym : scope.getSymbols()) {
-			if ( sym instanceof WVariableSymbol) {
-				if ( isHeapType(((WVariableSymbol)sym).getType()) ) {
-					stats.add(new RefCountDEREF(sym.getName()));
-				}
-			}
-		}
-		return stats;
 	}
 
 	public static WichType getTypeModel(Type type) {

@@ -189,7 +189,7 @@ IntType(t) ::= "int"
 FloatType(t) ::= "double"
 VectorType(t) ::= "Vector *"
 StringType(t) ::= "String *"
-TmpVarDef(t,type) ::="<type> tmp<t.varIndex>;"
+TmpVarDef(t,type) ::="<typeMo> tmp<t.varIndex>;"
 
 RefCountREF(v) ::= "REF(<v.varName>);"
 RefCountDEREF(v) ::= "DEREF(<v.varName>);"

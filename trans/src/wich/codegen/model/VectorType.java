@@ -24,5 +24,10 @@ SOFTWARE.
 package wich.codegen.model;
 
 
+import wich.semantics.SymbolTable;
+
 public class VectorType extends WichType {
+	public VectorType() {
+		super(SymbolTable._vector);
+	}
 }

@@ -23,12 +23,14 @@ SOFTWARE.
 */
 package wich.codegen.model;
 
-public class InjectRefCounting {
-//	public OutputModelObject visitEveryModelObject(OutputModelObject o) {
-//		System.out.println("visit every node: "+o.getClass().getSimpleName());
-//		return o;
-//	}
+import org.antlr.symtab.Symbol;
+import wich.codegen.CodeGenerator;
+import wich.semantics.symbols.WVariableSymbol;
 
+import java.util.ArrayList;
+import java.util.List;
+
+public class InjectRefCounting {
 	public OutputModelObject visit(AssignStat assign) {
 		System.out.println("visit assignment");
 		return assign;
@@ -36,11 +38,49 @@ public class InjectRefCounting {
 
 	public OutputModelObject visit(VarInitStat assign) {
 		System.out.println("visit assignment for var init");
-		return null;
+		return assign;
 	}
 
 	public OutputModelObject visit(Func func) {
 		System.out.println("visit func");
+		// Inject REF(x) for all heap args x at start of function, DEREF at end
+		for (ArgDef arg : func.args) {
+			if ( CodeGenerator.isHeapType(arg.type.type) ) {
+				func.body.stats.add(0, new RefCountREF(arg.name));
+				func.body.stats.add(new RefCountDEREF(arg.name));
+			}
+		}
+
 		return func;
+	}
+
+	public OutputModelObject visit(Script script) {
+		return visit((Block)script);
+	}
+
+	public OutputModelObject visit(Block block) {
+		for (VarDefStat varDef : block.varDefs) {
+			if ( CodeGenerator.isHeapType(varDef.type.type) ) {
+				block.stats.add(new RefCountDEREF(varDef.name));
+			}
+		}
+		return block;
+	}
+
+	public OutputModelObject visit(ReturnStat retStat) {
+		// add DEREF for all heap vars
+		final List<Stat> DEREFs = new ArrayList<>();
+		for (Symbol sym : retStat.enclosingScope.getSymbols()) {
+			if ( sym instanceof WVariableSymbol) {
+				if ( CodeGenerator.isHeapType(((WVariableSymbol) sym).getType()) ) {
+					DEREFs.add(new RefCountDEREF(sym.getName()));
+				}
+			}
+		}
+		final CompositeModelObject retWithDEREFs = new CompositeModelObject();
+		retWithDEREFs.modelObjects.addAll(DEREFs);
+		retWithDEREFs.modelObjects.add(retStat);
+
+		return retWithDEREFs;
 	}
 }

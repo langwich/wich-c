@@ -26,7 +26,7 @@ package wich.codegen.model;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Func extends OutputModelObject{
+public class Func extends OutputModelObject {
 	public final String funcName;
 	@ModelElement public WichType returnType;
 	@ModelElement public List<ArgDef> args = new ArrayList<ArgDef>();

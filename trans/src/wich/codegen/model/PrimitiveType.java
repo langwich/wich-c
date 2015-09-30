@@ -23,5 +23,10 @@ SOFTWARE.
 */
 package wich.codegen.model;
 
+import org.antlr.symtab.Type;
+
 public abstract class PrimitiveType extends WichType {
+	public PrimitiveType(Type type) {
+		super(type);
+	}
 }
