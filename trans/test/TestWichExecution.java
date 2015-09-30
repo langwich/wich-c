@@ -23,6 +23,7 @@ SOFTWARE.
 */
 
 import javafx.util.Pair;
+import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import wich.errors.WichErrorHandler;
@@ -37,6 +38,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
+import static junit.framework.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
 
 // Assuming the program is running on Unix-like operating systems.
@@ -56,6 +58,45 @@ public class TestWichExecution extends WichBaseTest {
 
 	public TestWichExecution(File input, String baseName) {
 		super(input, baseName);
+	}
+
+	@Test
+	public void testCodeGen() throws Exception {
+		WichErrorHandler err = new WichErrorHandler();
+		SymbolTable symtab = new SymbolTable();
+		URL expURL = CompilerUtils.getResourceFile(baseName + ".c");
+		assertNotNull(expURL);
+		String expPath = expURL.getPath();
+		String expected = CompilerUtils.readFile(expPath, CompilerUtils.FILE_ENCODING);
+		String contents = CompilerUtils.readFile(input.getAbsolutePath(), CompilerUtils.FILE_ENCODING);
+		String actual = CompilerUtils.genCode(contents, symtab, err);
+		CompilerUtils.writeFile("/tmp/__t.c", actual, StandardCharsets.UTF_8);
+
+		// normalize the file using gnu indent (brew install gnu-indent on OS X)
+		exec(
+			new String[] {
+				"gindent",
+				"-bap", "-bad", "-br", "-nce", "-ncs", "-nprs", "-npcs", "-sai", "-saw",
+				"-di1", "-brs", "-blf", "--indent-level4", "-nut", "-sob", "-l200",
+				"/tmp/__t.c"
+			}
+		);
+		actual = CompilerUtils.readFile("/tmp/__t.c", StandardCharsets.UTF_8);
+//		System.out.println("NORMALIZED\n"+actual);
+
+		// format the expected file as well
+		exec(
+			new String[] {
+				"gindent",
+				"-bap", "-bad", "-br", "-nce", "-ncs", "-nprs", "-npcs", "-sai", "-saw",
+				"-di1", "-brs", "-blf", "--indent-level4", "-nut", "-sob", "-l200",
+				expPath,
+				"-o", "/tmp/__expected.c"
+			}
+		);
+		expected = CompilerUtils.readFile("/tmp/__expected.c", StandardCharsets.UTF_8);
+
+		Assert.assertEquals(expected, actual);
 	}
 
 	@Test
@@ -100,9 +141,14 @@ public class TestWichExecution extends WichBaseTest {
 		CompilerUtils.writeFile(generatedFileName, actual, StandardCharsets.UTF_8);
 		// Compile C code and return the path to the executable.
 		String executable = "./" + baseName;
-		System.out.println(exec(new String[]{"cc", "-g", "-o", executable,
-		generatedFileName, runtimePath+"/"+WICH_LIB,
-		"-I", runtimePath, "-std=c99", "-O0"}).getValue());
+		final Pair<String, String> result = exec(
+			new String[]{
+				"cc", "-g", "-o", executable,
+				generatedFileName, runtimePath + "/" + WICH_LIB,
+				"-I", runtimePath, "-std=c99", "-O0"
+			}
+		);
+		System.out.println(result.getValue());
 		return executable;
 	}
 
