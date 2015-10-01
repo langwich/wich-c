@@ -33,7 +33,11 @@ import java.util.List;
  *  script level.  Split apart the defs from inits of variables.
  */
 public class Block extends Stat {
+	public static final int FUNC_BLOCK_NUMBER = 0;
+
+	/** indexed from 0 and is the block number within the enclosing block */
 	public int blockNumber;
+
 	public Scope scope;
 	/** Track vardefs separately. Using add() method ensures this. */
 	@ModelElement public List<VarDefStat> varDefs  = new ArrayList<>();

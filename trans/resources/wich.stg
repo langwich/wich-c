@@ -59,6 +59,7 @@ CVectorBinaryOpMap ::= [
 
 File(f, script) ::= <<
 #include \<stdio.h>
+#include \<stdbool.h>
 #include "wich.h"
 
 <script.varDefs; separator="\n">
@@ -87,6 +88,7 @@ Func(f,returnType,args,body)::=<<
 
 FuncBlock(b,varDefs,stats,cleanup)::= <<
 {
+	bool _ret = false;
 	<varDefs; separator="\n">
 	<stats; separator="\n">
 _cleanup:

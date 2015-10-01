@@ -1,12 +1,13 @@
 #include <stdio.h>
+#include <stdbool.h>
 #include "wich.h"
 
-f(Vector * a);
+void f(Vector * a);
 
-f(Vector * a)
+void f(Vector * a)
 {
+    bool _ret = false;
     String *b;
-
     Vector *e;
 
     REF(a);

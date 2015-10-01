@@ -4,6 +4,6 @@ public class FuncBlock extends Block {
 	public Func enclosingFunc;
 
 	public FuncBlock() {
-		super(0);
+		super(FUNC_BLOCK_NUMBER); // the outer block is always
 	}
 }
