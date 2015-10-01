@@ -28,7 +28,7 @@ public class TmpVarDef extends VarInitStat {
 	@ModelElement public final WichType type;
 
 	public TmpVarDef(int varIndex, WichType type) {
-		super("", null); // we don't use var name for tmp vars
+		super(null, null); // we don't use var name for tmp vars
 		this.varIndex = varIndex;
 		this.type = type;
 	}

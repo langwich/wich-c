@@ -23,15 +23,18 @@ SOFTWARE.
 */
 package wich.codegen.model;
 
+import org.antlr.symtab.Scope;
 import wich.codegen.CodeGenerator;
+import wich.semantics.symbols.WVariableSymbol;
 
 public class InjectRefCounting {
 	protected Func currentFunc;
+	protected Scope currentScope;
 
-//	public OutputModelObject visitEveryModelObject(OutputModelObject o) {
-//		System.out.println("visit every node: "+o.getClass().getSimpleName());
-//		return o;
-//	}
+	public OutputModelObject visitEveryModelObject(OutputModelObject o) {
+		System.out.println("visit every node: "+o.getClass().getSimpleName());
+		return o;
+	}
 
 	public OutputModelObject exitModel(VarInitStat init) {
 		return exitModel((AssignStat)init);
@@ -40,18 +43,19 @@ public class InjectRefCounting {
 	public OutputModelObject exitModel(AssignStat assign) {
 		System.out.println("exitModel assignment");
 		if ( CodeGenerator.isHeapType(assign.expr.getType()) ) {
-			return new CompositeModelObject(assign, new RefCountREF(assign.varName));
+			final String varName = assign.varRef.getName();
+			final WVariableSymbol varSym = (WVariableSymbol)currentScope.resolve(varName);
+			final RefCountREF REF = new RefCountREF(CodeGenerator.getVarRef(varSym));
+			return new CompositeModelObject(assign, REF);
 		}
 		return assign;
 	}
 
 	public OutputModelObject exitModel(ReturnStat retStat) {
-//		if ( CodeGenerator.isHeapType(retStat.expr.getType()) ) {
-//			final RefCountREF REF = new RefCountREF(retStat);
-//			return new CompositeModelObject(retStat, REF);
-//		}
-		final AssignStat ret = new AssignStat("_retv", retStat.expr);
-		return new CompositeModelObject(ret, new RefCountREF(ret.varName));
+		if ( CodeGenerator.isHeapType(retStat.expr.getType()) ) {
+			return new CompositeModelObject(new RefCountDEREF(), retStat);
+		}
+		return retStat;
 	}
 
 	public OutputModelObject enterModel(Func func) {
@@ -64,49 +68,52 @@ public class InjectRefCounting {
 		// Inject REF(x) for all heap args x at start of function, DEREF at end
 		for (ArgDef arg : func.args) {
 			if ( CodeGenerator.isHeapType(arg.type.type) ) {
-				func.body.stats.add(0, new RefCountREF(arg.name));
-				func.body.cleanup.add(new RefCountDEREF(arg.name));
+				final WVariableSymbol argSym = (WVariableSymbol)func.scope.resolve(arg.name);
+				func.body.stats.add(0, new RefCountREF(CodeGenerator.getVarRef(argSym)));
 			}
 		}
+
+		func.body.cleanup.add(new RefCountDEREF());
 
 		currentFunc = null;
 		return func;
 	}
 
-	public OutputModelObject exitModel(Script script) {
-		exitModel((Block)script);
+	public OutputModelObject enterModel(Script script) {
+		enterModel((Block)script);
 		return script;
+	}
+
+	public OutputModelObject exitModel(Script script) {
+		exitModel((Block) script);
+		return script;
+	}
+
+	public OutputModelObject enterModel(FuncBlock block) {
+		return enterModel((Block)block);
 	}
 
 	public OutputModelObject exitModel(FuncBlock block) {
 		return exitModel((Block)block);
 	}
 
-	public OutputModelObject exitModel(Block block) {
-		System.out.println("exitModel Block");
-		for (VarDefStat varDef : block.varDefs) {
-			if ( CodeGenerator.isHeapType(varDef.type.type) ) {
-				block.cleanup.add(new RefCountDEREF(varDef.name));
-			}
-		}
+	public OutputModelObject enterModel(Block block) {
+		System.out.println("enterModel block");
+		pushScope(block.scope);
 		return block;
 	}
 
-//	public OutputModelObject exitModel(ReturnStat retStat) {
-//		System.out.println("exitModel return stat");
-//		// add DEREF for all heap vars
-//		final List<Stat> DEREFs = new ArrayList<>();
-//		for (Symbol sym : retStat.enclosingScope.getSymbols()) {
-//			if ( sym instanceof WVariableSymbol) {
-//				if ( CodeGenerator.isHeapType(((WVariableSymbol) sym).getType()) ) {
-//					DEREFs.add(new RefCountDEREF(sym.getName()));
-//				}
+	public OutputModelObject exitModel(Block block) {
+		System.out.println("exitModel Block");
+//		for (VarDefStat varDef : block.varDefs) {
+//			if ( CodeGenerator.isHeapType(varDef.type.type) ) {
 //			}
 //		}
-//		final CompositeModelObject retWithDEREFs = new CompositeModelObject();
-//		retWithDEREFs.addAll(DEREFs);
-//		retWithDEREFs.add(retStat);
-//
-//		return retWithDEREFs;
-//	}
+		popScope();
+		return block;
+	}
+
+	protected void pushScope(Scope s) {currentScope = s;}
+
+	protected void popScope() {currentScope = currentScope.getEnclosingScope();}
 }

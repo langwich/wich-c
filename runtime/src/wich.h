@@ -87,7 +87,7 @@ void wich_free(heap_object *p);
 	printf("DEREF(" #x ") has %d refs\n", ((heap_object *)x)->refs);\
 	if ( x!=NULL ) { \
 		((heap_object *)x)->refs--; \
-		if ( x!=_retv && ((heap_object *)x)->refs==0 ) { \
+		if ( ((heap_object *)x)->refs==0 ) { \
 			printf("free(" #x ")\n"); \
 			wich_free((heap_object *)x); \
 			x = NULL; \
@@ -99,7 +99,7 @@ void wich_free(heap_object *p);
 #define DEREF(x) \
 	if ( x!=NULL ) { \
 		((heap_object *)x)->refs--; \
-		if ( x!=_retv && ((heap_object *)x)->refs==0 ) { \
+		if ( ((heap_object *)x)->refs==0 ) { \
 			wich_free((heap_object *)x); \
 			x = NULL; \
 		} \

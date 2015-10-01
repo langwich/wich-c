@@ -1,9 +1,11 @@
 package wich.codegen.model;
 
-public class RefCountREF extends Stat {
-	public String varName;
+import wich.codegen.model.expr.VarRef;
 
-	public RefCountREF(String varName) {
-		this.varName = varName;
+public class RefCountREF extends Stat {
+	@ModelElement public final VarRef varRef;
+
+	public RefCountREF(VarRef varRef) {
+		this.varRef = varRef;
 	}
 }

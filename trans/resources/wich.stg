@@ -81,19 +81,16 @@ funcDecl(funcTemplate) ::= <<
 >>
 
 Func(f,returnType,args,body)::=<<
-<returnType> <f.funcName>(<args;separator=",">)
+<returnType> <f.name>(<args;separator=",">)
 <body>
 <\n>
 >>
 
 FuncBlock(b,varDefs,stats,cleanup)::= <<
 {
-	bool _ret = false;
 	<varDefs; separator="\n">
 	<stats; separator="\n">
-_cleanup:
 	<cleanup; separator="\n">
-	<if(b.enclosingFunc.returnType)>return _retv;<endif>
 }
 >>
 
@@ -101,13 +98,11 @@ Block(b,varDefs,stats,cleanup)::= <<
 {
 	<varDefs; separator="\n">
 	<stats; separator="\n">
-_cleanup:
-	<cleanup; separator="\n">
 }
 >>
 
-AssignStat(a,expr)::=<<
-<a.varName> = <expr>;
+AssignStat(a,varRef,expr)::=<<
+<varRef> = <expr>;
 >>
 
 CallStat(c,callExpr) ::=<<
@@ -129,11 +124,11 @@ while (<condition>) <stat;separator="\n">
 >>
 
 ReturnStat(r,expr)  ::= <<
-_retv = <expr>;
+return <expr>;
 >>
 
-VarInitStat(v,expr) ::= <<
-<v.varName> = <expr>;
+VarInitStat(v,varRef,expr) ::= <<
+<varRef> = <expr>;
 >>
 
 VarDefStat(v,type) ::= <<
@@ -171,6 +166,7 @@ BinaryVectorOp(op, left, right)  ::= "<CVectorBinaryOpMap.(op.wichOp)>(<left>,<r
 IntLiteral(i)	::= "<i.value>"
 FloatLiteral(f)	::= "<f.value>"
 VarRef(v)		::= "<v.name>"
+HeapVarRef(v)	::= "_localptrs[<v.index>]"
 
 StringLiteral(s) ::= <<
 String_new(<s.literal>)
@@ -205,5 +201,5 @@ VectorType(t) ::= "Vector *"
 StringType(t) ::= "String *"
 TmpVarDef(t,type) ::="<typeMo> tmp<t.varIndex>;"
 
-RefCountREF(v) ::= "REF(<v.varName>);"
-RefCountDEREF(v) ::= "DEREF(<v.varName>);"
+RefCountREF(v,varRef) ::= "REF(<varRef>);"
+RefCountDEREF(v) ::= "deref(_localptrs);"

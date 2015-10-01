@@ -24,10 +24,11 @@ SOFTWARE.
 package wich.codegen.model;
 
 import wich.codegen.model.expr.Expr;
+import wich.codegen.model.expr.VarRef;
 
 /** Represents the init part of var x = <expr> statement. */
 public class VarInitStat extends AssignStat {
-	public VarInitStat(String name, Expr expr) {
-		super(name, expr);
+	public VarInitStat(VarRef varRef, Expr expr) {
+		super(varRef, expr);
 	}
 }

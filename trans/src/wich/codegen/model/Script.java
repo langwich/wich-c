@@ -33,6 +33,6 @@ public class Script extends Block {
 	@ModelElement public List<Func> functions = new ArrayList<>();
 
 	public Script() {
-		super(0);
+		super(null, SCRIPT_BLOCK_NUMBER);
 	}
 }

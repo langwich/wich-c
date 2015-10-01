@@ -34,17 +34,24 @@ import java.util.List;
  */
 public class Block extends Stat {
 	public static final int FUNC_BLOCK_NUMBER = 0;
+	public static final int SCRIPT_BLOCK_NUMBER = FUNC_BLOCK_NUMBER;
 
 	/** indexed from 0 and is the block number within the enclosing block */
 	public int blockNumber;
 
+	/** What scope in symtab is associated with this block? */
 	public Scope scope;
+
+	/** The lexically enclosing block; null if this instanceof FuncBlock or Script */
+	public Block enclosingBlock;
+
 	/** Track vardefs separately. Using add() method ensures this. */
 	@ModelElement public List<VarDefStat> varDefs  = new ArrayList<>();
 	@ModelElement public List<Stat> stats    	   = new ArrayList<>();
 	@ModelElement public List<Stat> cleanup    	   = new ArrayList<>();
 
-	public Block(int blockNumber) {
+	public Block(Block enclosingBlock, int blockNumber) {
+		this.enclosingBlock = enclosingBlock;
 		this.blockNumber = blockNumber;
 	}
 
@@ -70,6 +77,13 @@ public class Block extends Stat {
 			}
 		}
 	}
+
+//	public String getEnclosingCleanupLabel() {
+//		if ( enclosingBlock!=null ) {
+//			return enclosingBlock;
+//		}
+//		return "_cleanup_"+FUNC_BLOCK_NUMBER;
+//	}
 
 	public List<OutputModelObject> getStatementsNoVarDefs() {
 		return ModelWalker.findAll(this, (o) -> !(o instanceof VarDefStat));

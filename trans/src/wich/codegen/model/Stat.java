@@ -23,9 +23,5 @@ SOFTWARE.
 */
 package wich.codegen.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public abstract class Stat extends OutputModelObject {
-	public List<Integer> tmpVars = new ArrayList<>();
 }

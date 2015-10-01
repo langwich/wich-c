@@ -23,19 +23,23 @@ SOFTWARE.
 */
 package wich.codegen.model;
 
+import wich.semantics.symbols.WFunctionSymbol;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class Func extends OutputModelObject {
-	public final String funcName;
+	public WFunctionSymbol scope;
 	@ModelElement public WichType returnType;
 	@ModelElement public List<ArgDef> args = new ArrayList<ArgDef>();
-	@ModelElement public Block body;
+	@ModelElement public FuncBlock body;
 
-	public Func(String funcName, WichType returnType, FuncBlock body) {
-		this.funcName = funcName;
+	public Func(WFunctionSymbol scope, WichType returnType, FuncBlock body) {
+		this.scope = scope;
 		this.returnType = returnType;
 		this.body = body;
 		body.enclosingFunc = this;
 	}
+
+	public String getName() { return scope.getName(); }
 }

@@ -45,6 +45,7 @@ import wich.codegen.model.expr.BinaryVectorOp;
 import wich.codegen.model.expr.Expr;
 import wich.codegen.model.expr.FloatLiteral;
 import wich.codegen.model.expr.FuncCall;
+import wich.codegen.model.expr.HeapVarRef;
 import wich.codegen.model.expr.IntLiteral;
 import wich.codegen.model.expr.NegateExpr;
 import wich.codegen.model.expr.NotExpr;
@@ -70,6 +71,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	protected final SymbolTable symtab;
 	protected File currentFile;
 	protected Scope currentScope;
+	protected Block currentBlock;
 
 	public CodeGenerator(SymbolTable symtab) {
 		this.templates = new STGroupFile("wich.stg");
@@ -142,12 +144,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 			returnType = (WichType)visit(ctx.type());
 		}
 		FuncBlock body = (FuncBlock)visit(ctx.block());
-		if ( returnType!=null ) {
-			WVariableSymbol retvSym = new WVariableSymbol("_retv");
-			ctx.block().scope.define(retvSym);
-			body.varDefs.add(0, new VarDefStat("_retv", returnType));
-		}
-		Func func = new Func(funcName, returnType, body);
+		Func func = new Func(ctx.scope, returnType, body);
 		if ( ctx.formal_args()!=null ) {
 			for (WichParser.Formal_argContext arg : ctx.formal_args().formal_arg()) {
 				ArgDef argDefModel = (ArgDef) visit(arg);
@@ -192,11 +189,11 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 
 		Block block;
 		if ( ctx.getParent() instanceof FunctionContext ) {
-			block = new FuncBlock();
+			block = new FuncBlock(currentBlock);
 			block.scope = currentScope;
 		}
 		else {
-			block = new Block(blockNumber++);
+			block = new Block(currentBlock, blockNumber++);
 			block.scope = currentScope;
 		}
 		for (WichParser.StatementContext s : ctx.statement()) {
@@ -240,7 +237,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		WVariableSymbol v = (WVariableSymbol)currentScope.resolve(varName);
 		WichType type = getTypeModel(v.getType());
 		Expr expr = (Expr)visit(ctx.expr());
-		VarInitStat varInit = new VarInitStat(varName, expr);
+		VarInitStat varInit = new VarInitStat(getVarRef(varName), expr);
 		VarDefStat varDef = new VarDefStat(varName, type);
 		return new CompositeModelObject(varDef, varInit);
 	}
@@ -257,7 +254,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	public OutputModelObject visitAssign(@NotNull WichParser.AssignContext ctx) {
 		String varName = ctx.ID().getText();
 		Expr expr      = (Expr)visit(ctx.expr());
-		return new AssignStat(varName, expr);
+		return new AssignStat(getVarRef(varName), expr);
 	}
 
 	@Override
@@ -373,7 +370,19 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 
 	@Override
 	public OutputModelObject visitIdentifier(@NotNull WichParser.IdentifierContext ctx) {
-		final WVariableSymbol varSym = (WVariableSymbol)currentScope.resolve(ctx.getText());
+		final String varName = ctx.getText();
+		return getVarRef(varName);
+	}
+
+	public VarRef getVarRef(String varName) {
+		final WVariableSymbol varSym = (WVariableSymbol)currentScope.resolve(varName);
+		return getVarRef(varSym);
+	}
+
+	public static VarRef getVarRef(WVariableSymbol varSym) {
+		if ( isHeapType(varSym.getType()) ) {
+			return new HeapVarRef(varSym);
+		}
 		return new VarRef(varSym);
 	}
 
