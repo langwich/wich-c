@@ -27,17 +27,24 @@ SOFTWARE.
 #include <stdio.h>
 #include "wich.h"
 
+// There is a general assumption that support routines follow same
+// ref counting convention as Wich code: functions REF their heap args and
+// then DEREF before returning; it is the responsibility of the caller
+// to REF/DEREF heap return values
+
 Vector *Vector_new(double *data, size_t n)
 {
 	Vector *v = Vector_alloc(n);
 	memcpy(v->data, data, n * sizeof(double));
-	REF(v); // presumption is that people will have a ref to this result
 	return v;
 }
 
 Vector *Vector_copy(Vector *v)
 {
-	return Vector_new(v->data, v->length);
+	REF(v);
+	Vector *result = Vector_new(v->data, v->length);
+	DEREF(v); // might free(v)
+	return result;
 }
 
 Vector *Vector_empty()
@@ -45,7 +52,6 @@ Vector *Vector_empty()
 	int n = 10;
 	Vector *v = Vector_alloc(n);
 	memset(v->data, 0, n*sizeof(double));
-	REF(v); // presumption is that people will have a ref to this result
 	return v;
 }
 
@@ -59,6 +65,8 @@ Vector *Vector_alloc(size_t size)
 
 Vector *Vector_add(Vector *a, Vector *b)
 {
+	REF(a);
+	REF(b);
 	int i;
 	if ( a==NULL || b==NULL || a->length!=b->length ) return NULL;
 	size_t n = a->length;
@@ -66,18 +74,12 @@ Vector *Vector_add(Vector *a, Vector *b)
 	for (i=0; i<n; i++) {
 		c->data[i] = a->data[i] + b->data[i];
 	}
-	REF(c); // presumption is that people will have a ref to this result
+	DEREF(a);
+	DEREF(b);
 	return c;
 }
 
-void print_vector(Vector *a)
-{
-	char *vs = Vector_as_string(a);
-	printf("%s\n", vs);
-	free(vs);
-}
-
-char *Vector_as_string(Vector *a)
+static char *Vector_as_string(Vector *a) // not called from Wich so no REF/DEREF
 {
 	char *s = calloc(a->length*20, sizeof(char));
 	char buf[50];
@@ -91,6 +93,15 @@ char *Vector_as_string(Vector *a)
 	return s;
 }
 
+void print_vector(Vector *a)
+{
+	REF(a);
+	char *vs = Vector_as_string(a);
+	printf("%s\n", vs);
+	free(vs);
+	DEREF(a);
+}
+
 String *String_alloc(size_t size)
 {
 	String *s = (String *)wich_malloc(sizeof(String) + size * sizeof(char) + 1); // include \0 of string
@@ -102,7 +113,6 @@ String *String_new(char *orig)
 {
 	String *s = String_alloc(strlen(orig));
 	strcpy(s->str, orig);
-	REF(s); // presumption is that people will have a ref to this result
 	return s;
 }
 
@@ -114,18 +124,23 @@ String *String_from_char(char c)
 
 void print_string(String *a)
 {
+	REF(a);
 	printf("%s\n", a->str);
+	DEREF(a);
 }
 
 String *String_add(String *s, String *t)
 {
-	if ( s==NULL ) return t;
+	if ( s==NULL ) return t; // don't REF/DEREF as we might free our return value
 	if ( t==NULL ) return s;
+	REF(s);
+	REF(t);
 	size_t n = strlen(s->str) + strlen(t->str);
 	String *u = String_alloc(n);
-	REF(u);
 	strcpy(u->str, s->str);
 	strcat(u->str, t->str);
+	DEREF(s);
+	DEREF(t);
 	return u;
 }
 
@@ -139,29 +154,3 @@ void *wich_malloc(size_t nbytes)
 {
 	return malloc(nbytes);
 }
-
-/* old stuff we might use as base for double vector?
-
-void IntList_add(IntList *list, int v) {
-    if ( list->next >= list->size ) {
-        int *old = list->data;
-        list->data = calloc(list->size*2, sizeof(int));
-        memcpy(list->data, old, list->size);
-        free(old);
-        list->size *= 2;
-    }
-    list->data[list->next++] = v;
-}
-
-// Do two IntLists have same elements?
-int IntList_eq(IntList a, IntList b) {
-    int i;
-    if ( a.next!=b.next ) return 0;
-    int n = a.next > b.next ? a.next : b.next; // get max
-    if ( n<=0 ) return 0;
-    for (i=0; i<n; i++) {
-        if ( a.data[i]!=b.data[i] ) return 0;
-    }
-    return 1;
-}
-*/

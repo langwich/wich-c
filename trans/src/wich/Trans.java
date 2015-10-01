@@ -36,7 +36,7 @@ import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
 import wich.codegen.CodeGenerator;
 import wich.codegen.ModelConverter;
-import wich.codegen.model.CFile;
+import wich.codegen.model.File;
 import wich.errors.WichErrorHandler;
 import wich.parser.WichLexer;
 import wich.parser.WichParser;
@@ -108,10 +108,10 @@ public class Trans {
 
 			// use CodeGenerator tree visitor to generate the target
 			// language (C).
-			CodeGenerator codeGenerator = new CodeGenerator(filename,symtab);
-			CFile omo = codeGenerator.generate(tree);
+			CodeGenerator codeGenerator = new CodeGenerator(symtab);
+			File omo = codeGenerator.generate(tree);
 
-			// using omo and string template to generate translated LLVM bitcode.
+			// using omo and string template to generate translated code
 			STGroup templates = new STGroupFile("wich.stg");
 			ModelConverter converter = new ModelConverter(templates);
 			ST wichST = converter.walk(omo);

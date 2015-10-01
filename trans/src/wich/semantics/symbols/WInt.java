@@ -25,6 +25,6 @@ package wich.semantics.symbols;
 
 public class WInt extends WBuiltInTypeSymbol {
 	public WInt() {
-		super("int", TYPE.INT);
+		super("int", TYPENAME.INT);
 	}
 }

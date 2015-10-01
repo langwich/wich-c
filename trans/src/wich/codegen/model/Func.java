@@ -26,12 +26,15 @@ package wich.codegen.model;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Func extends OutputModelObject{
+public class Func extends OutputModelObject {
 	public final String funcName;
-	@ModelElement public PType returnType;
+	@ModelElement public WichType returnType;
 	@ModelElement public List<ArgDef> args = new ArrayList<ArgDef>();
 	@ModelElement public Block body;
-	public Func(String funcName) {
+
+	public Func(String funcName, WichType returnType, Block body) {
 		this.funcName = funcName;
+		this.returnType = returnType;
+		this.body = body;
 	}
 }

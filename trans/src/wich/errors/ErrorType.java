@@ -27,6 +27,7 @@ package wich.errors;
 import static wich.errors.ErrorSeverity.ERROR;
 
 public enum ErrorType {
+	INVALID_LEFT_SIDE_ERROR("left side of assignment must be a variable", ERROR),
 	INCOMPATIBLE_ASSIGNMENT_ERROR("incompatible type in assignment (cannot promote from <arg2> to <arg1>)", ERROR),
 	INCOMPATIBLE_ARGUMENT_ERROR("incompatible argument type (cannot promote from <arg2> to <arg1>)", ERROR),
 	INVALID_CONDITION_ERROR("invalid condition type (boolean expected but <arg1> was given)", ERROR),

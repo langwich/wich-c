@@ -22,20 +22,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
-import wich.errors.WichErrorHandler;
-import wich.semantics.SymbolTable;
 
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.regex.Pattern;
-
-import static junit.framework.Assert.assertEquals;
 
 @RunWith(Parameterized.class)
 public class WichBaseTest {
@@ -49,19 +43,7 @@ public class WichBaseTest {
 		this.baseName = baseName;
 	}
 
-	@Test
-	public void testCodeGen() throws Exception {
-		WichErrorHandler err = new WichErrorHandler();
-		SymbolTable symtab = new SymbolTable();
-		URL expURL = CompilerUtils.getResourceFile(baseName + "_expected.c");
-		String expPath = expURL.getPath();
-		String expected = CompilerUtils.readFile(expPath, CompilerUtils.FILE_ENCODING);
-		String contents = CompilerUtils.readFile(input.getAbsolutePath(), CompilerUtils.FILE_ENCODING);
-		String actual = CompilerUtils.genCode(contents, symtab, err);
-		assertEquals(expected, actual);
-	}
-
-	@Parameters(name="{1}")
+	@Parameterized.Parameters(name="{1}")
 	public static Collection<Object[]> findInputFiles() {
 		URL testFolder = CompilerUtils.getResourceFile(TEST_RES);
 		Collection<Object[]> result = new ArrayList<>();

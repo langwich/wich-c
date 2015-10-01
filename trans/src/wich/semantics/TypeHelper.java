@@ -195,8 +195,8 @@ public class TypeHelper {
 												   ExprContext le,
 												   ExprContext re)
 	{
-		int li = ((WBuiltInTypeSymbol)le.exprType).getTypeIndex();
-		int ri = ((WBuiltInTypeSymbol)re.exprType).getTypeIndex();
+		int li = le.exprType.getTypeIndex();
+		int ri = re.exprType.getTypeIndex();
 		WBuiltInTypeSymbol resultType = opResultTypeMap[op][li][ri];
 		le.promoteToType = operandPromotionMap[op][li][resultType.getTypeIndex()];
 		re.promoteToType = operandPromotionMap[op][ri][resultType.getTypeIndex()];

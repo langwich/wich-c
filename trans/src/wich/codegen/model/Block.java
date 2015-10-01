@@ -23,18 +23,51 @@ SOFTWARE.
 */
 package wich.codegen.model;
 
+import org.antlr.symtab.Scope;
+import wich.codegen.ModelWalker;
+
 import java.util.ArrayList;
 import java.util.List;
 
+/** A block of variable definitions and statements not at the outermost
+ *  script level.  Split apart the defs from inits of variables.
+ */
+public class Block extends Stat {
+	public int blockNumber;
+	public Scope scope;
+	/** Track vardefs separately. Using add() method ensures this. */
+	@ModelElement public List<VarDefStat> varDefs  = new ArrayList<>();
+	@ModelElement public List<Stat> stats    	   = new ArrayList<>();
+	@ModelElement public List<Stat> cleanup    	   = new ArrayList<>();
 
-public class Block extends OutputModelObject {
-	@ModelElement public List<VarDefStat> varDefs = new ArrayList<>();
-	@ModelElement public ReturnTmpExpr returnTmpAssign;
-	@ModelElement public List<Stat> stats = new ArrayList<>();
-	@ModelElement public Stat returnStat;
-	@ModelElement public List<TmpVarDef> returnTemps = new ArrayList<>();
-	public List<Integer> localTemps = new ArrayList<>();
-	public List<String> localVars = new ArrayList<>();
-	public List<String> argsRef = new ArrayList<>();
-	public String returnRefVar = null;
+	public Block(int blockNumber) {
+		this.blockNumber = blockNumber;
+	}
+
+	public void add(Stat stat) {
+		if ( stat instanceof CompositeModelObject ) {
+			final List<OutputModelObject> substats = ((CompositeModelObject) stat).modelObjects;
+			// cast to force addition even if substats might not be Stat at runtime
+			for (OutputModelObject ss : substats) {
+				if ( ss instanceof VarDefStat ) {
+					varDefs.add((VarDefStat)ss);
+				}
+				else {
+					stats.add((Stat) ss);
+				}
+			}
+		}
+		else {
+			if ( stat instanceof VarDefStat ) {
+				varDefs.add((VarDefStat)stat);
+			}
+			else {
+				stats.add(stat);
+			}
+		}
+	}
+
+	public List<OutputModelObject> getStatementsNoVarDefs() {
+		return ModelWalker.findAll(this, (o) -> !(o instanceof VarDefStat));
+	}
 }

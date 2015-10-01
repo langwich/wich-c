@@ -26,18 +26,13 @@ package wich.codegen.model;
 import java.util.ArrayList;
 import java.util.List;
 
-/** A model object that represents a complete script with possibly function
- *  definitions.
+/** A model object that represents a complete script including function
+ *  and var definitions.
  */
-public class Script extends OutputModelObject {
-	public final String scriptName;
-	@ModelElement public List<Func> functions = new ArrayList<Func>();
-	@ModelElement public List<VarDefStat> varDefs = new ArrayList<>();
-	@ModelElement public List<Stat> stats = new ArrayList<>();
-	public List<String> localVars = new ArrayList<>();
-	public List<Integer> localTemps = new ArrayList<>();
+public class Script extends Block {
+	@ModelElement public List<Func> functions = new ArrayList<>();
 
-	public Script(String scriptName) {
-		this.scriptName = scriptName;
+	public Script() {
+		super(0);
 	}
 }

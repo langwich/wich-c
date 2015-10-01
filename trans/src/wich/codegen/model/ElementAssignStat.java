@@ -23,12 +23,16 @@ SOFTWARE.
 */
 package wich.codegen.model;
 
-public class ElementAssignStat extends Stat{
-	public final String eName;
-	@ModelElement public Expr index;
-	@ModelElement public Expr rExpr;
+import wich.codegen.model.expr.Expr;
 
-	public ElementAssignStat(String eName) {
-		this.eName = eName;
+public class ElementAssignStat extends Stat{
+	public final String varName;
+	@ModelElement public Expr index;
+	@ModelElement public Expr expr;
+
+	public ElementAssignStat(String varName, Expr index, Expr expr) {
+		this.varName = varName;
+		this.index = index;
+		this.expr = expr;
 	}
 }

@@ -1,65 +1,120 @@
-CFile(f, script) ::= <<
+/*
+The MIT License (MIT)
+
+Copyright (c) 2015 Terence Parr, Hanzhou Shi, Shuai Yuan, Yuanyuan Zhang
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
+CPrimitiveBinaryOpMap ::= [
+	"*":"*",
+	"/":"/",
+	"+":"+",
+	"-":"-",
+	">":">",
+	">=":">=",
+	"\<":"\<",
+	"\<=":"\<=",
+	"==":"==",
+	"!=":"!=",
+	"&&":"&&",
+	"||":"||"
+]
+
+CStringBinaryOpMap ::= [
+	"+":"String_add",
+	">":"String_gt",
+	">=":"String_ge",
+	"<":"String_lt",
+	"<=":"String_le",
+	"==":"String_eq",
+	"!=":"String_neq"
+]
+
+CVectorBinaryOpMap ::= [
+	"*":"Vector_mul",
+	"/":"Vector_div",
+	"+":"Vector_add",
+	"-":"Vector_sub",
+	"==":"Vector_eq",
+	"!=":"Vector_neq",
+	".":"Vector_dot"
+]
+
+File(f, script) ::= <<
 #include \<stdio.h>
 #include "wich.h"
 
+<script.varDefs; separator="\n">
+<script.functions:funcDecl()>
+<script.functions>
 <script>
 >>
 
-Script(s,functions,varDefs,stats) ::= <<
-<varDefs:varDefine()>
-<functions:funcDecl()>
-<functions>
+Script(s,stats,varDefs,functions,cleanup) ::= <<
 int main(int argc, char *argv[])
 {
-	<varDefs:varInit();separator="\n">
-	<stats;separator="\n">
-	<s.localVars:{v|DEREF(<v>);}; separator="\n">
-	<s.localTemps:{t|DEREF(tmp<t>);}; separator="\n">
+	<stats; separator="\n">
 	return 0;
 }<\n>
 >>
 
-varDefine(varDefTemplate)  ::= "<varDefTemplate.type> <varDefTemplate.v.name>;<\n>"
-varInit(varDefTemplate)    ::= "<varDefTemplate.v.name> = <varDefTemplate.expr>;"
-
-funcDecl(funcTemplate)     ::= <<
-<funcTemplate.returnType; null="void"> <funcTemplate.f.funcName>(<funcTemplate.args;separator=",">);<\n>
+funcDecl(funcTemplate) ::= <<
+<funcTemplate.returnType> <funcTemplate.f.funcName>(<funcTemplate.args;separator=",">);<\n>
 >>
 
 Func(f,returnType,args,body)::=<<
-<returnType; null="void"> <f.funcName>(<args;separator=",">)
+<returnType> <f.funcName>(<args;separator=",">)
 <body>
-
+<\n>
 >>
 
-Block(b,varDefs,stats,returnStat,returnTemps,returnTmpAssign)::= <<
+FuncBlock(b,varDefs,stats,cleanup)::= <<
 {
-	<if(b.argsRef)><b.argsRef:{arg|REF(<arg>);};separator="\n"><endif>
-	<if(varDefs)><varDefs;separator="\n"><endif>
-	<if(returnTemps)><returnTemps;separator="\n"><endif>
-	<if(stats)><stats;separator="\n"><endif>
-	<returnTmpAssign>
-	<if(b.returnRefVar)>REF(<b.returnRefVar>);<endif>
-	<if(b.localVars)><b.localVars:{deRef|DEREF(<deRef>);};separator="\n"><endif>
-	<if(b.localTemps)><b.localTemps:{t|DEREF(tmp<t>);};separator="\n"><endif>
-	<if(returnStat)><returnStat><endif>
+	<varDefs; separator="\n">
+	<stats; separator="\n">
+_cleanup:
+	<cleanup; separator="\n">
+	<if(b.enclosingFunc.returnType)>return _retv;<endif>
 }
 >>
 
-AssignStat(a,right,localTemps)::=<<
-<if(localTemps)><localTemps;separator="\n">
-COPY_ON_WRITE(<a.varName>);<endif>
-<a.varName> = <right>;
+Block(b,varDefs,stats,cleanup)::= <<
+{
+	<varDefs; separator="\n">
+	<stats; separator="\n">
+_cleanup:
+	<cleanup; separator="\n">
+}
 >>
 
-CallStat(c,callExpr,localTemps) ::=<<
-<if(localTemps)><localTemps;separator="\n"><endif>
+AssignStat(a,expr)::=<<
+<a.varName> = <expr>;
+>>
+
+CallStat(c,callExpr) ::=<<
 <callExpr>;
 >>
 
-ElementAssignStat(e,index,rExpr) ::= <<
-COPY_ON_WRITE(<e.eName>);
-<e.eName>->data[<index>-1] = <rExpr>;
+ElementAssignStat(e,index,expr) ::= <<
+COPY_ON_WRITE(<e.varName>);
+<e.varName>->data[<index>-1] = <expr>;
 >>
 
 IfStat(i,condition,stat,elseStat) ::= <<
@@ -71,32 +126,32 @@ WhileStat(w,condition, stat) ::= <<
 while (<condition>) <stat;separator="\n">
 >>
 
-ReturnStat(r,rExpr)  ::= <<
-<if(r.tmpIndex)>return tmp<r.tmpIndex>;<else>return <rExpr>;<endif>
+ReturnStat(r,expr)  ::= <<
+_retv = <expr>;
 >>
 
-VarDefStat(v,type,expr,localTemps) ::= <<
-<if(localTemps)><localTemps;separator="\n"><endif>
-<type><v.name> = <expr>;<if(v.ref)>
-REF(<v.ref>);<endif>
+VarInitStat(v,expr) ::= <<
+<v.varName> = <expr>;
 >>
 
-BlockStat(b,block) ::= <<
-<block>
+VarDefStat(v,type) ::= <<
+<type> <v.name>;
 >>
 
-PrintStat(p) ::= <<
-print();
+CompositeModelObject(cs, modelObjects) ::= <<
+<modelObjects; separator="\n">
 >>
 
-PrintStrStat(ps,expr,localTemps) ::= <<
-<if(localTemps)><localTemps;separator="\n"><endif>
-print_<ps.type>(<expr>);
+PrintNewLine(p) ::= <<
+printf("\n");
 >>
 
-PrintVecStat(pv,expr,localTemps) ::= <<
-<if(localTemps)><localTemps;separator="\n"><endif>
-print_<pv.type>(<expr>);
+PrintStringStat(ps,expr) ::= <<
+print_string(<expr>);
+>>
+
+PrintVectorStat(pv,expr) ::= <<
+print_vector(<expr>);
 >>
 
 PrintIntStat(pi,expr) ::= <<
@@ -107,51 +162,46 @@ PrintFloatStat(pf,expr) ::= <<
 printf("%1.2f\n", <expr>);
 >>
 
-AtomExpr(a,primaryExpr) ::= "<primaryExpr>"
+BinaryPrimitiveOp(op,left,right) ::= "(<left> <CPrimitiveBinaryOpMap.(op.wichOp)> <right>)"
+BinaryStringOp(op, left, right)  ::= "<CStringBinaryOpMap.(op.wichOp)>(<left>,<right>)"
+BinaryVectorOp(op, left, right)  ::= "<CVectorBinaryOpMap.(op.wichOp)>(<left>,<right>)"
 
-PrimaryExpr(p) ::= "<p.content>"
+IntLiteral(i)	::= "<i.value>"
+FloatLiteral(f)	::= "<f.value>"
+VarRef(v)		::= "<v.name>"
 
-FuncCall(c,args) ::= <<
-<if(c.localTmp)>tmp<c.localTmp>=<c.funcName>(<args;separator=",">)<else><c.funcName>(<args;separator=",">)<endif>
+StringLiteral(s) ::= <<
+String_new(<s.literal>)
 >>
 
-StringNewFunCall(s) ::= <<
-<if(s.localTmp)>tmp<s.localTmp>=<s.funcName>(<s.literal>)<else><s.funcName>(<s.literal>)<endif>
+VectorLiteral(v,elems) ::= <<
+Vector_new((double []){<elems; separator=",">}, <v.vectorLength>)
 >>
 
-VectorNewFunCall(v,args) ::= <<
-<if(v.localTmp)>tmp<v.localTmp>=<v.funcName>((double[]){<args;separator=",">},<v.vectorNewSize>)
-<else><v.funcName>((double []){<args;separator=",">}, <v.vectorNewSize>)<endif>
+FuncCall(c,retType,args) ::= <<
+<c.funcName>(<args;separator=",">)
 >>
 
-OpFunCall(op,args) ::= <<
-<if(op.localTmp)>tmp<op.localTmp>=<op.funcName>(<args;separator=",">)<\\>
-<else><op.funcName>(<args;separator=",">)<\\>
-<endif>
+StringIndexExpr(s,expr) ::= <<
+String_from_char(<s.varName>->str[(<expr>)-1])
 >>
 
-StrToCharFunCall(str,arg) ::= <<
-<if(str.localTmp)>tmp<str.localTmp>=<str.funcName>(<arg>)<endif>
->>
+VectorIndexExpr(v,expr) ::= "<v.varName>->data[(<expr>)-1]"
 
-StrIndexExpr(s,expr) ::= <<
-<if(s.localTmp)>tmp<s.localTmp>=<endif><s.objectName>->str[(<expr>)-1]
->>
+NegateExpr(n,negateExpr) ::= "-<negateExpr>"
 
-ReturnTmpExpr(r,expr) ::= "<expr>;"
-
-VexIndexExpr(v,expr) ::= "<v.objectName>->data[(<expr>)-1]"
-
-NegateExpr(n,negateExpr) ::= "- <negateExpr>"
-
-NotExpr(ne,notExpr) ::= "! <notExpr>"
+NotExpr(ne,notExpr) ::= "!<notExpr>"
 
 OpExpr(o,lExp,rExp) ::= "<lExp> <o.op> <rExp>"
 
-ParensExpr(p,expression) ::= "(<expression>)"
-
 ArgDef(arg,type) ::= "<type> <arg.name>"
 
-CType(t) ::= "<t.name>"
-NonCType(nt) ::= "<nt.name> *"
-TmpVarDef(t) ::="<t.typeName> *tmp<t.index>;"
+VoidType(v) ::= "void"
+IntType(t) ::= "int"
+FloatType(t) ::= "double"
+VectorType(t) ::= "Vector *"
+StringType(t) ::= "String *"
+TmpVarDef(t,type) ::="<typeMo> tmp<t.varIndex>;"
+
+RefCountREF(v) ::= "REF(<v.varName>);"
+RefCountDEREF(v) ::= "DEREF(<v.varName>);"

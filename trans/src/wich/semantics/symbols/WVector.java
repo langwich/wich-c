@@ -25,7 +25,7 @@ package wich.semantics.symbols;
 
 public class WVector extends WBuiltInTypeSymbol {
 	public WVector() {
-		super("[]", TYPE.VECTOR);
+		super("[]", TYPENAME.VECTOR);
 	}
 
 }
