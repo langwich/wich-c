@@ -29,10 +29,8 @@ import wich.codegen.model.CompositeModelObject;
 import wich.codegen.model.ModelElement;
 import wich.codegen.model.OutputModelObject;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -181,21 +179,21 @@ public class ModelWalker {
 
 	/** Use reflection to find & invoke overloaded enter/exitModel(modeltype) method */
 	protected OutputModelObject enterModel(OutputModelObject omo) {
-		final MethodHandle m = getListenerMethodForType(omo.getClass(), ENTER_METHOD_NAME);
+		final Method m = getListenerMethodForType(omo.getClass(), ENTER_METHOD_NAME);
 		return execListenerMethod(omo, m);
 	}
 
 	protected OutputModelObject exitModel(OutputModelObject omo) {
-		final MethodHandle m = getListenerMethodForType(omo.getClass(), EXIT_METHOD_NAME);
+		final Method m = getListenerMethodForType(omo.getClass(), EXIT_METHOD_NAME);
 		return execListenerMethod(omo, m);
 	}
 
 	protected OutputModelObject visitEveryModelObject(OutputModelObject omo) {
-		final MethodHandle m = getVisitEveryNodeMethod();
+		final Method m = getVisitEveryNodeMethod();
 		return execListenerMethod(omo, m);
 	}
 
-	protected OutputModelObject execListenerMethod(OutputModelObject omo, MethodHandle m) {
+	protected OutputModelObject execListenerMethod(OutputModelObject omo, Method m) {
 		Object result = NO_RESULT;
 		if ( m!=null ) {
 			try {
@@ -209,48 +207,43 @@ public class ModelWalker {
 		return (OutputModelObject)result;
 	}
 
-	protected MethodHandle getListenerMethodForType(Class<?> argType, String methodName) {
+	protected Method getListenerMethodForType(Class<?> argType, String methodName) {
 		final Pair<String,Class<?>> key = new Pair<>(methodName, argType);
-		Object mh = listenerMethodCache.get(key); // reflection is slow; cache.
-		if ( mh!=null ) {
-			if ( mh==NOTFOUND ) {
+		Object m = listenerMethodCache.get(key); // reflection is slow; cache.
+		if ( m!=null ) {
+			if ( m==NOTFOUND ) {
 				return null;
 			}
-			return (MethodHandle)mh;
+			return (Method)m;
 		}
-		MethodHandles.Lookup lookup = MethodHandles.lookup();
-		final MethodType mType = MethodType.methodType(OutputModelObject.class, argType);
 		try {
-			mh = lookup.findVirtual(listener.getClass(), methodName, mType);
-			listenerMethodCache.put(key, mh);
+			m = listener.getClass().getMethod(methodName, argType);
+			listenerMethodCache.put(key, m);
 		}
-		catch (Exception e) {
-			mh = null;
+		catch (NoSuchMethodException nsme) {
+			m = null;
 			listenerMethodCache.put(key, NOTFOUND);
 		}
-		return (MethodHandle)mh;
+		return (Method)m;
 	}
 
-	protected MethodHandle getVisitEveryNodeMethod() {
+	protected Method getVisitEveryNodeMethod() {
 		if ( visitEveryModelObjectMethodCache!=null ) {
 			if ( visitEveryModelObjectMethodCache==NOTFOUND ) {
 				return null;
 			}
-			return (MethodHandle)visitEveryModelObjectMethodCache;
+			return (Method)visitEveryModelObjectMethodCache;
 		}
-		MethodHandles.Lookup lookup = MethodHandles.lookup();
-		final MethodType mType = MethodType.methodType(OutputModelObject.class,
-													   OutputModelObject.class);
-		MethodHandle mh;
+		Method m;
 		try {
-			mh = lookup.findVirtual(listener.getClass(), "visitEveryModelObject", mType);
-			visitEveryModelObjectMethodCache = mh;
+			m = listener.getClass().getMethod("visitEveryModelObject", OutputModelObject.class);
+			visitEveryModelObjectMethodCache = m;
 		}
-		catch (Exception e) {
-			mh = null;
+		catch (NoSuchMethodException nsme) {
+			m = null;
 			visitEveryModelObjectMethodCache = NOTFOUND;
 		}
-		return mh;
+		return m;
 	}
 
 	/** Starting at node model, find all nodes at or below model that
