@@ -85,19 +85,23 @@ void wich_free(heap_object *p);
 	printf("REF(" #x ") bumps refs to %d\n", ((heap_object *)x)->refs);
 #define DEREF(x) \
 	printf("DEREF(" #x ") has %d refs\n", ((heap_object *)x)->refs);\
-	if ( x!=NULL ) ((heap_object *)x)->refs--; \
-	if ( x!=NULL && ((heap_object *)x)->refs==0 ) { \
-		printf("free(" #x ")\n"); \
-        wich_free((heap_object *)x); \
-		x = NULL; \
+	if ( x!=NULL ) { \
+		((heap_object *)x)->refs--; \
+		if ( x!=_retv && ((heap_object *)x)->refs==0 ) { \
+			printf("free(" #x ")\n"); \
+			wich_free((heap_object *)x); \
+			x = NULL; \
+		} \
 	}
 #else
 #define REF(x) \
 	if ( x!=NULL ) ((heap_object *)x)->refs++;
 #define DEREF(x) \
-	if ( x!=NULL ) ((heap_object *)x)->refs--; \
-	if ( x!=NULL && ((heap_object *)x)->refs==0 ) { \
-        wich_free((heap_object *)x); \
-		x = NULL; \
+	if ( x!=NULL ) { \
+		((heap_object *)x)->refs--; \
+		if ( x!=_retv && ((heap_object *)x)->refs==0 ) { \
+			wich_free((heap_object *)x); \
+			x = NULL; \
+		} \
 	}
 #endif

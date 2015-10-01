@@ -31,4 +31,8 @@ import java.util.List;
  */
 public class Script extends Block {
 	@ModelElement public List<Func> functions = new ArrayList<>();
+
+	public Script() {
+		super(0);
+	}
 }

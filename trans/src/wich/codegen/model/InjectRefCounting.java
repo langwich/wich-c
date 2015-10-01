@@ -23,14 +23,11 @@ SOFTWARE.
 */
 package wich.codegen.model;
 
-import org.antlr.symtab.Symbol;
 import wich.codegen.CodeGenerator;
-import wich.semantics.symbols.WVariableSymbol;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class InjectRefCounting {
+	protected Func currentFunc;
+
 //	public OutputModelObject visitEveryModelObject(OutputModelObject o) {
 //		System.out.println("visit every node: "+o.getClass().getSimpleName());
 //		return o;
@@ -48,16 +45,31 @@ public class InjectRefCounting {
 		return assign;
 	}
 
+	public OutputModelObject exitModel(ReturnStat retStat) {
+//		if ( CodeGenerator.isHeapType(retStat.expr.getType()) ) {
+//			final RefCountREF REF = new RefCountREF(retStat);
+//			return new CompositeModelObject(retStat, REF);
+//		}
+		final AssignStat ret = new AssignStat("_retv", retStat.expr);
+		return new CompositeModelObject(ret, new RefCountREF(ret.varName));
+	}
+
+	public OutputModelObject enterModel(Func func) {
+		currentFunc = func;
+		return func;
+	}
+
 	public OutputModelObject exitModel(Func func) {
 		System.out.println("exitModel func");
 		// Inject REF(x) for all heap args x at start of function, DEREF at end
 		for (ArgDef arg : func.args) {
 			if ( CodeGenerator.isHeapType(arg.type.type) ) {
 				func.body.stats.add(0, new RefCountREF(arg.name));
-				func.body.stats.add(new RefCountDEREF(arg.name));
+				func.body.cleanup.add(new RefCountDEREF(arg.name));
 			}
 		}
 
+		currentFunc = null;
 		return func;
 	}
 
@@ -66,31 +78,35 @@ public class InjectRefCounting {
 		return script;
 	}
 
+	public OutputModelObject exitModel(FuncBlock block) {
+		return exitModel((Block)block);
+	}
+
 	public OutputModelObject exitModel(Block block) {
 		System.out.println("exitModel Block");
 		for (VarDefStat varDef : block.varDefs) {
 			if ( CodeGenerator.isHeapType(varDef.type.type) ) {
-				block.add(new RefCountDEREF(varDef.name));
+				block.cleanup.add(new RefCountDEREF(varDef.name));
 			}
 		}
 		return block;
 	}
 
-	public OutputModelObject exitModel(ReturnStat retStat) {
-		System.out.println("exitModel return stat");
-		// add DEREF for all heap vars
-		final List<Stat> DEREFs = new ArrayList<>();
-		for (Symbol sym : retStat.enclosingScope.getSymbols()) {
-			if ( sym instanceof WVariableSymbol) {
-				if ( CodeGenerator.isHeapType(((WVariableSymbol) sym).getType()) ) {
-					DEREFs.add(new RefCountDEREF(sym.getName()));
-				}
-			}
-		}
-		final CompositeModelObject retWithDEREFs = new CompositeModelObject();
-		retWithDEREFs.addAll(DEREFs);
-		retWithDEREFs.add(retStat);
-
-		return retWithDEREFs;
-	}
+//	public OutputModelObject exitModel(ReturnStat retStat) {
+//		System.out.println("exitModel return stat");
+//		// add DEREF for all heap vars
+//		final List<Stat> DEREFs = new ArrayList<>();
+//		for (Symbol sym : retStat.enclosingScope.getSymbols()) {
+//			if ( sym instanceof WVariableSymbol) {
+//				if ( CodeGenerator.isHeapType(((WVariableSymbol) sym).getType()) ) {
+//					DEREFs.add(new RefCountDEREF(sym.getName()));
+//				}
+//			}
+//		}
+//		final CompositeModelObject retWithDEREFs = new CompositeModelObject();
+//		retWithDEREFs.addAll(DEREFs);
+//		retWithDEREFs.add(retStat);
+//
+//		return retWithDEREFs;
+//	}
 }

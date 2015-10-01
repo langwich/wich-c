@@ -50,7 +50,6 @@ import wich.parser.WichParser;
 import wich.semantics.SymbolTable;
 import wich.semantics.symbols.WBuiltInTypeSymbol;
 import wich.semantics.symbols.WString;
-import wich.semantics.symbols.WVariableSymbol;
 import wich.semantics.symbols.WVector;
 
 import java.util.List;
@@ -141,30 +140,30 @@ public class CodeGenerator1 extends WichBaseVisitor<OutputModelObject> {
 		return null;
 	}
 
-	@Override
-	public OutputModelObject visitBlock(@NotNull WichParser.BlockContext ctx) {
-		pushScope(ctx.scope);
-		Block block = new Block();
-		List<WichParser.StatementContext> stats = ctx.statement();
-		for (WichParser.StatementContext s:stats) {
-			Stat stat = (Stat)visit(s);
-			if (s instanceof WichParser.VarDefStatementContext) {
-				Type t =((WVariableSymbol) currentScope.resolve(((WichParser.VarDefStatementContext) s).vardef().ID().getText())).getType();
-				if( isHeapObject(t)) {
-//					block.localVars.add(((WichParser.VarDefStatementContext) s).vardef().ID().getText());
-				}
-			}
-			else if (s instanceof WichParser.ReturnContext) {
-				SetupReturnStat(block, (WichParser.ReturnContext) s, stat);
-			}
-			else {
-				block.stats.add(stat);
-			}
-		}
-		addFunArgsRef(ctx, block);
-		popScope();
-		return block;
-	}
+//	@Override
+//	public OutputModelObject visitBlock(@NotNull WichParser.BlockContext ctx) {
+//		pushScope(ctx.scope);
+//		Block block = new Block();
+//		List<WichParser.StatementContext> stats = ctx.statement();
+//		for (WichParser.StatementContext s:stats) {
+//			Stat stat = (Stat)visit(s);
+//			if (s instanceof WichParser.VarDefStatementContext) {
+//				Type t =((WVariableSymbol) currentScope.resolve(((WichParser.VarDefStatementContext) s).vardef().ID().getText())).getType();
+//				if( isHeapObject(t)) {
+////					block.localVars.add(((WichParser.VarDefStatementContext) s).vardef().ID().getText());
+//				}
+//			}
+//			else if (s instanceof WichParser.ReturnContext) {
+//				SetupReturnStat(block, (WichParser.ReturnContext) s, stat);
+//			}
+//			else {
+//				block.stats.add(stat);
+//			}
+//		}
+//		addFunArgsRef(ctx, block);
+//		popScope();
+//		return block;
+//	}
 
 	private void SetupReturnStat(Block block, WichParser.ReturnContext s, Stat stat) {
 ////		block.returnStat = stat;

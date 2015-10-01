@@ -5,28 +5,21 @@ String * becomeSuper(String * name);
 
 String * becomeSuper(String * name)
 {
+	String *_retv;
+	String *tmp1;
 	REF(name);
-	String * tmp1;
-	String * tmp2;
-	tmp2=String_add(tmp1=String_new("super"),name);
-	REF(tmp2);
+	tmp1=String_add(String_new("super"),name);
+	REF(tmp1);
+	_retv = tmp1;
+_cleanup:
 	DEREF(name);
 	DEREF(tmp1);
-	DEREF(tmp2);
-	return tmp2;
+	return _retv;
 }
 
 int main(int argc, char *argv[])
 {
-	String * tmp3;
-	String * tmp4;
-	print_string(tmp4=becomeSuper(tmp3=String_new("man")));
-	String * tmp5;
-	String * tmp6;
-	print_string(tmp6=becomeSuper(tmp5=String_new("duper")));
-	DEREF(tmp3);
-	DEREF(tmp4);
-	DEREF(tmp5);
-	DEREF(tmp6);
+	print_string(becomeSuper(String_new("man")));
+	print_string(becomeSuper(String_new("duper")));
 	return 0;
 }

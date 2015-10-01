@@ -67,7 +67,7 @@ File(f, script) ::= <<
 <script>
 >>
 
-Script(s,stats,varDefs,functions) ::= <<
+Script(s,stats,varDefs,functions,cleanup) ::= <<
 int main(int argc, char *argv[])
 {
 	<stats; separator="\n">
@@ -75,20 +75,32 @@ int main(int argc, char *argv[])
 }<\n>
 >>
 
-funcDecl(funcTemplate)     ::= <<
-<funcTemplate.returnType; null="void"> <funcTemplate.f.funcName>(<funcTemplate.args;separator=",">);<\n>
+funcDecl(funcTemplate) ::= <<
+<funcTemplate.returnType> <funcTemplate.f.funcName>(<funcTemplate.args;separator=",">);<\n>
 >>
 
 Func(f,returnType,args,body)::=<<
-<returnType; null="void"> <f.funcName>(<args;separator=",">)
+<returnType> <f.funcName>(<args;separator=",">)
 <body>
 <\n>
 >>
 
-Block(b,varDefs,stats)::= <<
+FuncBlock(b,varDefs,stats,cleanup)::= <<
 {
 	<varDefs; separator="\n">
 	<stats; separator="\n">
+_cleanup:
+	<cleanup; separator="\n">
+	<if(b.enclosingFunc.returnType)>return _retv;<endif>
+}
+>>
+
+Block(b,varDefs,stats,cleanup)::= <<
+{
+	<varDefs; separator="\n">
+	<stats; separator="\n">
+_cleanup:
+	<cleanup; separator="\n">
 }
 >>
 
@@ -115,7 +127,7 @@ while (<condition>) <stat;separator="\n">
 >>
 
 ReturnStat(r,expr)  ::= <<
-return <expr>;
+_retv = <expr>;
 >>
 
 VarInitStat(v,expr) ::= <<

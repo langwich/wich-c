@@ -23,6 +23,7 @@ SOFTWARE.
 */
 package wich.codegen.model;
 
+import org.antlr.symtab.Scope;
 import wich.codegen.ModelWalker;
 
 import java.util.ArrayList;
@@ -32,10 +33,16 @@ import java.util.List;
  *  script level.  Split apart the defs from inits of variables.
  */
 public class Block extends Stat {
-	/** Track vardefs separately. Using add() method ensures this.
-	 */
+	public int blockNumber;
+	public Scope scope;
+	/** Track vardefs separately. Using add() method ensures this. */
 	@ModelElement public List<VarDefStat> varDefs  = new ArrayList<>();
 	@ModelElement public List<Stat> stats    	   = new ArrayList<>();
+	@ModelElement public List<Stat> cleanup    	   = new ArrayList<>();
+
+	public Block(int blockNumber) {
+		this.blockNumber = blockNumber;
+	}
 
 	public void add(Stat stat) {
 		if ( stat instanceof CompositeModelObject ) {
