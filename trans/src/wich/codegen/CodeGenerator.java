@@ -148,7 +148,6 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 			body.varDefs.add(0, new VarDefStat("_retv", returnType));
 		}
 		Func func = new Func(funcName, returnType, body);
-		body.enclosingFunc = func;
 		if ( ctx.formal_args()!=null ) {
 			for (WichParser.Formal_argContext arg : ctx.formal_args().formal_arg()) {
 				ArgDef argDefModel = (ArgDef) visit(arg);

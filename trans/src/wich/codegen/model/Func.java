@@ -32,9 +32,10 @@ public class Func extends OutputModelObject {
 	@ModelElement public List<ArgDef> args = new ArrayList<ArgDef>();
 	@ModelElement public Block body;
 
-	public Func(String funcName, WichType returnType, Block body) {
+	public Func(String funcName, WichType returnType, FuncBlock body) {
 		this.funcName = funcName;
 		this.returnType = returnType;
 		this.body = body;
+		body.enclosingFunc = this;
 	}
 }
