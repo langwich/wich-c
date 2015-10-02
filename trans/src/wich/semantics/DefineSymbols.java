@@ -32,6 +32,9 @@ import wich.semantics.symbols.WBlock;
 import wich.semantics.symbols.WFunctionSymbol;
 import wich.semantics.symbols.WVariableSymbol;
 
+import static wich.errors.ErrorType.INVALID_TYPE;
+
+/*Define symbols, annotate explicit type information for function and args.*/
 public class DefineSymbols extends CommonWichListener {
 	protected SymbolTable symtab;
 	protected int numOfBlocks;
@@ -44,6 +47,7 @@ public class DefineSymbols extends CommonWichListener {
 	@Override
 	public void enterVardef(WichParser.VardefContext ctx) {
 		currentScope.define(new WVariableSymbol(ctx.ID().getText())); // type set in type computation phase
+		symtab.numOfVars++;
 	}
 
 	@Override
@@ -51,7 +55,13 @@ public class DefineSymbols extends CommonWichListener {
 		WArgSymbol arg = new WArgSymbol(ctx.ID().getText());
 		String typeName = ctx.type().getText();
 		Type type = resolveType(typeName);
-		if ( type!=null ) arg.setType(type);
+		if ( type!=null ){
+			arg.setType(type);
+			((WFunctionSymbol)currentScope).argTypes.add(type);
+		}
+		else{
+			error(INVALID_TYPE, arg.getName());
+		}
 		currentScope.define(arg);
 	}
 
@@ -63,7 +73,10 @@ public class DefineSymbols extends CommonWichListener {
 		if ( ctx.type()!=null ) {
 			String typeName = ctx.type().getText();
 			Type type = resolveType(typeName);
-			if ( type!=null ) f.setType(type);
+			if ( type!=null )
+				f.setType(type);
+			else
+				error(INVALID_TYPE, f.getName());
 		}
 		ctx.scope = f;
 		currentScope.define(f);
@@ -71,9 +84,7 @@ public class DefineSymbols extends CommonWichListener {
 	}
 
 	@Override
-	public void exitFunction(@NotNull WichParser.FunctionContext ctx) {
-		popScope();
-	}
+	public void exitFunction(@NotNull WichParser.FunctionContext ctx) { popScope(); }
 
 	@Override
 	public void enterBlock(@NotNull WichParser.BlockContext ctx) {

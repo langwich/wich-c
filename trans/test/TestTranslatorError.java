@@ -88,7 +88,7 @@ public class TestTranslatorError {
 		String input =
 				"var x = \"1\" > [1.0]\n";
 		String expected =
-				"error: incompatible operand types (string + [])\n";
+				"error: incompatible operand types (string > [])\n";
 		compileAndCheckError(input, expected);
 	}
 
@@ -111,7 +111,7 @@ public class TestTranslatorError {
 	}
 
 	@Test
-	public void testIvalidWhileCond() throws Exception {
+	public void testInvalidWhileCond() throws Exception {
 		String input =
 				"while ([1]) { }\n";
 		String expected =
@@ -122,11 +122,29 @@ public class TestTranslatorError {
 	@Test
 	public void testIncompatibleFuncArgs() throws Exception {
 		String input =
-				"func foo(x:float,y:int,c:boolean):int { }\n" +
+				"func foo(x:float,y:int, c:boolean):int { }\n" +
 				"foo(1, 1.0, 2)\n";
 		String expected =
 				"error: incompatible argument type (cannot promote from float to int)\n" +
 				"error: incompatible argument type (cannot promote from int to boolean)\n";
+		compileAndCheckError(input, expected);
+	}
+
+	@Test
+	public void testIncorrectNumOfArgs() throws Exception {
+		String input =
+				"func foo(x:float,y:int, c:boolean):int { }\n" +
+						"foo(1.0, 1)\n";
+		String expected =
+				"error: incorrect number of args (3 args expected but 2 was given)\n";
+		compileAndCheckError(input, expected);
+	}
+	@Test
+	public void testInvalidTypeFuncArgs() throws Exception {
+		String input =
+				"func foo(x:float,y:int,c:Boolean):int { }\n" ;
+		String expected =
+				"error: invalid type for (c)\n";
 		compileAndCheckError(input, expected);
 	}
 
@@ -136,7 +154,7 @@ public class TestTranslatorError {
 				"var x = 1\n" +
 				"x()\n";
 		String expected =
-				"error: symbol not found (x)\n";
+				"error: function x not defined\n";
 		compileAndCheckError(input, expected);
 	}
 

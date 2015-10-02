@@ -8,7 +8,6 @@ import wich.errors.ErrorType;
 import wich.errors.WichErrorHandler;
 import wich.parser.WichBaseListener;
 
-import static wich.errors.ErrorType.SYMBOL_NOT_FOUND;
 
 public class CommonWichListener extends WichBaseListener {
 	protected final WichErrorHandler errorHandler;
@@ -35,7 +34,6 @@ public class CommonWichListener extends WichBaseListener {
 			return (Type)typeSymbol;
 		}
 		else {
-			error(SYMBOL_NOT_FOUND, typeName);
 			return null;
 		}
 	}

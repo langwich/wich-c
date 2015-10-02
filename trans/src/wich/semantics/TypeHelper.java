@@ -191,13 +191,16 @@ public class TypeHelper {
 	/** This method is the general helper method used to calculate result type.
 	 *  You should use the method in SymbolTable based on this method.
 	 */
-	public static WBuiltInTypeSymbol getResultType(int op,
-												   ExprContext le,
-												   ExprContext re)
+	public static Type getResultType(int op,
+	                                 ExprContext le,
+	                                 ExprContext re)
 	{
 		int li = le.exprType.getTypeIndex();
 		int ri = re.exprType.getTypeIndex();
-		WBuiltInTypeSymbol resultType = opResultTypeMap[op][li][ri];
+		Type resultType = opResultTypeMap[op][li][ri];
+		if (resultType == null) {
+			return SymbolTable.INVALID_TYPE;
+		}
 		le.promoteToType = operandPromotionMap[op][li][resultType.getTypeIndex()];
 		re.promoteToType = operandPromotionMap[op][ri][resultType.getTypeIndex()];
 		return resultType;
@@ -221,19 +224,21 @@ public class TypeHelper {
 
 	/** This method is used to promote type during type annotation */
 	public static void promote(ExprContext elem, int targetIndex) {
-		int selfIndex = ((WBuiltInTypeSymbol)elem.exprType).getTypeIndex();
-		elem.promoteToType = equalityPromoteFromTo[selfIndex][targetIndex];
+		if(elem.exprType != null && elem.exprType instanceof  WBuiltInTypeSymbol){  //elem.exprType may not be known
+			int selfIndex = ((WBuiltInTypeSymbol)elem.exprType).getTypeIndex();
+			elem.promoteToType = equalityPromoteFromTo[selfIndex][targetIndex];
+		}
 	}
 
 	public static String dumpWithType(ParserRuleContext tree) {
 		if (tree == null) return "";
-		return String.valueOf(process(tree.children, (t)->t instanceof TerminalNode, (t)->"",
-						(t)->dumpNonTerminal((ParserRuleContext) t)));
+		return String.valueOf(process(tree.children, (t) -> t instanceof TerminalNode, (t) -> "",
+		                              (t) -> dumpNonTerminal((ParserRuleContext) t)));
 	}
 
 	private static String dumpNonTerminal(ParserRuleContext ctx) {
 		StringBuilder sb = new StringBuilder();
-		if (ctx instanceof ExprContext) {
+		if (ctx instanceof ExprContext || ctx instanceof WichParser.Call_exprContext) {
 			sb.append(dumpExprWithType(ctx));
 		}
 		else {
@@ -253,6 +258,9 @@ public class TypeHelper {
 		else if (ctx instanceof WichParser.CallContext) {
 			sb.append(dumpCallWithType((WichParser.CallContext) ctx));
 		}
+		else if (ctx instanceof WichParser.Call_exprContext){
+			sb.append(dumpCallWithType((WichParser.Call_exprContext) ctx));
+		}
 		else {
 			ExprContext exprCtx = (ExprContext) ctx;
 			sb.append(exprCtx.getText()).append(":").append(getPrintType(exprCtx)).append("\n");
@@ -265,9 +273,9 @@ public class TypeHelper {
 
 	protected static String dumpOpWithType(WichParser.OpContext ctx) {
 		return String.valueOf(process(ctx.children,
-				(t)->t instanceof ExprContext,
-				(t)->dumpExprWithType((ParserRuleContext) t),
-				(t)->"")) + ctx.operator().getText() + ":" + getPrintType(ctx) + "\n";
+		                              (t) -> t instanceof ExprContext,
+		                              (t) -> dumpExprWithType((ParserRuleContext) t),
+		                              (t) -> "")) + ctx.operator().getText() + ":" + getPrintType(ctx) + "\n";
 	}
 
 	protected static String dumpCallWithType(WichParser.CallContext ctx) {
@@ -279,17 +287,36 @@ public class TypeHelper {
 				                       (t) -> ""));
 	}
 
+	//overloading to dump call statement with type
+	protected static String dumpCallWithType(WichParser.Call_exprContext ctx) {
+		WichParser.Expr_listContext args = ctx.expr_list();
+		return ctx.getText() + ":" + getPrintType(ctx) + "\n" +
+				String.valueOf(process(args!=null ? args.children : Collections.emptyList(),
+						(t) -> t instanceof ExprContext,
+						(t) -> dumpExprWithType((ParserRuleContext) t),
+						(t) -> ""));
+	}
+
 	protected static String dumpPrimaryWithType(WichParser.AtomContext ctx) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(ctx.getText()).append(":").append(getPrintType(ctx)).append("\n");
 		if (ctx.primary() instanceof WichParser.VectorContext) {
 			WichParser.VectorContext vectorContext = (WichParser.VectorContext) ctx.primary();
-			sb.append(process(vectorContext.expr_list().expr(), (t)->true, TypeHelper::dumpExprWithType, (t)->""));
+			sb.append(process(vectorContext.expr_list().expr(), (t) -> true, TypeHelper::dumpExprWithType, (t) -> ""));
 		}
 		return sb.toString();
 	}
 
 	protected static String getPrintType(ExprContext ctx) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(ctx.exprType.getName());
+		if (ctx.promoteToType != null) {
+			sb.append(" => ").append(ctx.promoteToType);
+		}
+		return sb.toString();
+	}
+	//overloading to get print type for call statement
+	protected static String getPrintType(WichParser.Call_exprContext ctx) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(ctx.exprType.getName());
 		if (ctx.promoteToType != null) {

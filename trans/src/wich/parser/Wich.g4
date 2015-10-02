@@ -46,6 +46,7 @@ formal_arg : ID ':' type ;
 type:	'int'                                               # IntTypeSpec
 	|	'float'                                             # FloatTypeSpec
 	|	'string'                                            # StringTypeSpec
+	|	'boolean'											# BooleanTypeSpec
 	|	'[' ']'                                             # VectorTypeSpec
 	;
 
@@ -82,7 +83,8 @@ expr returns [Type exprType, Type promoteToType]
 
 operator  : MUL|DIV|ADD|SUB|GT|GE|LT|LE|EQUAL_EQUAL|NOT_EQUAL|OR|AND|DOT ; // no implicit precedence
 
-call_expr : ID '(' expr_list? ')' ;
+call_expr returns [Type exprType, Type promoteToType]
+	: ID '(' expr_list? ')' ;
 
 expr_list : expr (',' expr)* ;
 

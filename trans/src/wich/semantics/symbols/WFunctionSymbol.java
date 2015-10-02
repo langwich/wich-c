@@ -24,9 +24,13 @@ SOFTWARE.
 package wich.semantics.symbols;
 
 import org.antlr.symtab.FunctionSymbol;
+import org.antlr.symtab.Type;
+
+import java.util.ArrayList;
 
 public class WFunctionSymbol extends FunctionSymbol {
 	public WBlock block; // code block of the function
+	public ArrayList<Type> argTypes = new ArrayList<Type>();
 
 	public WFunctionSymbol(String funcName) {
 		super(funcName);

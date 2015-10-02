@@ -36,10 +36,12 @@ import wich.codegen.model.OutputModelObject;
 import wich.errors.WichErrorHandler;
 import wich.parser.WichLexer;
 import wich.parser.WichParser;
+import wich.semantics.AssignTypes;
+import wich.semantics.CheckTypes;
+import wich.semantics.ComputeTypes;
 import wich.semantics.DefineSymbols;
+import wich.semantics.FinalComputeTypes;
 import wich.semantics.SymbolTable;
-import wich.semantics.TypeAnnotator;
-import wich.semantics.TypeChecker;
 
 import java.io.IOException;
 import java.net.URL;
@@ -67,15 +69,25 @@ public class CompilerUtils {
 
 	static ParserRuleContext getAnnotatedParseTree(String input, SymbolTable symtab, WichErrorHandler err) {
 		ParserRuleContext tree = defineSymbols(input, symtab, err);
-		TypeAnnotator typeAnnotator = new TypeAnnotator(err);
+
+		ComputeTypes computeTypes = new ComputeTypes(err);
+		AssignTypes assignTypes = new AssignTypes(err, symtab.numOfVars);
 		ParseTreeWalker walker = new ParseTreeWalker();
-		walker.walk(typeAnnotator, tree);
+		do{
+			walker.walk(computeTypes, tree);
+			walker = new ParseTreeWalker();
+			walker.walk(assignTypes, tree);
+		}while(!assignTypes.isAssignFinished);
+
+		FinalComputeTypes finalComputeTypes = new FinalComputeTypes(err);
+		walker = new ParseTreeWalker();
+		walker.walk(finalComputeTypes, tree);
 		return tree;
 	}
 
 	static ParserRuleContext checkCorrectness(String input, SymbolTable symtab, WichErrorHandler err) {
 		ParserRuleContext tree = getAnnotatedParseTree(input, symtab, err);
-		TypeChecker checker = new TypeChecker(err);
+		CheckTypes checker = new CheckTypes(err);
 		ParseTreeWalker walker = new ParseTreeWalker();
 		walker.walk(checker, tree);
 		return tree;

@@ -40,10 +40,12 @@ import wich.codegen.model.File;
 import wich.errors.WichErrorHandler;
 import wich.parser.WichLexer;
 import wich.parser.WichParser;
+import wich.semantics.AssignTypes;
+import wich.semantics.CheckTypes;
+import wich.semantics.ComputeTypes;
 import wich.semantics.DefineSymbols;
+import wich.semantics.FinalComputeTypes;
 import wich.semantics.SymbolTable;
-import wich.semantics.TypeAnnotator;
-import wich.semantics.TypeChecker;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -94,15 +96,29 @@ public class Trans {
 			DefineSymbols defSymbols = new DefineSymbols(symtab, err);
 			walker.walk(defSymbols, tree);
 
-			// use the TypeAnnotator listener to compute and
-			// and annotate the parse tree with type information
-			// also, it deals with type inference and type promotion
-			TypeAnnotator typeAnnotator = new TypeAnnotator(err);
+			/*
+			use the listener to compute and
+			and annotate the parse tree with type information
+			also, it deals with type inference and type promotion
+			to support forward reference, iterative passes are used.
+			*/
+
+			ComputeTypes computeTypes = new ComputeTypes(err);
+			AssignTypes assignTypes = new AssignTypes(err,symtab.numOfVars );
 			walker = new ParseTreeWalker();
-			walker.walk(typeAnnotator, tree);
+			do{
+				walker.walk(computeTypes, tree);
+				walker = new ParseTreeWalker();
+				assignTypes.isAssignFinished = true;
+				walker.walk(assignTypes, tree);
+			}while(!assignTypes.isAssignFinished);
+
+			FinalComputeTypes finalComputeTypes = new FinalComputeTypes(err);
+			walker = new ParseTreeWalker();
+			walker.walk(finalComputeTypes, tree);
 
 			// use TypeChecker listener to do static type checking
-			TypeChecker typeChecker = new TypeChecker(err);
+			CheckTypes typeChecker = new CheckTypes(err);
 			walker = new ParseTreeWalker();
 			walker.walk(typeChecker, tree);
 
