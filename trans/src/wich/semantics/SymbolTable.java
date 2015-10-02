@@ -33,7 +33,6 @@ import org.antlr.symtab.Type;
 import wich.parser.WichParser.ExprContext;
 import wich.semantics.symbols.WBlock;
 import wich.semantics.symbols.WBoolean;
-import wich.semantics.symbols.WBuiltInTypeSymbol;
 import wich.semantics.symbols.WFloat;
 import wich.semantics.symbols.WFunctionSymbol;
 import wich.semantics.symbols.WInt;
@@ -52,6 +51,8 @@ public class SymbolTable {
 	public static final WVector _vector = new WVector();
 	public static final WBoolean _boolean = new WBoolean();
 	public static final WVoid _void = new WVoid();
+
+	public int numOfVars;
 
 	public SymbolTable() {
 		initTypeSystem();

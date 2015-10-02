@@ -31,8 +31,10 @@ import wich.parser.WichParser;
 import wich.semantics.symbols.WFunctionSymbol;
 import wich.semantics.symbols.WVariableSymbol;
 
-import static wich.errors.ErrorType.*;
-import static wich.errors.ErrorType.INCORRECT_ARG_NUMBERS;
+import static wich.errors.ErrorType.INCOMPATIBLE_OPERAND_ERROR;
+import static wich.errors.ErrorType.INVALID_OPERAND_ERROR;
+import static wich.errors.ErrorType.INVALID_OPERATION;
+import static wich.errors.ErrorType.SYMBOL_NOT_FOUND;
 
 /*Another pass to support forward reference */
 public class FinalComputeTypes extends MaintainScopeListener{

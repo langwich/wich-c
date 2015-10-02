@@ -46,6 +46,7 @@ formal_arg : ID ':' type ;
 type:	'int'                                               # IntTypeSpec
 	|	'float'                                             # FloatTypeSpec
 	|	'string'                                            # StringTypeSpec
+	|	'boolean'											# BooleanTypeSpec
 	|	'[' ']'                                             # VectorTypeSpec
 	;
 

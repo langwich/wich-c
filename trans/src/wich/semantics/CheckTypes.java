@@ -30,9 +30,13 @@ import org.antlr.v4.runtime.misc.NotNull;
 import wich.errors.WichErrorHandler;
 import wich.parser.WichParser;
 import wich.semantics.symbols.WFunctionSymbol;
-import wich.semantics.symbols.WVector;
 
-import static wich.errors.ErrorType.*;
+import static wich.errors.ErrorType.INCOMPATIBLE_ARGUMENT_ERROR;
+import static wich.errors.ErrorType.INCOMPATIBLE_ASSIGNMENT_ERROR;
+import static wich.errors.ErrorType.INVALID_CONDITION_ERROR;
+import static wich.errors.ErrorType.INVALID_ELEMENT_ERROR;
+import static wich.errors.ErrorType.INVALID_INDEX_ERROR;
+import static wich.errors.ErrorType.INVALID_OPERATION;
 
 public class CheckTypes extends MaintainScopeListener {
 

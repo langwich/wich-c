@@ -29,7 +29,7 @@ import wich.errors.WichErrorHandler;
 import wich.parser.WichParser;
 import wich.semantics.symbols.WVariableSymbol;
 
-import static wich.errors.ErrorType.*;
+import static wich.errors.ErrorType.SYMBOL_NOT_FOUND;
 
 
 /*Assign types to variables wherever possible, keep track of whether all variables have been assigned types*/

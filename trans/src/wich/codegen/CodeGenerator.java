@@ -11,6 +11,7 @@ import org.stringtemplate.v4.STGroupFile;
 import wich.codegen.model.ArgDef;
 import wich.codegen.model.AssignStat;
 import wich.codegen.model.Block;
+import wich.codegen.model.BooleanType;
 import wich.codegen.model.CallStat;
 import wich.codegen.model.CompositeModelObject;
 import wich.codegen.model.ElementAssignStat;
@@ -166,6 +167,11 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	@Override
 	public OutputModelObject visitIntTypeSpec(WichParser.IntTypeSpecContext ctx) {
 		return new IntType();
+	}
+
+	@Override
+	public OutputModelObject visitBooleanTypeSpec(@NotNull WichParser.BooleanTypeSpecContext ctx) {
+		return new BooleanType();
 	}
 
 	@Override

@@ -31,9 +31,15 @@ import org.antlr.v4.runtime.misc.NotNull;
 import wich.errors.WichErrorHandler;
 import wich.parser.WichParser;
 import wich.parser.WichParser.ExprContext;
-import wich.semantics.symbols.*;
+import wich.semantics.symbols.WFunctionSymbol;
+import wich.semantics.symbols.WVariableSymbol;
 
-import static wich.errors.ErrorType.*;
+import static wich.errors.ErrorType.INCOMPATIBLE_OPERAND_ERROR;
+import static wich.errors.ErrorType.INCORRECT_ARG_NUMBERS;
+import static wich.errors.ErrorType.INVALID_OPERAND_ERROR;
+import static wich.errors.ErrorType.INVALID_OPERATION;
+import static wich.errors.ErrorType.SYMBOL_NOT_FOUND;
+import static wich.errors.ErrorType.UNDEFINED_FUNCTION;
 
 /*Compute expression types wherever possible.*/
 public class ComputeTypes extends MaintainScopeListener {

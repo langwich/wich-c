@@ -40,7 +40,12 @@ import wich.codegen.model.File;
 import wich.errors.WichErrorHandler;
 import wich.parser.WichLexer;
 import wich.parser.WichParser;
-import wich.semantics.*;
+import wich.semantics.AssignTypes;
+import wich.semantics.CheckTypes;
+import wich.semantics.ComputeTypes;
+import wich.semantics.DefineSymbols;
+import wich.semantics.FinalComputeTypes;
+import wich.semantics.SymbolTable;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
