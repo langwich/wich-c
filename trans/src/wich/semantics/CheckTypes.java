@@ -25,25 +25,28 @@ package wich.semantics;
 
 import org.antlr.symtab.Symbol;
 import org.antlr.symtab.Type;
+import org.antlr.symtab.TypedSymbol;
 import org.antlr.v4.runtime.misc.NotNull;
 import wich.errors.WichErrorHandler;
 import wich.parser.WichParser;
-import wich.semantics.symbols.WBuiltInTypeSymbol;
-import wich.semantics.symbols.WVariableSymbol;
+import wich.semantics.symbols.WFunctionSymbol;
+import wich.semantics.symbols.WVector;
 
-import static wich.errors.WichErrorHandler.INCOMPATIBLE_ASSIGNMENT;
-import static wich.errors.WichErrorHandler.INVALID_ELEMENT;
-import static wich.errors.WichErrorHandler.INVALID_VECTOR_INDEX;
+import static wich.errors.ErrorType.*;
 
-public class CheckTypeInAssignment extends MaintainScopeListener {
+public class CheckTypes extends MaintainScopeListener {
+
+	public CheckTypes(WichErrorHandler errorHandler) {
+		super(errorHandler);
+	}
+
 	@Override
 	public void exitAssign(@NotNull WichParser.AssignContext ctx) {
 		Symbol s = currentScope.resolve(ctx.ID().getText());
-		Type left = (WBuiltInTypeSymbol) s;
+		Type left = ((TypedSymbol)s).getType();
 		Type right = ctx.expr().exprType;
-
 		if ( !TypeHelper.isLegalAssign(left, right) ) {
-			error(INCOMPATIBLE_ASSIGNMENT, left.getName()+"="+right.getName());
+			error(INCOMPATIBLE_ASSIGNMENT_ERROR, left.getName(), right.getName());
 		}
 	}
 	/*
@@ -66,15 +69,18 @@ public class CheckTypeInAssignment extends MaintainScopeListener {
 	public void exitElementAssign(@NotNull WichParser.ElementAssignContext ctx) {
 		WichParser.ExprContext index = ctx.expr(0);
 		WichParser.ExprContext elem = ctx.expr(1);
-
-		// index must be expression of int type
-		if (index.exprType != SymbolTable._int) {
-			error(INVALID_VECTOR_INDEX, index.exprType.getName());
+		//id must be of vector type
+		Symbol id = currentScope.resolve(ctx.ID().getText());
+		if (((TypedSymbol)id).getType() != SymbolTable._vector){
+			error(INVALID_OPERATION, "[]", ((TypedSymbol)id).getType().getName());
 		}
-
+		// index must be expression of int type
+		else if (index.exprType != SymbolTable._int) {
+			error(INVALID_INDEX_ERROR, index.exprType.getName()); //should terminate the program
+		}
 		// element value must be expression of float type or can be promoted to float
-		if ( !TypeHelper.typesAreCompatible(elem, SymbolTable._float) ) {
-			error(INVALID_ELEMENT, elem.exprType.getName());
+		else if ( !TypeHelper.typesAreCompatible(elem, SymbolTable._float) ) {
+			error(INVALID_ELEMENT_ERROR, elem.exprType.getName());
 		}
 	}
 
@@ -83,9 +89,45 @@ public class CheckTypeInAssignment extends MaintainScopeListener {
 		if (ctx.expr_list() != null) {
 			for (WichParser.ExprContext elem : ctx.expr_list().expr()){
 				if ( !TypeHelper.typesAreCompatible(elem, SymbolTable._float) ) {
-					error(INVALID_ELEMENT, elem.exprType.getName());
+					error(INVALID_ELEMENT_ERROR, elem.exprType.getName());
 				}
 			}
 		}
+	}
+
+	@Override
+	public void exitIf(@NotNull WichParser.IfContext ctx) {
+		if(ctx.expr().exprType != SymbolTable._boolean)
+			error(INVALID_CONDITION_ERROR, ctx.expr().exprType.getName());
+	}
+
+
+	@Override
+	public void exitWhile(@NotNull WichParser.WhileContext ctx) {
+		if(ctx.expr().exprType != SymbolTable._boolean)
+			error(INVALID_CONDITION_ERROR, ctx.expr().exprType.getName());
+	}
+
+	@Override
+	public void exitCall_expr(@NotNull WichParser.Call_exprContext ctx) {
+		Symbol f = currentScope.resolve(ctx.ID().getText());
+		if(f != null && f instanceof WFunctionSymbol){
+			int numOfArgs = ((WFunctionSymbol)f).argTypes.size();
+			if(numOfArgs != 0 && numOfArgs == ctx.expr_list().expr().size()){
+				for(int i = 0; i < numOfArgs; i++){
+					Type actual = ctx.expr_list().expr(i).exprType;
+					Type promoted = ctx.expr_list().expr(i).promoteToType;
+					Type expected = ((WFunctionSymbol)f).argTypes.get(i);
+					if (actual != expected && promoted != expected)
+						error(INCOMPATIBLE_ARGUMENT_ERROR, expected.getName(), actual.getName());
+				}
+			}
+		}
+	}
+
+	@Override
+	public void exitCall(@NotNull WichParser.CallContext ctx) {
+		WichParser.Call_exprContext callExprContext = ctx.call_expr();
+		exitCall_expr(callExprContext);
 	}
 }

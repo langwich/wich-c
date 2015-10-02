@@ -33,17 +33,19 @@ import org.stringtemplate.v4.STGroupFile;
 import wich.codegen.CodeGenerator;
 import wich.codegen.ModelConverter;
 import wich.codegen.model.OutputModelObject;
+import wich.errors.WichErrorHandler;
 import wich.parser.WichLexer;
 import wich.parser.WichParser;
 import wich.semantics.*;
 
 import java.io.IOException;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-public class CompilerFacade {
+public class CompilerUtils {
 	public static final Charset FILE_ENCODING = StandardCharsets.UTF_8;
 
 	private static ParserRuleContext parse(ANTLRInputStream antlrInputStream) {
@@ -52,36 +54,43 @@ public class CompilerFacade {
 		return parser.file();
 	}
 
-	static ParserRuleContext defineSymbols(String input, SymbolTable symtab) {
+	static ParserRuleContext defineSymbols(String input, SymbolTable symtab, WichErrorHandler err) {
 		ParserRuleContext tree = parse(new ANTLRInputStream(input));
 		ParseTreeWalker walker = new ParseTreeWalker();
-		DefineSymbols symtabConstructor = new DefineSymbols(symtab);
+		DefineSymbols symtabConstructor = new DefineSymbols(symtab, err);
 		walker.walk(symtabConstructor, tree);
 		return tree;
 	}
 
-	static ParserRuleContext getAnnotatedParseTree(String input, SymbolTable symtab) {
-		ParserRuleContext tree = defineSymbols(input, symtab);
+	static ParserRuleContext getAnnotatedParseTree(String input, SymbolTable symtab, WichErrorHandler err) {
+		ParserRuleContext tree = defineSymbols(input, symtab, err);
 
-		ComputeTypeFirstPass firstPass = new ComputeTypeFirstPass();
-		AssignVarTypes assignVarTypes = new AssignVarTypes();
-
+		ComputeTypes computeTypes = new ComputeTypes(err);
+		AssignTypes assignTypes = new AssignTypes(err, symtab.numOfVars);
 		ParseTreeWalker walker = new ParseTreeWalker();
-		while (!assignVarTypes.isAssignFinished) {
-			walker.walk(firstPass, tree);
+		do{
+			walker.walk(computeTypes, tree);
 			walker = new ParseTreeWalker();
-			assignVarTypes.isAssignFinished = true;
-			walker.walk(assignVarTypes, tree);
-		}
-		ComputeTypeSecondPass secondPass = new ComputeTypeSecondPass();
+			walker.walk(assignTypes, tree);
+		}while(!assignTypes.isAssignFinished);
+
+		FinalComputeTypes finalComputeTypes = new FinalComputeTypes(err);
 		walker = new ParseTreeWalker();
-		walker.walk(secondPass, tree);
+		walker.walk(finalComputeTypes, tree);
 		return tree;
 	}
 
-	static String genCode(String input, SymbolTable symtab) {
-		ParserRuleContext tree = getAnnotatedParseTree(input, symtab);
-		CodeGenerator codeGenerator = new CodeGenerator(input,symtab);
+	static ParserRuleContext checkCorrectness(String input, SymbolTable symtab, WichErrorHandler err) {
+		ParserRuleContext tree = getAnnotatedParseTree(input, symtab, err);
+		CheckTypes checker = new CheckTypes(err);
+		ParseTreeWalker walker = new ParseTreeWalker();
+		walker.walk(checker, tree);
+		return tree;
+	}
+
+	static String genCode(String input, SymbolTable symtab, WichErrorHandler err) {
+		ParserRuleContext tree = checkCorrectness(input, symtab, err);
+		CodeGenerator codeGenerator = new CodeGenerator(input, symtab);
 		OutputModelObject omo = codeGenerator.generate(tree);
 		STGroup templates = new STGroupFile("wich.stg");
 		ModelConverter converter = new ModelConverter(templates);
@@ -96,5 +105,9 @@ public class CompilerFacade {
 
 	static void writeFile(String path, String output, Charset encoding) throws IOException {
 		Files.write(Paths.get(path), output.getBytes(encoding));
+	}
+
+	static URL getResourceFile(String resName) {
+		return WichBaseTest.class.getClassLoader().getResource(resName);
 	}
 }

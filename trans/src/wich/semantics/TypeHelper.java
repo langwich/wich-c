@@ -191,13 +191,15 @@ public class TypeHelper {
 	/** This method is the general helper method used to calculate result type.
 	 *  You should use the method in SymbolTable based on this method.
 	 */
-	public static WBuiltInTypeSymbol getResultType(int op,
-												   ExprContext le,
-												   ExprContext re)
+	public static Type getResultType(int op,
+	                                 ExprContext le,
+	                                 ExprContext re)
 	{
 		int li = ((WBuiltInTypeSymbol)le.exprType).getTypeIndex();
 		int ri = ((WBuiltInTypeSymbol)re.exprType).getTypeIndex();
-		WBuiltInTypeSymbol resultType = opResultTypeMap[op][li][ri];
+		Type resultType = opResultTypeMap[op][li][ri];
+		if (resultType == null)
+			return SymbolTable.INVALID_TYPE;
 		le.promoteToType = operandPromotionMap[op][li][resultType.getTypeIndex()];
 		re.promoteToType = operandPromotionMap[op][ri][resultType.getTypeIndex()];
 		return resultType;
@@ -221,8 +223,10 @@ public class TypeHelper {
 
 	/** This method is used to promote type during type annotation */
 	public static void promote(ExprContext elem, int targetIndex) {
-		int selfIndex = ((WBuiltInTypeSymbol)elem.exprType).getTypeIndex();
-		elem.promoteToType = equalityPromoteFromTo[selfIndex][targetIndex];
+		if(elem.exprType != null && elem.exprType instanceof  WBuiltInTypeSymbol){  //elem.exprType may not be known
+			int selfIndex = ((WBuiltInTypeSymbol)elem.exprType).getTypeIndex();
+			elem.promoteToType = equalityPromoteFromTo[selfIndex][targetIndex];
+		}
 	}
 
 	public static String dumpWithType(ParserRuleContext tree) {

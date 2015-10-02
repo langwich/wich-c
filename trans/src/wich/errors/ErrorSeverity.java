@@ -1,4 +1,4 @@
-package wich.errors;/*
+/*
 The MIT License (MIT)
 
 Copyright (c) 2015 Terence Parr, Hanzhou Shi, Shuai Yuan, Yuanyuan Zhang
@@ -21,7 +21,19 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+package wich.errors;
 
-class InvalidVecIndexError extends Error {
-	protected String msg = "Invalid vector index type.";
+public enum ErrorSeverity {
+	WARNING("warning"),
+	ERROR("error");
+
+	private String severityName;
+
+	ErrorSeverity(String name) {
+		severityName = name;
+	}
+
+	public String getName() {
+		return severityName;
+	}
 }

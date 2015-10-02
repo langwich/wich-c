@@ -46,6 +46,7 @@ formal_arg : ID ':' type ;
 type:	'int'
 	|	'float'
 	|	'string'
+	|   'boolean'
 	|	'[' ']'
 	;
 

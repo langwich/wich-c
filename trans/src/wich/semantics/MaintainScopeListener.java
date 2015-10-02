@@ -1,9 +1,14 @@
 package wich.semantics;
 
 import org.antlr.v4.runtime.misc.NotNull;
+import wich.errors.WichErrorHandler;
 import wich.parser.WichParser;
 
 public class MaintainScopeListener extends CommonWichListener {
+	public MaintainScopeListener(WichErrorHandler errorHandler) {
+		super(errorHandler);
+	}
+
 	@Override
 	public void enterScript(@NotNull WichParser.ScriptContext ctx) {
 		pushScope(ctx.scope);

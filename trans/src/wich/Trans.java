@@ -37,6 +37,7 @@ import org.stringtemplate.v4.STGroupFile;
 import wich.codegen.CodeGenerator;
 import wich.codegen.ModelConverter;
 import wich.codegen.model.CFile;
+import wich.errors.WichErrorHandler;
 import wich.parser.WichLexer;
 import wich.parser.WichParser;
 import wich.semantics.*;
@@ -85,33 +86,34 @@ public class Trans {
 
 			// trigger tree walk to define symbols
 			SymbolTable symtab = new SymbolTable();
+			WichErrorHandler err = new WichErrorHandler();
 			ParseTreeWalker walker = new ParseTreeWalker();
-			DefineSymbols defSymbols = new DefineSymbols(symtab);
+			DefineSymbols defSymbols = new DefineSymbols(symtab, err);
 			walker.walk(defSymbols, tree);
 
-			/*use the listener to compute and
+			/*
+			use the listener to compute and
 			and annotate the parse tree with type information
 			also, it deals with type inference and type promotion
-			to support forward reference, three passes are used.*/
+			to support forward reference, iterative passes are used.
+			*/
 
-			//First pass to compute types of expressions when possible
-			ComputeTypeFirstPass firstPassCompute = new ComputeTypeFirstPass();
+			ComputeTypes computeTypes = new ComputeTypes(err);
+			AssignTypes assignTypes = new AssignTypes(err,symtab.numOfVars );
 			walker = new ParseTreeWalker();
-			walker.walk(firstPassCompute, tree);
+			do{
+				walker.walk(computeTypes, tree);
+				walker = new ParseTreeWalker();
+				assignTypes.isAssignFinished = true;
+				walker.walk(assignTypes, tree);
+			}while(!assignTypes.isAssignFinished);
 
-			//Second pass to assign variable types
-			AssignVarTypes assignVarTypes = new AssignVarTypes();
+			FinalComputeTypes finalComputeTypes = new FinalComputeTypes(err);
 			walker = new ParseTreeWalker();
-			walker.walk(assignVarTypes, tree);
-
-			//third pass to collect computed type for forward referenced expressions
-			ComputeTypeSecondPass secondPassCompute = new ComputeTypeSecondPass();
-			walker = new ParseTreeWalker();
-			walker.walk(secondPassCompute, tree);
-
+			walker.walk(finalComputeTypes, tree);
 
 			// use TypeChecker listener to do static type checking
-			CheckTypeInAssignment typeChecker = new CheckTypeInAssignment();
+			CheckTypes typeChecker = new CheckTypes(err);
 			walker = new ParseTreeWalker();
 			walker.walk(typeChecker, tree);
 

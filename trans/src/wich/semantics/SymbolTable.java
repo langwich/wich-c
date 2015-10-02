@@ -50,6 +50,7 @@ public class SymbolTable {
 	public static final WString _string = new WString();
 	public static final WVector _vector = new WVector();
 	public static final WBoolean _boolean = new WBoolean();
+	public int numOfVars = 0;
 
 	public SymbolTable() {
 		initTypeSystem();
@@ -108,7 +109,7 @@ public class SymbolTable {
 		return buf.toString();
 	}
 
-	public static WBuiltInTypeSymbol op(int op, ExprContext lt, ExprContext rt) {
+	public static Type op(int op, ExprContext lt, ExprContext rt) {
 		return TypeHelper.getResultType(op, lt, rt);
 	}
 
