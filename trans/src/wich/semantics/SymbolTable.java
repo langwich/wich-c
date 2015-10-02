@@ -110,7 +110,7 @@ public class SymbolTable {
 		return buf.toString();
 	}
 
-	public static WBuiltInTypeSymbol op(int op, ExprContext lt, ExprContext rt) {
+	public static Type op(int op, ExprContext lt, ExprContext rt) {
 		return TypeHelper.getResultType(op, lt, rt);
 	}
 

@@ -7,11 +7,11 @@ void f();
 
 void f()
 {
-	printf("??");
+	printf("%d\n", x);
 }
 
 int main(int argc, char *argv[])
 {
-    x = 99;
+	x = 99;
 	return 0;
 }

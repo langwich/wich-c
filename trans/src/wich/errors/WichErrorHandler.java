@@ -68,9 +68,7 @@ public class WichErrorHandler {
 		return template.render();
 	}
 
-	public int getErrorNum() {
-		return errQueue.size();
-	}
+	public int getErrorNum() { return errQueue.size(); }
 
 	// destructive operation, will leave the error message queue empty.
 	public String toString() {
@@ -79,3 +77,4 @@ public class WichErrorHandler {
 		return sb.toString();
 	}
 }
+
