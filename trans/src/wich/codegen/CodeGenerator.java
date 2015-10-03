@@ -29,6 +29,7 @@ import wich.codegen.model.PrintIntStat;
 import wich.codegen.model.PrintNewLine;
 import wich.codegen.model.PrintStringStat;
 import wich.codegen.model.PrintVectorStat;
+import wich.codegen.model.RefCountREF;
 import wich.codegen.model.ReturnStat;
 import wich.codegen.model.Stat;
 import wich.codegen.model.StringLiteral;
@@ -145,6 +146,9 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 			for (WichParser.Formal_argContext arg : ctx.formal_args().formal_arg()) {
 				ArgDef argDefModel = (ArgDef) visit(arg);
 				func.args.add(argDefModel);
+				// Inject code to copy arg to local ptrs if heap
+				final WVariableSymbol argSym = (WVariableSymbol)func.scope.resolve(arg.ID().getText());
+				func.body.stats.add(0, new RefCountREF(CodeGenerator.getVarRef(argSym)));
 			}
 		}
 
@@ -267,7 +271,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		String varName = ctx.ID().getText();
 		Expr index     = (Expr)visit(ctx.expr(0));
 		Expr expr      = (Expr)visit(ctx.expr(1));
-		return new ElementAssignStat(varName, index, expr);
+		return new ElementAssignStat(getVarRef(varName), index, expr);
 	}
 
 	@Override

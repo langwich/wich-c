@@ -37,19 +37,30 @@ import static wich.errors.ErrorType.INVALID_TYPE;
 /*Define symbols, annotate explicit type information for function and args.*/
 public class DefineSymbols extends CommonWichListener {
 	protected SymbolTable symtab;
-	protected int localVarIndex = 0;
+
+	/** Total number of non-arg variables defined */
+	protected int numOfVars;
+
+	/** Tracks the index assigned to each arg, local in a function; used as
+	 *  index into local ptrs array for ref/counting.
+	 */
+	protected int varIndex = 0;
 
 	public DefineSymbols(SymbolTable symtab, WichErrorHandler errorHandler) {
 		super(errorHandler);
 		this.symtab = symtab;
 	}
 
+	public int getNumOfVars() {
+		return numOfVars;
+	}
+
 	@Override
 	public void enterVardef(WichParser.VardefContext ctx) {
 		final WVariableSymbol varSym = new WVariableSymbol(ctx.ID().getText());
-		varSym.localVarIndex = localVarIndex++;
+		varSym.localVarIndex = varIndex++;
 		currentScope.define(varSym); // type set in type computation phase
-		symtab.numOfVars++;
+		numOfVars++;
 	}
 
 	@Override
@@ -69,6 +80,7 @@ public class DefineSymbols extends CommonWichListener {
 
 	@Override
 	public void enterFunction(@NotNull WichParser.FunctionContext ctx) {
+		varIndex = 0;
 		WFunctionSymbol f = new WFunctionSymbol(ctx.ID().getText());
 		f.setEnclosingScope(currentScope);
 		// resolve return type of the method since it's explicit

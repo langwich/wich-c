@@ -95,6 +95,7 @@ public class Trans {
 			ParseTreeWalker walker = new ParseTreeWalker();
 			DefineSymbols defSymbols = new DefineSymbols(symtab, err);
 			walker.walk(defSymbols, tree);
+			symtab.numOfVars = defSymbols.getNumOfVars();
 
 			/*
 			use the listener to compute and

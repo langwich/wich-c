@@ -24,14 +24,15 @@ SOFTWARE.
 package wich.codegen.model;
 
 import wich.codegen.model.expr.Expr;
+import wich.codegen.model.expr.VarRef;
 
 public class ElementAssignStat extends Stat{
-	public final String varName;
-	@ModelElement public Expr index;
-	@ModelElement public Expr expr;
+	@ModelElement public final VarRef varRef;
+	@ModelElement public final Expr index;
+	@ModelElement public final Expr expr;
 
-	public ElementAssignStat(String varName, Expr index, Expr expr) {
-		this.varName = varName;
+	public ElementAssignStat(VarRef varRef, Expr index, Expr expr) {
+		this.varRef = varRef;
 		this.index = index;
 		this.expr = expr;
 	}

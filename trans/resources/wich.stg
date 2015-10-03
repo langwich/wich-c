@@ -112,9 +112,9 @@ CallStat(c,callExpr) ::=<<
 <callExpr>;
 >>
 
-ElementAssignStat(e,index,expr) ::= <<
-COPY_ON_WRITE(<e.varName>);
-<e.varName>->data[<index>-1] = <expr>;
+ElementAssignStat(e,varRef,index,expr) ::= <<
+COPY_ON_WRITE(<varRef>);
+((Vector *)<varRef>)->data[<index>-1] = <expr>;
 >>
 
 IfStat(i,condition,stat,elseStat) ::= <<
