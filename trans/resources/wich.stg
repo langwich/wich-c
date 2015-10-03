@@ -57,50 +57,51 @@ CVectorBinaryOpMap ::= [
 	".":"Vector_dot"
 ]
 
-File(f, script) ::= <<
+File(f, functions, main) ::= <<
 #include \<stdio.h>
 #include "wich.h"
 
-<script.functions:funcDecl()>
-<script.functions>
-<script>
->>
-
-Script(s,stats,varDefs,functions,cleanup) ::= <<
-int main(int argc, char *argv[])
-{
-	void *_localptrs[<s.numHeapVars>];
-	<varDefs; separator="\n">
-	<stats; separator="\n">
-	<cleanup; separator="\n">
-	return 0;
-}<\n>
+<functions:funcDecl()>
+<functions>
+<main>
 >>
 
 funcDecl(funcTemplate) ::= <<
 <funcTemplate.returnType> <funcTemplate.f.name>(<funcTemplate.args;separator=",">);<\n>
 >>
 
-Func(f,returnType,args,body)::=<<
-<returnType> <f.name>(<args;separator=",">)
-<body>
+MainFunc(f,returnType,args,body) ::= <<
+int main(int argc, char *argv[])
+{
+	void *_localptrs[<f.totalNumHeapVars>];
+	<body>
+	return 0;
+}
 <\n>
 >>
 
-FuncBlock(b,varDefs,stats,cleanup)::= <<
+Func(f,returnType,args,body)::=<<
+<returnType> <f.name>(<args;separator=",">)
 {
-	void *_localptrs[<b.numHeapVars>];
-	<varDefs; separator="\n">
-	<stats; separator="\n">
-	<cleanup; separator="\n">
+    void *_localptrs[<f.totalNumHeapVars>];
+    <body>
 }
+<\n>
+>>
+
+MainBlock(b,varDefs,stats,cleanup)::= <<
+<Block(...)>
+>>
+
+FuncBlock(b,varDefs,stats,cleanup)::= <<
+<varDefs; separator="\n">
+<stats; separator="\n">
+<cleanup; separator="\n">
 >>
 
 Block(b,varDefs,stats,cleanup)::= <<
-{
-	<varDefs; separator="\n">
-	<stats; separator="\n">
-}
+<varDefs; separator="\n">
+<stats; separator="\n">
 >>
 
 AssignStat(a,varRef,expr)::=<<
@@ -127,6 +128,12 @@ while (<condition>) <stat;separator="\n">
 
 ReturnStat(r,expr)  ::= <<
 return <expr>;
+>>
+
+BlockStatement(b,block) ::= <<
+{
+    <block>
+}
 >>
 
 VarInitStat(v,varRef,expr) ::= <<

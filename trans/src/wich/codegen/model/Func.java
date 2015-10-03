@@ -23,6 +23,7 @@ SOFTWARE.
 */
 package wich.codegen.model;
 
+import wich.codegen.ModelWalker;
 import wich.semantics.symbols.WFunctionSymbol;
 
 import java.util.ArrayList;
@@ -46,6 +47,12 @@ public class Func extends OutputModelObject {
 
 	/** How many heap vars in this function and all nested blocks */
 	public int getTotalNumHeapVars() {
-		return 0;
+		int[] numHeapVars = new int[1]; // force Java to allow alteration of an int from lambda
+		ModelWalker.applyToAll(body, (o) -> {
+			if (o instanceof Block)
+				numHeapVars[0] += ((Block) o).getNumHeapVars();
+		});
+//		System.out.println("num heap var in script: " + numHeapVars[0]);
+		return numHeapVars[0];
 	}
 }

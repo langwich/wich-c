@@ -23,21 +23,8 @@ SOFTWARE.
 */
 package wich.codegen.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
-/** A model object that represents a complete script including function
- *  and var definitions.
+/** A model object that represents a block of statements associated with
+ *  the statements outside of functions in a Wich file.
  */
-public class Script extends Block {
-	@ModelElement public List<Func> functions = new ArrayList<>();
-
-	public Script() {
-		super(null, SCRIPT_BLOCK_NUMBER);
-	}
-
-	/** How many heap vars in this script and all nested blocks */
-	public int getTotalNumHeapVars() {
-		return 0;
-	}
+public class MainBlock extends FuncBlock {
 }

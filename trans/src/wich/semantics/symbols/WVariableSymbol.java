@@ -26,6 +26,8 @@ package wich.semantics.symbols;
 import org.antlr.symtab.VariableSymbol;
 
 public class WVariableSymbol extends VariableSymbol {
+	public int localVarIndex = 0;
+	
 	public WVariableSymbol(String name) {
 		super(name);
 	}

@@ -56,7 +56,7 @@ public class CompilerUtils {
 	private static ParserRuleContext parse(ANTLRInputStream antlrInputStream) {
 		TokenStream tokens = new CommonTokenStream(new WichLexer(antlrInputStream));
 		WichParser parser = new WichParser(tokens);
-		return parser.file();
+		return parser.script();
 	}
 
 	static ParserRuleContext defineSymbols(String input, SymbolTable symtab, WichErrorHandler err) {

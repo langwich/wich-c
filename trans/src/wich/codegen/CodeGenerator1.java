@@ -36,7 +36,6 @@ import wich.codegen.model.FloatType;
 import wich.codegen.model.IfStat;
 import wich.codegen.model.IntType;
 import wich.codegen.model.OutputModelObject;
-import wich.codegen.model.Script;
 import wich.codegen.model.Stat;
 import wich.codegen.model.StringType;
 import wich.codegen.model.VectorType;
@@ -78,12 +77,12 @@ public class CodeGenerator1 extends WichBaseVisitor<OutputModelObject> {
 		return file;
 	}
 
-	@Override
-	public OutputModelObject visitFile(@NotNull WichParser.FileContext ctx) {
-		this.file = new File(null);
-		this.file.script = (Script)visit(ctx.script());
-		return file;
-	}
+//	@Override
+//	public OutputModelObject visitFile(@NotNull WichParser.FileContext ctx) {
+//		this.file = new File(null);
+//		this.file.script = (ScriptBlock)visit(ctx.script());
+//		return file;
+//	}
 
 //	@Override
 //	public OutputModelObject visitScript(@NotNull WichParser.ScriptContext ctx) {

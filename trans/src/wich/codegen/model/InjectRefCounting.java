@@ -79,12 +79,12 @@ public class InjectRefCounting {
 		return func;
 	}
 
-	public OutputModelObject enterModel(Script script) {
+	public OutputModelObject enterModel(MainBlock script) {
 		enterModel((Block)script);
 		return script;
 	}
 
-	public OutputModelObject exitModel(Script script) {
+	public OutputModelObject exitModel(MainBlock script) {
 		exitModel((Block) script);
 		return script;
 	}

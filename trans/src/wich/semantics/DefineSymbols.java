@@ -37,7 +37,7 @@ import static wich.errors.ErrorType.INVALID_TYPE;
 /*Define symbols, annotate explicit type information for function and args.*/
 public class DefineSymbols extends CommonWichListener {
 	protected SymbolTable symtab;
-	protected int numOfBlocks;
+	protected int localVarIndex = 0;
 
 	public DefineSymbols(SymbolTable symtab, WichErrorHandler errorHandler) {
 		super(errorHandler);
@@ -46,7 +46,9 @@ public class DefineSymbols extends CommonWichListener {
 
 	@Override
 	public void enterVardef(WichParser.VardefContext ctx) {
-		currentScope.define(new WVariableSymbol(ctx.ID().getText())); // type set in type computation phase
+		final WVariableSymbol varSym = new WVariableSymbol(ctx.ID().getText());
+		varSym.localVarIndex = localVarIndex++;
+		currentScope.define(varSym); // type set in type computation phase
 		symtab.numOfVars++;
 	}
 
@@ -88,7 +90,7 @@ public class DefineSymbols extends CommonWichListener {
 
 	@Override
 	public void enterBlock(@NotNull WichParser.BlockContext ctx) {
-		WBlock blk = new WBlock(currentScope, numOfBlocks);
+		WBlock blk = new WBlock(currentScope);
 		if ( currentScope instanceof WBlock ) {
 			((WBlock)currentScope).addNestedBlock(blk);
 		}
@@ -97,7 +99,6 @@ public class DefineSymbols extends CommonWichListener {
 		}
 		ctx.scope = blk;
 		pushScope(ctx.scope);
-		numOfBlocks++;
 	}
 
 	@Override

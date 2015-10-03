@@ -95,6 +95,21 @@ public class Block extends Stat {
 		return n;
 	}
 
+	public int getNumHeapVarsAbove() {
+		if ( enclosingBlock==null ) {
+			return 0;
+		}
+//		return enclosingBlock.getNumHeapVars()
+		return 0;
+	}
+
+	public int getIndexOfFirstHeapVar() {
+		if ( enclosingBlock==null ) {
+			return 0;
+		}
+		return enclosingBlock.getNumHeapVars();
+	}
+
 	public List<OutputModelObject> getStatementsNoVarDefs() {
 		return ModelWalker.findAll(this, (o) -> !(o instanceof VarDefStat));
 	}

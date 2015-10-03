@@ -123,7 +123,7 @@ public class ModelWalker {
 			}
 		}
 
- 		// Null from enter and exit both mean delete from parent node
+		// Null from enter and exit both mean delete from parent node
 		// but enter returning null means children of omo aren't visited.
 		// So, to delete and avoid visiting children, have enter return null
 		// rather than this exit call.
@@ -207,6 +207,42 @@ public class ModelWalker {
 		}
 		return (OutputModelObject)result;
 	}
+
+	// playing around trying to find most specific method to invoke.
+//	public static void main(String[] args) throws Exception {
+//		Object listener = new Object() {
+//			public int depth = 0;
+//			public OutputModelObject enterModel(MainBlock o) {
+//				enterModel((Block)o);
+//				return o;
+//			}
+////			public OutputModelObject enterModel(FuncBlock o) {
+////				enterModel((Block) o);
+////				return o;
+////			}
+//			public OutputModelObject enterModel(Block o) {
+//				System.out.println("set depth "+o);
+//				depth += o.scope.getNumberOfSymbols();
+//				return o;
+//			}
+//			public OutputModelObject exitModel(Block o) {
+//				System.out.println("set depth "+o);
+//				depth += o.scope.getNumberOfSymbols();
+//				return o;
+//			}
+//		};
+//
+//		Class<?> cl = listener.getClass();
+//
+//		final Method[] methods = cl.getMethods();
+//		cl.get
+//		Method b = listener.getClass().getMethod("enterModel", Block.class);
+//		System.out.println(b);
+//		Method f = listener.getClass().getMethod("enterModel", FuncBlock.class);
+//		System.out.println(f);
+//		Method m = listener.getClass().getMethod("enterModel", MainBlock.class);
+//		System.out.println(m);
+//	}
 
 	protected Method getListenerMethodForType(Class<?> argType, String methodName) {
 		final Pair<String,Class<?>> key = new Pair<>(methodName, argType);

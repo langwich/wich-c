@@ -5,24 +5,23 @@ void f();
 
 void f()
 {
-	String * x;
-	x = String_new("cat");
-    REF(x);
-	{
-		String * y;
-		String * z;
-		y = String_new("dog");
-    	REF(y);
-		z = x;
-		REF(z);
-		DEREF(y);
-		DEREF(z);
-	}
-	DEREF(x);
+    void *_localptrs[3];
+
+    _localptrs[0] = String_new("cat");
+    REF(_localptrs[0]);
+    {
+        _localptrs[1] = String_new("dog");
+        REF(_localptrs[1]);
+        _localptrs[2] = _localptrs[0];
+        REF(_localptrs[2]);
+    }
+
 }
 
 int main(int argc, char *argv[])
 {
-	f();
-	return 0;
+    void *_localptrs[0];
+
+    f();
+    return 0;
 }

@@ -87,7 +87,7 @@ public class Trans {
 
 			// get the parse tree
 			WichParser parser = new WichParser(tokens);
-			ParserRuleContext tree = parser.file();
+			ParserRuleContext tree = parser.script();
 
 			// trigger tree walk to define symbols
 			SymbolTable symtab = new SymbolTable();

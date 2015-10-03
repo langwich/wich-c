@@ -1,12 +1,13 @@
 #include <stdio.h>
 #include "wich.h"
 
-String * x;
-
-int main(int argc, char *argv[])
+int
+main(int argc, char *argv[])
 {
-	x = String_new("Hello World!");
-	REF(x);
-	DEREF(x);
-	return 0;
+    void *_localptrs[1];
+
+    _localptrs[0] = String_new("Hello World!");
+    REF(_localptrs[0]);
+    deref(_localptrs);
+    return 0;
 }

@@ -3,10 +3,11 @@ package wich.codegen.model.expr;
 import wich.semantics.symbols.WVariableSymbol;
 
 public class HeapVarRef extends VarRef {
+
 	public HeapVarRef(WVariableSymbol symbol) {
 		super(symbol);
 	}
 
 	/** Local variable index into _localptrs array */
-	public int getIndex() { return symbol.getInsertionOrderNumber(); }
+	public int getIndex() { return symbol.localVarIndex; }
 }
