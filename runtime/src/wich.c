@@ -154,3 +154,9 @@ void *wich_malloc(size_t nbytes)
 {
 	return malloc(nbytes);
 }
+
+/* Announce a heap reference so we can _deref() all before exiting a function */
+void _heapvar(heap_object **p) {
+}
+
+void _deref() { }

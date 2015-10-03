@@ -87,7 +87,7 @@ public class Trans {
 
 			// get the parse tree
 			WichParser parser = new WichParser(tokens);
-			ParserRuleContext tree = parser.file();
+			ParserRuleContext tree = parser.script();
 
 			// trigger tree walk to define symbols
 			SymbolTable symtab = new SymbolTable();
@@ -95,6 +95,7 @@ public class Trans {
 			ParseTreeWalker walker = new ParseTreeWalker();
 			DefineSymbols defSymbols = new DefineSymbols(symtab, err);
 			walker.walk(defSymbols, tree);
+			symtab.numOfVars = defSymbols.getNumOfVars();
 
 			/*
 			use the listener to compute and

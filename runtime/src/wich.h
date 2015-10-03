@@ -68,9 +68,13 @@ Vector *Vector_div(Vector *a, Vector *b);
 
 void print_vector(Vector *a);
 
-// Following malloc/free our the hook where we create our own malloc/free or use the system's
+// Following malloc/free are the hook where we create our own malloc/free or use the system's
 void *wich_malloc(size_t nbytes);
 void wich_free(heap_object *p);
+
+/* Announce a heap reference so we can _deref() all before exiting a function */
+void _heapvar(heap_object **p);
+void _deref();
 
 #define COPY_ON_WRITE(x) \
 	if ( x!=NULL && ((heap_object *)x)->refs > 1 ) { \
