@@ -42,4 +42,10 @@ public class Func extends OutputModelObject {
 	}
 
 	public String getName() { return scope.getName(); }
+
+
+	/** How many heap vars in this function and all nested blocks */
+	public int getTotalNumHeapVars() {
+		return 0;
+	}
 }

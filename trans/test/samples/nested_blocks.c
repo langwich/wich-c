@@ -1,57 +1,29 @@
 #include <stdio.h>
-#include <stdbool.h>
 #include "wich.h"
 
 void f(Vector * a);
 
 void f(Vector * a)
 {
-    bool _ret = false;
-    String *b;
-    Vector *e;
+    void *_localptrs[0];
 
-    REF(a);
-    b = String_new("cat");
-    REF(b);
+    _localptrs[0] = String_new("cat");
     {
-        String *c;
-
-        c = String_new("dog");
-        REF(c);
+        _localptrs[0] = String_new("dog");
         {
-            String *d;
-
-            d = String_new("moo");
-            REF(d);
-_cleanup:
-            DEREF(d);
+            _localptrs[0] = String_new("moo");
         }
-_cleanup:
-        DEREF(c);
     }
     {
-        String *b;
-
-        String *c;
-
-        b = String_new("boo");
-        REF(b);
-        c = String_new("hoo");
-        REF(c);
-_cleanup:
-        DEREF(b);
-        DEREF(c);
+        _localptrs[0] = String_new("boo");
+        _localptrs[0] = String_new("hoo");
     }
-    e = Vector_new((double[]) {7}, 1);
-    REF(e);
-_cleanup:
-    DEREF(b);
-    DEREF(e);
-    DEREF(a);
+    _localptrs[0] = Vector_new((double[]) {7}, 1);
 }
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
+    void *_localptrs[0];
+
     return 0;
 }

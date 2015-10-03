@@ -35,4 +35,9 @@ public class Script extends Block {
 	public Script() {
 		super(null, SCRIPT_BLOCK_NUMBER);
 	}
+
+	/** How many heap vars in this script and all nested blocks */
+	public int getTotalNumHeapVars() {
+		return 0;
+	}
 }

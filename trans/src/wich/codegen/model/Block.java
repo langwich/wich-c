@@ -24,7 +24,10 @@ SOFTWARE.
 package wich.codegen.model;
 
 import org.antlr.symtab.Scope;
+import org.antlr.symtab.Symbol;
+import wich.codegen.CodeGenerator;
 import wich.codegen.ModelWalker;
+import wich.semantics.symbols.WVariableSymbol;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,12 +81,19 @@ public class Block extends Stat {
 		}
 	}
 
-//	public String getEnclosingCleanupLabel() {
-//		if ( enclosingBlock!=null ) {
-//			return enclosingBlock;
-//		}
-//		return "_cleanup_"+FUNC_BLOCK_NUMBER;
-//	}
+	/** How many heap vars in this specific block */
+	public int getNumHeapVars() {
+		int n = 0;
+		for (Symbol s : scope.getSymbols()) {
+			if ( s instanceof WVariableSymbol ) {
+				WVariableSymbol ws = (WVariableSymbol) s;
+				if ( CodeGenerator.isHeapType(ws.getType()) ) {
+					n++;
+				}
+			}
+		}
+		return n;
+	}
 
 	public List<OutputModelObject> getStatementsNoVarDefs() {
 		return ModelWalker.findAll(this, (o) -> !(o instanceof VarDefStat));

@@ -5,7 +5,6 @@ import org.antlr.symtab.Type;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.NotNull;
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
 import wich.codegen.model.ArgDef;
@@ -20,7 +19,6 @@ import wich.codegen.model.FloatType;
 import wich.codegen.model.Func;
 import wich.codegen.model.FuncBlock;
 import wich.codegen.model.IfStat;
-import wich.codegen.model.InjectRefCounting;
 import wich.codegen.model.IntType;
 import wich.codegen.model.OutputModelObject;
 import wich.codegen.model.PrintFloatStat;
@@ -64,7 +62,6 @@ import wich.semantics.symbols.WVariableSymbol;
 import wich.semantics.symbols.WVector;
 
 import static wich.parser.WichParser.FunctionContext;
-import static wich.parser.WichParser.VardefContext;
 
 public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	protected int blockNumber = 0; // tracks block number within each method
@@ -81,16 +78,16 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 
 	public File generate(ParserRuleContext tree) {
 		File f = (File)visit(tree);
-		ModelWalker modelWalker = new ModelWalker(new InjectRefCounting());
-		modelWalker.walk(f);
-		System.out.println("\nfinal model walk:");
-		modelWalker = new ModelWalker(new Object() {
-			public OutputModelObject visitEveryModelObject(OutputModelObject o) {
-//				System.out.println("visit every node: "+o.getClass().getSimpleName());
-				return o;
-			}
-		});
-		modelWalker.walk(f);
+//		ModelWalker modelWalker = new ModelWalker(new InjectRefCounting());
+//		modelWalker.walk(f);
+//		System.out.println("\nfinal model walk:");
+//		modelWalker = new ModelWalker(new Object() {
+//			public OutputModelObject visitEveryModelObject(OutputModelObject o) {
+////				System.out.println("visit every node: "+o.getClass().getSimpleName());
+//				return o;
+//			}
+//		});
+//		modelWalker.walk(f);
 
 		return f;
 	}
@@ -112,24 +109,17 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		Script script = new Script();
 		script.scope = currentScope;
 
-		// order of var / statements matters so examine children in order.
-		// Separate out var def from init and function definitions for a
-		// more flexible model.
-		for (ParseTree child : ctx.children) {
-			if ( child instanceof VardefContext ) {
-				CompositeModelObject varStats = visitVardef((VardefContext)child);
-				VarDefStat def = (VarDefStat)varStats.modelObjects.get(0);
-				script.add(def);
-				Stat init = (Stat)varStats.modelObjects.get(1);
-				script.add(init);
-			}
-			else if ( child instanceof FunctionContext ) {
-				script.functions.add((Func)visit(child));
-			}
-			else { // statement
-				script.add((Stat) visit(child));
-			}
+		for (WichParser.FunctionContext f : ctx.function()) {
+			script.functions.add((Func)visit(f));
 		}
+
+		for (WichParser.StatementContext s : ctx.statement()) {
+			script.add((Stat) visit(s));
+		}
+
+		int[] numHeapVars = new int[1];
+		ModelWalker.applyToAll(script, (o) -> {if ( o instanceof Block ) numHeapVars[0] += ((Block)o).getNumHeapVars();});
+		System.out.println("num heap var in script: "+numHeapVars[0]);
 
 		return script;
 	}
@@ -139,7 +129,6 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		pushScope(ctx.scope);
 		blockNumber = 0;
 
-		String funcName = ctx.ID().getText();
 		WichType returnType = getTypeModel(SymbolTable._void);
 		if ( ctx.type()!=null ) {
 			returnType = (WichType)visit(ctx.type());
@@ -238,12 +227,15 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	}
 
 	@Override
-	public CompositeModelObject visitVardef(@NotNull WichParser.VardefContext ctx) {
+	public OutputModelObject visitVardef(@NotNull WichParser.VardefContext ctx) {
 		String varName = ctx.ID().getText();
 		WVariableSymbol v = (WVariableSymbol)currentScope.resolve(varName);
 		WichType type = getTypeModel(v.getType());
 		Expr expr = (Expr)visit(ctx.expr());
 		VarInitStat varInit = new VarInitStat(getVarRef(varName), expr);
+		if ( isHeapType(v.getType()) ) {
+			return varInit;
+		}
 		VarDefStat varDef = new VarDefStat(varName, type);
 		return new CompositeModelObject(varDef, varInit);
 	}

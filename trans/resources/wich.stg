@@ -59,10 +59,8 @@ CVectorBinaryOpMap ::= [
 
 File(f, script) ::= <<
 #include \<stdio.h>
-#include \<stdbool.h>
 #include "wich.h"
 
-<script.varDefs; separator="\n">
 <script.functions:funcDecl()>
 <script.functions>
 <script>
@@ -71,13 +69,16 @@ File(f, script) ::= <<
 Script(s,stats,varDefs,functions,cleanup) ::= <<
 int main(int argc, char *argv[])
 {
+	void *_localptrs[<s.numHeapVars>];
+	<varDefs; separator="\n">
 	<stats; separator="\n">
+	<cleanup; separator="\n">
 	return 0;
 }<\n>
 >>
 
 funcDecl(funcTemplate) ::= <<
-<funcTemplate.returnType> <funcTemplate.f.funcName>(<funcTemplate.args;separator=",">);<\n>
+<funcTemplate.returnType> <funcTemplate.f.name>(<funcTemplate.args;separator=",">);<\n>
 >>
 
 Func(f,returnType,args,body)::=<<
@@ -88,6 +89,7 @@ Func(f,returnType,args,body)::=<<
 
 FuncBlock(b,varDefs,stats,cleanup)::= <<
 {
+	void *_localptrs[<b.numHeapVars>];
 	<varDefs; separator="\n">
 	<stats; separator="\n">
 	<cleanup; separator="\n">
