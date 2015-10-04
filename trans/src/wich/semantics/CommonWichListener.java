@@ -41,11 +41,11 @@ public class CommonWichListener extends WichBaseListener {
 	// error support
 
 	protected void error(ErrorType type, String... args) {
-		errorHandler.aggregate(type, args);
+		errorHandler.error(type, args);
 	}
 
 	protected void error(ErrorType type, Exception e, String... args) {
-		errorHandler.aggregate(type, e, args);
+		errorHandler.error(type, e, args);
 	}
 
 	public int getErrorNum() {

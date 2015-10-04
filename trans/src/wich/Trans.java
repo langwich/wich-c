@@ -107,12 +107,12 @@ public class Trans {
 			ComputeTypes computeTypes = new ComputeTypes(err);
 			AssignTypes assignTypes = new AssignTypes(err,symtab.numOfVars );
 			walker = new ParseTreeWalker();
-			do{
+			do {
 				walker.walk(computeTypes, tree);
 				walker = new ParseTreeWalker();
 				assignTypes.isAssignFinished = true;
 				walker.walk(assignTypes, tree);
-			}while(!assignTypes.isAssignFinished);
+			} while(!assignTypes.isAssignFinished);
 
 			FinalComputeTypes finalComputeTypes = new FinalComputeTypes(err);
 			walker = new ParseTreeWalker();

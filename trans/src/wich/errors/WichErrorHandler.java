@@ -38,7 +38,7 @@ public class WichErrorHandler {
 	protected Queue<String> errQueue = new LinkedList<>();
 
 	// aggregate error messages. set
-	public void aggregate(ErrorType type, String... args) {
+	public void error(ErrorType type, String... args) {
 		try {
 			String msg = getErrorMessage(type, args);
 			errQueue.offer(type.getSeverity().getName() + ": " + msg);
@@ -48,7 +48,7 @@ public class WichErrorHandler {
 	}
 
 	// aggregate error messages.
-	public void aggregate(ErrorType type, Exception e, String... args) {
+	public void error(ErrorType type, Exception e, String... args) {
 		try {
 			String msg = getErrorMessage(type, args);
 			errQueue.offer(type.getSeverity().getName() + ": " + msg + "\n" + Arrays.toString(e.getStackTrace()));
