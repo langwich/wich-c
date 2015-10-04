@@ -5,12 +5,12 @@ import org.antlr.symtab.Type;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.NotNull;
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
 import wich.codegen.model.ArgDef;
 import wich.codegen.model.AssignStat;
 import wich.codegen.model.Block;
+import wich.codegen.model.BlockStatement;
 import wich.codegen.model.BooleanType;
 import wich.codegen.model.CallStat;
 import wich.codegen.model.CompositeModelObject;
@@ -20,8 +20,9 @@ import wich.codegen.model.FloatType;
 import wich.codegen.model.Func;
 import wich.codegen.model.FuncBlock;
 import wich.codegen.model.IfStat;
-import wich.codegen.model.InjectRefCounting;
 import wich.codegen.model.IntType;
+import wich.codegen.model.MainBlock;
+import wich.codegen.model.MainFunc;
 import wich.codegen.model.OutputModelObject;
 import wich.codegen.model.PrintFloatStat;
 import wich.codegen.model.PrintIntStat;
@@ -29,7 +30,6 @@ import wich.codegen.model.PrintNewLine;
 import wich.codegen.model.PrintStringStat;
 import wich.codegen.model.PrintVectorStat;
 import wich.codegen.model.ReturnStat;
-import wich.codegen.model.Script;
 import wich.codegen.model.Stat;
 import wich.codegen.model.StringLiteral;
 import wich.codegen.model.StringType;
@@ -63,8 +63,10 @@ import wich.semantics.symbols.WString;
 import wich.semantics.symbols.WVariableSymbol;
 import wich.semantics.symbols.WVector;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static wich.parser.WichParser.FunctionContext;
-import static wich.parser.WichParser.VardefContext;
 
 public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	protected int blockNumber = 0; // tracks block number within each method
@@ -81,16 +83,16 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 
 	public File generate(ParserRuleContext tree) {
 		File f = (File)visit(tree);
-		ModelWalker modelWalker = new ModelWalker(new InjectRefCounting());
-		modelWalker.walk(f);
-		System.out.println("\nfinal model walk:");
-		modelWalker = new ModelWalker(new Object() {
-			public OutputModelObject visitEveryModelObject(OutputModelObject o) {
-//				System.out.println("visit every node: "+o.getClass().getSimpleName());
-				return o;
-			}
-		});
-		modelWalker.walk(f);
+//		ModelWalker modelWalker = new ModelWalker(new InjectRefCounting());
+//		modelWalker.walk(f);
+//		System.out.println("\nfinal model walk:");
+//		modelWalker = new ModelWalker(new Object() {
+//			public OutputModelObject visitEveryModelObject(OutputModelObject o) {
+////				System.out.println("visit every node: "+o.getClass().getSimpleName());
+//				return o;
+//			}
+//		});
+//		modelWalker.walk(f);
 
 		return f;
 	}
@@ -100,38 +102,28 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	// V I S I T O R  M E T H O D S
 
 	@Override
-	public OutputModelObject visitFile(@NotNull WichParser.FileContext ctx) {
-		pushScope(symtab.getGlobalScope());
-		currentFile = new File((Script)visit(ctx.script()));
-		popScope();
-		return currentFile;
-	}
-
-	@Override
 	public OutputModelObject visitScript(@NotNull WichParser.ScriptContext ctx) {
-		Script script = new Script();
-		script.scope = currentScope;
+		pushScope(symtab.getGlobalScope());
 
-		// order of var / statements matters so examine children in order.
-		// Separate out var def from init and function definitions for a
-		// more flexible model.
-		for (ParseTree child : ctx.children) {
-			if ( child instanceof VardefContext ) {
-				CompositeModelObject varStats = visitVardef((VardefContext)child);
-				VarDefStat def = (VarDefStat)varStats.modelObjects.get(0);
-				script.add(def);
-				Stat init = (Stat)varStats.modelObjects.get(1);
-				script.add(init);
-			}
-			else if ( child instanceof FunctionContext ) {
-				script.functions.add((Func)visit(child));
-			}
-			else { // statement
-				script.add((Stat) visit(child));
-			}
+		List<Func> funcs = new ArrayList<>();
+		for (WichParser.FunctionContext f : ctx.function()) {
+			funcs.add((Func)visit(f));
 		}
 
-		return script;
+		MainBlock body = new MainBlock();
+		body.scope = currentScope;
+
+		for (WichParser.StatementContext s : ctx.statement()) {
+			body.add((Stat) visit(s));
+		}
+
+		final WFunctionSymbol mainSym = new WFunctionSymbol("main");
+		MainFunc main = new MainFunc(mainSym, body);
+
+		currentFile = new File(funcs,main);
+
+		popScope();
+		return currentFile;
 	}
 
 	@Override
@@ -139,13 +131,14 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		pushScope(ctx.scope);
 		blockNumber = 0;
 
-		String funcName = ctx.ID().getText();
 		WichType returnType = getTypeModel(SymbolTable._void);
 		if ( ctx.type()!=null ) {
 			returnType = (WichType)visit(ctx.type());
 		}
+
 		FuncBlock body = (FuncBlock)visit(ctx.block());
 		Func func = new Func(ctx.scope, returnType, body);
+
 		if ( ctx.formal_args()!=null ) {
 			for (WichParser.Formal_argContext arg : ctx.formal_args().formal_arg()) {
 				ArgDef argDefModel = (ArgDef) visit(arg);
@@ -193,29 +186,30 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	public OutputModelObject visitBlock(@NotNull WichParser.BlockContext ctx) {
 		pushScope(ctx.scope);
 
-		Block block;
 		if ( ctx.getParent() instanceof FunctionContext ) {
-			block = new FuncBlock(currentBlock);
-			block.scope = currentScope;
+			currentBlock = new FuncBlock();
 		}
 		else {
-			block = new Block(currentBlock, blockNumber++);
-			block.scope = currentScope;
+			currentBlock = new Block(currentBlock); // push new block
 		}
+		currentBlock.scope = currentScope;
+
 		for (WichParser.StatementContext s : ctx.statement()) {
 			Stat stat = (Stat)visit(s);
-			block.add(stat);
+			currentBlock.add(stat);
 		}
 
+		Block result = currentBlock;
+		currentBlock = currentBlock.enclosingBlock;
 		popScope();
-		return block;
+		return result;
 	}
 
 	// S T A T E M E N T S
 
 	@Override
 	public OutputModelObject visitBlockStatement(@NotNull WichParser.BlockStatementContext ctx) {
-		return visit(ctx.block());
+		return new BlockStatement( (Block)visit(ctx.block()) );
 	}
 
 	@Override
@@ -268,7 +262,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		String varName = ctx.ID().getText();
 		Expr index     = (Expr)visit(ctx.expr(0));
 		Expr expr      = (Expr)visit(ctx.expr(1));
-		return new ElementAssignStat(varName, index, expr);
+		return new ElementAssignStat(getVarRef(varName), index, expr);
 	}
 
 	@Override

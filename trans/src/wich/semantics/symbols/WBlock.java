@@ -30,16 +30,9 @@ import java.util.List;
 
 public class WBlock extends LocalScope {
 	public List<WBlock> nestedBlocks = new ArrayList<>();
-	public final int index;
 
-	public WBlock(Scope enclosingScope, int index) {
+	public WBlock(Scope enclosingScope) {
 		super(enclosingScope);
-		this.index = index;
-	}
-
-	@Override
-	public String getName() {
-		return super.getName()+"_"+index;
 	}
 
 	public void addNestedBlock(WBlock blk) { nestedBlocks.add(blk); }

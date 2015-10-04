@@ -21,10 +21,21 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-package wich.codegen.model;
+package wich.codegen;
 
 import org.antlr.symtab.Scope;
-import wich.codegen.CodeGenerator;
+import wich.codegen.model.ArgDef;
+import wich.codegen.model.AssignStat;
+import wich.codegen.model.Block;
+import wich.codegen.model.CompositeModelObject;
+import wich.codegen.model.Func;
+import wich.codegen.model.FuncBlock;
+import wich.codegen.model.MainBlock;
+import wich.codegen.model.OutputModelObject;
+import wich.codegen.model.RefCountDEREF;
+import wich.codegen.model.RefCountREF;
+import wich.codegen.model.ReturnStat;
+import wich.codegen.model.VarInitStat;
 import wich.semantics.symbols.WVariableSymbol;
 
 public class InjectRefCounting {
@@ -79,12 +90,12 @@ public class InjectRefCounting {
 		return func;
 	}
 
-	public OutputModelObject enterModel(Script script) {
+	public OutputModelObject enterModel(MainBlock script) {
 		enterModel((Block)script);
 		return script;
 	}
 
-	public OutputModelObject exitModel(Script script) {
+	public OutputModelObject exitModel(MainBlock script) {
 		exitModel((Block) script);
 		return script;
 	}

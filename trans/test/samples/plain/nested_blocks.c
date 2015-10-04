@@ -1,33 +1,24 @@
 #include <stdio.h>
-#include <stdbool.h>
 #include "wich.h"
-
 void f(Vector * a);
 
-void f(Vector * a)
+void
+f(Vector * a)
 {
-    bool _ret = false;
     String *b;
+
     Vector *e;
 
-    REF(a);
     b = String_new("cat");
-    REF(b);
     {
         String *c;
 
         c = String_new("dog");
-        REF(c);
         {
             String *d;
 
             d = String_new("moo");
-            REF(d);
-_cleanup:
-            DEREF(d);
         }
-_cleanup:
-        DEREF(c);
     }
     {
         String *b;
@@ -35,19 +26,10 @@ _cleanup:
         String *c;
 
         b = String_new("boo");
-        REF(b);
         c = String_new("hoo");
-        REF(c);
-_cleanup:
-        DEREF(b);
-        DEREF(c);
     }
-    e = Vector_new((double[]) {7}, 1);
-    REF(e);
-_cleanup:
-    DEREF(b);
-    DEREF(e);
-    DEREF(a);
+    e = Vector_new((double[]) {
+                   7}, 1);
 }
 
 int

@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 // listener methods:
@@ -266,5 +267,15 @@ public class ModelWalker {
 		});
 		walker.walk(model);
 		return nodes;
+	}
+
+	public static void applyToAll(OutputModelObject model, Consumer<OutputModelObject> f) {
+		ModelWalker walker = new ModelWalker(new Object() {
+			public OutputModelObject visitEveryModelObject(OutputModelObject o) {
+				f.accept(o);
+				return o;
+			}
+		});
+		walker.walk(model);
 	}
 }

@@ -57,48 +57,49 @@ CVectorBinaryOpMap ::= [
 	".":"Vector_dot"
 ]
 
-File(f, script) ::= <<
+File(f, functions, main) ::= <<
 #include \<stdio.h>
-#include \<stdbool.h>
 #include "wich.h"
 
-<script.varDefs; separator="\n">
-<script.functions:funcDecl()>
-<script.functions>
-<script>
->>
-
-Script(s,stats,varDefs,functions,cleanup) ::= <<
-int main(int argc, char *argv[])
-{
-	<stats; separator="\n">
-	return 0;
-}<\n>
+<functions:funcDecl()>
+<functions>
+<main>
 >>
 
 funcDecl(funcTemplate) ::= <<
-<funcTemplate.returnType> <funcTemplate.f.funcName>(<funcTemplate.args;separator=",">);<\n>
+<funcTemplate.returnType> <funcTemplate.f.name>(<funcTemplate.args;separator=",">);<\n>
+>>
+
+MainFunc(f,returnType,args,body) ::= <<
+int main(int argc, char *argv[])
+{
+	<body>
+	return 0;
+}
+<\n>
 >>
 
 Func(f,returnType,args,body)::=<<
 <returnType> <f.name>(<args;separator=",">)
-<body>
+{
+    <body>
+}
 <\n>
 >>
 
+MainBlock(b,varDefs,stats,cleanup)::= <<
+<Block(...)>
+>>
+
 FuncBlock(b,varDefs,stats,cleanup)::= <<
-{
-	<varDefs; separator="\n">
-	<stats; separator="\n">
-	<cleanup; separator="\n">
-}
+<varDefs; separator="\n">
+<stats; separator="\n">
+<cleanup; separator="\n">
 >>
 
 Block(b,varDefs,stats,cleanup)::= <<
-{
-	<varDefs; separator="\n">
-	<stats; separator="\n">
-}
+<varDefs; separator="\n">
+<stats; separator="\n">
 >>
 
 AssignStat(a,varRef,expr)::=<<
@@ -109,9 +110,9 @@ CallStat(c,callExpr) ::=<<
 <callExpr>;
 >>
 
-ElementAssignStat(e,index,expr) ::= <<
-COPY_ON_WRITE(<e.varName>);
-<e.varName>->data[<index>-1] = <expr>;
+ElementAssignStat(e,varRef,index,expr) ::= <<
+COPY_ON_WRITE(<varRef>);
+<varRef>->data[<index>-1] = <expr>;
 >>
 
 IfStat(i,condition,stat,elseStat) ::= <<
@@ -125,6 +126,12 @@ while (<condition>) <stat;separator="\n">
 
 ReturnStat(r,expr)  ::= <<
 return <expr>;
+>>
+
+BlockStatement(b,block) ::= <<
+{
+    <block>
+}
 >>
 
 VarInitStat(v,varRef,expr) ::= <<
@@ -166,7 +173,7 @@ BinaryVectorOp(op, left, right)  ::= "<CVectorBinaryOpMap.(op.wichOp)>(<left>,<r
 IntLiteral(i)	::= "<i.value>"
 FloatLiteral(f)	::= "<f.value>"
 VarRef(v)		::= "<v.name>"
-HeapVarRef(v)	::= "_localptrs[<v.index>]"
+HeapVarRef(v)	::= "<v.name>"
 
 StringLiteral(s) ::= <<
 String_new(<s.literal>)
@@ -201,5 +208,6 @@ VectorType(t) ::= "Vector *"
 StringType(t) ::= "String *"
 TmpVarDef(t,type) ::="<typeMo> tmp<t.varIndex>;"
 
-RefCountREF(v,varRef) ::= "REF(<varRef>);"
-RefCountDEREF(v) ::= "deref(_localptrs);"
+RefCountREF(r,varRef) ::= "REF(<varRef>);"
+RefCountDEREF(d) ::= "_deref();"
+RefCountROOT(r,varRef) ::= "_heapvar((heap_object **)&<varRef>)"
