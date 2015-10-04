@@ -24,6 +24,7 @@ SOFTWARE.
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <signal.h>
 
 typedef struct {
 	int refs;    		// refs to this object
@@ -72,47 +73,29 @@ void print_vector(Vector *a);
 void *wich_malloc(size_t nbytes);
 void wich_free(heap_object *p);
 
-/* Announce a heap reference so we can _deref() all before exiting a function */
-void _heapvar(heap_object **p);
-void _deref();
-
-static const int MAX_ROOTS = 1024;
-static int _sp = 0;
-static heap_object *_roots[MAX_ROOTS];
-
-#define _enterfunc()	int _save = _sp;
-#define _exitfunc()		{_deref(); _sp = _save;}
-
-#define COPY_ON_WRITE(x) \
-	if ( x!=NULL && ((heap_object *)x)->refs > 1 ) { \
-		((heap_object *)x)->refs--; \
-		x = Vector_copy(x); \
-		((heap_object *)x)->refs = 1; \
+static inline void COPY_ON_WRITE(void *x) {
+	if ( x!=NULL && ((heap_object *)x)->refs > 1 ) {
+		((heap_object *)x)->refs--;
+		x = Vector_copy(x);
+		((heap_object *)x)->refs = 1;
 	}
+}
 
-#ifdef DEBUG
-#define REF(x) \
-	if ( x!=NULL ) ((heap_object *)x)->refs++; \
-	printf("REF(" #x ") bumps refs to %d\n", ((heap_object *)x)->refs);
-#define DEREF(x) \
-	printf("DEREF(" #x ") has %d refs\n", ((heap_object *)x)->refs);\
-	if ( x!=NULL ) { \
-		((heap_object *)x)->refs--; \
-		if ( ((heap_object *)x)->refs==0 ) { \
-			printf("free(" #x ")\n"); \
-			wich_free((heap_object *)x); \
-			x = NULL; \
-		} \
-	}
-#else
-#define REF(x) \
-	if ( x!=NULL ) ((heap_object *)x)->refs++;
-#define DEREF(x) \
-	if ( x!=NULL ) { \
-		((heap_object *)x)->refs--; \
-		if ( ((heap_object *)x)->refs==0 ) { \
-			wich_free((heap_object *)x); \
-			x = NULL; \
-		} \
-	}
-#endif
+
+static void
+handle_sys_errors(int errno)
+{
+    char *signame = "UNKNOWN";
+
+    if (errno == SIGSEGV)
+        signame = "SIGSEGV";
+    else if (errno == SIGBUS)
+        signame = "SIGBUS";
+    fprintf(stderr, "Wich is confused; signal %s (%d)\n", signame, errno);
+    exit(errno);
+}
+
+static inline void setup_error_handlers() {
+	signal(SIGSEGV, handle_sys_errors);
+	signal(SIGBUS, handle_sys_errors);
+}

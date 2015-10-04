@@ -25,7 +25,13 @@ SOFTWARE.
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+//#define DEBUG
 #include "wich.h"
+#include "refcounting.h"
+
+static const int MAX_ROOTS = 1024;
+static int sp = -1; // grow upwards; inc then set for push.
+static heap_object **roots[MAX_ROOTS];
 
 // There is a general assumption that support routines follow same
 // ref counting convention as Wich code: functions REF their heap args and
@@ -155,8 +161,25 @@ void *wich_malloc(size_t nbytes)
 	return malloc(nbytes);
 }
 
+int _heap_sp() { return sp; }
+void _set_sp(int _sp) { sp = _sp; }
+
 /* Announce a heap reference so we can _deref() all before exiting a function */
 void _heapvar(heap_object **p) {
+	roots[++sp] = p;
 }
 
-void _deref() { }
+/* DEREF the stack a to b inclusive */
+void _deref(int a, int b) {
+#ifdef DEBUG
+	printf("deref(%d,%d)\n", a,b);
+#endif
+	for (int i=a; i<=b; i++) {
+		heap_object **addr_of_root = roots[i];
+		heap_object *root = *addr_of_root;
+#ifdef DEBUG
+		printf("deref %p\n", root);
+#endif
+		DEREF(root);
+	}
+}
