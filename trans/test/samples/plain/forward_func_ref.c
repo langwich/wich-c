@@ -16,5 +16,6 @@ double g()
 
 int main(int argc, char *argv[])
 {
+	setup_error_handlers();
 	return 0;
 }

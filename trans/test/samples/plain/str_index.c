@@ -15,6 +15,7 @@ f()
 int
 main(int argc, char *argv[])
 {
+	setup_error_handlers();
     f();
     return 0;
 }

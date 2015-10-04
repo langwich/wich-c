@@ -1,47 +1,54 @@
 #include <stdio.h>
 #include "wich.h"
+#include "refcounting.h"
 
 int f(Vector * a);
 
 int
 f(Vector * a)
 {
+    ENTER();
     int x;
-    String *b;
-    Vector *e;
 
+    STRING(b);
+    VECTOR(e);
     REF(a);
-
     x = 32;
     b = String_new("cat");
     REF(b);
     {
-        String *c;
-
+        MARK();
+        STRING(c);
         c = String_new("dog");
         REF(c);
         {
-            String *d;
-
+            MARK();
+            STRING(d);
             d = String_new("moo");
             REF(d);
-            return x;
+            { EXIT(); return x; }
+            RELEASE();
         }
+        RELEASE();
     }
     {
-        String *b;
-
+        MARK();
+        STRING(b);
         b = String_new("boo");
         REF(b);
+        RELEASE();
     }
     e = Vector_new((double[]) {7}, 1);
     REF(e);
-    _deref();
+    EXIT();
 }
 
 int
 main(int argc, char *argv[])
 {
+    setup_error_handlers();
+    ENTER();
     printf("%d\n", f(Vector_new((double[]) {1}, 1)));
+    EXIT();
     return 0;
 }

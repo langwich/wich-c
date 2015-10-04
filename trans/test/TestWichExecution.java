@@ -22,10 +22,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import javafx.util.Pair;
 import junit.framework.Assert;
+import org.antlr.v4.runtime.misc.Triple;
 import org.junit.Before;
 import org.junit.Test;
+import wich.errors.ErrorType;
 import wich.errors.WichErrorHandler;
 import wich.semantics.SymbolTable;
 
@@ -42,9 +43,8 @@ import static junit.framework.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
 
 // Assuming the program is running on Unix-like operating systems.
-// Please make sure gcc is on the program searching path.
+// Please make sure cc is on the program searching path.
 public class TestWichExecution extends WichBaseTest {
-
 	protected static final String WORKING_DIR = "/tmp/";
 	protected static final String WICH_LIB = "wich.c";
 	protected static String runtimePath;
@@ -62,26 +62,37 @@ public class TestWichExecution extends WichBaseTest {
 
 	@Test
 	public void testPlainCodeGen() throws Exception {
-		testCodeGen();
+		testCodeGen(CompilerUtils.CodeGenTarget.PLAIN);
 	}
 
-//	@Test
-//	public void testRefCountingCodeGen() throws Exception {
-//		testCodeGen();
-//	}
+	@Test
+	public void testRefCountingCodeGen() throws Exception {
+		testCodeGen(CompilerUtils.CodeGenTarget.REFCOUNTING);
+	}
 
-	protected void testCodeGen() throws IOException, InterruptedException {
+	protected void testCodeGen(CompilerUtils.CodeGenTarget target) throws IOException, InterruptedException {
 		WichErrorHandler err = new WichErrorHandler();
 		SymbolTable symtab = new SymbolTable();
-		URL expURL = CompilerUtils.getResourceFile(TEST_RES_PLAIN_GEND_CODE+"/"+baseName + ".c");
-		assertNotNull(expURL);
-		String expPath = expURL.getPath();
+		URL expectedOutputURL;
+		switch ( target ) {
+			case PLAIN :
+				expectedOutputURL = CompilerUtils.getResourceFile(TEST_RES_PLAIN_GEND_CODE+"/"+baseName+".c");
+				break;
+			case REFCOUNTING :
+				expectedOutputURL = CompilerUtils.getResourceFile(TEST_RES_REFCOUNTING_GEND_CODE+"/"+baseName+".c");
+				break;
+			default :
+				err.error(ErrorType.UNKNOWN_TARGET, target.toString());
+				return;
+		}
+		assertNotNull(expectedOutputURL);
+		String expPath = expectedOutputURL.getPath();
 		String expected = CompilerUtils.readFile(expPath, CompilerUtils.FILE_ENCODING);
 		expected = expected.replace("\n\n", "\n"); // strip blank lines
 		CompilerUtils.writeFile("/tmp/__expected.c", expected, StandardCharsets.UTF_8);
 
 		String wichInput = CompilerUtils.readFile(input.getAbsolutePath(), CompilerUtils.FILE_ENCODING);
-		String actual = CompilerUtils.genCode(wichInput, symtab, err);
+		String actual = CompilerUtils.genCode(wichInput, symtab, err, target);
 		actual = actual.replace("\n\n", "\n");
 		CompilerUtils.writeFile("/tmp/__t.c", actual, StandardCharsets.UTF_8);
 
@@ -118,33 +129,35 @@ public class TestWichExecution extends WichBaseTest {
 		if (expectedFile != null) {
 			expected = CompilerUtils.readFile(expectedFile.getPath(), CompilerUtils.FILE_ENCODING);
 		}
-		executeAndCheck(input.getAbsolutePath(), expected, false);
+		executeAndCheck(input.getAbsolutePath(), expected, false, CompilerUtils.CodeGenTarget.PLAIN);
 	}
 
-//	@Test
-//	public void testRefCountingExecution() throws Exception {
-//		URL expectedFile = CompilerUtils.getResourceFile(baseName + ".output");
-//		String expected = "";
-//		if (expectedFile != null) {
-//			expected = CompilerUtils.readFile(expectedFile.getPath(), CompilerUtils.FILE_ENCODING);
-//		}
-//		executeAndCheck(input.getAbsolutePath(), expected, true);
-//	}
+	@Test
+	public void testRefCountingExecution() throws Exception {
+		URL expectedFile = CompilerUtils.getResourceFile(baseName + ".output");
+		String expected = "";
+		if (expectedFile != null) {
+			expected = CompilerUtils.readFile(expectedFile.getPath(), CompilerUtils.FILE_ENCODING);
+		}
+		executeAndCheck(input.getAbsolutePath(), expected, true, CompilerUtils.CodeGenTarget.REFCOUNTING);
+	}
 
-	private void executeAndCheck(String inputFileName, String expected, boolean valgrind) throws IOException, InterruptedException {
-		String executable = compileC(inputFileName);
+	private void executeAndCheck(String wichFileName, String expected, boolean valgrind, CompilerUtils.CodeGenTarget target)
+		throws IOException, InterruptedException
+	{
+		String executable = compileC(wichFileName, target);
 		String output = executeC(executable);
+		System.out.println(output);
+		assertEquals(expected, output);
 		if ( valgrind ) {
 			valgrindCheck(executable);
 		}
-		System.out.println(output);
-		assertEquals(expected, output);
 	}
 
 	private void valgrindCheck(String executable) throws IOException, InterruptedException {
 		// For Intellij users you need to set PATH environment variable in Run/Debug configuration,
 		// since Intellij doesn't inherit environment variables from system.
-		String errSummary = exec(new String[]{"valgrind", executable}).getValue();
+		String errSummary = exec(new String[]{"valgrind", executable}).c;
 		assertEquals("Valgrind memcheck failed...", 0, getErrorNumFromSummary(errSummary));
 	}
 
@@ -156,32 +169,38 @@ public class TestWichExecution extends WichBaseTest {
 		return Integer.parseInt(summary.substring(summary.indexOf(":") + 1, summary.lastIndexOf("errors")).trim());
 	}
 
-	private String compileC(String wichInput) throws IOException, InterruptedException {
+	private String compileC(String wichInputFilename, CompilerUtils.CodeGenTarget target) throws IOException, InterruptedException {
 		// Translate to C file.
 		SymbolTable symtab = new SymbolTable();
 		WichErrorHandler err = new WichErrorHandler();
-		String actual = CompilerUtils.genCode(CompilerUtils.readFile(wichInput, CompilerUtils.FILE_ENCODING), symtab, err);
+		String wichInput = CompilerUtils.readFile(wichInputFilename, CompilerUtils.FILE_ENCODING);
+		String actual = CompilerUtils.genCode(wichInput, symtab, err, target);
 		String generatedFileName = WORKING_DIR + baseName + ".c";
 		CompilerUtils.writeFile(generatedFileName, actual, StandardCharsets.UTF_8);
 		// Compile C code and return the path to the executable.
 		String executable = "./" + baseName;
-		final Pair<String, String> result = exec(
+		File execF = new File(executable);
+		if ( execF.exists() ) {
+			execF.delete();
+		}
+		final Triple<Integer, String, String> result = exec(
 			new String[]{
 				"cc", "-g", "-o", executable,
 				generatedFileName, runtimePath + "/" + WICH_LIB,
 				"-I", runtimePath, "-std=c99", "-O0"
 			}
 		);
-		System.out.println(result.getValue());
+		System.out.println(result.c);
 		return executable;
 	}
 
-	private Pair<String, String> exec(String[] cmd) throws IOException, InterruptedException {
+	private Triple<Integer, String, String> exec(String[] cmd) throws IOException, InterruptedException {
 		ProcessBuilder pb = new ProcessBuilder();
 		pb.command(Arrays.asList(cmd)).directory(new File(WORKING_DIR));
 		Process process = pb.start();
-		Pair<String, String> ret = new Pair<>(dump(process.getInputStream()), dump(process.getErrorStream()));
-		process.waitFor();
+		int resultCode = process.waitFor();
+		Triple<Integer, String, String> ret =
+			new Triple<>(resultCode, dump(process.getInputStream()), dump(process.getErrorStream()));
 		return ret;
 	}
 
@@ -197,6 +216,10 @@ public class TestWichExecution extends WichBaseTest {
 	}
 
 	private String executeC(String executable) throws IOException, InterruptedException {
-		return exec(new String[]{"./" + executable}).getKey();
+		Triple<Integer, String, String> result = exec(new String[]{"./"+executable});
+		if ( result.a!=0 ) {
+			throw new RuntimeException(result.c+"failed execution of "+executable+" with result code "+result.a);
+		}
+		return result.b;
 	}
 }

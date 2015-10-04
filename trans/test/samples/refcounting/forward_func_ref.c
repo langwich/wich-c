@@ -1,20 +1,31 @@
 #include <stdio.h>
 #include "wich.h"
+#include "refcounting.h"
 
-String * f();
+String *f();
 double g();
 
-String * f()
+String *
+f()
 {
-	g();
+    ENTER();
+    g();
+    EXIT();
 }
 
-double g()
+double
+g()
 {
-	f();
+    ENTER();
+    f();
+    EXIT();
 }
 
-int main(int argc, char *argv[])
+int
+main(int argc, char *argv[])
 {
-	return 0;
+    setup_error_handlers();
+    ENTER();
+    EXIT();
+    return 0;
 }

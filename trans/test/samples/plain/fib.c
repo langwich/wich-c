@@ -13,6 +13,7 @@ int fib(int x)
 
 int main(int argc, char *argv[])
 {
+	setup_error_handlers();
 	printf("%d\n", fib(5));
 	return 0;
 }

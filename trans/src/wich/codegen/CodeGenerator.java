@@ -33,9 +33,11 @@ import wich.codegen.model.ReturnStat;
 import wich.codegen.model.Stat;
 import wich.codegen.model.StringLiteral;
 import wich.codegen.model.StringType;
+import wich.codegen.model.StringVarDefStat;
 import wich.codegen.model.VarDefStat;
 import wich.codegen.model.VarInitStat;
 import wich.codegen.model.VectorType;
+import wich.codegen.model.VectorVarDefStat;
 import wich.codegen.model.VoidType;
 import wich.codegen.model.WhileStat;
 import wich.codegen.model.WichType;
@@ -83,17 +85,6 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 
 	public File generate(ParserRuleContext tree) {
 		File f = (File)visit(tree);
-//		ModelWalker modelWalker = new ModelWalker(new InjectRefCounting());
-//		modelWalker.walk(f);
-//		System.out.println("\nfinal model walk:");
-//		modelWalker = new ModelWalker(new Object() {
-//			public OutputModelObject visitEveryModelObject(OutputModelObject o) {
-////				System.out.println("visit every node: "+o.getClass().getSimpleName());
-//				return o;
-//			}
-//		});
-//		modelWalker.walk(f);
-
 		return f;
 	}
 
@@ -235,10 +226,9 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	public CompositeModelObject visitVardef(@NotNull WichParser.VardefContext ctx) {
 		String varName = ctx.ID().getText();
 		WVariableSymbol v = (WVariableSymbol)currentScope.resolve(varName);
-		WichType type = getTypeModel(v.getType());
 		Expr expr = (Expr)visit(ctx.expr());
 		VarInitStat varInit = new VarInitStat(getVarRef(varName), expr);
-		VarDefStat varDef = new VarDefStat(varName, type);
+		VarDefStat varDef = getVarDefStat(v);
 		return new CompositeModelObject(varDef, varInit);
 	}
 
@@ -384,6 +374,16 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 			return new HeapVarRef(varSym);
 		}
 		return new VarRef(varSym);
+	}
+
+	public static VarDefStat getVarDefStat(WVariableSymbol varSym) {
+		if ( varSym.getType() == SymbolTable._vector ) {
+			return new VectorVarDefStat(varSym);
+		}
+		if ( varSym.getType() == SymbolTable._string ) {
+			return new StringVarDefStat(varSym);
+		}
+		return new VarDefStat(varSym, getTypeModel(varSym.getType()));
 	}
 
 

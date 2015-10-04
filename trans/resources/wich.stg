@@ -73,6 +73,7 @@ funcDecl(funcTemplate) ::= <<
 MainFunc(f,returnType,args,body) ::= <<
 int main(int argc, char *argv[])
 {
+	setup_error_handlers();
 	<body>
 	return 0;
 }
@@ -124,9 +125,7 @@ WhileStat(w,condition, stat) ::= <<
 while (<condition>) <stat;separator="\n">
 >>
 
-ReturnStat(r,expr)  ::= <<
-return <expr>;
->>
+ReturnStat(r,expr)  ::= "return <expr>;"
 
 BlockStatement(b,block) ::= <<
 {
@@ -134,37 +133,21 @@ BlockStatement(b,block) ::= <<
 }
 >>
 
-VarInitStat(v,varRef,expr) ::= <<
-<varRef> = <expr>;
->>
+VarInitStat(v,varRef,expr) ::= "<varRef> = <expr>;"
 
-VarDefStat(v,type) ::= <<
-<type> <v.name>;
->>
+VarDefStat(v,type) ::= "<type> <v.name>;"
+StringVarDefStat ::= VarDefStat
+VectorVarDefStat ::= VarDefStat
 
 CompositeModelObject(cs, modelObjects) ::= <<
 <modelObjects; separator="\n">
 >>
 
-PrintNewLine(p) ::= <<
-printf("\n");
->>
-
-PrintStringStat(ps,expr) ::= <<
-print_string(<expr>);
->>
-
-PrintVectorStat(pv,expr) ::= <<
-print_vector(<expr>);
->>
-
-PrintIntStat(pi,expr) ::= <<
-printf("%d\n", <expr>);
->>
-
-PrintFloatStat(pf,expr) ::= <<
-printf("%1.2f\n", <expr>);
->>
+PrintNewLine(p) 		 ::= <<printf("\n");>>
+PrintStringStat(ps,expr) ::= <<print_string(<expr>);>>
+PrintVectorStat(pv,expr) ::= <<print_vector(<expr>);>>
+PrintIntStat(pi,expr) 	 ::= <<printf("%d\n", <expr>);>>
+PrintFloatStat(pf,expr)  ::= <<printf("%1.2f\n", <expr>);>>
 
 BinaryPrimitiveOp(op,left,right) ::= "(<left> <CPrimitiveBinaryOpMap.(op.wichOp)> <right>)"
 BinaryStringOp(op, left, right)  ::= "<CStringBinaryOpMap.(op.wichOp)>(<left>,<right>)"
@@ -207,7 +190,3 @@ FloatType(t) ::= "double"
 VectorType(t) ::= "Vector *"
 StringType(t) ::= "String *"
 TmpVarDef(t,type) ::="<typeMo> tmp<t.varIndex>;"
-
-RefCountREF(r,varRef) ::= "REF(<varRef>);"
-RefCountDEREF(d) ::= "_deref();"
-RefCountROOT(r,varRef) ::= "_heapvar((heap_object **)&<varRef>)"

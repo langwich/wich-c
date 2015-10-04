@@ -31,8 +31,11 @@ import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
 import wich.codegen.CodeGenerator;
+import wich.codegen.InjectRefCounting;
 import wich.codegen.ModelConverter;
-import wich.codegen.model.OutputModelObject;
+import wich.codegen.ModelWalker;
+import wich.codegen.model.File;
+import wich.errors.ErrorType;
 import wich.errors.WichErrorHandler;
 import wich.parser.WichLexer;
 import wich.parser.WichParser;
@@ -51,6 +54,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class CompilerUtils {
+	public enum CodeGenTarget { PLAIN, REFCOUNTING, GC, GENERATIONAL_GC }
+
 	public static final Charset FILE_ENCODING = StandardCharsets.UTF_8;
 
 	private static ParserRuleContext parse(ANTLRInputStream antlrInputStream) {
@@ -94,13 +99,38 @@ public class CompilerUtils {
 		return tree;
 	}
 
-	static String genCode(String input, SymbolTable symtab, WichErrorHandler err) {
+	static String genCode(String input, SymbolTable symtab, WichErrorHandler err,
+	                      CompilerUtils.CodeGenTarget target)
+	{
 		ParserRuleContext tree = checkCorrectness(input, symtab, err);
 		CodeGenerator codeGenerator = new CodeGenerator(symtab);
-		OutputModelObject omo = codeGenerator.generate(tree);
-		STGroup templates = new STGroupFile("wich.stg");
+		File modelRoot = codeGenerator.generate(tree);
+		STGroup templates;
+		switch ( target ) {
+			case PLAIN :
+				templates = new STGroupFile("wich.stg");
+				break;
+			case REFCOUNTING :
+				ModelWalker modelWalker = new ModelWalker(new InjectRefCounting());
+				modelWalker.walk(modelRoot);
+//				System.out.println("\nfinal model walk:");
+//				modelWalker = new ModelWalker(new Object() {
+//					public OutputModelObject visitEveryModelObject(OutputModelObject o) {
+//		//				System.out.println("visit every node: "+o.getClass().getSimpleName());
+//						return o;
+//					}
+//				});
+//				modelWalker.walk(modelRoot);
+				templates = new STGroupFile("wich-refcounting.stg");
+				break;
+			default :
+				err.error(ErrorType.INVALID_TYPE, target.toString());
+				return "";
+		}
+
+		// model is complete, convert to template hierarchy then string
 		ModelConverter converter = new ModelConverter(templates);
-		ST wichST = converter.walk(omo);
+		ST wichST = converter.walk(modelRoot);
 		return wichST.render();
 	}
 

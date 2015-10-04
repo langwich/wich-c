@@ -1,52 +1,51 @@
 #include <stdio.h>
 #include "wich.h"
-
+#include "refcounting.h"
 void f(Vector * a);
 
-void f(Vector * a)
+void
+f(Vector * a)
 {
-    String *b;
-    _heapvar((heap_object **) & b);
-
-    Vector *e;
-    _heapvar((heap_object **) & e);
-
+    ENTER();
+    STRING(b);
+    VECTOR(e);
     REF(a);
-
     b = String_new("cat");
     REF(b);
     {
-        String *c;
-        _heapvar((heap_object **) & c);
-
+        MARK();
+        STRING(c);
         c = String_new("dog");
         REF(c);
         {
-            String *d;
-            _heapvar((heap_object **) & d);
-
+            MARK();
+            STRING(d);
             d = String_new("moo");
             REF(d);
+            RELEASE();
         }
+        RELEASE();
     }
     {
-        String *b;
-        _heapvar((heap_object **) & b);
-
-        String *c;
-        _heapvar((heap_object **) & c);
-
+        MARK();
+        STRING(b);
+        STRING(c);
         b = String_new("boo");
         REF(b);
         c = String_new("hoo");
         REF(c);
+        RELEASE();
     }
     e = Vector_new((double[]) {7}, 1);
     REF(e);
-    _deref();
+    EXIT();
 }
 
-int main(int argc, char *argv[])
+int
+main(int argc, char *argv[])
 {
+    setup_error_handlers();
+    ENTER();
+    EXIT();
     return 0;
 }

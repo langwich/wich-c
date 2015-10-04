@@ -1,10 +1,14 @@
 #include <stdio.h>
 #include "wich.h"
-
-int x;
-
-int main(int argc, char *argv[])
+#include "refcounting.h"
+int
+main(int argc, char *argv[])
 {
-	x = 1;
-	return 0;
+    setup_error_handlers();
+    ENTER();
+    int x;
+
+    x = 1;
+    EXIT();
+    return 0;
 }

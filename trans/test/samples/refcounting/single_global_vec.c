@@ -1,12 +1,15 @@
 #include <stdio.h>
 #include "wich.h"
-
-Vector * x;
-
-int main(int argc, char *argv[])
+#include "refcounting.h"
+int
+main(int argc, char *argv[])
 {
-	x = Vector_new((double []){1,2,3,4,5}, 5);
-	REF(x);
-	DEREF(x);
-	return 0;
+    setup_error_handlers();
+    ENTER();
+    VECTOR(x);
+    x = Vector_new((double[]) {
+                   1, 2, 3, 4, 5}, 5);
+    REF(x);
+    EXIT();
+    return 0;
 }

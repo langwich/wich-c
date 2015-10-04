@@ -1,25 +1,27 @@
 #include <stdio.h>
 #include "wich.h"
+#include "refcounting.h"
+String *becomeSuper(String * name);
 
-String * becomeSuper(String * name);
-
-String * becomeSuper(String * name)
+String *
+becomeSuper(String * name)
 {
-	String *_retv;
-	String *tmp1;
-	REF(name);
-	tmp1=String_add(String_new("super"),name);
-	REF(tmp1);
-	_retv = tmp1;
-_cleanup:
-	DEREF(name);
-	DEREF(tmp1);
-	return _retv;
+    ENTER();
+    REF(name);
+    {
+        EXIT();
+        return String_add(String_new("super"), name);
+    }
+    EXIT();
 }
 
-int main(int argc, char *argv[])
+int
+main(int argc, char *argv[])
 {
-	print_string(becomeSuper(String_new("man")));
-	print_string(becomeSuper(String_new("duper")));
-	return 0;
+    setup_error_handlers();
+    ENTER();
+    print_string(becomeSuper(String_new("man")));
+    print_string(becomeSuper(String_new("duper")));
+    EXIT();
+    return 0;
 }

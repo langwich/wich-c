@@ -1,28 +1,35 @@
 #include <stdio.h>
 #include "wich.h"
+#include "refcounting.h"
 
 void f();
 
-void f()
+void
+f()
 {
-	String * x;
-	x = String_new("cat");
+    ENTER();
+    STRING(x);
+    x = String_new("cat");
     REF(x);
-	{
-		String * y;
-		String * z;
-		y = String_new("dog");
-    	REF(y);
-		z = x;
-		REF(z);
-		DEREF(y);
-		DEREF(z);
-	}
-	DEREF(x);
+    {
+        MARK();
+        STRING(y);
+        STRING(z);
+        y = String_new("dog");
+        REF(y);
+        z = x;
+        REF(z);
+        RELEASE();
+    }
+    EXIT();
 }
 
-int main(int argc, char *argv[])
+int
+main(int argc, char *argv[])
 {
-	f();
-	return 0;
+    setup_error_handlers();
+    ENTER();
+    f();
+    EXIT();
+    return 0;
 }
