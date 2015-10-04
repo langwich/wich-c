@@ -195,6 +195,7 @@ public class TypeHelper {
 	                                 ExprContext le,
 	                                 ExprContext re)
 	{
+
 		int li = le.exprType.getTypeIndex();
 		int ri = re.exprType.getTypeIndex();
 		Type resultType = opResultTypeMap[op][li][ri];
