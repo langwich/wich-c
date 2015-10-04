@@ -1,13 +1,12 @@
 #include <stdio.h>
 #include "wich.h"
-
-int x;
-
-int y;
-
 int
 main(int argc, char *argv[])
 {
+    int x;
+
+    int y;
+
     x = 2;
     y = 1;
     if ((x > y)) {

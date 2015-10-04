@@ -1,22 +1,15 @@
 #include <stdio.h>
 #include "wich.h"
-
 Vector *f();
 
 Vector *
 f()
 {
-    Vector *_retv;
     Vector *x;
 
-    x = Vector_new((double[]) {1, 2, 3}, 3);
-    REF(x);
-    _retv = x;
-    REF(_retv);
-_cleanup:
-    DEREF(_retv);
-    DEREF(x);
-    return _retv;
+    x = Vector_new((double[]) {
+                   1, 2, 3}, 3);
+    return x;
 }
 
 int

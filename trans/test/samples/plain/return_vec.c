@@ -1,25 +1,23 @@
 #include <stdio.h>
 #include "wich.h"
+Vector *foo();
 
-Vector * x;
-
-Vector * foo();
-
-Vector * foo()
+Vector *
+foo()
 {
-	Vector * y;
-	y = Vector_new((double []){1,2,3,4,5}, 5);
-	REF(y);
-	DEREF(y);
-	return y;
-    DEREF(y);
+    Vector *y;
+
+    y = Vector_new((double[]) {
+                   1, 2, 3, 4, 5}, 5);
+    return y;
 }
 
-int main(int argc, char *argv[])
+int
+main(int argc, char *argv[])
 {
-	x = foo();
-    REF(x);
-	print_vector(foo());
-	DEREF(x);
-	return 0;
+    Vector *x;
+
+    x = foo();
+    print_vector(foo());
+    return 0;
 }

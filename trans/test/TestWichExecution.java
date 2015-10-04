@@ -89,6 +89,8 @@ public class TestWichExecution extends WichBaseTest {
 		exec(
 			new String[] {
 				"gindent",
+				"-bap", "-bad", "-br", "-nce", "-ncs", "-nprs", "-npcs", "-sai", "-saw",
+				"-di1", "-brs", "-blf", "--indent-level4", "-nut", "-sob", "-l200",
 				"/tmp/__t.c"
 			}
 		);
@@ -99,6 +101,8 @@ public class TestWichExecution extends WichBaseTest {
 		exec(
 			new String[] {
 				"gindent",
+				"-bap", "-bad", "-br", "-nce", "-ncs", "-nprs", "-npcs", "-sai", "-saw",
+				"-di1", "-brs", "-blf", "--indent-level4", "-nut", "-sob", "-l200",
 				"/tmp/__expected.c"
 			}
 		);
