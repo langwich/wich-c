@@ -33,12 +33,6 @@ import java.util.List;
  *  script level.  Split apart the defs from inits of variables.
  */
 public class Block extends Stat {
-	public static final int FUNC_BLOCK_NUMBER = 0;
-	public static final int SCRIPT_BLOCK_NUMBER = FUNC_BLOCK_NUMBER;
-
-	/** indexed from 0 and is the block number within the enclosing block */
-	public int blockNumber;
-
 	/** What scope in symtab is associated with this block? */
 	public Scope scope;
 
@@ -50,9 +44,8 @@ public class Block extends Stat {
 	@ModelElement public List<Stat> stats    	   = new ArrayList<>();
 	@ModelElement public List<Stat> cleanup    	   = new ArrayList<>();
 
-	public Block(Block enclosingBlock, int blockNumber) {
+	public Block(Block enclosingBlock) {
 		this.enclosingBlock = enclosingBlock;
-		this.blockNumber = blockNumber;
 	}
 
 	public void add(Stat stat) {

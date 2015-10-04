@@ -61,15 +61,28 @@ public class TestWichExecution extends WichBaseTest {
 	}
 
 	@Test
-	public void testCodeGen() throws Exception {
+	public void testPlainCodeGen() throws Exception {
+		testCodeGen();
+	}
+
+//	@Test
+//	public void testRefCountingCodeGen() throws Exception {
+//		testCodeGen();
+//	}
+
+	protected void testCodeGen() throws IOException, InterruptedException {
 		WichErrorHandler err = new WichErrorHandler();
 		SymbolTable symtab = new SymbolTable();
-		URL expURL = CompilerUtils.getResourceFile(baseName + ".c");
+		URL expURL = CompilerUtils.getResourceFile(TEST_RES_PLAIN_GEND_CODE+"/"+baseName + ".c");
 		assertNotNull(expURL);
 		String expPath = expURL.getPath();
 		String expected = CompilerUtils.readFile(expPath, CompilerUtils.FILE_ENCODING);
-		String contents = CompilerUtils.readFile(input.getAbsolutePath(), CompilerUtils.FILE_ENCODING);
-		String actual = CompilerUtils.genCode(contents, symtab, err);
+		expected = expected.replace("\n\n", "\n"); // strip blank lines
+		CompilerUtils.writeFile("/tmp/__expected.c", expected, StandardCharsets.UTF_8);
+
+		String wichInput = CompilerUtils.readFile(input.getAbsolutePath(), CompilerUtils.FILE_ENCODING);
+		String actual = CompilerUtils.genCode(wichInput, symtab, err);
+		actual = actual.replace("\n\n", "\n");
 		CompilerUtils.writeFile("/tmp/__t.c", actual, StandardCharsets.UTF_8);
 
 		// normalize the file using gnu indent (brew install gnu-indent on OS X)
@@ -90,8 +103,7 @@ public class TestWichExecution extends WichBaseTest {
 				"gindent",
 				"-bap", "-bad", "-br", "-nce", "-ncs", "-nprs", "-npcs", "-sai", "-saw",
 				"-di1", "-brs", "-blf", "--indent-level4", "-nut", "-sob", "-l200",
-				expPath,
-				"-o", "/tmp/__expected.c"
+				"/tmp/__expected.c"
 			}
 		);
 		expected = CompilerUtils.readFile("/tmp/__expected.c", StandardCharsets.UTF_8);
@@ -100,19 +112,31 @@ public class TestWichExecution extends WichBaseTest {
 	}
 
 	@Test
-	public void testExecution() throws Exception {
+	public void testPlainExecution() throws Exception {
 		URL expectedFile = CompilerUtils.getResourceFile(baseName + ".output");
 		String expected = "";
 		if (expectedFile != null) {
 			expected = CompilerUtils.readFile(expectedFile.getPath(), CompilerUtils.FILE_ENCODING);
 		}
-		executeAndCheck(input.getAbsolutePath(), expected);
+		executeAndCheck(input.getAbsolutePath(), expected, false);
 	}
 
-	private void executeAndCheck(String inputFileName, String expected) throws IOException, InterruptedException {
+//	@Test
+//	public void testRefCountingExecution() throws Exception {
+//		URL expectedFile = CompilerUtils.getResourceFile(baseName + ".output");
+//		String expected = "";
+//		if (expectedFile != null) {
+//			expected = CompilerUtils.readFile(expectedFile.getPath(), CompilerUtils.FILE_ENCODING);
+//		}
+//		executeAndCheck(input.getAbsolutePath(), expected, true);
+//	}
+
+	private void executeAndCheck(String inputFileName, String expected, boolean valgrind) throws IOException, InterruptedException {
 		String executable = compileC(inputFileName);
 		String output = executeC(executable);
-		valgrindCheck(executable);
+		if ( valgrind ) {
+			valgrindCheck(executable);
+		}
 		System.out.println(output);
 		assertEquals(expected, output);
 	}

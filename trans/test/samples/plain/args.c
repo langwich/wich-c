@@ -1,17 +1,14 @@
 #include <stdio.h>
 #include "wich.h"
 
-int x;
+void f(int x,Vector * v);
 
-void f();
-
-void f()
+void f(int x,Vector * v)
 {
-	printf("%d\n", x);
 }
+
 
 int main(int argc, char *argv[])
 {
-	x = 99;
 	return 0;
 }

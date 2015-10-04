@@ -56,14 +56,15 @@ public class CompilerUtils {
 	private static ParserRuleContext parse(ANTLRInputStream antlrInputStream) {
 		TokenStream tokens = new CommonTokenStream(new WichLexer(antlrInputStream));
 		WichParser parser = new WichParser(tokens);
-		return parser.file();
+		return parser.script();
 	}
 
 	static ParserRuleContext defineSymbols(String input, SymbolTable symtab, WichErrorHandler err) {
 		ParserRuleContext tree = parse(new ANTLRInputStream(input));
 		ParseTreeWalker walker = new ParseTreeWalker();
-		DefineSymbols symtabConstructor = new DefineSymbols(symtab, err);
-		walker.walk(symtabConstructor, tree);
+		DefineSymbols defSymbols = new DefineSymbols(symtab, err);
+		walker.walk(defSymbols, tree);
+		symtab.numOfVars = defSymbols.getNumOfVars();
 		return tree;
 	}
 
@@ -73,11 +74,11 @@ public class CompilerUtils {
 		ComputeTypes computeTypes = new ComputeTypes(err);
 		AssignTypes assignTypes = new AssignTypes(err, symtab.numOfVars);
 		ParseTreeWalker walker = new ParseTreeWalker();
-		do{
+		do {
 			walker.walk(computeTypes, tree);
 			walker = new ParseTreeWalker();
 			walker.walk(assignTypes, tree);
-		}while(!assignTypes.isAssignFinished);
+		} while(!assignTypes.isAssignFinished);
 
 		FinalComputeTypes finalComputeTypes = new FinalComputeTypes(err);
 		walker = new ParseTreeWalker();

@@ -29,10 +29,8 @@ import wich.semantics.symbols.*;
 import org.antlr.symtab.*;
 }
 
-file : script EOF ;
-
 script returns [GlobalScope scope]
-	:	function* statement*
+	:	function* statement* EOF
 	;
 
 function returns [WFunctionSymbol scope]
