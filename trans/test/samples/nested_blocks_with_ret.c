@@ -1,50 +1,42 @@
 #include <stdio.h>
-#include <stdbool.h>
 #include "wich.h"
 
-int f(Vector *a);
+int f(Vector * a);
 
-int f(Vector *_a)
+int
+f(Vector * a)
 {
-#define a  0
-#define b  1
-#define c  2
-#define d  3
-#define b1 4
-#define e  5
-    heap_object _localptrs[6]; // room for all ptrs simultaneously including args
+    int x;
+    String *b;
+    Vector *e;
 
-    _localptrs[a] = _a;        // copy arg into locals array
-    REF(_localptrs[a]);
+    REF(a);
 
-    int x;                     // primitives can stay as-is
     x = 32;
-
-    _localptrs[b] = String_new("cat");
-    REF(_localptrs[b]);
+    b = String_new("cat");
+    REF(b);
     {
-        _localptrs[_c] = String_new("dog");
-        REF(_localptrs[_c]);
+        String *c;
+
+        c = String_new("dog");
+        REF(c);
         {
-            _localptrs[_d] = String_new("moo");
-            REF(_localptrs[_d]);
-            deref(_localptrs);
+            String *d;
+
+            d = String_new("moo");
+            REF(d);
             return x;
         }
     }
     {
-        _localptrs[_b1] = String_new("boo");
-        REF(_localptrs[_b1]);
+        String *b;
+
+        b = String_new("boo");
+        REF(b);
     }
-    _localptrs[_e] = Vector_new((double[]) {7}, 1);
-    REF(_localptrs[_e]);
-    deref(_localptrs);
-#undef a
-#undef b
-#undef c
-#undef d
-#undef b1
-#undef e
+    e = Vector_new((double[]) {7}, 1);
+    REF(e);
+    _deref();
 }
 
 int

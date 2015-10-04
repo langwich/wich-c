@@ -140,7 +140,6 @@ VarInitStat(v,varRef,expr) ::= <<
 
 VarDefStat(v,type) ::= <<
 <type> <v.name>;
-_heapvar((heap_object **)&<v.name>);
 >>
 
 CompositeModelObject(cs, modelObjects) ::= <<
@@ -211,3 +210,4 @@ TmpVarDef(t,type) ::="<typeMo> tmp<t.varIndex>;"
 
 RefCountREF(r,varRef) ::= "REF(<varRef>);"
 RefCountDEREF(d) ::= "_deref();"
+RefCountROOT(r,varRef) ::= "_heapvar((heap_object **)&<varRef>)"

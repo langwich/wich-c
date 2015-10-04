@@ -30,6 +30,7 @@ import wich.codegen.model.Block;
 import wich.codegen.model.CompositeModelObject;
 import wich.codegen.model.Func;
 import wich.codegen.model.FuncBlock;
+import wich.codegen.model.MainBlock;
 import wich.codegen.model.OutputModelObject;
 import wich.codegen.model.RefCountDEREF;
 import wich.codegen.model.RefCountREF;
@@ -89,15 +90,15 @@ public class InjectRefCounting {
 		return func;
 	}
 
-//	public OutputModelObject enterModel(Script script) {
-//		enterModel((Block)script.);
-//		return script;
-//	}
-//
-//	public OutputModelObject exitModel(Script script) {
-//		exitModel((Block) script);
-//		return script;
-//	}
+	public OutputModelObject enterModel(MainBlock script) {
+		enterModel((Block)script);
+		return script;
+	}
+
+	public OutputModelObject exitModel(MainBlock script) {
+		exitModel((Block) script);
+		return script;
+	}
 
 	public OutputModelObject enterModel(FuncBlock block) {
 		return enterModel((Block)block);
