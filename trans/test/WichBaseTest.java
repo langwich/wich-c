@@ -33,8 +33,9 @@ import java.util.regex.Pattern;
 
 @RunWith(Parameterized.class)
 public class WichBaseTest {
-
 	public static final String TEST_RES = "samples";
+	public static final String TEST_RES_PLAIN_GEND_CODE = "plain";
+	public static final String TEST_RES_REFCOUNTING_GEND_CODE = "refcounting";
 	protected File input;
 	protected String baseName;
 
@@ -58,5 +59,4 @@ public class WichBaseTest {
 		}
 		return result;
 	}
-
 }

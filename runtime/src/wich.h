@@ -76,6 +76,13 @@ void wich_free(heap_object *p);
 void _heapvar(heap_object **p);
 void _deref();
 
+static const int MAX_ROOTS = 1024;
+static int _sp = 0;
+static heap_object *_roots[MAX_ROOTS];
+
+#define _enterfunc()	int _save = _sp;
+#define _exitfunc()		{_deref(); _sp = _save;}
+
 #define COPY_ON_WRITE(x) \
 	if ( x!=NULL && ((heap_object *)x)->refs > 1 ) { \
 		((heap_object *)x)->refs--; \

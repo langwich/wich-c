@@ -83,16 +83,16 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 
 	public File generate(ParserRuleContext tree) {
 		File f = (File)visit(tree);
-		ModelWalker modelWalker = new ModelWalker(new InjectRefCounting());
-		modelWalker.walk(f);
-		System.out.println("\nfinal model walk:");
-		modelWalker = new ModelWalker(new Object() {
-			public OutputModelObject visitEveryModelObject(OutputModelObject o) {
-//				System.out.println("visit every node: "+o.getClass().getSimpleName());
-				return o;
-			}
-		});
-		modelWalker.walk(f);
+//		ModelWalker modelWalker = new ModelWalker(new InjectRefCounting());
+//		modelWalker.walk(f);
+//		System.out.println("\nfinal model walk:");
+//		modelWalker = new ModelWalker(new Object() {
+//			public OutputModelObject visitEveryModelObject(OutputModelObject o) {
+////				System.out.println("visit every node: "+o.getClass().getSimpleName());
+//				return o;
+//			}
+//		});
+//		modelWalker.walk(f);
 
 		return f;
 	}
