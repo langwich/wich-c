@@ -1,6 +1,5 @@
 func foo() : [] {
-	var y = [1, 2, 3, 4, 5]
-	return y
+	return [1, 2, 3, 4, 5]
 }
 
 var x = foo()

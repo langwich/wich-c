@@ -39,7 +39,10 @@ public enum ErrorType {
 	INVALID_OPERATION("invalid operation (<arg1> expected, but <arg2> was given)", ERROR),
 	INVALID_TYPE("invalid type for (<arg1>)", ERROR),
 	SYMBOL_NOT_FOUND("symbol not found (<arg1>)", ERROR),
-	UNDEFINED_FUNCTION("function <arg1> not defined", ERROR);
+	UNDEFINED_FUNCTION("function <arg1> not defined", ERROR),
+
+	UNKNOWN_TARGET("Unknown translation target: <arg1>", ERROR);
+
 
 	protected String template;
 	protected ErrorSeverity severity;

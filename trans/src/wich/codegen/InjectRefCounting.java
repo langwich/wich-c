@@ -32,10 +32,11 @@ import wich.codegen.model.Func;
 import wich.codegen.model.FuncBlock;
 import wich.codegen.model.MainBlock;
 import wich.codegen.model.OutputModelObject;
-import wich.codegen.model.RefCountDEREF;
 import wich.codegen.model.RefCountREF;
+import wich.codegen.model.ReturnHeapVarStat;
 import wich.codegen.model.ReturnStat;
 import wich.codegen.model.VarInitStat;
+import wich.codegen.model.expr.VarRef;
 import wich.semantics.symbols.WVariableSymbol;
 
 public class InjectRefCounting {
@@ -43,7 +44,7 @@ public class InjectRefCounting {
 	protected Scope currentScope;
 
 	public OutputModelObject visitEveryModelObject(OutputModelObject o) {
-		System.out.println("visit every node: "+o.getClass().getSimpleName());
+//		System.out.println("visit every node: "+o.getClass().getSimpleName());
 		return o;
 	}
 
@@ -52,7 +53,7 @@ public class InjectRefCounting {
 	}
 
 	public OutputModelObject exitModel(AssignStat assign) {
-		System.out.println("exitModel assignment");
+//		System.out.println("exitModel assignment");
 		if ( CodeGenerator.isHeapType(assign.expr.getType()) ) {
 			final String varName = assign.varRef.getName();
 			final WVariableSymbol varSym = (WVariableSymbol)currentScope.resolve(varName);
@@ -64,7 +65,12 @@ public class InjectRefCounting {
 
 	public OutputModelObject exitModel(ReturnStat retStat) {
 		if ( CodeGenerator.isHeapType(retStat.expr.getType()) ) {
-			return new CompositeModelObject(new RefCountDEREF(), retStat);
+			if ( retStat.expr instanceof VarRef ) {
+				return new ReturnHeapVarStat(retStat.expr);
+			}
+//			final String varName = retStat.varRef.getName();
+//			final WVariableSymbol varSym = (WVariableSymbol)currentScope.resolve(varName);
+//			return new CompositeModelObject(new RefCountDEREF(), retStat);
 		}
 		return retStat;
 	}
@@ -75,7 +81,7 @@ public class InjectRefCounting {
 	}
 
 	public OutputModelObject exitModel(Func func) {
-		System.out.println("exitModel func");
+//		System.out.println("exitModel func");
 		// Inject REF(x) for all heap args x at start of function, DEREF at end
 		for (ArgDef arg : func.args) {
 			if ( CodeGenerator.isHeapType(arg.type.type) ) {
@@ -84,7 +90,7 @@ public class InjectRefCounting {
 			}
 		}
 
-		func.body.cleanup.add(new RefCountDEREF());
+//		func.body.cleanup.add(new RefCountDEREF());
 
 		currentFunc = null;
 		return func;
@@ -109,13 +115,13 @@ public class InjectRefCounting {
 	}
 
 	public OutputModelObject enterModel(Block block) {
-		System.out.println("enterModel block");
+//		System.out.println("enterModel block");
 		pushScope(block.scope);
 		return block;
 	}
 
 	public OutputModelObject exitModel(Block block) {
-		System.out.println("exitModel Block");
+//		System.out.println("exitModel Block");
 //		for (VarDefStat varDef : block.varDefs) {
 //			if ( CodeGenerator.isHeapType(varDef.type.type) ) {
 //			}

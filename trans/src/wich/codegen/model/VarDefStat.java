@@ -1,12 +1,16 @@
 package wich.codegen.model;
 
+import wich.semantics.symbols.WVariableSymbol;
+
 /** Represents a variable definition */
 public class VarDefStat extends Stat {
-	public final String name;
+	public final WVariableSymbol symbol;
 	@ModelElement public WichType type;
 
-	public VarDefStat(String name, WichType type) {
-		this.name = name;
+	public VarDefStat(WVariableSymbol symbol, WichType type) {
+		this.symbol = symbol;
 		this.type = type;
 	}
+
+	public String getName() { return symbol.getName(); }
 }

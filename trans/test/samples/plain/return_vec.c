@@ -5,16 +5,13 @@ Vector *foo();
 Vector *
 foo()
 {
-    Vector *y;
-
-    y = Vector_new((double[]) {
-                   1, 2, 3, 4, 5}, 5);
-    return y;
+    return Vector_new((double[]) {1, 2, 3, 4, 5}, 5);
 }
 
 int
 main(int argc, char *argv[])
 {
+	setup_error_handlers();
     Vector *x;
 
     x = foo();

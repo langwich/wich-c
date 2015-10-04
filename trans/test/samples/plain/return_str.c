@@ -11,6 +11,7 @@ becomeSuper(String * name)
 int
 main(int argc, char *argv[])
 {
+	setup_error_handlers();
     print_string(becomeSuper(String_new("man")));
     print_string(becomeSuper(String_new("duper")));
     return 0;

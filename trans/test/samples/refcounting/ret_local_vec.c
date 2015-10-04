@@ -1,27 +1,31 @@
 #include <stdio.h>
 #include "wich.h"
-
+#include "refcounting.h"
 Vector *f();
 
 Vector *
 f()
 {
-    Vector *_retv;
-    Vector *x;
-
-    x = Vector_new((double[]) {1, 2, 3}, 3);
+    ENTER();
+    VECTOR(x);
+    x = Vector_new((double[]) {
+                   1, 2, 3}, 3);
     REF(x);
-    _retv = x;
-    REF(_retv);
-_cleanup:
-    DEREF(_retv);
-    DEREF(x);
-    return _retv;
+    {
+        REF(x);
+        EXIT();
+        DEC(x);
+        return x;
+    }
+    EXIT();
 }
 
 int
 main(int argc, char *argv[])
 {
+    setup_error_handlers();
+    ENTER();
     print_vector(Vector_add(f(), f()));
+    EXIT();
     return 0;
 }

@@ -15,6 +15,7 @@ f()
 int
 main(int argc, char *argv[])
 {
+	setup_error_handlers();
     print_vector(Vector_add(f(), f()));
     return 0;
 }
