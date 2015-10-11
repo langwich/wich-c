@@ -25,6 +25,7 @@ SOFTWARE.
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <stdbool.h>
 //#define DEBUG
 #include "wich.h"
 #include "refcounting.h"
@@ -84,6 +85,26 @@ Vector *Vector_add(Vector *a, Vector *b)
 	DEREF(b);
 	return c;
 }
+
+//Vector *Vector_add(Vector *a, int b)
+//{
+//	REF(a);
+//	if(a == NULL) return NULL;
+//	size_t n = a->length;
+//	Vector * c = Vector_alloc(n+1);
+//	int i;
+//	for (i=0; i<n; i++) {
+//    	c->data[i] = a->data[i];
+//    }
+//    c->data[n] = (float)b;
+//    DEREF(a);
+//    return c;
+//}
+//
+//Vector *Int_add_Vector(int a, Vector *b) {
+//	Vector * c = Vector_add(b,a);
+//	return c;
+//}
 
 static char *Vector_as_string(Vector *a) // not called from Wich so no REF/DEREF
 {
@@ -150,6 +171,86 @@ String *String_add(String *s, String *t)
 	return u;
 }
 
+bool String_eq(String *s, String *t) {
+	if (strlen(s->str) != strlen(t->str)) {
+		return false;
+	}else {
+		size_t n = strlen(s->str);
+		int i;
+		for (i = 0; i < n; i++) {
+			if(s->str[i] != t->str[i]) {
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+bool String_neq(String *s, String *t) {
+	return !String_eq(s,t);
+}
+
+bool String_gt(String *s, String *t) {
+	size_t len_s = strlen(s->str);
+	size_t len_t = strlen(t->str);
+	if (len_s > len_t) { return true;}
+	else if (len_s < len_t) {return false;}
+	else {
+		int i;
+		for (i = 0; i < len_s; i++) {
+			if(s->str[i] <= t->str[i]) {
+				return false;
+			}
+		}
+		return true;
+	}
+}
+
+bool String_ge(String *s, String *t) {
+	size_t len_s = strlen(s->str);
+	size_t len_t = strlen(t->str);
+	if (len_s > len_t) { return true;}
+	else if (len_s < len_t) {return false;}
+	else {
+		int i;
+		for (i = 0; i < len_s; i++) {
+			if(s->str[i] < t->str[i]) {
+				return false;
+			}
+		}
+		return true;
+	}
+}
+bool String_lt(String *s, String *t) {
+	size_t len_s = strlen(s->str);
+	size_t len_t = strlen(t->str);
+	if (len_s < len_t) { return true;}
+	else if (len_s > len_t) {return false;}
+	else {
+		int i;
+		for (i = 0; i < len_s; i++) {
+			if(s->str[i] >= t->str[i]) {
+				return false;
+			}
+		}
+		return true;
+	}
+}
+bool String_le(String *s, String *t) {
+	size_t len_s = strlen(s->str);
+	size_t len_t = strlen(t->str);
+	if (len_s < len_t) { return true;}
+	else if (len_s > len_t) {return false;}
+	else {
+		int i;
+		for (i = 0; i < len_s; i++) {
+			if(s->str[i] > t->str[i]) {
+				return false;
+			}
+		}
+		return true;
+	}
+}
 /** We don't have data aggregates like structs so no need to free nested pointers. */
 void wich_free(heap_object *p)
 {

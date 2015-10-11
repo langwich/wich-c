@@ -167,6 +167,16 @@ public class ComputeTypes extends MaintainScopeListener {
 	}
 
 	@Override
+	public void exitTrueLiteral(@NotNull WichParser.TrueLiteralContext ctx) {
+		ctx.exprType = SymbolTable._boolean;
+	}
+
+	@Override
+	public void exitFalseLiteral(@NotNull WichParser.FalseLiteralContext ctx) {
+		ctx.exprType = SymbolTable._boolean;
+	}
+
+	@Override
 	public void exitAtom(@NotNull WichParser.AtomContext ctx) {
 		ctx.exprType = ctx.primary().exprType; // bubble up primary's type to expr node
 	}

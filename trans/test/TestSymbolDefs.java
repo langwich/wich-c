@@ -204,6 +204,18 @@ public class TestSymbolDefs {
 		checkScopes(input, expecting);
 	}
 
+	@Test
+	public void testBooleanVar() throws Exception {
+		String input =
+				"var y = true\n";
+		String expecting =
+				"global {\n" +
+						"    global.y:boolean\n" +
+						"}\n";
+		checkScopes(input, expecting);
+	}
+
+
 	public void checkScopes(String input, String expecting) throws IOException {
 		boolean includePredefined = false;
 		checkAllScopes(input, includePredefined, expecting);
