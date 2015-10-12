@@ -133,7 +133,7 @@ public class TestTypeAnnotation {
 		String expected =
 				"1.2:float\n" +
 				"1:int => float\n" +
-				"+:float\n";
+				"+:float => float\n";
 		annotateTypeAndCheck(input, expected);
 	}
 

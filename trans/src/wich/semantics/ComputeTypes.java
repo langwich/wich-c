@@ -65,6 +65,8 @@ public class ComputeTypes extends MaintainScopeListener {
 		//when both operands' types are known
 		else if(lExpr.exprType != null && rExpr.exprType != null){
 			ctx.exprType = SymbolTable.op(op, lExpr, rExpr);
+			if (lExpr.exprType != rExpr.exprType)
+				ctx.promoteToType = SymbolTable.op(op, lExpr,rExpr);
 			if(ctx.exprType == SymbolTable.INVALID_TYPE){
 				String left = lExpr.exprType.getName();
 				String operator = ctx.operator().getText();
