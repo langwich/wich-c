@@ -232,7 +232,48 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		Expr left  = (Expr)visit(ctx.expr(0));
 		Expr right = (Expr)visit(ctx.expr(1));
 		final Type resultType = ctx.promoteToType!=null ? ctx.promoteToType : ctx.exprType;
+		if (ctx.promoteToType != null) {
+			left = createPromotionObject(ctx,left,right);
+			right = createPromotionObject(ctx,right,left);
+		}
 		return getBinaryOperationModel(ctx.operator(), resultType, left, right);
+	}
+
+	public static Expr createPromotionObject( WichParser.OpContext ctx, Expr from,Expr to) {
+		if (from.getType() != ctx.promoteToType) {
+			if (ctx.promoteToType == SymbolTable._vector) {
+				if (from.getType() == SymbolTable._int) {
+					VectorFromInt v = new VectorFromInt();
+					v.intLiteral = from;
+					v.vector = to;
+					from = v;
+				}
+				else if (from.getType() == SymbolTable._float) {
+					VectorFromFloat v = new VectorFromFloat();
+					v.floatLiteral = from;
+					v.vector = to;
+					from = v;
+				}
+			}
+			else if (ctx.promoteToType == SymbolTable._string) {
+				if (from.getType() == SymbolTable._vector) {
+					StringFromVector s = new StringFromVector();
+					s.vector = from;
+					from = s;
+				}
+				else if (from.getType() == SymbolTable._int) {
+					StringFromInt s = new StringFromInt();
+					s.intExpr = from;
+					from = s;
+				}
+				else if (from.getType() == SymbolTable._float) {
+					StringFromFloat s = new StringFromFloat();
+					s.floatExpr = from;
+					from = s;
+				}
+			}
+		}
+		return from;
 	}
 
 	@Override

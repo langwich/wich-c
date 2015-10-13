@@ -8,13 +8,16 @@ main(int argc, char *argv[])
     ENTER();
     VECTOR(x);
     VECTOR(y);
+    VECTOR(z);
     x = Vector_new((double[]) {
-                   1, 2, 3}, 3);
+                   4, 6, 8}, 3);
     REF(x);
     y = Vector_new((double[]) {
-                   4, 5, 6}, 3);
+                   2, 3, 4}, 3);
     REF(y);
-    print_vector(Vector_add(x, y));
+    z = Vector_div(Vector_mul(Vector_add(x, y), x), y);
+    REF(z);
+    print_vector(z);
     EXIT();
     return 0;
 }

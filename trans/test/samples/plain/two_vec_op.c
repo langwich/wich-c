@@ -8,10 +8,14 @@ main(int argc, char *argv[])
 
     Vector *y;
 
+    Vector *z;
+
     x = Vector_new((double[]) {
-                   1, 2, 3}, 3);
+                   4, 6, 8}, 3);
     y = Vector_new((double[]) {
-                   4, 5, 6}, 3);
-    print_vector(Vector_add(x, y));
+                   2, 3, 4}, 3);
+    z = Vector_div(Vector_mul(Vector_add(x, y), x), y);
+    print_vector(z);
     return 0;
 }
+

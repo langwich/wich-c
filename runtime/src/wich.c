@@ -70,6 +70,28 @@ Vector *Vector_alloc(size_t size)
 	return v;
 }
 
+Vector *Vector_from_int(int value, Vector *v) {
+	int len = v->length;
+	if (len == 0) return NULL;
+	double data[len];
+	int i;
+	for (i = 0; i< len; i++) {
+		data[i] = value;
+	}
+	return Vector_new(data,len);
+}
+
+Vector *Vector_from_float(float value, Vector *v) {
+	int len = v->length;
+	if (len == 0) return NULL;
+	double data[len];
+	int i;
+	for (i = 0; i< len; i++) {
+		data[i] = value;
+	}
+	return Vector_new(data,len);
+}
+
 Vector *Vector_add(Vector *a, Vector *b)
 {
 	REF(a);
@@ -86,6 +108,53 @@ Vector *Vector_add(Vector *a, Vector *b)
 	return c;
 }
 
+Vector *Vector_sub(Vector *a, Vector *b)
+{
+	REF(a);
+	REF(b);
+	int i;
+	if ( a==NULL || b==NULL || a->length!=b->length ) return NULL;
+	size_t n = a->length;
+	Vector * c = Vector_alloc(n);
+	for (i=0; i<n; i++) {
+		c->data[i] = a->data[i] - b->data[i];
+	}
+	DEREF(a);
+	DEREF(b);
+	return c;
+}
+
+Vector *Vector_mul(Vector *a, Vector *b)
+{
+	REF(a);
+	REF(b);
+	int i;
+	if ( a==NULL || b==NULL || a->length!=b->length ) return NULL;
+	size_t n = a->length;
+	Vector * c = Vector_alloc(n);
+	for (i=0; i<n; i++) {
+		c->data[i] = a->data[i] * b->data[i];
+	}
+	DEREF(a);
+	DEREF(b);
+	return c;
+}
+
+Vector *Vector_div(Vector *a, Vector *b)
+{
+	REF(a);
+	REF(b);
+	int i;
+	if ( a==NULL || b==NULL || a->length!=b->length ) return NULL;
+	size_t n = a->length;
+	Vector * c = Vector_alloc(n);
+	for (i=0; i<n; i++) {
+		c->data[i] = a->data[i] / b->data[i];
+	}
+	DEREF(a);
+	DEREF(b);
+	return c;
+}
 //Vector *Vector_add(Vector *a, int b)
 //{
 //	REF(a);
@@ -147,6 +216,33 @@ String *String_from_char(char c)
 {
 	char buf[2] = {c, '\0'};
 	return String_new(buf);
+}
+
+String *String_from_vector(Vector *v) {
+	if (v == NULL) return NULL;
+	char *s = calloc(v->length*20, sizeof(char));
+	char buf[50];
+	for (int i=0; i<v->length; i++) {
+		sprintf(buf, "%d", (int)v->data[i]);
+		strcat(s, buf);
+	}
+	return String_new(s);
+}
+
+String *String_from_int(int value) {
+	char *s = calloc(20, sizeof(char));
+	char buf[50];
+	sprintf(buf,"%d",value);
+	strcat(s, buf);
+	return String_new(s);
+}
+
+String *String_from_float(float value) {
+	char *s = calloc(20, sizeof(char));
+	char buf[50];
+	sprintf(buf,"%1.2f",value);
+	strcat(s, buf);
+	return String_new(s);
 }
 
 void print_string(String *a)

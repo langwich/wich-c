@@ -1,18 +1,18 @@
 #include <stdio.h>
 #include "wich.h"
 #include "refcounting.h"
-Vector *f(int x);
+Vector *foo(int x);
 
 Vector *
-f(int x)
+foo(int x)
 {
     ENTER();
     VECTOR(y);
     VECTOR(z);
     y = Vector_new((double[]) {
-                   1, 2, 3}, 3);
+                   2, 4, 6}, 3);
     REF(y);
-    z = Vector_add(y, Vector_from_int(x, y));
+    z = Vector_div(y, Vector_from_int(x, y));
     REF(z);
     {
         REF(z);
@@ -28,7 +28,13 @@ main(int argc, char *argv[])
 {
     setup_error_handlers();
     ENTER();
-    print_vector(f(4));
+    double f;
+
+    VECTOR(v);
+    f = 5.00;
+    v = Vector_mul(foo(2), Vector_from_float(f, foo(2)));
+    REF(v);
+    print_vector(v);
     EXIT();
     return 0;
 }

@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include "wich.h"
 #include "refcounting.h"
-Vector *f(int x);
+Vector *f(double x);
 
 Vector *
-f(int x)
+f(double x)
 {
     ENTER();
     VECTOR(y);
@@ -12,7 +12,7 @@ f(int x)
     y = Vector_new((double[]) {
                    1, 2, 3}, 3);
     REF(y);
-    z = Vector_add(y, Vector_from_int(x, y));
+    z = Vector_add(y, Vector_from_float(x, y));
     REF(z);
     {
         REF(z);
@@ -28,7 +28,7 @@ main(int argc, char *argv[])
 {
     setup_error_handlers();
     ENTER();
-    print_vector(f(4));
+    print_vector(f(4.00));
     EXIT();
     return 0;
 }
