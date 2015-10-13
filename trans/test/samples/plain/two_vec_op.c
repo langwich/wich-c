@@ -10,12 +10,14 @@ main(int argc, char *argv[])
 
     Vector *z;
 
+    Vector *q;
+
     x = Vector_new((double[]) {
                    4, 6, 8}, 3);
     y = Vector_new((double[]) {
                    2, 3, 4}, 3);
-    z = Vector_div(Vector_mul(Vector_add(x, y), x), y);
-    print_vector(z);
+    z = Vector_mul(x, y);
+    q = Vector_div(z, y);
+    print_vector(q);
     return 0;
 }
-

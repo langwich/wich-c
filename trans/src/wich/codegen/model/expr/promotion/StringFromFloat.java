@@ -21,13 +21,14 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-package wich.codegen.model.expr;
+package wich.codegen.model.expr.promotion;
 
 import org.antlr.symtab.Type;
 import wich.codegen.model.ModelElement;
+import wich.codegen.model.expr.Expr;
 import wich.semantics.SymbolTable;
 
-public class StringFromFloat extends Expr{
+public class StringFromFloat extends Expr {
     @ModelElement public Expr floatExpr;
 
     @Override

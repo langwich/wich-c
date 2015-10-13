@@ -9,15 +9,18 @@ main(int argc, char *argv[])
     VECTOR(x);
     VECTOR(y);
     VECTOR(z);
+    VECTOR(q);
     x = Vector_new((double[]) {
                    4, 6, 8}, 3);
     REF(x);
     y = Vector_new((double[]) {
                    2, 3, 4}, 3);
     REF(y);
-    z = Vector_div(Vector_mul(Vector_add(x, y), x), y);
+    z = Vector_mul(x, y);
     REF(z);
-    print_vector(z);
+    q = Vector_div(z, y);
+    REF(q);
+    print_vector(q);
     EXIT();
     return 0;
 }

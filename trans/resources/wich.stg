@@ -154,18 +154,18 @@ BinaryPrimitiveOp(op,left,right) ::= "(<left> <CPrimitiveBinaryOpMap.(op.wichOp)
 BinaryStringOp(op, left, right)  ::= "<CStringBinaryOpMap.(op.wichOp)>(<left>,<right>)"
 BinaryVectorOp(op, left, right)  ::= "<CVectorBinaryOpMap.(op.wichOp)>(<left>,<right>)"
 
+VectorFromInt(v,vector,intLiteral)	::= "Vector_from_int(<intLiteral>,<vector>)"
+VectorFromFloat(v,vector,floatLiteral)	::= "Vector_from_float(<floatLiteral>,<vector>)"
+StringFromVector(s,vector) ::= "String_from_vector(<vector>)"
+StringFromInt(s,intExpr) ::= "String_from_int(<intExpr>)"
+StringFromFloat(s,floatExpr) ::= "String_from_float(<floatExpr>)"
+
 IntLiteral(i)	::= "<i.value>"
 FloatLiteral(f)	::= "<f.value>"
 TrueLiteral(t) ::= "<t.value>"
 FalseLiteral(f) ::="<f.value>"
 VarRef(v)		::= "<v.name>"
 HeapVarRef(v)	::= "<v.name>"
-
-VectorFromInt(v,vector,intLiteral)	::= "Vector_from_int(<intLiteral>,<vector>)"
-VectorFromFloat(v,vector,floatLiteral)	::= "Vector_from_float(<floatLiteral>,<vector>)"
-StringFromVector(s,vector) ::= "String_from_vector(<vector>)"
-StringFromInt(s,intExpr) ::= "String_from_int(<intExpr>)"
-StringFromFloat(s,floatExpr) ::= "String_from_float(<floatExpr>)"
 
 StringLiteral(s) ::= <<
 String_new(<s.literal>)

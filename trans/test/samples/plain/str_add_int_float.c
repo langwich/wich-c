@@ -10,16 +10,13 @@ main(int argc, char *argv[])
 
     double f;
 
-    String *z;
-
     String *r;
 
     s = String_new("hello");
     i = 1;
     f = 1.00;
-    z = String_add(s, String_from_int(i));
     r = String_add(String_new("world"), String_from_float(f));
-    print_string(z);
+    print_string(String_add(s, String_from_int(i)));
     print_string(r);
     return 0;
 }

@@ -155,25 +155,6 @@ Vector *Vector_div(Vector *a, Vector *b)
 	DEREF(b);
 	return c;
 }
-//Vector *Vector_add(Vector *a, int b)
-//{
-//	REF(a);
-//	if(a == NULL) return NULL;
-//	size_t n = a->length;
-//	Vector * c = Vector_alloc(n+1);
-//	int i;
-//	for (i=0; i<n; i++) {
-//    	c->data[i] = a->data[i];
-//    }
-//    c->data[n] = (float)b;
-//    DEREF(a);
-//    return c;
-//}
-//
-//Vector *Int_add_Vector(int a, Vector *b) {
-//	Vector * c = Vector_add(b,a);
-//	return c;
-//}
 
 static char *Vector_as_string(Vector *a) // not called from Wich so no REF/DEREF
 {

@@ -21,20 +21,18 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-package wich.codegen.model.expr;
-
+package wich.codegen.model.expr.promotion;
 
 import org.antlr.symtab.Type;
 import wich.codegen.model.ModelElement;
+import wich.codegen.model.expr.Expr;
 import wich.semantics.SymbolTable;
 
-
-public class VectorFromInt extends Expr{
-	@ModelElement public Expr vector;
-	@ModelElement public Expr intLiteral;
+public class StringFromInt extends Expr {
+	@ModelElement public Expr intExpr;
 
 	@Override
 	public Type getType() {
-		return SymbolTable._vector;
+		return SymbolTable._int;
 	}
 }

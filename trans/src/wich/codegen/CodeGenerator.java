@@ -9,6 +9,7 @@ import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
 import wich.codegen.model.*;
 import wich.codegen.model.expr.*;
+import wich.codegen.model.expr.promotion.*;
 import wich.parser.WichBaseVisitor;
 import wich.parser.WichParser;
 import wich.semantics.SymbolTable;
@@ -231,49 +232,12 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	public OutputModelObject visitOp(@NotNull WichParser.OpContext ctx) {
 		Expr left  = (Expr)visit(ctx.expr(0));
 		Expr right = (Expr)visit(ctx.expr(1));
-		final Type resultType = ctx.promoteToType!=null ? ctx.promoteToType : ctx.exprType;
 		if (ctx.promoteToType != null) {
 			left = createPromotionObject(ctx,left,right);
 			right = createPromotionObject(ctx,right,left);
 		}
+		final Type resultType = ctx.promoteToType!=null ? ctx.promoteToType : ctx.exprType;
 		return getBinaryOperationModel(ctx.operator(), resultType, left, right);
-	}
-
-	public static Expr createPromotionObject( WichParser.OpContext ctx, Expr from,Expr to) {
-		if (from.getType() != ctx.promoteToType) {
-			if (ctx.promoteToType == SymbolTable._vector) {
-				if (from.getType() == SymbolTable._int) {
-					VectorFromInt v = new VectorFromInt();
-					v.intLiteral = from;
-					v.vector = to;
-					from = v;
-				}
-				else if (from.getType() == SymbolTable._float) {
-					VectorFromFloat v = new VectorFromFloat();
-					v.floatLiteral = from;
-					v.vector = to;
-					from = v;
-				}
-			}
-			else if (ctx.promoteToType == SymbolTable._string) {
-				if (from.getType() == SymbolTable._vector) {
-					StringFromVector s = new StringFromVector();
-					s.vector = from;
-					from = s;
-				}
-				else if (from.getType() == SymbolTable._int) {
-					StringFromInt s = new StringFromInt();
-					s.intExpr = from;
-					from = s;
-				}
-				else if (from.getType() == SymbolTable._float) {
-					StringFromFloat s = new StringFromFloat();
-					s.floatExpr = from;
-					from = s;
-				}
-			}
-		}
-		return from;
 	}
 
 	@Override
@@ -394,9 +358,9 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	// S U P P O R T  C O D E
 
 	public static BinaryOpExpr getBinaryOperationModel(WichParser.OperatorContext opCtx,
-	                                                   Type operandType,
-	                                                   Expr left,
-	                                                   Expr right)
+													   Type operandType,
+													   Expr left,
+													   Expr right)
 	{
 		Token opToken = opCtx.getStart();
 		String wichOp = opToken.getText();
@@ -414,6 +378,54 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		opExpr.resultType = operandType;
 		return opExpr;
 	}
+
+	public static Expr createPromotionObject( WichParser.OpContext ctx, Expr promoteExp,Expr targetExp) {
+		if (promoteExp.getType() != ctx.promoteToType) {
+			if (ctx.promoteToType == SymbolTable._vector) {
+				promoteExp = promoteToVector(promoteExp, targetExp);
+			}
+			else if (ctx.promoteToType == SymbolTable._string) {
+				promoteExp = promoteToString(promoteExp);
+			}
+		}
+		return promoteExp;
+	}
+
+	private static Expr promoteToString(Expr promoteExp) {
+		if (promoteExp.getType() == SymbolTable._vector) {
+			StringFromVector s = new StringFromVector();
+			s.vector = promoteExp;
+			promoteExp = s;
+		}
+		else if (promoteExp.getType() == SymbolTable._int) {
+			StringFromInt s = new StringFromInt();
+			s.intExpr = promoteExp;
+			promoteExp = s;
+		}
+		else if (promoteExp.getType() == SymbolTable._float) {
+			StringFromFloat s = new StringFromFloat();
+			s.floatExpr = promoteExp;
+			promoteExp = s;
+		}
+		return promoteExp;
+	}
+
+	private static Expr promoteToVector(Expr promoteExp, Expr targetExp) {
+		if (promoteExp.getType() == SymbolTable._int) {
+			VectorFromInt v = new VectorFromInt();
+			v.intLiteral = promoteExp;
+			v.vector = targetExp;
+			promoteExp = v;
+		}
+		else if (promoteExp.getType() == SymbolTable._float) {
+			VectorFromFloat v = new VectorFromFloat();
+			v.floatLiteral = promoteExp;
+			v.vector = targetExp;
+			promoteExp = v;
+		}
+		return promoteExp;
+	}
+
 
 	public static Stat getPrintModel(Type type, Expr expr) {
 		// split into granularity sufficient for most potential target languages
