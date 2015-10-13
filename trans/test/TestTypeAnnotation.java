@@ -262,6 +262,21 @@ public class TestTypeAnnotation {
 	}
 
 	@Test
+	public void testBooleanVarInferenceFromRetValue() throws Exception {
+		String input =
+				"func f():boolean { return (1<3) }\n" +
+				"var y = f()\n";
+		String expecting =
+				"(1<3):boolean\n"+
+				"1:int\n"+
+				"3:int\n"+
+				"<:boolean\n"+
+				"f():boolean\n"+
+				"y:boolean\n";
+		annotateTypeAndCheck(input, expecting);
+	}
+
+	@Test
 	public void testForwardRefs() throws Exception {
 		String input =
 			"func f() { print(x) }\n" +

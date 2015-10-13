@@ -25,6 +25,7 @@ SOFTWARE.
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
+#include <stdbool.h>
 
 typedef struct {
 	int refs;    		// refs to this object
@@ -53,6 +54,16 @@ String *String_from_char(char c);
 String *String_alloc(size_t size);
 String *String_add(String *s, String *t);
 String *String_copy(String *s);
+String *String_from_vector(Vector *vector);
+String *String_from_int(int value);
+String *String_from_float(float value);
+
+bool String_eq(String *s, String *t);
+bool String_neq(String *s, String *t);
+bool String_gt(String *s, String *t);
+bool String_ge(String *s, String *t);
+bool String_lt(String *s, String *t);
+bool String_le(String *s, String *t);
 void print_string(String *s);
 
 Vector *Vector_empty();
@@ -61,6 +72,8 @@ Vector *Vector_alloc(size_t size);
 Vector *Vector_new(double *data, size_t n);
 Vector *Vector_append(Vector *a, double value);
 Vector *Vector_append_vector(Vector *a, Vector *b);
+Vector *Vector_from_int(int value, Vector *v);
+Vector *Vector_from_float(float value, Vector *v);
 
 Vector *Vector_add(Vector *a, Vector *b);
 Vector *Vector_sub(Vector *a, Vector *b);

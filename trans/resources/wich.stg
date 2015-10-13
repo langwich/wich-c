@@ -29,8 +29,8 @@ CPrimitiveBinaryOpMap ::= [
 	"-":"-",
 	">":">",
 	">=":">=",
-	"\<":"\<",
-	"\<=":"\<=",
+	"<":"<",
+	"<=":"<=",
 	"==":"==",
 	"!=":"!=",
 	"&&":"&&",
@@ -143,18 +143,27 @@ CompositeModelObject(cs, modelObjects) ::= <<
 <modelObjects; separator="\n">
 >>
 
-PrintNewLine(p) 		 ::= <<printf("\n");>>
-PrintStringStat(ps,expr) ::= <<print_string(<expr>);>>
-PrintVectorStat(pv,expr) ::= <<print_vector(<expr>);>>
-PrintIntStat(pi,expr) 	 ::= <<printf("%d\n", <expr>);>>
-PrintFloatStat(pf,expr)  ::= <<printf("%1.2f\n", <expr>);>>
+PrintNewLine(p) 		  ::= <<printf("\n");>>
+PrintStringStat(ps,expr)  ::= <<print_string(<expr>);>>
+PrintVectorStat(pv,expr)  ::= <<print_vector(<expr>);>>
+PrintIntStat(pi,expr) 	  ::= <<printf("%d\n", <expr>);>>
+PrintFloatStat(pf,expr)   ::= <<printf("%1.2f\n", <expr>);>>
+PrintBooleanStat(pb,expr) ::= <<printf("%d\n", <expr>);>>
 
 BinaryPrimitiveOp(op,left,right) ::= "(<left> <CPrimitiveBinaryOpMap.(op.wichOp)> <right>)"
 BinaryStringOp(op, left, right)  ::= "<CStringBinaryOpMap.(op.wichOp)>(<left>,<right>)"
 BinaryVectorOp(op, left, right)  ::= "<CVectorBinaryOpMap.(op.wichOp)>(<left>,<right>)"
 
+VectorFromInt(v,vector,intLiteral)	::= "Vector_from_int(<intLiteral>,<vector>)"
+VectorFromFloat(v,vector,floatLiteral)	::= "Vector_from_float(<floatLiteral>,<vector>)"
+StringFromVector(s,vector) ::= "String_from_vector(<vector>)"
+StringFromInt(s,intExpr) ::= "String_from_int(<intExpr>)"
+StringFromFloat(s,floatExpr) ::= "String_from_float(<floatExpr>)"
+
 IntLiteral(i)	::= "<i.value>"
 FloatLiteral(f)	::= "<f.value>"
+TrueLiteral(t) ::= "<t.value>"
+FalseLiteral(f) ::="<f.value>"
 VarRef(v)		::= "<v.name>"
 HeapVarRef(v)	::= "<v.name>"
 
@@ -176,9 +185,9 @@ String_from_char(<s.varName>->str[(<expr>)-1])
 
 VectorIndexExpr(v,expr) ::= "<v.varName>->data[(<expr>)-1]"
 
-NegateExpr(n,negateExpr) ::= "-<negateExpr>"
+NegateExpr(n,expr) ::= "-<expr>"
 
-NotExpr(ne,notExpr) ::= "!<notExpr>"
+NotExpr(ne,expr) ::= "!<expr>"
 
 OpExpr(o,lExp,rExp) ::= "<lExp> <o.op> <rExp>"
 
@@ -189,4 +198,5 @@ IntType(t) ::= "int"
 FloatType(t) ::= "double"
 VectorType(t) ::= "Vector *"
 StringType(t) ::= "String *"
+BooleanType(t) ::= "bool"
 TmpVarDef(t,type) ::="<typeMo> tmp<t.varIndex>;"

@@ -25,6 +25,7 @@ SOFTWARE.
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <stdbool.h>
 //#define DEBUG
 #include "wich.h"
 #include "refcounting.h"
@@ -69,6 +70,28 @@ Vector *Vector_alloc(size_t size)
 	return v;
 }
 
+Vector *Vector_from_int(int value, Vector *v) {
+	int len = v->length;
+	if (len == 0) return NULL;
+	double data[len];
+	int i;
+	for (i = 0; i< len; i++) {
+		data[i] = value;
+	}
+	return Vector_new(data,len);
+}
+
+Vector *Vector_from_float(float value, Vector *v) {
+	int len = v->length;
+	if (len == 0) return NULL;
+	double data[len];
+	int i;
+	for (i = 0; i< len; i++) {
+		data[i] = value;
+	}
+	return Vector_new(data,len);
+}
+
 Vector *Vector_add(Vector *a, Vector *b)
 {
 	REF(a);
@@ -79,6 +102,54 @@ Vector *Vector_add(Vector *a, Vector *b)
 	Vector * c = Vector_alloc(n);
 	for (i=0; i<n; i++) {
 		c->data[i] = a->data[i] + b->data[i];
+	}
+	DEREF(a);
+	DEREF(b);
+	return c;
+}
+
+Vector *Vector_sub(Vector *a, Vector *b)
+{
+	REF(a);
+	REF(b);
+	int i;
+	if ( a==NULL || b==NULL || a->length!=b->length ) return NULL;
+	size_t n = a->length;
+	Vector * c = Vector_alloc(n);
+	for (i=0; i<n; i++) {
+		c->data[i] = a->data[i] - b->data[i];
+	}
+	DEREF(a);
+	DEREF(b);
+	return c;
+}
+
+Vector *Vector_mul(Vector *a, Vector *b)
+{
+	REF(a);
+	REF(b);
+	int i;
+	if ( a==NULL || b==NULL || a->length!=b->length ) return NULL;
+	size_t n = a->length;
+	Vector * c = Vector_alloc(n);
+	for (i=0; i<n; i++) {
+		c->data[i] = a->data[i] * b->data[i];
+	}
+	DEREF(a);
+	DEREF(b);
+	return c;
+}
+
+Vector *Vector_div(Vector *a, Vector *b)
+{
+	REF(a);
+	REF(b);
+	int i;
+	if ( a==NULL || b==NULL || a->length!=b->length ) return NULL;
+	size_t n = a->length;
+	Vector * c = Vector_alloc(n);
+	for (i=0; i<n; i++) {
+		c->data[i] = a->data[i] / b->data[i];
 	}
 	DEREF(a);
 	DEREF(b);
@@ -128,6 +199,33 @@ String *String_from_char(char c)
 	return String_new(buf);
 }
 
+String *String_from_vector(Vector *v) {
+	if (v == NULL) return NULL;
+	char *s = calloc(v->length*20, sizeof(char));
+	char buf[50];
+	for (int i=0; i<v->length; i++) {
+		sprintf(buf, "%d", (int)v->data[i]);
+		strcat(s, buf);
+	}
+	return String_new(s);
+}
+
+String *String_from_int(int value) {
+	char *s = calloc(20, sizeof(char));
+	char buf[50];
+	sprintf(buf,"%d",value);
+	strcat(s, buf);
+	return String_new(s);
+}
+
+String *String_from_float(float value) {
+	char *s = calloc(20, sizeof(char));
+	char buf[50];
+	sprintf(buf,"%1.2f",value);
+	strcat(s, buf);
+	return String_new(s);
+}
+
 void print_string(String *a)
 {
 	REF(a);
@@ -150,6 +248,86 @@ String *String_add(String *s, String *t)
 	return u;
 }
 
+bool String_eq(String *s, String *t) {
+	if (strlen(s->str) != strlen(t->str)) {
+		return false;
+	}else {
+		size_t n = strlen(s->str);
+		int i;
+		for (i = 0; i < n; i++) {
+			if(s->str[i] != t->str[i]) {
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+bool String_neq(String *s, String *t) {
+	return !String_eq(s,t);
+}
+
+bool String_gt(String *s, String *t) {
+	size_t len_s = strlen(s->str);
+	size_t len_t = strlen(t->str);
+	if (len_s > len_t) { return true;}
+	else if (len_s < len_t) {return false;}
+	else {
+		int i;
+		for (i = 0; i < len_s; i++) {
+			if(s->str[i] <= t->str[i]) {
+				return false;
+			}
+		}
+		return true;
+	}
+}
+
+bool String_ge(String *s, String *t) {
+	size_t len_s = strlen(s->str);
+	size_t len_t = strlen(t->str);
+	if (len_s > len_t) { return true;}
+	else if (len_s < len_t) {return false;}
+	else {
+		int i;
+		for (i = 0; i < len_s; i++) {
+			if(s->str[i] < t->str[i]) {
+				return false;
+			}
+		}
+		return true;
+	}
+}
+bool String_lt(String *s, String *t) {
+	size_t len_s = strlen(s->str);
+	size_t len_t = strlen(t->str);
+	if (len_s < len_t) { return true;}
+	else if (len_s > len_t) {return false;}
+	else {
+		int i;
+		for (i = 0; i < len_s; i++) {
+			if(s->str[i] >= t->str[i]) {
+				return false;
+			}
+		}
+		return true;
+	}
+}
+bool String_le(String *s, String *t) {
+	size_t len_s = strlen(s->str);
+	size_t len_t = strlen(t->str);
+	if (len_s < len_t) { return true;}
+	else if (len_s > len_t) {return false;}
+	else {
+		int i;
+		for (i = 0; i < len_s; i++) {
+			if(s->str[i] > t->str[i]) {
+				return false;
+			}
+		}
+		return true;
+	}
+}
 /** We don't have data aggregates like structs so no need to free nested pointers. */
 void wich_free(heap_object *p)
 {

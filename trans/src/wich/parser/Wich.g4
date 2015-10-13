@@ -88,6 +88,8 @@ primary returns [Type exprType]
 	|	FLOAT												# Float
 	|	STRING												# String
 	|	'[' expr_list ']'									# Vector
+	|	'true'												# TrueLiteral
+	|	'false'												# FalseLiteral
 	;
 
 LPAREN : '(' ;

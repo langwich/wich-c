@@ -7,55 +7,9 @@ import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
-import wich.codegen.model.ArgDef;
-import wich.codegen.model.AssignStat;
-import wich.codegen.model.Block;
-import wich.codegen.model.BlockStatement;
-import wich.codegen.model.BooleanType;
-import wich.codegen.model.CallStat;
-import wich.codegen.model.CompositeModelObject;
-import wich.codegen.model.ElementAssignStat;
-import wich.codegen.model.File;
-import wich.codegen.model.FloatType;
-import wich.codegen.model.Func;
-import wich.codegen.model.FuncBlock;
-import wich.codegen.model.IfStat;
-import wich.codegen.model.IntType;
-import wich.codegen.model.MainBlock;
-import wich.codegen.model.MainFunc;
-import wich.codegen.model.OutputModelObject;
-import wich.codegen.model.PrintFloatStat;
-import wich.codegen.model.PrintIntStat;
-import wich.codegen.model.PrintNewLine;
-import wich.codegen.model.PrintStringStat;
-import wich.codegen.model.PrintVectorStat;
-import wich.codegen.model.ReturnStat;
-import wich.codegen.model.Stat;
-import wich.codegen.model.StringLiteral;
-import wich.codegen.model.StringType;
-import wich.codegen.model.StringVarDefStat;
-import wich.codegen.model.VarDefStat;
-import wich.codegen.model.VarInitStat;
-import wich.codegen.model.VectorType;
-import wich.codegen.model.VectorVarDefStat;
-import wich.codegen.model.VoidType;
-import wich.codegen.model.WhileStat;
-import wich.codegen.model.WichType;
-import wich.codegen.model.expr.BinaryOpExpr;
-import wich.codegen.model.expr.BinaryPrimitiveOp;
-import wich.codegen.model.expr.BinaryStringOp;
-import wich.codegen.model.expr.BinaryVectorOp;
-import wich.codegen.model.expr.Expr;
-import wich.codegen.model.expr.FloatLiteral;
-import wich.codegen.model.expr.FuncCall;
-import wich.codegen.model.expr.HeapVarRef;
-import wich.codegen.model.expr.IntLiteral;
-import wich.codegen.model.expr.NegateExpr;
-import wich.codegen.model.expr.NotExpr;
-import wich.codegen.model.expr.StringIndexExpr;
-import wich.codegen.model.expr.VarRef;
-import wich.codegen.model.expr.VectorIndexExpr;
-import wich.codegen.model.expr.VectorLiteral;
+import wich.codegen.model.*;
+import wich.codegen.model.expr.*;
+import wich.codegen.model.expr.promotion.*;
 import wich.parser.WichBaseVisitor;
 import wich.parser.WichParser;
 import wich.semantics.SymbolTable;
@@ -278,6 +232,10 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	public OutputModelObject visitOp(@NotNull WichParser.OpContext ctx) {
 		Expr left  = (Expr)visit(ctx.expr(0));
 		Expr right = (Expr)visit(ctx.expr(1));
+		if (ctx.promoteToType != null) {
+			left = createPromotionObject(ctx,left,right);
+			right = createPromotionObject(ctx,right,left);
+		}
 		final Type resultType = ctx.promoteToType!=null ? ctx.promoteToType : ctx.exprType;
 		return getBinaryOperationModel(ctx.operator(), resultType, left, right);
 	}
@@ -359,6 +317,16 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	}
 
 	@Override
+	public OutputModelObject visitFalseLiteral(@NotNull WichParser.FalseLiteralContext ctx) {
+		return new FalseLiteral(ctx.getText());
+	}
+
+	@Override
+	public OutputModelObject visitTrueLiteral(@NotNull WichParser.TrueLiteralContext ctx) {
+		return new FalseLiteral(ctx.getText());
+	}
+
+	@Override
 	public OutputModelObject visitIdentifier(@NotNull WichParser.IdentifierContext ctx) {
 		final String varName = ctx.getText();
 		return getVarRef(varName);
@@ -390,9 +358,9 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	// S U P P O R T  C O D E
 
 	public static BinaryOpExpr getBinaryOperationModel(WichParser.OperatorContext opCtx,
-	                                                   Type operandType,
-	                                                   Expr left,
-	                                                   Expr right)
+													   Type operandType,
+													   Expr left,
+													   Expr right)
 	{
 		Token opToken = opCtx.getStart();
 		String wichOp = opToken.getText();
@@ -411,6 +379,54 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		return opExpr;
 	}
 
+	public static Expr createPromotionObject( WichParser.OpContext ctx, Expr promoteExp,Expr targetExp) {
+		if (promoteExp.getType() != ctx.promoteToType) {
+			if (ctx.promoteToType == SymbolTable._vector) {
+				promoteExp = promoteToVector(promoteExp, targetExp);
+			}
+			else if (ctx.promoteToType == SymbolTable._string) {
+				promoteExp = promoteToString(promoteExp);
+			}
+		}
+		return promoteExp;
+	}
+
+	private static Expr promoteToString(Expr promoteExp) {
+		if (promoteExp.getType() == SymbolTable._vector) {
+			StringFromVector s = new StringFromVector();
+			s.vector = promoteExp;
+			promoteExp = s;
+		}
+		else if (promoteExp.getType() == SymbolTable._int) {
+			StringFromInt s = new StringFromInt();
+			s.intExpr = promoteExp;
+			promoteExp = s;
+		}
+		else if (promoteExp.getType() == SymbolTable._float) {
+			StringFromFloat s = new StringFromFloat();
+			s.floatExpr = promoteExp;
+			promoteExp = s;
+		}
+		return promoteExp;
+	}
+
+	private static Expr promoteToVector(Expr promoteExp, Expr targetExp) {
+		if (promoteExp.getType() == SymbolTable._int) {
+			VectorFromInt v = new VectorFromInt();
+			v.intLiteral = promoteExp;
+			v.vector = targetExp;
+			promoteExp = v;
+		}
+		else if (promoteExp.getType() == SymbolTable._float) {
+			VectorFromFloat v = new VectorFromFloat();
+			v.floatLiteral = promoteExp;
+			v.vector = targetExp;
+			promoteExp = v;
+		}
+		return promoteExp;
+	}
+
+
 	public static Stat getPrintModel(Type type, Expr expr) {
 		// split into granularity sufficient for most potential target languages
 		switch ( ((WBuiltInTypeSymbol)type).typename ) {
@@ -422,6 +438,8 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 				return new PrintIntStat(expr);
 			case FLOAT:
 				return new PrintFloatStat(expr);
+			case BOOLEAN:
+				return new PrintBooleanStat(expr);
 		}
 		return null;
 	}
@@ -447,6 +465,8 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 					return new FloatType();
 				case VOID:
 					return new VoidType();
+				case BOOLEAN:
+					return new BooleanType();
 				default :
 					return null;
 			}
