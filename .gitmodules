@@ -1,4 +1,4 @@
-[submodule "trans/lib/symtab"]
-	path = trans/lib/symtab
+[submodule "lib/symtab"]
+	path = lib/symtab
 	url = git@github.com:antlr/symtab.git
 	ignore = dirty
