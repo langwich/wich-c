@@ -54,7 +54,36 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class CompilerUtils {
-	public enum CodeGenTarget { PLAIN, REFCOUNTING, GC, GENERATIONAL_GC }
+	/*
+-- Installing: /usr/local/wich/lib/libmalloc_common.a
+-- Installing: /usr/local/wich/lib/libfreelist.a
+-- Installing: /usr/local/wich/lib/libbitmap.a
+-- Installing: /usr/local/wich/lib/libbytemap.a
+-- Installing: /usr/local/wich/lib/libwlib.a
+-- Installing: /usr/local/wich/lib/libwlib_refcounting.a
+-- Installing: /usr/local/wich/lib/libwlib_mark_and_compact.a
+-- Installing: /usr/local/wich/lib/libwlib_mark_and_sweep.a
+-- Installing: /usr/local/wich/lib/libcunit.a
+-- Installing: /usr/local/wich/lib/libgc_mark_and_compact.a
+-- Installing: /usr/local/wich/lib/libgc_mark_and_sweep.a
+-- Installing: /usr/local/wich/lib/libmark_and_compact.a
+-- Installing: /usr/local/wich/lib/libmark_and_sweep.a
+	 */
+	public enum CodeGenTarget {
+		PLAIN(new String[]{"wlib"}),
+		REFCOUNTING(new String[]{"wlib_refcounting"}),
+		MARK_AND_COMPACT(new String[]{"wlib_mark_and_compact"}),
+		MARK_AND_SWEEP(new String[]{"wlib_mark_and_sweep"}),
+		GENERATIONAL_GC(new String[]{"wlib"});
+
+		public String[] libs;
+		public String flag;
+
+		CodeGenTarget(String[] libs) {
+			this.libs = libs;
+			this.flag = this.toString();
+		}
+	}
 
 	public static final Charset FILE_ENCODING = StandardCharsets.UTF_8;
 

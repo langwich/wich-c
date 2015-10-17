@@ -24,6 +24,7 @@ SOFTWARE.
 
 import junit.framework.Assert;
 import org.antlr.v4.runtime.misc.Triple;
+import org.antlr.v4.runtime.misc.Utils;
 import org.junit.Before;
 import org.junit.Test;
 import wich.errors.ErrorType;
@@ -184,15 +185,17 @@ public class TestWichExecution extends WichBaseTest {
 		if ( execF.exists() ) {
 			execF.delete();
 		}
-		final Triple<Integer, String, String> result = exec(
-			new String[]{
-				"cc", "-g", "-o", executable,
-				generatedFileName, LIB_DIR,
-				"-I", INCLUDE_DIR, "-std=c99", "-O0"
-			}
-		);
+		String[] cmd = {
+			"cc", "-g", "-o", executable,
+			generatedFileName, "-L", LIB_DIR, "-l"+target.libs[0],
+			"-D"+target.flag,
+			"-I", INCLUDE_DIR, "-std=c99", "-O0"
+		};
+		final Triple<Integer, String, String> result = exec(cmd);
 		if ( result.a!=0 ) {
-			throw new RuntimeException("failed compilation of "+generatedFileName+" with result code "+result.a+"; stderr:\n"+result.c);
+			throw new RuntimeException("failed compilation of "+generatedFileName+" with result code "+result.a+
+									   " from\n"+
+			                           Utils.join(cmd, " ")+"\nstderr:\n"+result.c);
 		}
 //		System.out.println(result.c);
 		return executable;
