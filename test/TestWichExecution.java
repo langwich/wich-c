@@ -24,6 +24,7 @@ SOFTWARE.
 
 import junit.framework.Assert;
 import org.antlr.v4.runtime.misc.Triple;
+import org.antlr.v4.runtime.misc.Utils;
 import org.junit.Before;
 import org.junit.Test;
 import wich.errors.ErrorType;
@@ -46,14 +47,15 @@ import static org.junit.Assert.assertEquals;
 // Please make sure cc is on the program searching path.
 public class TestWichExecution extends WichBaseTest {
 	protected static final String WORKING_DIR = "/tmp/";
-	protected static final String WICH_LIB = "wich.c";
-	protected static String runtimePath;
+	protected static final String LIB_DIR = "/usr/local/wich/lib";
+	protected static final String INCLUDE_DIR = "/usr/local/wich/include";
 
 	@Before
 	public void setUp() throws Exception {
-		URL wichLib = CompilerUtils.getResourceFile(WICH_LIB);
-		if (wichLib != null) runtimePath = new File(wichLib.getPath()).getParent();
-		else throw new IllegalArgumentException("Can't find wich runtime library.");
+		File dir = new File(LIB_DIR);
+		if ( !dir.exists() ) {
+			throw new IllegalArgumentException("Can't find wich runtime library.");
+		}
 	}
 
 	public TestWichExecution(File input, String baseName) {
@@ -183,14 +185,19 @@ public class TestWichExecution extends WichBaseTest {
 		if ( execF.exists() ) {
 			execF.delete();
 		}
-		final Triple<Integer, String, String> result = exec(
-			new String[]{
-				"cc", "-g", "-o", executable,
-				generatedFileName, runtimePath + "/" + WICH_LIB,
-				"-I", runtimePath, "-std=c99", "-O0"
-			}
-		);
-		System.out.println(result.c);
+		String[] cmd = {
+			"cc", "-g", "-o", executable,
+			generatedFileName, "-L", LIB_DIR, "-l"+target.libs[0],
+			"-D"+target.flag,
+			"-I", INCLUDE_DIR, "-std=c99", "-O0"
+		};
+		final Triple<Integer, String, String> result = exec(cmd);
+		if ( result.a!=0 ) {
+			throw new RuntimeException("failed compilation of "+generatedFileName+" with result code "+result.a+
+									   " from\n"+
+			                           Utils.join(cmd, " ")+"\nstderr:\n"+result.c);
+		}
+//		System.out.println(result.c);
 		return executable;
 	}
 
@@ -199,8 +206,9 @@ public class TestWichExecution extends WichBaseTest {
 		pb.command(Arrays.asList(cmd)).directory(new File(WORKING_DIR));
 		Process process = pb.start();
 		int resultCode = process.waitFor();
-		Triple<Integer, String, String> ret =
-			new Triple<>(resultCode, dump(process.getInputStream()), dump(process.getErrorStream()));
+		String stdout = dump(process.getInputStream());
+		String stderr = dump(process.getErrorStream());
+		Triple<Integer, String, String> ret = new Triple<>(resultCode, stdout, stderr);
 		return ret;
 	}
 
@@ -217,8 +225,11 @@ public class TestWichExecution extends WichBaseTest {
 
 	private String executeC(String executable) throws IOException, InterruptedException {
 		Triple<Integer, String, String> result = exec(new String[]{"./"+executable});
+//		if ( result.c.length()>0 ) {
+//			throw new RuntimeException("failed execution of "+executable+" with stderr:\n"+result.c);
+//		}
 		if ( result.a!=0 ) {
-			throw new RuntimeException(result.c+"failed execution of "+executable+" with result code "+result.a);
+			throw new RuntimeException("failed execution of "+executable+" with result code "+result.a+"; stderr:\n"+result.c);
 		}
 		return result.b;
 	}
