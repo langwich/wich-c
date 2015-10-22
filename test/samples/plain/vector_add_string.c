@@ -6,7 +6,7 @@ main(int argc, char *argv[])
     setup_error_handlers();
     String *s;
 
-    Vector *v;
+    PVector_ptr v;
 
     String *z;
 

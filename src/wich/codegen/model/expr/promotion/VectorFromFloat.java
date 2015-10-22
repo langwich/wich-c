@@ -31,6 +31,11 @@ public class VectorFromFloat extends Expr {
 	@ModelElement public Expr vector;
 	@ModelElement public Expr floatLiteral;
 
+	public VectorFromFloat(Expr floatLiteral, Expr vector) {
+		this.floatLiteral = floatLiteral;
+		this.vector = vector;
+	}
+
 	@Override
 	public Type getType() {
 		return null;

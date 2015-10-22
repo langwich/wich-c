@@ -30,7 +30,13 @@ import wich.codegen.model.PrintIntStat;
 import wich.codegen.model.PrintNewLine;
 import wich.codegen.model.PrintStringStat;
 import wich.codegen.model.PrintVectorStat;
+import wich.codegen.model.RefCountDEREF;
+import wich.codegen.model.RefCountDEREFVector;
+import wich.codegen.model.RefCountREF;
+import wich.codegen.model.RefCountREFVector;
+import wich.codegen.model.ReturnHeapVarStat;
 import wich.codegen.model.ReturnStat;
+import wich.codegen.model.ReturnVectorHeapVarStat;
 import wich.codegen.model.Stat;
 import wich.codegen.model.StringLiteral;
 import wich.codegen.model.StringType;
@@ -286,8 +292,8 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		Expr left  = (Expr)visit(ctx.expr(0));
 		Expr right = (Expr)visit(ctx.expr(1));
 		if (ctx.promoteToType != null) {
-			left = createPromotionObject(ctx,left,right);
-			right = createPromotionObject(ctx,right,left);
+			left = getPromotionObject(ctx, left, right);
+			right = getPromotionObject(ctx, right, left);
 		}
 		final Type resultType = ctx.promoteToType!=null ? ctx.promoteToType : ctx.exprType;
 		return getBinaryOperationModel(ctx.operator(), resultType, left, right);
@@ -385,6 +391,8 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		return getVarRef(varName);
 	}
 
+	// S U P P O R T  C O D E
+
 	public VarRef getVarRef(String varName) {
 		final WVariableSymbol varSym = (WVariableSymbol)currentScope.resolve(varName);
 		return getVarRef(varSym);
@@ -407,8 +415,34 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		return new VarDefStat(varSym, getTypeModel(varSym.getType()));
 	}
 
+	public static RefCountREF getREF(WVariableSymbol varSym) {
+		final VarRef varRef = getVarRef(varSym);
+		if (varSym.getType() == SymbolTable._vector) {
+			return new RefCountREFVector(varRef);
+		}
+		else {
+			return new RefCountREF(varRef);
+		}
+	}
 
-	// S U P P O R T  C O D E
+	public static RefCountDEREF getDEREF(WVariableSymbol varSym) {
+		final VarRef varRef = getVarRef(varSym);
+		if (varSym.getType() == SymbolTable._vector) {
+			return new RefCountDEREFVector(varRef);
+		}
+		else {
+			return new RefCountDEREF(varRef);
+		}
+	}
+
+	public static ReturnHeapVarStat getReturnHeapExpr(Expr expr) {
+		if (expr.getType() == SymbolTable._vector) {
+			return new ReturnVectorHeapVarStat(expr);
+		}
+		else {
+			return new ReturnHeapVarStat(expr);
+		}
+	}
 
 	public static BinaryOpExpr getBinaryOperationModel(WichParser.OperatorContext opCtx,
 													   Type operandType,
@@ -432,7 +466,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		return opExpr;
 	}
 
-	public static Expr createPromotionObject( WichParser.OpContext ctx, Expr promoteExp,Expr targetExp) {
+	public static Expr getPromotionObject(WichParser.OpContext ctx, Expr promoteExp, Expr targetExp) {
 		if (promoteExp.getType() != ctx.promoteToType) {
 			if (ctx.promoteToType == SymbolTable._vector) {
 				promoteExp = promoteToVector(promoteExp, targetExp);
@@ -465,16 +499,10 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 
 	private static Expr promoteToVector(Expr promoteExp, Expr targetExp) {
 		if (promoteExp.getType() == SymbolTable._int) {
-			VectorFromInt v = new VectorFromInt();
-			v.intLiteral = promoteExp;
-			v.vector = targetExp;
-			promoteExp = v;
+			promoteExp = new VectorFromInt(promoteExp, targetExp);
 		}
 		else if (promoteExp.getType() == SymbolTable._float) {
-			VectorFromFloat v = new VectorFromFloat();
-			v.floatLiteral = promoteExp;
-			v.vector = targetExp;
-			promoteExp = v;
+			promoteExp = new VectorFromFloat(promoteExp, targetExp);
 		}
 		return promoteExp;
 	}

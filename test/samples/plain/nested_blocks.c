@@ -1,13 +1,13 @@
 #include <stdio.h>
 #include "wich.h"
-void f(Vector * a);
+void f(PVector_ptr  a);
 
 void
-f(Vector * a)
+f(PVector_ptr  a)
 {
     String *b;
 
-    Vector *e;
+    PVector_ptr e;
 
     b = String_new("cat");
     {

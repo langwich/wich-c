@@ -1,27 +1,27 @@
 #include <stdio.h>
 #include "wich.h"
 #include "refcounting.h"
-void f(Vector * a);
+void f(PVector_ptr a);
 
 void
-f(Vector * a)
+f(PVector_ptr a)
 {
     ENTER();
     STRING(b);
     VECTOR(e);
-    REF(a);
+    REF((void *)a.vector);
     b = String_new("cat");
-    REF(b);
+    REF((void *)b);
     {
         MARK();
         STRING(c);
         c = String_new("dog");
-        REF(c);
+        REF((void *)c);
         {
             MARK();
             STRING(d);
             d = String_new("moo");
-            REF(d);
+            REF((void *)d);
             RELEASE();
         }
         RELEASE();
@@ -31,13 +31,13 @@ f(Vector * a)
         STRING(b);
         STRING(c);
         b = String_new("boo");
-        REF(b);
+        REF((void *)b);
         c = String_new("hoo");
-        REF(c);
+        REF((void *)c);
         RELEASE();
     }
     e = Vector_new((double[]) {7}, 1);
-    REF(e);
+    REF((void *)e.vector);
     EXIT();
 }
 

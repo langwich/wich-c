@@ -2,13 +2,13 @@
 #include "wich.h"
 #include "refcounting.h"
 
-void f(int x, Vector * v);
+void f(int x, PVector_ptr  v);
 
 void
-f(int x, Vector * v)
+f(int x, PVector_ptr  v)
 {
     ENTER();
-    REF(v);
+    REF((void *)v.vector);
     EXIT();
 }
 

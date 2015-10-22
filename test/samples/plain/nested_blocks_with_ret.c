@@ -1,15 +1,15 @@
 #include <stdio.h>
 #include "wich.h"
-int f(Vector * a);
+int f(PVector_ptr  a);
 
 int
-f(Vector * a)
+f(PVector_ptr  a)
 {
     int x;
 
     String *b;
 
-    Vector *e;
+    PVector_ptr e;
 
     x = 32;
     b = String_new("cat");

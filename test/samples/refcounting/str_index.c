@@ -9,7 +9,7 @@ f()
     ENTER();
     STRING(x);
     x = String_add(String_new("cat"), String_new("dog"));
-    REF(x);
+    REF((void *)x);
     print_string(x);
     print_string(String_add(String_from_char(x->str[(1) - 1]), String_from_char(x->str[(3) - 1])));
     EXIT();

@@ -34,6 +34,11 @@ public class VectorFromInt extends Expr {
 	@ModelElement public Expr vector;
 	@ModelElement public Expr intLiteral;
 
+	public VectorFromInt(Expr intLiteral, Expr vector) {
+		this.intLiteral = intLiteral;
+		this.vector = vector;
+	}
+
 	@Override
 	public Type getType() {
 		return SymbolTable._vector;

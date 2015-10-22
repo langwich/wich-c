@@ -1,17 +1,17 @@
 #include <stdio.h>
 #include "wich.h"
-Vector *f(double x);
+PVector_ptr f(double x);
 
-Vector *
+PVector_ptr
 f(double x)
 {
-    Vector *y;
+    PVector_ptr y;
 
-    Vector *z;
+    PVector_ptr z;
 
     y = Vector_new((double[]) {
                    1, 2, 3}, 3);
-    z = Vector_add(y, Vector_from_float(x, y));
+    z = Vector_add(y, Vector_from_float(x, (y).vector->length));
     return z;
 }
 

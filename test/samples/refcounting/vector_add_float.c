@@ -1,23 +1,22 @@
 #include <stdio.h>
 #include "wich.h"
 #include "refcounting.h"
-Vector *f(double x);
+PVector_ptr f(double x);
 
-Vector *
+PVector_ptr
 f(double x)
 {
     ENTER();
     VECTOR(y);
     VECTOR(z);
-    y = Vector_new((double[]) {
-                   1, 2, 3}, 3);
-    REF(y);
-    z = Vector_add(y, Vector_from_float(x, y));
-    REF(z);
+    y = Vector_new((double[]) {1, 2, 3}, 3);
+    REF((void *)y.vector);
+    z = Vector_add(y, Vector_from_float(x, (y).vector->length));
+    REF((void *)z.vector);
     {
-        REF(z);
+        REF((void *)z.vector);
         EXIT();
-        DEC(z);
+        DEC((void *)z.vector);
         return z;
     }
     EXIT();

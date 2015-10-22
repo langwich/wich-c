@@ -40,12 +40,15 @@ BlockStatement(b,block) ::= <<
 }
 >>
 
-ReturnStat(r,expr)		 ::= "{EXIT(); return <expr>;}"
-ReturnHeapVarStat(r,expr)::= "{REF(<expr>); EXIT(); DEC(<expr>); return <expr>;}"
+ReturnStat(r,expr)		     ::= "{EXIT(); return <expr>;}"
+ReturnHeapVarStat(r,expr)    ::= "{REF((void *)<expr>); EXIT(); DEC((void *)<expr>); return <expr>;}"
+ReturnVectorHeapVarStat(r,expr)::= "{REF((void *)<expr>.vector); EXIT(); DEC((void *)<expr>.vector); return <expr>;}"
 
-StringVarDefStat(v,type) ::= "STRING(<v.name>);"
-VectorVarDefStat(v,type) ::= "VECTOR(<v.name>);"
+StringVarDefStat(v,type)     ::= "STRING(<v.name>);"
+VectorVarDefStat(v,type)     ::= "VECTOR(<v.name>);"
 
-RefCountREF(r,varRef)	 ::= "REF(<varRef>);"
-RefCountDEREF(d,varRef)  ::= "DEREF(<varRef>);"
-RefCountROOT(r,varRef)	 ::= "_heapvar((heap_object **)&<varRef>)"
+RefCountREF(r,varRef)   	 ::= "REF((void *)<varRef>);"
+RefCountREFVector(r,varRef)	 ::= "REF((void *)<varRef>.vector);"
+RefCountDEREF(d,varRef)      ::= "DEREF((void *)<varRef>);"
+RefCountDEREFVector(d,varRef)::= "DEREF((void *)<varRef>.vector);"
+RefCountROOT(r,varRef)	     ::= "_heapvar((heap_object **)&<varRef>)"

@@ -1,16 +1,14 @@
 #include <stdio.h>
 #include "wich.h"
 #include "refcounting.h"
-
-void bar(Vector * x);
+void bar(PVector_ptr x);
 
 void
-bar(Vector * x)
+bar(PVector_ptr x)
 {
     ENTER();
-    REF(x);
-    COPY_ON_WRITE(x);
-    x->data[1 - 1] = 100;
+    REF((void *)x.vector);
+    set_ith(x, 1 - 1, 100);
     print_vector(x);
     EXIT();
 }
@@ -21,11 +19,10 @@ main(int argc, char *argv[])
     setup_error_handlers();
     ENTER();
     VECTOR(x);
-    x = Vector_new((double[]) {1, 2, 3}, 3);
-    REF(x);
+    x = Vector_new((double[]) { 1, 2, 3}, 3);
+    REF((void *)x.vector);
     bar(x);
-    COPY_ON_WRITE(x);
-    x->data[1 - 1] = 99;
+    set_ith(x, 1 - 1, 99);
     print_vector(x);
     EXIT();
     return 0;

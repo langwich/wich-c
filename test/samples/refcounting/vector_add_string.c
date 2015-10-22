@@ -10,12 +10,11 @@ main(int argc, char *argv[])
     VECTOR(v);
     STRING(z);
     s = String_new("hello");
-    REF(s);
-    v = Vector_new((double[]) {
-                   1, 2, 3}, 3);
-    REF(v);
+    REF((void *)s);
+    v = Vector_new((double[]) {1, 2, 3}, 3);
+    REF((void *)v.vector);
     z = String_add(s, String_from_vector(v));
-    REF(z);
+    REF((void *)z);
     print_string(z);
     EXIT();
     return 0;

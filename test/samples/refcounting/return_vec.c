@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include "wich.h"
 #include "refcounting.h"
-Vector *foo();
+PVector_ptr foo();
 
-Vector *
+PVector_ptr 
 foo()
 {
     ENTER();
@@ -21,7 +21,7 @@ main(int argc, char *argv[])
     ENTER();
     VECTOR(x);
     x = foo();
-    REF(x);
+    REF((void *)x.vector);
     print_vector(foo());
     EXIT();
     return 0;
