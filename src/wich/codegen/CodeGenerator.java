@@ -465,16 +465,10 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 
 	private static Expr promoteToVector(Expr promoteExp, Expr targetExp) {
 		if (promoteExp.getType() == SymbolTable._int) {
-			VectorFromInt v = new VectorFromInt();
-			v.intLiteral = promoteExp;
-			v.vector = targetExp;
-			promoteExp = v;
+			promoteExp = new VectorFromInt(promoteExp, targetExp);
 		}
 		else if (promoteExp.getType() == SymbolTable._float) {
-			VectorFromFloat v = new VectorFromFloat();
-			v.floatLiteral = promoteExp;
-			v.vector = targetExp;
-			promoteExp = v;
+			promoteExp = new VectorFromFloat(promoteExp, targetExp);
 		}
 		return promoteExp;
 	}
