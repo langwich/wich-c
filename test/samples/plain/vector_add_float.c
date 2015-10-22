@@ -2,7 +2,7 @@
 #include "wich.h"
 PVector_ptr f(double x);
 
-PVector_ptr 
+PVector_ptr
 f(double x)
 {
     PVector_ptr y;
@@ -11,7 +11,7 @@ f(double x)
 
     y = Vector_new((double[]) {
                    1, 2, 3}, 3);
-    z = Vector_add(y, Vector_from_float(x, y));
+    z = Vector_add(y, Vector_from_float(x, (y).vector->length));
     return z;
 }
 

@@ -11,7 +11,7 @@ f(int x)
 
     y = Vector_new((double[]) {
                    1, 2, 3}, 3);
-    z = Vector_add(y, Vector_from_int(x, y));
+    z = Vector_add(y, Vector_from_int(x, (y).vector->length));
     return z;
 }
 
