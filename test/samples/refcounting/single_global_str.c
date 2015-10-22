@@ -8,7 +8,7 @@ main(int argc, char *argv[])
     ENTER();
     STRING(x);
     x = String_new("Hello World!");
-    REF((void *)x.vector);
+    REF((void *)x);
     EXIT();
     return 0;
 }

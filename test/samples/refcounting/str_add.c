@@ -9,9 +9,9 @@ main(int argc, char *argv[])
     STRING(hello);
     STRING(world);
     hello = String_new("hello");
-    REF(hello);
+    REF((void *)hello);
     world = String_new("world");
-    REF(world);
+    REF((void *)world);
     print_string(String_add(hello, world));
     EXIT();
     return 0;

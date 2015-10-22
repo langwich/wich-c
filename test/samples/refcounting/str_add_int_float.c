@@ -13,11 +13,11 @@ main(int argc, char *argv[])
 
     STRING(r);
     s = String_new("hello");
-    REF(s);
+    REF((void *)s);
     i = 1;
     f = 1.00;
     r = String_add(String_new("world"), String_from_float(f));
-    REF(r);
+    REF((void *)r);
     print_string(String_add(s, String_from_int(i)));
     print_string(r);
     EXIT();

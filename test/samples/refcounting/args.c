@@ -8,7 +8,7 @@ void
 f(int x, PVector_ptr  v)
 {
     ENTER();
-    REF(v);
+    REF((void *)v.vector);
     EXIT();
 }
 

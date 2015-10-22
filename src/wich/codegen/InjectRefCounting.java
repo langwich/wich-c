@@ -35,6 +35,7 @@ import wich.codegen.model.OutputModelObject;
 import wich.codegen.model.RefCountREF;
 import wich.codegen.model.ReturnStat;
 import wich.codegen.model.VarInitStat;
+import wich.codegen.model.expr.VarRef;
 import wich.semantics.symbols.WVariableSymbol;
 
 public class InjectRefCounting {
@@ -63,9 +64,13 @@ public class InjectRefCounting {
 
 	public OutputModelObject exitModel(ReturnStat retStat) {
 		if ( CodeGenerator.isHeapType(retStat.expr.getType()) ) {
-			return CodeGenerator.getReturnHeapExpr(retStat.expr);
-//			if ( retStat.expr instanceof VarRef ) { // TODO: maybe we always need to wrap?
-//			}
+			if ( retStat.expr instanceof VarRef ) {
+				// only doing the complicated return if it's a sole var ref
+				// because expressions already have a zero-reference object
+				// E.g., this is fine w/o REF/DEC:
+				// 		return String_add(String_new("super"), name);
+				return CodeGenerator.getReturnHeapExpr(retStat.expr);
+			}
 		}
 		return retStat;
 	}

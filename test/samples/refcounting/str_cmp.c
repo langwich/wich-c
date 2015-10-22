@@ -7,7 +7,7 @@ bool
 f(String * s)
 {
     ENTER();
-    REF(s);
+    REF((void *)s);
     if ((s <= String_new("cat"))) {
         MARK();
         {
@@ -31,9 +31,9 @@ main(int argc, char *argv[])
     STRING(s1);
     STRING(s2);
     s1 = String_new("");
-    REF(s1);
+    REF((void *)s1);
     s2 = String_new("cat");
-    REF(s2);
+    REF((void *)s2);
     if ((s1 > s2)) {
         MARK();
         RELEASE();

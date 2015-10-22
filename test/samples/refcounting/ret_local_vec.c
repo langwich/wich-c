@@ -8,13 +8,12 @@ f()
 {
     ENTER();
     VECTOR(x);
-    x = Vector_new((double[]) {
-                   1, 2, 3}, 3);
+    x = Vector_new((double[]) {1, 2, 3}, 3);
     REF((void *)x.vector);
     {
         REF((void *)x.vector);
         EXIT();
-        DEC(x);
+        DEC((void *)x.vector);
         return x;
     }
     EXIT();

@@ -7,7 +7,7 @@ String *
 becomeSuper(String * name)
 {
     ENTER();
-    REF(name);
+    REF((void *)name);
     {
         EXIT();
         return String_add(String_new("super"), name);

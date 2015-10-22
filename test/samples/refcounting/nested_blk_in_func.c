@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include "wich.h"
 #include "refcounting.h"
-
 void f();
 
 void
@@ -10,15 +9,15 @@ f()
     ENTER();
     STRING(x);
     x = String_new("cat");
-    REF((void *)x.vector);
+    REF((void *)x);
     {
         MARK();
         STRING(y);
         STRING(z);
         y = String_new("dog");
-        REF(y);
+        REF((void *)y);
         z = x;
-        REF(z);
+        REF((void *)z);
         RELEASE();
     }
     EXIT();
