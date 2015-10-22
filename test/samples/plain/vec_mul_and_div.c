@@ -1,13 +1,13 @@
 #include <stdio.h>
 #include "wich.h"
-Vector *foo(int x);
+PVector_ptr foo(int x);
 
-Vector *
+PVector_ptr 
 foo(int x)
 {
-    Vector *y;
+    PVector_ptr y;
 
-    Vector *z;
+    PVector_ptr z;
 
     y = Vector_new((double[]) {
                    2, 4, 6}, 3);
@@ -21,7 +21,7 @@ main(int argc, char *argv[])
     setup_error_handlers();
     double f;
 
-    Vector *v;
+    PVector_ptr v;
 
     f = 5.00;
     v = Vector_mul(foo(2), Vector_from_float(f, foo(2)));

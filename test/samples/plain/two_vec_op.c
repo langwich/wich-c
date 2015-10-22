@@ -4,13 +4,13 @@ int
 main(int argc, char *argv[])
 {
     setup_error_handlers();
-    Vector *x;
+    PVector_ptr x;
 
-    Vector *y;
+    PVector_ptr y;
 
-    Vector *z;
+    PVector_ptr z;
 
-    Vector *q;
+    PVector_ptr q;
 
     x = Vector_new((double[]) {
                    4, 6, 8}, 3);

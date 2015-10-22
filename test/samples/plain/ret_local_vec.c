@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include "wich.h"
-Vector *f();
+PVector_ptr f();
 
-Vector *
+PVector_ptr 
 f()
 {
-    Vector *x;
+    PVector_ptr x;
 
     x = Vector_new((double[]) {
                    1, 2, 3}, 3);

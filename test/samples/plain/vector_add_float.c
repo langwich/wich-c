@@ -1,13 +1,13 @@
 #include <stdio.h>
 #include "wich.h"
-Vector *f(double x);
+PVector_ptr f(double x);
 
-Vector *
+PVector_ptr 
 f(double x)
 {
-    Vector *y;
+    PVector_ptr y;
 
-    Vector *z;
+    PVector_ptr z;
 
     y = Vector_new((double[]) {
                    1, 2, 3}, 3);
