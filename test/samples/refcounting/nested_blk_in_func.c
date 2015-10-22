@@ -10,7 +10,7 @@ f()
     ENTER();
     STRING(x);
     x = String_new("cat");
-    REF(x);
+    REF((void *)x.vector);
     {
         MARK();
         STRING(y);

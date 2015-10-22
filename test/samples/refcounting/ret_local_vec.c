@@ -1,18 +1,18 @@
 #include <stdio.h>
 #include "wich.h"
 #include "refcounting.h"
-Vector *f();
+PVector_ptr f();
 
-Vector *
+PVector_ptr 
 f()
 {
     ENTER();
     VECTOR(x);
     x = Vector_new((double[]) {
                    1, 2, 3}, 3);
-    REF(x);
+    REF((void *)x.vector);
     {
-        REF(x);
+        REF((void *)x.vector);
         EXIT();
         DEC(x);
         return x;

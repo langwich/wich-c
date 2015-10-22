@@ -7,7 +7,7 @@ bool
 cmp(String * x)
 {
     ENTER();
-    REF(x);
+    REF((void *)x.vector);
     {
         EXIT();
         return (x == String_new("ca"));
@@ -23,7 +23,7 @@ main(int argc, char *argv[])
     STRING(x);
     STRING(y);
     x = String_new("cat");
-    REF(x);
+    REF((void *)x.vector);
     y = String_new("dog");
     REF(y);
     if ((x == y)) {

@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include "wich.h"
 #include "refcounting.h"
-Vector *f(int x);
+PVector_ptr f(int x);
 
-Vector *
+PVector_ptr 
 f(int x)
 {
     ENTER();

@@ -12,7 +12,7 @@ main(int argc, char *argv[])
     VECTOR(q);
     x = Vector_new((double[]) {
                    4, 6, 8}, 3);
-    REF(x);
+    REF((void *)x.vector);
     y = Vector_new((double[]) {
                    2, 3, 4}, 3);
     REF(y);

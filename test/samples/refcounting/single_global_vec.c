@@ -9,7 +9,7 @@ main(int argc, char *argv[])
     VECTOR(x);
     x = Vector_new((double[]) {
                    1, 2, 3, 4, 5}, 5);
-    REF(x);
+    REF((void *)x.vector);
     EXIT();
     return 0;
 }

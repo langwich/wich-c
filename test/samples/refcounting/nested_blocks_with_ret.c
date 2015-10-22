@@ -2,10 +2,10 @@
 #include "wich.h"
 #include "refcounting.h"
 
-int f(Vector * a);
+int f(PVector_ptr  a);
 
 int
-f(Vector * a)
+f(PVector_ptr  a)
 {
     ENTER();
     int x;
