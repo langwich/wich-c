@@ -33,10 +33,8 @@ import wich.codegen.model.FuncBlock;
 import wich.codegen.model.MainBlock;
 import wich.codegen.model.OutputModelObject;
 import wich.codegen.model.RefCountREF;
-import wich.codegen.model.ReturnHeapVarStat;
 import wich.codegen.model.ReturnStat;
 import wich.codegen.model.VarInitStat;
-import wich.codegen.model.expr.VarRef;
 import wich.semantics.symbols.WVariableSymbol;
 
 public class InjectRefCounting {
@@ -57,7 +55,7 @@ public class InjectRefCounting {
 		if ( CodeGenerator.isHeapType(assign.expr.getType()) ) {
 			final String varName = assign.varRef.getName();
 			final WVariableSymbol varSym = (WVariableSymbol)currentScope.resolve(varName);
-			final RefCountREF REF = new RefCountREF(CodeGenerator.getVarRef(varSym));
+			final RefCountREF REF = CodeGenerator.getREF(varSym);
 			return new CompositeModelObject(assign, REF);
 		}
 		return assign;
@@ -65,12 +63,9 @@ public class InjectRefCounting {
 
 	public OutputModelObject exitModel(ReturnStat retStat) {
 		if ( CodeGenerator.isHeapType(retStat.expr.getType()) ) {
-			if ( retStat.expr instanceof VarRef ) {
-				return new ReturnHeapVarStat(retStat.expr);
-			}
-//			final String varName = retStat.varRef.getName();
-//			final WVariableSymbol varSym = (WVariableSymbol)currentScope.resolve(varName);
-//			return new CompositeModelObject(new RefCountDEREF(), retStat);
+			return CodeGenerator.getReturnHeapExpr(retStat.expr);
+//			if ( retStat.expr instanceof VarRef ) { // TODO: maybe we always need to wrap?
+//			}
 		}
 		return retStat;
 	}
@@ -86,7 +81,7 @@ public class InjectRefCounting {
 		for (ArgDef arg : func.args) {
 			if ( CodeGenerator.isHeapType(arg.type.type) ) {
 				final WVariableSymbol argSym = (WVariableSymbol)func.scope.resolve(arg.name);
-				func.body.stats.add(0, new RefCountREF(CodeGenerator.getVarRef(argSym)));
+				func.body.stats.add(0, CodeGenerator.getREF(argSym));
 			}
 		}
 
