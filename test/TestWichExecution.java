@@ -37,7 +37,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static junit.framework.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
@@ -162,28 +164,22 @@ public class TestWichExecution extends WichBaseTest {
 		if ( execF.exists() ) {
 			execF.delete();
 		}
-		String[] cmd;
-		if ( mallocImpl!=CompilerUtils.MallocImpl.SYSTEM ) {
-			cmd = new String[] {
+		List<String> cc = new ArrayList<>();
+		cc.addAll(
+			Arrays.asList(
 				"cc", "-g", "-o", executable,
 				generatedFileName,
 				"-L", LIB_DIR,
-				"-l" + target.libs[0],
-				"-l" + mallocImpl.lib,
-				"-lmalloc_common",
 				"-D" + target.flag,
 				"-I", INCLUDE_DIR, "-std=c99", "-O0"
-			};
+		    )
+		);
+		for (String lib : target.libs) {
+			cc.add("-l"+lib);
 		}
-		else {
-			cmd = new String[] {
-				"cc", "-g", "-o", executable,
-				generatedFileName,
-				"-L", LIB_DIR,
-				"-l" + target.libs[0],
-				"-D" + target.flag,
-				"-I", INCLUDE_DIR, "-std=c99", "-O0"
-			};
+		String[] cmd = cc.toArray(new String[cc.size()]);
+		if ( mallocImpl!=CompilerUtils.MallocImpl.SYSTEM ) {
+			cc.addAll(Arrays.asList("-l"+mallocImpl.lib, "-lmalloc_common"));
 		}
 		final Triple<Integer, String, String> result = exec(cmd);
 		String cmdS = Utils.join(cmd, " ");
