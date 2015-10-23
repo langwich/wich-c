@@ -26,7 +26,6 @@ import junit.framework.Assert;
 import org.antlr.v4.runtime.misc.Triple;
 import org.antlr.v4.runtime.misc.Utils;
 import org.junit.Before;
-import org.junit.Test;
 import wich.errors.ErrorType;
 import wich.errors.WichErrorHandler;
 import wich.semantics.SymbolTable;
@@ -49,6 +48,11 @@ public class TestWichExecution extends WichBaseTest {
 	protected static final String WORKING_DIR = "/tmp/";
 	protected static final String LIB_DIR = "/usr/local/wich/lib";
 	protected static final String INCLUDE_DIR = "/usr/local/wich/include";
+	protected CompilerUtils.MallocImpl mallocImpl = CompilerUtils.MallocImpl.SYSTEM; // default malloc;
+
+	public TestWichExecution(File input, String baseName) {
+		super(input, baseName);
+	}
 
 	@Before
 	public void setUp() throws Exception {
@@ -58,30 +62,18 @@ public class TestWichExecution extends WichBaseTest {
 		}
 	}
 
-	public TestWichExecution(File input, String baseName) {
-		super(input, baseName);
-	}
-
-	@Test
-	public void testPlainCodeGen() throws Exception {
-		testCodeGen(CompilerUtils.CodeGenTarget.PLAIN);
-	}
-
-	@Test
-	public void testRefCountingCodeGen() throws Exception {
-		testCodeGen(CompilerUtils.CodeGenTarget.REFCOUNTING);
-	}
-
 	protected void testCodeGen(CompilerUtils.CodeGenTarget target) throws IOException, InterruptedException {
 		WichErrorHandler err = new WichErrorHandler();
 		SymbolTable symtab = new SymbolTable();
 		URL expectedOutputURL;
 		switch ( target ) {
 			case PLAIN :
-				expectedOutputURL = CompilerUtils.getResourceFile(TEST_RES_PLAIN_GEND_CODE+"/"+baseName+".c");
+				expectedOutputURL =
+					CompilerUtils.getResourceFile(TEST_RES_PLAIN_GEND_CODE+"/"+baseName+".c");
 				break;
 			case REFCOUNTING :
-				expectedOutputURL = CompilerUtils.getResourceFile(TEST_RES_REFCOUNTING_GEND_CODE+"/"+baseName+".c");
+				expectedOutputURL =
+					CompilerUtils.getResourceFile(TEST_RES_REFCOUNTING_GEND_CODE+"/"+baseName+".c");
 				break;
 			default :
 				err.error(ErrorType.UNKNOWN_TARGET, target.toString());
@@ -124,27 +116,10 @@ public class TestWichExecution extends WichBaseTest {
 		Assert.assertEquals(expected, actual);
 	}
 
-	@Test
-	public void testPlainExecution() throws Exception {
-		URL expectedFile = CompilerUtils.getResourceFile(baseName + ".output");
-		String expected = "";
-		if (expectedFile != null) {
-			expected = CompilerUtils.readFile(expectedFile.getPath(), CompilerUtils.FILE_ENCODING);
-		}
-		executeAndCheck(input.getAbsolutePath(), expected, false, CompilerUtils.CodeGenTarget.PLAIN);
-	}
-
-	@Test
-	public void testRefCountingExecution() throws Exception {
-		URL expectedFile = CompilerUtils.getResourceFile(baseName + ".output");
-		String expected = "";
-		if (expectedFile != null) {
-			expected = CompilerUtils.readFile(expectedFile.getPath(), CompilerUtils.FILE_ENCODING);
-		}
-		executeAndCheck(input.getAbsolutePath(), expected, true, CompilerUtils.CodeGenTarget.REFCOUNTING);
-	}
-
-	private void executeAndCheck(String wichFileName, String expected, boolean valgrind, CompilerUtils.CodeGenTarget target)
+	protected void executeAndCheck(String wichFileName,
+								   String expected,
+								   boolean valgrind,
+								   CompilerUtils.CodeGenTarget target)
 		throws IOException, InterruptedException
 	{
 		String executable = compileC(wichFileName, target);
@@ -156,14 +131,14 @@ public class TestWichExecution extends WichBaseTest {
 		}
 	}
 
-	private void valgrindCheck(String executable) throws IOException, InterruptedException {
+	protected void valgrindCheck(String executable) throws IOException, InterruptedException {
 		// For Intellij users you need to set PATH environment variable in Run/Debug configuration,
 		// since Intellij doesn't inherit environment variables from system.
 		String errSummary = exec(new String[]{"valgrind", executable}).c;
 		assertEquals("Valgrind memcheck failed...", 0, getErrorNumFromSummary(errSummary));
 	}
 
-	private int getErrorNumFromSummary(String errSummary) {
+	protected int getErrorNumFromSummary(String errSummary) {
 		if (errSummary == null || errSummary.length() == 0) return -1;
 		String[] lines = errSummary.split("\n");
 		//Sample: ==15358== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
@@ -171,7 +146,9 @@ public class TestWichExecution extends WichBaseTest {
 		return Integer.parseInt(summary.substring(summary.indexOf(":") + 1, summary.lastIndexOf("errors")).trim());
 	}
 
-	private String compileC(String wichInputFilename, CompilerUtils.CodeGenTarget target) throws IOException, InterruptedException {
+	protected String compileC(String wichInputFilename, CompilerUtils.CodeGenTarget target)
+		throws IOException, InterruptedException
+	{
 		// Translate to C file.
 		SymbolTable symtab = new SymbolTable();
 		WichErrorHandler err = new WichErrorHandler();
@@ -185,12 +162,29 @@ public class TestWichExecution extends WichBaseTest {
 		if ( execF.exists() ) {
 			execF.delete();
 		}
-		String[] cmd = {
-			"cc", "-g", "-o", executable,
-			generatedFileName, "-L", LIB_DIR, "-l"+target.libs[0],
-			"-D"+target.flag,
-			"-I", INCLUDE_DIR, "-std=c99", "-O0"
-		};
+		String[] cmd;
+		if ( mallocImpl!=CompilerUtils.MallocImpl.SYSTEM ) {
+			cmd = new String[] {
+				"cc", "-g", "-o", executable,
+				generatedFileName,
+				"-L", LIB_DIR,
+				"-l" + target.libs[0],
+				"-l" + mallocImpl.lib,
+				"-lmalloc_common",
+				"-D" + target.flag,
+				"-I", INCLUDE_DIR, "-std=c99", "-O0"
+			};
+		}
+		else {
+			cmd = new String[] {
+				"cc", "-g", "-o", executable,
+				generatedFileName,
+				"-L", LIB_DIR,
+				"-l" + target.libs[0],
+				"-D" + target.flag,
+				"-I", INCLUDE_DIR, "-std=c99", "-O0"
+			};
+		}
 		final Triple<Integer, String, String> result = exec(cmd);
 		if ( result.a!=0 ) {
 			throw new RuntimeException("failed compilation of "+generatedFileName+" with result code "+result.a+
@@ -201,7 +195,7 @@ public class TestWichExecution extends WichBaseTest {
 		return executable;
 	}
 
-	private Triple<Integer, String, String> exec(String[] cmd) throws IOException, InterruptedException {
+	protected Triple<Integer, String, String> exec(String[] cmd) throws IOException, InterruptedException {
 		ProcessBuilder pb = new ProcessBuilder();
 		pb.command(Arrays.asList(cmd)).directory(new File(WORKING_DIR));
 		Process process = pb.start();
@@ -212,7 +206,7 @@ public class TestWichExecution extends WichBaseTest {
 		return ret;
 	}
 
-	private String dump(InputStream is) throws IOException {
+	protected String dump(InputStream is) throws IOException {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 		String line;
 		StringBuilder out = new StringBuilder();
@@ -223,7 +217,7 @@ public class TestWichExecution extends WichBaseTest {
 		return out.toString();
 	}
 
-	private String executeC(String executable) throws IOException, InterruptedException {
+	protected String executeC(String executable) throws IOException, InterruptedException {
 		Triple<Integer, String, String> result = exec(new String[]{"./"+executable});
 //		if ( result.c.length()>0 ) {
 //			throw new RuntimeException("failed execution of "+executable+" with stderr:\n"+result.c);
