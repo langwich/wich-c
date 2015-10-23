@@ -186,10 +186,12 @@ public class TestWichExecution extends WichBaseTest {
 			};
 		}
 		final Triple<Integer, String, String> result = exec(cmd);
+		String cmdS = Utils.join(cmd, " ");
+//		System.out.println(cmdS);
 		if ( result.a!=0 ) {
 			throw new RuntimeException("failed compilation of "+generatedFileName+" with result code "+result.a+
 									   " from\n"+
-			                           Utils.join(cmd, " ")+"\nstderr:\n"+result.c);
+			                           cmdS+"\nstderr:\n"+result.c);
 		}
 //		System.out.println(result.c);
 		return executable;
