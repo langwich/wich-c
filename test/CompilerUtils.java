@@ -59,6 +59,8 @@ public class CompilerUtils {
 -- Installing: /usr/local/wich/lib/libfreelist.a
 -- Installing: /usr/local/wich/lib/libbitmap.a
 -- Installing: /usr/local/wich/lib/libbytemap.a
+-- Installing: /usr/local/wich/lib/libbinning.a
+-- Installing: /usr/local/wich/lib/libmerging.a
 -- Installing: /usr/local/wich/lib/libwlib.a
 -- Installing: /usr/local/wich/lib/libwlib_refcounting.a
 -- Installing: /usr/local/wich/lib/libwlib_mark_and_compact.a
@@ -82,6 +84,21 @@ public class CompilerUtils {
 		CodeGenTarget(String[] libs) {
 			this.libs = libs;
 			this.flag = this.toString();
+		}
+	}
+
+	public enum MallocImpl {
+		SYSTEM("system"),
+		FREELIST("freelist"),
+		BITMAP("bitmap"),
+		BYTEMAP("bytemap"),
+		BINNING("binning"),
+		MERGING("merging");
+
+		public String lib;
+
+		MallocImpl(String lib) {
+			this.lib = lib;
 		}
 	}
 
