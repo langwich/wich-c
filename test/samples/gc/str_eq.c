@@ -1,42 +1,39 @@
 #include <stdio.h>
 #include "wich.h"
-#include "refcounting.h"
+#include "gc.h"
+
 bool cmp(String * x);
 
-bool
-cmp(String * x)
+bool cmp(String * x)
 {
-    ENTER();
-    REF((void *)x);
-    {
-        EXIT();
-        return (x == String_new("ca"));
-    }
-    EXIT();
+	gc_begin_func();
+	{gc_end_func(); return (x == String_new("ca"));}
+
+	gc_end_func();
 }
 
-int
-main(int argc, char *argv[])
+
+int main(int argc, char *argv[])
 {
-    setup_error_handlers();
-    ENTER();
-    STRING(x);
-    STRING(y);
-    x = String_new("cat");
-    REF((void *)x);
-    y = String_new("dog");
-    REF((void *)y);
-    if ((x == y)) {
-        MARK();
-        print_string(String_new("x==y"));
-        RELEASE();
-    }
-    if ((x != y)) {
-        MARK();
-        print_string(String_new("x!=y"));
-        RELEASE();
-    }
-    printf("%d\n", cmp(x));
-    EXIT();
-    return 0;
+	setup_error_handlers();
+	gc_begin_func();
+	STRING(x);
+	STRING(y);
+	x = String_new("cat");
+	y = String_new("dog");
+	if ((x == y)) {
+		print_string(String_new("x==y"));
+	}
+	if ((x != y)) {
+		print_string(String_new("x!=y"));
+	}
+	printf("%d\n", cmp(x));
+	gc_end_func();
+
+	gc();
+	Heap_Info info = get_heap_info();
+	if ( info.live!=0 ) fprintf(stderr, "%d objects remain after collection\n", info.live);
+	gc_shutdown();
+	return 0;
 }
+

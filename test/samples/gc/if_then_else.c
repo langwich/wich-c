@@ -1,28 +1,27 @@
 #include <stdio.h>
 #include "wich.h"
-#include "refcounting.h"
+#include "gc.h"
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
-    setup_error_handlers();
-    ENTER();
-    int x;
+	setup_error_handlers();
+	gc_begin_func();
+	int x;
+	int y;
+	x = 2;
+	y = 1;
+	if ((x > y)) {
+		print_string(String_new("TRUE"));
+	}
+	else {
+		print_string(String_new("FALSE"));
+	}
+	gc_end_func();
 
-    int y;
-
-    x = 2;
-    y = 1;
-    if ((x > y)) {
-        MARK();
-        print_string(String_new("TRUE"));
-        RELEASE();
-    }
-    else {
-        MARK();
-        print_string(String_new("FALSE"));
-        RELEASE();
-    }
-    EXIT();
-    return 0;
+	gc();
+	Heap_Info info = get_heap_info();
+	if ( info.live!=0 ) fprintf(stderr, "%d objects remain after collection\n", info.live);
+	gc_shutdown();
+	return 0;
 }
+
