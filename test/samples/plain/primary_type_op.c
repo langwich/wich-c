@@ -18,7 +18,7 @@ main(int argc, char *argv[])
     double z;
 
     z = f(2);
-    if (!z) {
+    if ((z == 0)) {
         print_string(String_new("z==0"));
     }
     else {

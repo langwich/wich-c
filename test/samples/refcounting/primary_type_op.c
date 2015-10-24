@@ -25,7 +25,7 @@ main(int argc, char *argv[])
     double z;
 
     z = f(2);
-    if (!z) {
+    if ((z == 0)) {
         MARK();
         print_string(String_new("z==0"));
         RELEASE();

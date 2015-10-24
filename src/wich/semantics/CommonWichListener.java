@@ -2,12 +2,16 @@ package wich.semantics;
 
 import org.antlr.symtab.Scope;
 import org.antlr.symtab.Symbol;
-import org.antlr.symtab.Type;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.NotNull;
 import wich.errors.ErrorType;
 import wich.errors.WichErrorHandler;
 import wich.parser.WichBaseListener;
+import wich.parser.WichParser;
+import wich.semantics.symbols.WBuiltInTypeSymbol;
+import wich.semantics.symbols.WFunctionSymbol;
+
+import static wich.errors.ErrorType.INCORRECT_ARG_NUMBERS;
 
 
 public class CommonWichListener extends WichBaseListener {
@@ -29,13 +33,28 @@ public class CommonWichListener extends WichBaseListener {
 		}
 	}
 
-	public Type resolveType(@NotNull String typeName) {
+	public WBuiltInTypeSymbol resolveType(@NotNull String typeName) {
 		Symbol typeSymbol = currentScope.resolve(typeName);
-		if ( typeSymbol instanceof Type ) {
-			return (Type)typeSymbol;
+		if ( typeSymbol instanceof WBuiltInTypeSymbol ) {
+			return (WBuiltInTypeSymbol)typeSymbol;
 		}
 		else {
 			return null;
+		}
+	}
+
+	void promoteArgTypes(WichParser.Call_exprContext ctx, WFunctionSymbol f) {
+		int numOfArgs = f.argTypes.size();
+		//check the number of args
+		if(numOfArgs != 0 && numOfArgs != ctx.expr_list().expr().size()){
+			error(ctx.start, INCORRECT_ARG_NUMBERS,
+					String.valueOf(numOfArgs),
+					String.valueOf(ctx.expr_list().expr().size()));
+		}
+		else {
+			for (int i = 0; i < numOfArgs; i++) {
+				TypeHelper.promote(ctx.expr_list().expr(i), f.argTypes.get(i));
+			}
 		}
 	}
 

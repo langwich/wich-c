@@ -37,34 +37,56 @@ import static wich.errors.ErrorType.INVALID_OPERATION;
 import static wich.errors.ErrorType.SYMBOL_NOT_FOUND;
 
 /*Another pass to support forward reference */
-public class FinalComputeTypes extends MaintainScopeListener{
+public class FinalComputeTypes extends MaintainScopeListener {
 
 	public FinalComputeTypes(WichErrorHandler errorHandler) {
 		super(errorHandler);
 	}
 
 	@Override
+	public void exitElementAssign(@NotNull WichParser.ElementAssignContext ctx) {
+		// might need to promote right hand side per known type of left
+		WichParser.ExprContext expr = ctx.expr(1);
+		Symbol id = currentScope.resolve(ctx.ID().getText());
+		if ( id instanceof WVariableSymbol ) {
+			TypeHelper.promote(expr, SymbolTable._float);
+		}
+	}
+
+	@Override
+	public void exitAssign(@NotNull WichParser.AssignContext ctx) {
+		// might need to promote right hand side per known type of left
+		WichParser.ExprContext expr = ctx.expr();
+		Symbol id = currentScope.resolve(ctx.ID().getText());
+		if ( id instanceof WVariableSymbol ) {
+			TypeHelper.promote(expr, ((WVariableSymbol) id).getType());
+		}
+	}
+
+	@Override
 	public void exitOp(@NotNull WichParser.OpContext ctx) {
-		if (ctx.exprType != null)
-			return;
+		if (ctx.exprType != null) return;
 		int op = ctx.operator().start.getType();
 		WichParser.ExprContext lExpr = ctx.expr(0);
 		WichParser.ExprContext rExpr = ctx.expr(1);
 		//check if operand is valid
-		if(lExpr.exprType == SymbolTable.INVALID_TYPE ||
-				rExpr.exprType == SymbolTable.INVALID_TYPE){
-			if(lExpr.exprType == SymbolTable.INVALID_TYPE)
+		if( lExpr.exprType == SymbolTable.INVALID_TYPE ||
+			rExpr.exprType == SymbolTable.INVALID_TYPE )
+		{
+			if(lExpr.exprType == SymbolTable.INVALID_TYPE) {
 				error(lExpr.start, INVALID_OPERAND_ERROR, lExpr.getText());
-			if(rExpr.exprType == SymbolTable.INVALID_TYPE)
+			}
+			if(rExpr.exprType == SymbolTable.INVALID_TYPE) {
 				error(rExpr.start, INVALID_OPERAND_ERROR, rExpr.getText());
-
+			}
 		}
 		//when both operands' types are known
-		else if(lExpr.exprType != null && rExpr.exprType != null){
+		else if(lExpr.exprType != null && rExpr.exprType != null) {
 			ctx.exprType = SymbolTable.op(op, lExpr, rExpr);
-			if (lExpr.exprType != rExpr.exprType)
-				ctx.promoteToType = SymbolTable.op(op, lExpr,rExpr);
-			if(ctx.exprType == SymbolTable.INVALID_TYPE){
+			if (lExpr.exprType != rExpr.exprType) {
+				ctx.promoteToType = SymbolTable.op(op, lExpr, rExpr);
+			}
+			if(ctx.exprType == SymbolTable.INVALID_TYPE) {
 				String left = lExpr.exprType.getName();
 				String operator = ctx.operator().getText();
 				String right = rExpr.exprType.getName();
@@ -75,51 +97,46 @@ public class FinalComputeTypes extends MaintainScopeListener{
 
 	@Override
 	public void exitNegate(@NotNull WichParser.NegateContext ctx) {
-		if (ctx.exprType != null)
-			return;
+		if (ctx.exprType != null) return;
 		ctx.exprType = ctx.expr().exprType;
 	}
 
 	@Override
 	public void exitNot(@NotNull WichParser.NotContext ctx) {
-		if (ctx.exprType != null)
-			return;
+		if (ctx.exprType != null) return;
 		ctx.exprType = ctx.expr().exprType;
 	}
 
 	@Override
 	public void exitCall_expr(@NotNull WichParser.Call_exprContext ctx) {
-		if (ctx.exprType != null)
-			return;
+		if (ctx.exprType != null) return;
 		Symbol f = currentScope.resolve(ctx.ID().getText());
 		if ( f!=null && f instanceof WFunctionSymbol ) {
 			ctx.exprType = ((WFunctionSymbol) f).getType();
 			int numOfArgs = ((WFunctionSymbol) f).argTypes.size();
-			if(numOfArgs != 0 && numOfArgs == ctx.expr_list().expr().size())
+			if(numOfArgs != 0 && numOfArgs == ctx.expr_list().expr().size()) {
 				promoteArgTypes(ctx, (WFunctionSymbol) f);
+			}
 		}
 	}
 
 	@Override
 	public void exitCall(@NotNull WichParser.CallContext ctx) {
-		if (ctx.exprType != null)
-			return;
+		if (ctx.exprType != null) return;
 		Symbol f = currentScope.resolve(ctx.call_expr().ID().getText());
 		if ( f!=null && f instanceof WFunctionSymbol ) {
 			ctx.exprType = ((WFunctionSymbol) f).getType();
 			int numOfArgs = ((WFunctionSymbol) f).argTypes.size();
-			if(numOfArgs != 0 && numOfArgs == ctx.call_expr().expr_list().expr().size()){
+			if(numOfArgs != 0 && numOfArgs == ctx.call_expr().expr_list().expr().size()) {
 				WichParser.Call_exprContext callExprContext = ctx.call_expr();
 				promoteArgTypes(callExprContext, (WFunctionSymbol) f);
 			}
-
 		}
 	}
 
 	@Override
 	public void exitIndex(@NotNull WichParser.IndexContext ctx) {
-		if (ctx.exprType != null)
-			return;
+		if (ctx.exprType != null) return;
 		Symbol s = currentScope.resolve(ctx.ID().getText());
 		if ( s==null) {
 			error(ctx.ID().getSymbol(), SYMBOL_NOT_FOUND, ctx.ID().getText());
@@ -138,15 +155,13 @@ public class FinalComputeTypes extends MaintainScopeListener{
 
 	@Override
 	public void exitParens(@NotNull WichParser.ParensContext ctx) {
-		if (ctx.exprType != null)
-			return;
+		if (ctx.exprType != null) return;
 		ctx.exprType = ctx.expr().exprType;
 	}
 
 	@Override
 	public void exitIdentifier(@NotNull WichParser.IdentifierContext ctx) {
-		if (ctx.exprType != null)
-			return;
+		if (ctx.exprType != null) return;
 		Symbol s = currentScope.resolve(ctx.ID().getText());
 		if ( s!=null && s instanceof WVariableSymbol ) {
 			ctx.exprType = ((TypedSymbol) s).getType();
@@ -157,15 +172,13 @@ public class FinalComputeTypes extends MaintainScopeListener{
 
 	@Override
 	public void exitInteger(@NotNull WichParser.IntegerContext ctx) {
-		if (ctx.exprType != null)
-			return;
+		if (ctx.exprType != null) return;
 		ctx.exprType = SymbolTable._int;
 	}
 
 	@Override
 	public void exitFloat(@NotNull WichParser.FloatContext ctx) {
-		if (ctx.exprType != null)
-			return;
+		if (ctx.exprType != null) return;
 		ctx.exprType = SymbolTable._float;
 	}
 
@@ -173,32 +186,22 @@ public class FinalComputeTypes extends MaintainScopeListener{
 	public void exitVector(@NotNull WichParser.VectorContext ctx) {
 		ctx.exprType = SymbolTable._vector;
 		// promote element type to fit in a vector
-		int targetIndex = SymbolTable._float.getTypeIndex();
 		for (WichParser.ExprContext elem : ctx.expr_list().expr()) {
-			if(elem.exprType != null) // may not be known at this stage
-				TypeHelper.promote(elem, targetIndex);
+			if(elem.exprType != null) { // may not be known at this stage
+				TypeHelper.promote(elem, SymbolTable._float);
+			}
 		}
 	}
 
 	@Override
 	public void exitString(@NotNull WichParser.StringContext ctx) {
-		if (ctx.exprType != null)
-			return;
+		if (ctx.exprType != null) return;
 		ctx.exprType = SymbolTable._string;
 	}
 
 	@Override
 	public void exitAtom(@NotNull WichParser.AtomContext ctx) {
-		if (ctx.exprType != null)
-			return;
+		if (ctx.exprType != null) return;
 		ctx.exprType = ctx.primary().exprType; // bubble up primary's type to expr node
-	}
-
-	private void promoteArgTypes(WichParser.Call_exprContext ctx, WFunctionSymbol f) {
-		int numOfArgs = f.argTypes.size();
-		for(int i = 0; i < numOfArgs; i++){
-			int targetIndex = f.argTypes.get(i).getTypeIndex();
-			TypeHelper.promote(ctx.expr_list().expr(i), targetIndex);
-		}
 	}
 }

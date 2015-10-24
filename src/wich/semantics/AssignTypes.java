@@ -32,17 +32,14 @@ import wich.semantics.symbols.WVariableSymbol;
 import static wich.errors.ErrorType.SYMBOL_NOT_FOUND;
 
 
-/*Assign types to variables wherever possible, keep track of whether all variables have been assigned types*/
+/*Assign types to variable initializations wherever possible, keep track of whether all variables have been assigned types*/
 public class AssignTypes extends MaintainScopeListener{
-	public boolean isAssignFinished =  false;
-	public int numOfVars;
-	private int countOfAssigned;
+	public int numOfVars = 0;
+	protected int countOfAssigned = 0;
 
 	public AssignTypes(WichErrorHandler errorHandler, int numOfVars) {
 		super(errorHandler);
 		this.numOfVars = numOfVars;
-		if(numOfVars == 0)
-			isAssignFinished = true;
 	}
 
 	@Override
@@ -53,14 +50,13 @@ public class AssignTypes extends MaintainScopeListener{
 			error(ctx.ID().getSymbol(), SYMBOL_NOT_FOUND, ctx.ID().getText());
 		}
 		else if (((TypedSymbol) var).getType() == null) {
-			if(ctx.expr().exprType != null){
+			if(ctx.expr().exprType != null) {
 				((TypedSymbol) var).setType(ctx.expr().exprType);
 				countOfAssigned++;
 			}
 		}
-
-		if(countOfAssigned == numOfVars)
-			isAssignFinished = true;
 	}
+
+	public boolean isAssignFinished() { return countOfAssigned == numOfVars; }
 
 }

@@ -111,6 +111,19 @@ public class TestTypeAnnotation {
 	}
 
 	@Test
+	public void testAssignPromote() throws Exception {
+		String input =
+				"var x = 1\n" +
+				"var y = 0.0\n" +
+				"y = x\n";
+		String expected =
+				"1:int\n"+
+				"0.0:float\n"+
+				"x:int => float\n";
+		annotateTypeAndCheck(input, expected);
+	}
+
+	@Test
 	public void testElementAssign() throws Exception {
 		String input =
 				"var arr = [1, 2, 3, 4, 5]\n" +
@@ -123,7 +136,19 @@ public class TestTypeAnnotation {
 				"4:int => float\n" +
 				"5:int => float\n" +
 				"3:int\n" +
-				"1:int\n";
+				"1:int => float\n";
+		annotateTypeAndCheck(input, expected);
+	}
+
+	@Test
+	public void testArgElementAssign() throws Exception {
+		String input =
+				"func bar(x:[]) {\n"+
+				"    x[1] = 100\n" +
+				"}\n";
+		String expected =
+				"1:int\n"+
+				"100:int => float\n";
 		annotateTypeAndCheck(input, expected);
 	}
 
@@ -265,7 +290,8 @@ public class TestTypeAnnotation {
 	public void testBooleanVarInferenceFromRetValue() throws Exception {
 		String input =
 				"func f():boolean { return (1<3) }\n" +
-				"var y = f()\n";
+				"var y = f()\n"+
+				"print(y)\n";
 		String expecting =
 				"(1<3):boolean\n"+
 				"1:int\n"+
