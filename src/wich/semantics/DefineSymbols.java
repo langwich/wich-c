@@ -66,7 +66,7 @@ public class DefineSymbols extends CommonWichListener {
 			((WFunctionSymbol)currentScope).argTypes.add(type);
 		}
 		else{
-			error(INVALID_TYPE, arg.getName());
+			error(ctx.ID().getSymbol(), INVALID_TYPE, arg.getName());
 		}
 		currentScope.define(arg);
 	}
@@ -82,7 +82,7 @@ public class DefineSymbols extends CommonWichListener {
 			if ( type!=null )
 				f.setType(type);
 			else
-				error(INVALID_TYPE, f.getName());
+				error(ctx.ID().getSymbol(), INVALID_TYPE, f.getName());
 		}
 		ctx.scope = f;
 		currentScope.define(f);

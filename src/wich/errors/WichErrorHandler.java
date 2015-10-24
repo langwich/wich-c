@@ -24,6 +24,7 @@ SOFTWARE.
 package wich.errors;
 
 import org.antlr.symtab.Utils;
+import org.antlr.v4.runtime.Token;
 import org.stringtemplate.v4.ST;
 
 import java.util.ArrayList;
@@ -39,9 +40,9 @@ public class WichErrorHandler {
 	protected List<String> errorList = new ArrayList<>();
 
 	// aggregate error messages. set
-	public void error(ErrorType type, String... args) {
+	public void error(Token token, ErrorType type, String... args) {
 		try {
-			String msg = getErrorMessage(type, args);
+			String msg = getErrorMessage(token, type, args);
 			errorList.add(type.getSeverity().getName()+": "+msg);
 		}
 		catch (Exception e) {
@@ -50,9 +51,9 @@ public class WichErrorHandler {
 	}
 
 	// aggregate error messages.
-	public void error(ErrorType type, Exception e, String... args) {
+	public void error(Token token, ErrorType type, Exception e, String... args) {
 		try {
-			String msg = getErrorMessage(type, args);
+			String msg = getErrorMessage(token, type, args);
 			errorList.add(type.getSeverity().getName()+": "+msg+"\n"+Arrays.toString(e.getStackTrace()));
 		}
 		catch (Exception _e) {
@@ -60,7 +61,7 @@ public class WichErrorHandler {
 		}
 	}
 
-	protected String getErrorMessage(ErrorType type, String[] args) {
+	protected String getErrorMessage(Token token, ErrorType type, String[] args) {
 		ST template = new ST(type.getMessageTemplate());
 		for (int i = 0; i < args.length; ++i) {
 			template.add("arg" + String.valueOf(i + 1), args[i]);
@@ -71,7 +72,11 @@ public class WichErrorHandler {
 		else {
 			warnings++;
 		}
-		return template.render();
+		String location = "";
+		if ( token!=null ) {
+			location = "line "+token.getLine()+":"+token.getCharPositionInLine()+" ";
+		}
+		return location+template.render();
 	}
 
 	public int getErrorNum() { return errorList.size(); }

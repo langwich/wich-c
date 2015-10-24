@@ -84,7 +84,7 @@ public class TestWichExecution extends WichBaseTest {
 					CompilerUtils.getResourceFile(TEST_RES_GC_GEND_CODE+"/"+baseName+".c");
 				break;
 			default :
-				err.error(ErrorType.UNKNOWN_TARGET, target.toString());
+				err.error(null, ErrorType.UNKNOWN_TARGET, target.toString());
 		}
 		assertTrue(err.toString(), err.getErrorNum()==0);
 		assertNotNull(expectedOutputURL);

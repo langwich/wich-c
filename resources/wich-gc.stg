@@ -1,0 +1,46 @@
+import "wich.stg"
+
+File(f, functions, main) ::= <<
+#include \<stdio.h>
+#include "wich.h"
+#include "gc.h"
+
+<functions:funcDecl()>
+<functions>
+<main>
+>>
+
+MainFunc(f,returnType,args,body) ::= <<
+int main(int argc, char *argv[])
+{
+	setup_error_handlers();
+    ENTER();
+	<body>
+    EXIT();
+	return 0;
+}
+<\n>
+>>
+
+Func(f,returnType,args,body)::=<<
+<returnType> <f.name>(<args;separator=",">)
+{
+    ENTER();
+    <body>
+    EXIT();
+}
+<\n>
+>>
+
+BlockStatement(b,block) ::= <<
+{
+    <block>
+}
+>>
+
+ReturnStat(r,expr)		     ::= "{EXIT(); return <expr>;}"
+ReturnHeapVarStat(r,expr)    ::= "{EXIT(); return <expr>;}"
+ReturnVectorHeapVarStat(r,expr)::= "{EXIT(); return <expr>;}"
+
+StringVarDefStat(v,type)     ::= "STRING(<v.name>);"
+VectorVarDefStat(v,type)     ::= "VECTOR(<v.name>);"

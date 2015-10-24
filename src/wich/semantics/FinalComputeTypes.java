@@ -54,9 +54,9 @@ public class FinalComputeTypes extends MaintainScopeListener{
 		if(lExpr.exprType == SymbolTable.INVALID_TYPE ||
 				rExpr.exprType == SymbolTable.INVALID_TYPE){
 			if(lExpr.exprType == SymbolTable.INVALID_TYPE)
-				error(INVALID_OPERAND_ERROR, lExpr.getText());
+				error(lExpr.start, INVALID_OPERAND_ERROR, lExpr.getText());
 			if(rExpr.exprType == SymbolTable.INVALID_TYPE)
-				error(INVALID_OPERAND_ERROR, rExpr.getText());
+				error(rExpr.start, INVALID_OPERAND_ERROR, rExpr.getText());
 
 		}
 		//when both operands' types are known
@@ -68,7 +68,7 @@ public class FinalComputeTypes extends MaintainScopeListener{
 				String left = lExpr.exprType.getName();
 				String operator = ctx.operator().getText();
 				String right = rExpr.exprType.getName();
-				error(INCOMPATIBLE_OPERAND_ERROR, left, operator, right);
+				error(ctx.start, INCOMPATIBLE_OPERAND_ERROR, left, operator, right);
 			}
 		}
 	}
@@ -122,7 +122,8 @@ public class FinalComputeTypes extends MaintainScopeListener{
 			return;
 		Symbol s = currentScope.resolve(ctx.ID().getText());
 		if ( s==null) {
-			error(SYMBOL_NOT_FOUND, ctx.ID().getText());
+			error(ctx.ID().getSymbol(), SYMBOL_NOT_FOUND, ctx.ID().getText());
+			return;
 		}
 		// string[i] returns a single character string
 		Type idType = ((WVariableSymbol) s).getType();
@@ -131,7 +132,7 @@ public class FinalComputeTypes extends MaintainScopeListener{
 		} else if ( idType==SymbolTable._vector ) {         // vector can be indexed
 			ctx.exprType = SymbolTable._float;
 		} else if (idType != null){
-			error(INVALID_OPERATION, "[]", ((WVariableSymbol) s).getType().getName());
+			error(ctx.ID().getSymbol(), INVALID_OPERATION, "[]", ((WVariableSymbol) s).getType().getName());
 		}
 	}
 
@@ -150,7 +151,7 @@ public class FinalComputeTypes extends MaintainScopeListener{
 		if ( s!=null && s instanceof WVariableSymbol ) {
 			ctx.exprType = ((TypedSymbol) s).getType();
 		} else {
-			error(SYMBOL_NOT_FOUND, ctx.ID().getText());
+			error(ctx.ID().getSymbol(), SYMBOL_NOT_FOUND, ctx.ID().getText());
 		}
 	}
 

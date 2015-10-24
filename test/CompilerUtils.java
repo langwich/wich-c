@@ -169,8 +169,14 @@ public class CompilerUtils {
 //				modelWalker.walk(modelRoot);
 				templates = new STGroupFile("wich-refcounting.stg");
 				break;
+			case MARK_AND_COMPACT:
+			case MARK_AND_SWEEP:
+//				modelWalker = new ModelWalker(new InjectRefCounting());
+//				modelWalker.walk(modelRoot);
+				templates = new STGroupFile("wich-gc.stg");
+				break;
 			default :
-				err.error(ErrorType.INVALID_TYPE, target.toString());
+				err.error(null, ErrorType.UNKNOWN_TARGET, target.toString());
 				return "";
 		}
 
