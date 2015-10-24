@@ -79,6 +79,10 @@ public class TestWichExecution extends WichBaseTest {
 				expectedOutputURL =
 					CompilerUtils.getResourceFile(TEST_RES_REFCOUNTING_GEND_CODE+"/"+baseName+".c");
 				break;
+			case LLVM :
+				expectedOutputURL =
+						CompilerUtils.getResourceFile(TEST_RES_LLVM_GEND_CODE+"/"+baseName+".c");
+				break;
 			case MARK_AND_COMPACT:
 			case MARK_AND_SWEEP:
 				expectedOutputURL =

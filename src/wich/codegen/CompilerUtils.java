@@ -77,6 +77,7 @@ public class CompilerUtils {
 	 */
 	public enum CodeGenTarget {
 		PLAIN(new String[]{"wlib"}),
+		LLVM(new String[]{"wlib"}),
 		REFCOUNTING(new String[]{"wlib_refcounting"}),
 		MARK_AND_COMPACT(new String[]{"wlib_mark_and_compact", "mark_and_compact", "gc_mark_and_compact", "malloc_common"}),
 		MARK_AND_SWEEP(new String[]{"wlib_mark_and_sweep", "mark_and_sweep", "gc_mark_and_sweep", "malloc_common"}),
