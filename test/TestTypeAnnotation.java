@@ -24,6 +24,7 @@ SOFTWARE.
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.junit.Test;
+import wich.codegen.CompilerUtils;
 import wich.errors.WichErrorHandler;
 import wich.semantics.SymbolTable;
 import wich.semantics.TypeHelper;

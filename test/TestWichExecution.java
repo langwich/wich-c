@@ -26,6 +26,7 @@ import junit.framework.Assert;
 import org.antlr.v4.runtime.misc.Triple;
 import org.antlr.v4.runtime.misc.Utils;
 import org.junit.Before;
+import wich.codegen.CompilerUtils;
 import wich.errors.ErrorType;
 import wich.errors.WichErrorHandler;
 import wich.semantics.SymbolTable;

@@ -24,6 +24,7 @@ SOFTWARE.
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import wich.codegen.CompilerUtils;
 
 import java.io.File;
 import java.net.URL;
