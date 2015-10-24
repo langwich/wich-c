@@ -4,7 +4,7 @@ func f (x:int):float{
 }
 
 var z = f(2)
-if(!z) {
+if(z==0) {
 	print ("z==0")
 }
 else {
