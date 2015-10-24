@@ -287,6 +287,17 @@ public class TestTypeAnnotation {
 	}
 
 	@Test
+	public void testPromoteArg() throws Exception {
+		String input =
+			"func f(x:float) { }\n" +
+			"f(1)\n";
+		String expected =
+			"f(1):void\n"+
+			"1:int => float\n";
+		annotateTypeAndCheck(input, expected);
+	}
+
+	@Test
 	public void testBooleanVarInferenceFromRetValue() throws Exception {
 		String input =
 				"func f():boolean { return (1<3) }\n" +

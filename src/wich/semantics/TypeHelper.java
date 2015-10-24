@@ -217,7 +217,7 @@ public class TypeHelper {
 
 	/** This method is used to promote type during type annotation */
 	public static void promote(ExprContext elem, Type targetType) {
-		if (elem.exprType != null && elem.exprType instanceof WBuiltInTypeSymbol) {  //elem.exprType may not be known
+		if (elem.exprType != null ) {  // elem.exprType may not be known
 			int selfIndex = elem.exprType.getTypeIndex();
 			elem.promoteToType = equalityPromoteFromTo[selfIndex][targetType.getTypeIndex()];
 		}
@@ -308,6 +308,7 @@ public class TypeHelper {
 		}
 		return sb.toString();
 	}
+
 	//overloading to get print type for call statement
 	protected static String getPrintType(WichParser.Call_exprContext ctx) {
 		StringBuilder sb = new StringBuilder();
@@ -321,7 +322,8 @@ public class TypeHelper {
 	protected static <T, R> StringBuilder process(List<T> children,
 	                                              Predicate<T> pred,
 	                                              Function<T, R> func1,
-	                                              Function<T, R> func2) {
+	                                              Function<T, R> func2)
+	{
 		StringBuilder sb = new StringBuilder();
 		for (T child : children) {
 			if (pred.test(child)) {

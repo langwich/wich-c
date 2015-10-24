@@ -53,21 +53,23 @@ public class ComputeTypes extends MaintainScopeListener {
 		ExprContext lExpr = ctx.expr(0);
 		ExprContext rExpr = ctx.expr(1);
 		//check if operand is valid
-		if(lExpr.exprType == SymbolTable.INVALID_TYPE ||
-			rExpr.exprType == SymbolTable.INVALID_TYPE) {
-			if(lExpr.exprType == SymbolTable.INVALID_TYPE)
+		if (lExpr.exprType == SymbolTable.INVALID_TYPE ||
+			rExpr.exprType == SymbolTable.INVALID_TYPE)
+		{
+			if (lExpr.exprType == SymbolTable.INVALID_TYPE) {
 				error(lExpr.start, INVALID_OPERAND_ERROR, lExpr.getText());
-			if(rExpr.exprType == SymbolTable.INVALID_TYPE)
+			}
+			if (rExpr.exprType == SymbolTable.INVALID_TYPE) {
 				error(rExpr.start, INVALID_OPERAND_ERROR, rExpr.getText());
-
+			}
 		}
 		//when both operands' types are known
-		else if(lExpr.exprType != null && rExpr.exprType != null) {
+		else if (lExpr.exprType != null && rExpr.exprType != null) {
 			ctx.exprType = SymbolTable.op(op, lExpr, rExpr);
 			if (lExpr.exprType != rExpr.exprType) {
 				ctx.promoteToType = SymbolTable.op(op, lExpr, rExpr);
 			}
-			if(ctx.exprType == SymbolTable.INVALID_TYPE) {
+			if (ctx.exprType == SymbolTable.INVALID_TYPE) {
 				String left = lExpr.exprType.getName();
 				String operator = ctx.operator().getText();
 				String right = rExpr.exprType.getName();
@@ -158,7 +160,7 @@ public class ComputeTypes extends MaintainScopeListener {
 		ctx.exprType = SymbolTable._vector;
 		// promote element type to fit in a vector
 		for (ExprContext elem : ctx.expr_list().expr()) {
-			if(elem.exprType != null) { // may not be known at this stage
+			if (elem.exprType != null) { // may not be known at this stage
 				TypeHelper.promote(elem, SymbolTable._float);
 			}
 		}
