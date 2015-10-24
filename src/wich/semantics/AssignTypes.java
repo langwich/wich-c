@@ -55,8 +55,9 @@ public class AssignTypes extends MaintainScopeListener{
 				((TypedSymbol) var).setType(ctx.expr().exprType);
 				countOfAssigned++;
 			}
-		}else{
-			error(SYMBOL_NOT_FOUND, ctx.ID().getText());
+		}
+		else {
+			error(ctx.ID().getSymbol(), SYMBOL_NOT_FOUND, ctx.ID().getText());
 		}
 		if(countOfAssigned == numOfVars)
 			isAssignFinished = true;

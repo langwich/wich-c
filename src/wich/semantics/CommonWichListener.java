@@ -3,6 +3,7 @@ package wich.semantics;
 import org.antlr.symtab.Scope;
 import org.antlr.symtab.Symbol;
 import org.antlr.symtab.Type;
+import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.NotNull;
 import wich.errors.ErrorType;
 import wich.errors.WichErrorHandler;
@@ -40,12 +41,12 @@ public class CommonWichListener extends WichBaseListener {
 
 	// error support
 
-	protected void error(ErrorType type, String... args) {
-		errorHandler.error(type, args);
+	protected void error(Token token, ErrorType type, String... args) {
+		errorHandler.error(token, type, args);
 	}
 
-	protected void error(ErrorType type, Exception e, String... args) {
-		errorHandler.error(type, e, args);
+	protected void error(Token token, ErrorType type, Exception e, String... args) {
+		errorHandler.error(token, type, e, args);
 	}
 
 	public int getErrorNum() {

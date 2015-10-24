@@ -74,8 +74,8 @@ public class CompilerUtils {
 	public enum CodeGenTarget {
 		PLAIN(new String[]{"wlib"}),
 		REFCOUNTING(new String[]{"wlib_refcounting"}),
-		MARK_AND_COMPACT(new String[]{"wlib_mark_and_compact"}),
-		MARK_AND_SWEEP(new String[]{"wlib_mark_and_sweep"}),
+		MARK_AND_COMPACT(new String[]{"wlib_mark_and_compact", "mark_and_compact", "gc_mark_and_compact", "malloc_common"}),
+		MARK_AND_SWEEP(new String[]{"wlib_mark_and_sweep", "mark_and_sweep", "gc_mark_and_sweep", "malloc_common"}),
 		GENERATIONAL_GC(new String[]{"wlib"});
 
 		public String[] libs;
@@ -169,8 +169,14 @@ public class CompilerUtils {
 //				modelWalker.walk(modelRoot);
 				templates = new STGroupFile("wich-refcounting.stg");
 				break;
+			case MARK_AND_COMPACT:
+			case MARK_AND_SWEEP:
+//				modelWalker = new ModelWalker(new InjectRefCounting());
+//				modelWalker.walk(modelRoot);
+				templates = new STGroupFile("wich-gc.stg");
+				break;
 			default :
-				err.error(ErrorType.INVALID_TYPE, target.toString());
+				err.error(null, ErrorType.UNKNOWN_TARGET, target.toString());
 				return "";
 		}
 

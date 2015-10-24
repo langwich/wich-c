@@ -57,9 +57,9 @@ public class ComputeTypes extends MaintainScopeListener {
 		if(lExpr.exprType == SymbolTable.INVALID_TYPE ||
 			rExpr.exprType == SymbolTable.INVALID_TYPE){
 			if(lExpr.exprType == SymbolTable.INVALID_TYPE)
-				error(INVALID_OPERAND_ERROR, lExpr.getText());
+				error(lExpr.start, INVALID_OPERAND_ERROR, lExpr.getText());
 			if(rExpr.exprType == SymbolTable.INVALID_TYPE)
-				error(INVALID_OPERAND_ERROR, rExpr.getText());
+				error(rExpr.start, INVALID_OPERAND_ERROR, rExpr.getText());
 
 		}
 		//when both operands' types are known
@@ -71,7 +71,7 @@ public class ComputeTypes extends MaintainScopeListener {
 				String left = lExpr.exprType.getName();
 				String operator = ctx.operator().getText();
 				String right = rExpr.exprType.getName();
-				error(INCOMPATIBLE_OPERAND_ERROR, left, operator, right);
+				error(ctx.start, INCOMPATIBLE_OPERAND_ERROR, left, operator, right);
 			}
 		}
 	}
@@ -94,7 +94,7 @@ public class ComputeTypes extends MaintainScopeListener {
 			ctx.exprType = ((WFunctionSymbol) f).getType();
 			promoteArgTypes(ctx, (WFunctionSymbol) f);
 		} else {
-			error(UNDEFINED_FUNCTION, ctx.ID().getText());
+			error(ctx.ID().getSymbol(), UNDEFINED_FUNCTION, ctx.ID().getText());
 		}
 	}
 
@@ -106,7 +106,7 @@ public class ComputeTypes extends MaintainScopeListener {
 			WichParser.Call_exprContext callExprContext = ctx.call_expr();
 			promoteArgTypes(callExprContext, (WFunctionSymbol)f);
 		} else {
-			error(UNDEFINED_FUNCTION, ctx.call_expr().ID().getText());
+			error(ctx.call_expr().ID().getSymbol(), UNDEFINED_FUNCTION, ctx.call_expr().ID().getText());
 		}
 	}
 
@@ -114,7 +114,8 @@ public class ComputeTypes extends MaintainScopeListener {
 	public void exitIndex(@NotNull WichParser.IndexContext ctx) {
 		Symbol s = currentScope.resolve(ctx.ID().getText());
 		if ( s==null) {
-			error(SYMBOL_NOT_FOUND, ctx.ID().getText());
+			error(ctx.ID().getSymbol(), SYMBOL_NOT_FOUND, ctx.ID().getText());
+			return;
 		}
 		// string[i] returns a single character string
 		Type idType = ((WVariableSymbol) s).getType();
@@ -123,7 +124,7 @@ public class ComputeTypes extends MaintainScopeListener {
 		} else if ( idType==SymbolTable._vector ) {         // vector can be indexed
 			ctx.exprType = SymbolTable._float;
 		} else if (idType != null){
-			error(INVALID_OPERATION, "[]", ((WVariableSymbol) s).getType().getName());
+			error(ctx.start, INVALID_OPERATION, "[]", ((WVariableSymbol) s).getType().getName());
 		}
 	}
 
@@ -138,7 +139,7 @@ public class ComputeTypes extends MaintainScopeListener {
 		if ( s!=null && s instanceof WVariableSymbol ) {
 			ctx.exprType = ((TypedSymbol) s).getType();
 		} else {
-			error(SYMBOL_NOT_FOUND, ctx.ID().getText());
+			error(ctx.ID().getSymbol(), SYMBOL_NOT_FOUND, ctx.ID().getText());
 		}
 	}
 
@@ -187,7 +188,7 @@ public class ComputeTypes extends MaintainScopeListener {
 		int numOfArgs = f.argTypes.size();
 		//check the number of args
 		if(numOfArgs != 0 && numOfArgs != ctx.expr_list().expr().size()){
-			error(INCORRECT_ARG_NUMBERS,
+			error(ctx.start, INCORRECT_ARG_NUMBERS,
 					String.valueOf(numOfArgs),
 					String.valueOf(ctx.expr_list().expr().size()));
 		}else{
