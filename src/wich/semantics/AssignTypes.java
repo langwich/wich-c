@@ -48,17 +48,17 @@ public class AssignTypes extends MaintainScopeListener{
 	@Override
 	public void exitVardef(WichParser.VardefContext ctx) {
 		Symbol var = currentScope.resolve(ctx.ID().getText());
-		// type inference
-		if ( var!=null && var instanceof WVariableSymbol   // avoid cascading errors
-				&& ((TypedSymbol) var).getType() == null) {   // no type set before, avoid repetitive assignment
-			if(ctx.expr().exprType != null){ //may not know at this stage
+
+		if (var == null || !(var instanceof WVariableSymbol)) {
+			error(ctx.ID().getSymbol(), SYMBOL_NOT_FOUND, ctx.ID().getText());
+		}
+		else if (((TypedSymbol) var).getType() == null) {
+			if(ctx.expr().exprType != null){
 				((TypedSymbol) var).setType(ctx.expr().exprType);
 				countOfAssigned++;
 			}
 		}
-		else {
-			error(ctx.ID().getSymbol(), SYMBOL_NOT_FOUND, ctx.ID().getText());
-		}
+
 		if(countOfAssigned == numOfVars)
 			isAssignFinished = true;
 	}

@@ -53,22 +53,7 @@ public class CheckTypes extends MaintainScopeListener {
 			error(ctx.start, INCOMPATIBLE_ASSIGNMENT_ERROR, left.getName(), right.getName());
 		}
 	}
-	/*
-	@Override
-	public void exitAssign(@NotNull WichParser.AssignContext ctx) {
-		Symbol s = currentScope.resolve(ctx.ID().getText());
-		if ( !(s instanceof WVariableSymbol) ) {
-			error(INVALID_LEFT_SIDE_ERROR);
-			return;
-		}
-		Type left = ((WVariableSymbol)s).getType();
-		Type right = ctx.expr().exprType;
-
-		if ( !TypeHelper.isLegalAssign(left, right) ) {
-			error(INCOMPATIBLE_ASSIGNMENT_ERROR, left.getName(), right.getName());
-		}
-	}
-	*/
+	
 	@Override
 	public void exitElementAssign(@NotNull WichParser.ElementAssignContext ctx) {
 		WichParser.ExprContext index = ctx.expr(0);
