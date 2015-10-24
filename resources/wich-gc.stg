@@ -14,9 +14,14 @@ MainFunc(f,returnType,args,body) ::= <<
 int main(int argc, char *argv[])
 {
 	setup_error_handlers();
-    ENTER();
+    gc_begin_func();
 	<body>
-    EXIT();
+    gc_end_func();
+
+    gc();
+    Heap_Info info = get_heap_info();
+	if ( info.live!=0 ) fprintf(stderr, "%d objects remain after collection\n", info.live);
+    gc_shutdown();
 	return 0;
 }
 <\n>
@@ -25,9 +30,9 @@ int main(int argc, char *argv[])
 Func(f,returnType,args,body)::=<<
 <returnType> <f.name>(<args;separator=",">)
 {
-    ENTER();
+    gc_begin_func();
     <body>
-    EXIT();
+    gc_end_func();
 }
 <\n>
 >>
@@ -38,9 +43,9 @@ BlockStatement(b,block) ::= <<
 }
 >>
 
-ReturnStat(r,expr)		     ::= "{EXIT(); return <expr>;}"
-ReturnHeapVarStat(r,expr)    ::= "{EXIT(); return <expr>;}"
-ReturnVectorHeapVarStat(r,expr)::= "{EXIT(); return <expr>;}"
+ReturnStat(r,expr)		     ::= "{gc_end_func(); return <expr>;}"
+ReturnHeapVarStat(r,expr)    ::= "{gc_end_func(); return <expr>;}"
+ReturnVectorHeapVarStat(r,expr)::= "{gc_end_func(); return <expr>;}"
 
 StringVarDefStat(v,type)     ::= "STRING(<v.name>);"
 VectorVarDefStat(v,type)     ::= "VECTOR(<v.name>);"
