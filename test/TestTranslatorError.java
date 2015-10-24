@@ -23,6 +23,7 @@ SOFTWARE.
 */
 
 import org.junit.Test;
+import wich.codegen.CompilerUtils;
 import wich.errors.WichErrorHandler;
 import wich.semantics.SymbolTable;
 

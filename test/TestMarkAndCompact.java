@@ -1,4 +1,5 @@
 import org.junit.Test;
+import wich.codegen.CompilerUtils;
 
 import java.io.File;
 import java.net.URL;
