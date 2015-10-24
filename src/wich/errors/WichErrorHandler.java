@@ -23,26 +23,28 @@ SOFTWARE.
 */
 package wich.errors;
 
+import org.antlr.symtab.Utils;
 import org.stringtemplate.v4.ST;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.List;
 
 import static wich.errors.ErrorSeverity.WARNING;
 
 public class WichErrorHandler {
+	public int errors = 0;
+	public int warnings = 0;
 
-	protected boolean terminate = false;
-
-	protected Queue<String> errQueue = new LinkedList<>();
+	protected List<String> errorList = new ArrayList<>();
 
 	// aggregate error messages. set
 	public void error(ErrorType type, String... args) {
 		try {
 			String msg = getErrorMessage(type, args);
-			errQueue.offer(type.getSeverity().getName() + ": " + msg);
-		} catch (Exception e) {
+			errorList.add(type.getSeverity().getName()+": "+msg);
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -51,8 +53,9 @@ public class WichErrorHandler {
 	public void error(ErrorType type, Exception e, String... args) {
 		try {
 			String msg = getErrorMessage(type, args);
-			errQueue.offer(type.getSeverity().getName() + ": " + msg + "\n" + Arrays.toString(e.getStackTrace()));
-		} catch (Exception _e) {
+			errorList.add(type.getSeverity().getName()+": "+msg+"\n"+Arrays.toString(e.getStackTrace()));
+		}
+		catch (Exception _e) {
 			_e.printStackTrace();
 		}
 	}
@@ -62,19 +65,19 @@ public class WichErrorHandler {
 		for (int i = 0; i < args.length; ++i) {
 			template.add("arg" + String.valueOf(i + 1), args[i]);
 		}
-		if (type.severity.ordinal() > WARNING.ordinal()) {
-			terminate = true;
+		if ( type.severity == WARNING ) {
+			errors++;
+		}
+		else {
+			warnings++;
 		}
 		return template.render();
 	}
 
-	public int getErrorNum() { return errQueue.size(); }
+	public int getErrorNum() { return errorList.size(); }
 
-	// destructive operation, will leave the error message queue empty.
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		while (!errQueue.isEmpty()) sb.append(errQueue.poll()).append("\n");
-		return sb.toString();
+		return Utils.join(errorList, ", ");
 	}
 }
 

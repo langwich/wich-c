@@ -42,6 +42,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
 // Assuming the program is running on Unix-like operating systems.
@@ -67,7 +68,7 @@ public class TestWichExecution extends WichBaseTest {
 	protected void testCodeGen(CompilerUtils.CodeGenTarget target) throws IOException, InterruptedException {
 		WichErrorHandler err = new WichErrorHandler();
 		SymbolTable symtab = new SymbolTable();
-		URL expectedOutputURL;
+		URL expectedOutputURL = null;
 		switch ( target ) {
 			case PLAIN :
 				expectedOutputURL =
@@ -77,10 +78,15 @@ public class TestWichExecution extends WichBaseTest {
 				expectedOutputURL =
 					CompilerUtils.getResourceFile(TEST_RES_REFCOUNTING_GEND_CODE+"/"+baseName+".c");
 				break;
+			case MARK_AND_COMPACT:
+			case MARK_AND_SWEEP:
+				expectedOutputURL =
+					CompilerUtils.getResourceFile(TEST_RES_GC_GEND_CODE+"/"+baseName+".c");
+				break;
 			default :
 				err.error(ErrorType.UNKNOWN_TARGET, target.toString());
-				return;
 		}
+		assertTrue(err.toString(), err.getErrorNum()==0);
 		assertNotNull(expectedOutputURL);
 		String expPath = expectedOutputURL.getPath();
 		String expected = CompilerUtils.readFile(expPath, CompilerUtils.FILE_ENCODING);
@@ -89,6 +95,7 @@ public class TestWichExecution extends WichBaseTest {
 
 		String wichInput = CompilerUtils.readFile(input.getAbsolutePath(), CompilerUtils.FILE_ENCODING);
 		String actual = CompilerUtils.genCode(wichInput, symtab, err, target);
+		assertTrue(err.toString(), err.getErrorNum()==0);
 		actual = actual.replace("\n\n", "\n");
 		CompilerUtils.writeFile("/tmp/__t.c", actual, StandardCharsets.UTF_8);
 
@@ -156,6 +163,7 @@ public class TestWichExecution extends WichBaseTest {
 		WichErrorHandler err = new WichErrorHandler();
 		String wichInput = CompilerUtils.readFile(wichInputFilename, CompilerUtils.FILE_ENCODING);
 		String actual = CompilerUtils.genCode(wichInput, symtab, err, target);
+		assertTrue(err.toString(), err.getErrorNum()==0);
 		String generatedFileName = WORKING_DIR + baseName + ".c";
 		CompilerUtils.writeFile(generatedFileName, actual, StandardCharsets.UTF_8);
 		// Compile C code and return the path to the executable.
