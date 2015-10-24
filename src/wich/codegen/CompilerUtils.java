@@ -161,6 +161,9 @@ public class CompilerUtils {
 			case PLAIN :
 				templates = new STGroupFile("wich.stg");
 				break;
+			case LLVM :
+				templates = new STGroupFile("wich-llvm.stg");
+				break;
 			case REFCOUNTING :
 				ModelWalker modelWalker = new ModelWalker(new InjectRefCounting());
 				modelWalker.walk(modelRoot);
