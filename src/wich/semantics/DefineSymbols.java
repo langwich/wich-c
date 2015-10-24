@@ -77,13 +77,14 @@ public class DefineSymbols extends CommonWichListener {
 		WFunctionSymbol f = new WFunctionSymbol(ctx.ID().getText());
 		f.setEnclosingScope(currentScope);
 		// resolve return type of the method since it's explicit
-		if ( ctx.type()!=null ) {
+		if ( ctx.type()==null ) {
+			f.setType(SymbolTable._void);
+		}
+		else {
 			String typeName = ctx.type().getText();
 			Type type = resolveType(typeName);
-			if ( type!=null )
-				f.setType(type);
-			else
-				error(ctx.ID().getSymbol(), INVALID_TYPE, f.getName());
+			if ( type!=null ) f.setType(type);
+			else error(ctx.ID().getSymbol(), INVALID_TYPE, f.getName());
 		}
 		ctx.scope = f;
 		currentScope.define(f);

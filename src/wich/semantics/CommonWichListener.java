@@ -53,7 +53,8 @@ public class CommonWichListener extends WichBaseListener {
 		}
 		else {
 			for (int i = 0; i < numOfArgs; i++) {
-				TypeHelper.promote(ctx.expr_list().expr(i), f.argTypes.get(i));
+				WichParser.ExprContext argExpr = ctx.expr_list().expr(i);
+				TypeHelper.promote(argExpr, f.argTypes.get(i));
 			}
 		}
 	}
