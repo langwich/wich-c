@@ -1,27 +1,34 @@
 #include <stdio.h>
 #include "wich.h"
-#include "refcounting.h"
+#include "gc.h"
 void bar(PVector_ptr x);
 
 void
 bar(PVector_ptr x)
 {
-    ENTER();
+    gc_begin_func();
     set_ith(x, 1 - 1, 100.0);
     print_vector(x);
-    EXIT();
+    gc_end_func();
 }
 
 int
 main(int argc, char *argv[])
 {
     setup_error_handlers();
-    ENTER();
+    gc_begin_func();
     VECTOR(x);
-    x = Vector_new((double[]) { 1, 2, 3}, 3);
+    x = Vector_new((double[]) {
+                   1, 2, 3}, 3);
     bar(x);
     set_ith(x, 1 - 1, 99.0);
     print_vector(x);
-    EXIT();
+    gc_end_func();
+    gc();
+    Heap_Info info = get_heap_info();
+
+    if (info.live != 0)
+        fprintf(stderr, "%d objects remain after collection\n", info.live);
+    gc_shutdown();
     return 0;
 }

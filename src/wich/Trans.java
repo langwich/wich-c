@@ -55,13 +55,13 @@ public class Trans {
 	public static void main(String[] args) {
 		Trans translator = new Trans();
 		if (args.length != 2 && args.length != 3) {
-			System.out.println("Try: java Trans <input_file> [-console | -file <output_path>]");
+			System.out.println("Try: java wich.Trans <input_file> [-console | -file <output_path>]");
 			return;
 		}
 
-		String inputFile;
+		String inputFile = args[0];
 		String outputPath = null;
-		boolean console = false;
+		boolean console = true;
 		boolean file = false;
 		switch (args[0]) {
 			case "-console":
@@ -74,7 +74,6 @@ public class Trans {
 			default:
 				break;
 		}
-		inputFile = args[0];
 		translator.translate(inputFile, console, file, outputPath);
 	}
 
