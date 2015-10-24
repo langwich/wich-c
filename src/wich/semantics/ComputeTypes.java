@@ -35,7 +35,6 @@ import wich.semantics.symbols.WFunctionSymbol;
 import wich.semantics.symbols.WVariableSymbol;
 
 import static wich.errors.ErrorType.INCOMPATIBLE_OPERAND_ERROR;
-import static wich.errors.ErrorType.INCORRECT_ARG_NUMBERS;
 import static wich.errors.ErrorType.INVALID_OPERAND_ERROR;
 import static wich.errors.ErrorType.INVALID_OPERATION;
 import static wich.errors.ErrorType.SYMBOL_NOT_FOUND;
@@ -55,7 +54,7 @@ public class ComputeTypes extends MaintainScopeListener {
 		ExprContext rExpr = ctx.expr(1);
 		//check if operand is valid
 		if(lExpr.exprType == SymbolTable.INVALID_TYPE ||
-			rExpr.exprType == SymbolTable.INVALID_TYPE){
+			rExpr.exprType == SymbolTable.INVALID_TYPE) {
 			if(lExpr.exprType == SymbolTable.INVALID_TYPE)
 				error(lExpr.start, INVALID_OPERAND_ERROR, lExpr.getText());
 			if(rExpr.exprType == SymbolTable.INVALID_TYPE)
@@ -63,11 +62,12 @@ public class ComputeTypes extends MaintainScopeListener {
 
 		}
 		//when both operands' types are known
-		else if(lExpr.exprType != null && rExpr.exprType != null){
+		else if(lExpr.exprType != null && rExpr.exprType != null) {
 			ctx.exprType = SymbolTable.op(op, lExpr, rExpr);
-			if (lExpr.exprType != rExpr.exprType)
-				ctx.promoteToType = SymbolTable.op(op, lExpr,rExpr);
-			if(ctx.exprType == SymbolTable.INVALID_TYPE){
+			if (lExpr.exprType != rExpr.exprType) {
+				ctx.promoteToType = SymbolTable.op(op, lExpr, rExpr);
+			}
+			if(ctx.exprType == SymbolTable.INVALID_TYPE) {
 				String left = lExpr.exprType.getName();
 				String operator = ctx.operator().getText();
 				String right = rExpr.exprType.getName();
@@ -123,7 +123,7 @@ public class ComputeTypes extends MaintainScopeListener {
 			ctx.exprType = SymbolTable._string;
 		} else if ( idType==SymbolTable._vector ) {         // vector can be indexed
 			ctx.exprType = SymbolTable._float;
-		} else if (idType != null){
+		} else if (idType != null) {
 			error(ctx.start, INVALID_OPERATION, "[]", ((WVariableSymbol) s).getType().getName());
 		}
 	}
@@ -157,10 +157,10 @@ public class ComputeTypes extends MaintainScopeListener {
 	public void exitVector(@NotNull WichParser.VectorContext ctx) {
 		ctx.exprType = SymbolTable._vector;
 		// promote element type to fit in a vector
-		int targetIndex = SymbolTable._float.getTypeIndex();
 		for (ExprContext elem : ctx.expr_list().expr()) {
-			if(elem.exprType != null) // may not be known at this stage
-				TypeHelper.promote(elem, targetIndex);
+			if(elem.exprType != null) { // may not be known at this stage
+				TypeHelper.promote(elem, SymbolTable._float);
+			}
 		}
 	}
 
@@ -182,20 +182,5 @@ public class ComputeTypes extends MaintainScopeListener {
 	@Override
 	public void exitAtom(@NotNull WichParser.AtomContext ctx) {
 		ctx.exprType = ctx.primary().exprType; // bubble up primary's type to expr node
-	}
-
-	private void promoteArgTypes(WichParser.Call_exprContext ctx, WFunctionSymbol f) {
-		int numOfArgs = f.argTypes.size();
-		//check the number of args
-		if(numOfArgs != 0 && numOfArgs != ctx.expr_list().expr().size()){
-			error(ctx.start, INCORRECT_ARG_NUMBERS,
-					String.valueOf(numOfArgs),
-					String.valueOf(ctx.expr_list().expr().size()));
-		}else{
-			for(int i = 0; i < numOfArgs; i++){
-				int targetIndex = f.argTypes.get(i).getTypeIndex();
-				TypeHelper.promote(ctx.expr_list().expr(i), targetIndex);
-			}
-		}
 	}
 }

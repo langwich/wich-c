@@ -29,6 +29,7 @@ import wich.errors.WichErrorHandler;
 import wich.parser.WichParser;
 import wich.semantics.symbols.WArgSymbol;
 import wich.semantics.symbols.WBlock;
+import wich.semantics.symbols.WBuiltInTypeSymbol;
 import wich.semantics.symbols.WFunctionSymbol;
 import wich.semantics.symbols.WVariableSymbol;
 
@@ -60,8 +61,8 @@ public class DefineSymbols extends CommonWichListener {
 	public void enterFormal_arg(@NotNull WichParser.Formal_argContext ctx) {
 		WArgSymbol arg = new WArgSymbol(ctx.ID().getText());
 		String typeName = ctx.type().getText();
-		Type type = resolveType(typeName);
-		if ( type!=null ){
+		WBuiltInTypeSymbol type = resolveType(typeName);
+		if ( type!=null ) {
 			arg.setType(type);
 			((WFunctionSymbol)currentScope).argTypes.add(type);
 		}

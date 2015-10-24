@@ -87,7 +87,7 @@ public class TypeHelper {
 	/*vector*/	{null,      null,       null,       null,       null},
 	/*boolean*/	{null,      null,       null,       null,       null}
 	};
-	// ==, !=
+	// ==, != (also assign =)
 	protected static final WBuiltInTypeSymbol[][] equalityResultTable = new WBuiltInTypeSymbol[][] {
 	/*           int        float       string      vector      boolean */
 	/*int*/	    {_boolean,  _boolean,   null,       null,       null},
@@ -134,7 +134,7 @@ public class TypeHelper {
 	/*vector*/	{null,      null,       null,       null,       null},
 	/*boolean*/	{null,      null,       null,       null,       null}
 	};
-	// ==, !=
+	// ==, != (also assign =)
 	protected static final WBuiltInTypeSymbol[][] equalityPromoteFromTo = new WBuiltInTypeSymbol[][] {
 	/*           int        float       string      vector      boolean */
 	/*int*/	    {null,      _float,     null,       null,       null},
@@ -209,25 +209,17 @@ public class TypeHelper {
 
 	/** This method is used to promote type in assignment.
 	 *  Returns a boolean indicating whether the assignment is legal.
+	 *  The expr type info must be available before this method works.
 	 */
-	public static boolean isLegalAssign(Type ltype,
-	                                    Type rtype)
-	{
-		if (ltype == rtype) {
-			return true;
-		}
-		else {
-			int li = ((WBuiltInTypeSymbol)ltype).getTypeIndex();
-			int ri = ((WBuiltInTypeSymbol)rtype).getTypeIndex();
-			return equalityPromoteFromTo[li][ri].getTypeIndex() == li;
-		}
+	public static boolean isLegalAssign(Type ltype, ExprContext expr) {
+		return ltype==expr.exprType || ltype==expr.promoteToType;
 	}
 
 	/** This method is used to promote type during type annotation */
-	public static void promote(ExprContext elem, int targetIndex) {
-		if(elem.exprType != null && elem.exprType instanceof  WBuiltInTypeSymbol){  //elem.exprType may not be known
-			int selfIndex = ((WBuiltInTypeSymbol)elem.exprType).getTypeIndex();
-			elem.promoteToType = equalityPromoteFromTo[selfIndex][targetIndex];
+	public static void promote(ExprContext elem, Type targetType) {
+		if (elem.exprType != null && elem.exprType instanceof WBuiltInTypeSymbol) {  //elem.exprType may not be known
+			int selfIndex = elem.exprType.getTypeIndex();
+			elem.promoteToType = equalityPromoteFromTo[selfIndex][targetType.getTypeIndex()];
 		}
 	}
 

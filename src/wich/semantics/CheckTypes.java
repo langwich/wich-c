@@ -48,19 +48,18 @@ public class CheckTypes extends MaintainScopeListener {
 	public void exitAssign(@NotNull WichParser.AssignContext ctx) {
 		Symbol s = currentScope.resolve(ctx.ID().getText());
 		Type left = ((TypedSymbol)s).getType();
-		Type right = ctx.expr().exprType;
-		if ( !TypeHelper.isLegalAssign(left, right) ) {
-			error(ctx.start, INCOMPATIBLE_ASSIGNMENT_ERROR, left.getName(), right.getName());
+		if ( !TypeHelper.isLegalAssign(left, ctx.expr()) ) {
+			error(ctx.start, INCOMPATIBLE_ASSIGNMENT_ERROR, left.getName(), ctx.expr().exprType.getName());
 		}
 	}
-	
+
 	@Override
 	public void exitElementAssign(@NotNull WichParser.ElementAssignContext ctx) {
 		WichParser.ExprContext index = ctx.expr(0);
 		WichParser.ExprContext elem = ctx.expr(1);
 		//id must be of vector type
 		Symbol id = currentScope.resolve(ctx.ID().getText());
-		if (((TypedSymbol)id).getType() != SymbolTable._vector){
+		if (((TypedSymbol)id).getType() != SymbolTable._vector) {
 			error(ctx.start, INVALID_OPERATION, "[]", ((TypedSymbol)id).getType().getName());
 		}
 		// index must be expression of int type
