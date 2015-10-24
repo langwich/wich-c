@@ -191,7 +191,7 @@ public class TestWichExecution extends WichBaseTest {
 		}
 		final Triple<Integer, String, String> result = exec(cmd);
 		String cmdS = Utils.join(cmd, " ");
-//		System.out.println(cmdS);
+		System.out.println(cmdS);
 		if ( result.a!=0 ) {
 			throw new RuntimeException("failed compilation of "+generatedFileName+" with result code "+result.a+
 									   " from\n"+
@@ -225,9 +225,6 @@ public class TestWichExecution extends WichBaseTest {
 
 	protected String executeC(String executable) throws IOException, InterruptedException {
 		Triple<Integer, String, String> result = exec(new String[]{"./"+executable});
-//		if ( result.c.length()>0 ) {
-//			throw new RuntimeException("failed execution of "+executable+" with stderr:\n"+result.c);
-//		}
 		if ( result.a!=0 ) {
 			throw new RuntimeException("failed execution of "+executable+" with result code "+result.a+"; stderr:\n"+result.c);
 		}

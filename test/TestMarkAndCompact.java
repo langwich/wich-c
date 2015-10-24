@@ -20,6 +20,6 @@ public class TestMarkAndCompact extends TestWichExecution {
 		if (expectedFile != null) {
 			expected = CompilerUtils.readFile(expectedFile.getPath(), CompilerUtils.FILE_ENCODING);
 		}
-		executeAndCheck(input.getAbsolutePath(), expected, false, CompilerUtils.CodeGenTarget.PLAIN);
+		executeAndCheck(input.getAbsolutePath(), expected, false, CompilerUtils.CodeGenTarget.MARK_AND_COMPACT);
 	}
 }
