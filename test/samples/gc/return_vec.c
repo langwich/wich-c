@@ -1,28 +1,31 @@
 #include <stdio.h>
 #include "wich.h"
-#include "refcounting.h"
+#include "gc.h"
+
 PVector_ptr foo();
 
-PVector_ptr 
-foo()
+PVector_ptr foo()
 {
-    ENTER();
-    {
-        EXIT();
-        return Vector_new((double[]) {1, 2, 3, 4, 5}, 5);
-    }
-    EXIT();
+	gc_begin_func();
+	{gc_end_func(); return Vector_new((double []){1,2,3,4,5}, 5);}
+
+	gc_end_func();
 }
 
-int
-main(int argc, char *argv[])
+
+int main(int argc, char *argv[])
 {
-    setup_error_handlers();
-    ENTER();
-    VECTOR(x);
-    x = foo();
-    REF((void *)x.vector);
-    print_vector(foo());
-    EXIT();
-    return 0;
+	setup_error_handlers();
+	gc_begin_func();
+	VECTOR(x);
+	x = foo();
+	print_vector(foo());
+	gc_end_func();
+
+	gc();
+	Heap_Info info = get_heap_info();
+	if ( info.live!=0 ) fprintf(stderr, "%d objects remain after collection\n", info.live);
+	gc_shutdown();
+	return 0;
 }
+

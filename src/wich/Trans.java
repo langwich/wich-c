@@ -30,6 +30,12 @@ import wich.semantics.SymbolTable;
 
 import java.io.FileOutputStream;
 
+/*
+~/github/wich-c/test/samples $ for f in *.w; do echo $f;
+java -cp $CLASSPATH:../../out/production/symtab:../../out/production/wich-c wich.Trans $f -target MARK_AND_COMPACT -o "gc/${f%%.*}.c";
+done
+ */
+
 public class Trans {
 	public static void main(String[] args) throws Exception {
 		Trans translator = new Trans();

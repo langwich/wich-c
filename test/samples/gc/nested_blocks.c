@@ -1,51 +1,45 @@
 #include <stdio.h>
 #include "wich.h"
-#include "refcounting.h"
+#include "gc.h"
+
 void f(PVector_ptr a);
 
-void
-f(PVector_ptr a)
+void f(PVector_ptr a)
 {
-    ENTER();
-    STRING(b);
-    VECTOR(e);
-    REF((void *)a.vector);
-    b = String_new("cat");
-    REF((void *)b);
-    {
-        MARK();
-        STRING(c);
-        c = String_new("dog");
-        REF((void *)c);
-        {
-            MARK();
-            STRING(d);
-            d = String_new("moo");
-            REF((void *)d);
-            RELEASE();
-        }
-        RELEASE();
-    }
-    {
-        MARK();
-        STRING(b);
-        STRING(c);
-        b = String_new("boo");
-        REF((void *)b);
-        c = String_new("hoo");
-        REF((void *)c);
-        RELEASE();
-    }
-    e = Vector_new((double[]) {7}, 1);
-    REF((void *)e.vector);
-    EXIT();
+	gc_begin_func();
+	STRING(b);
+	VECTOR(e);
+	b = String_new("cat");
+	{
+		STRING(c);
+		c = String_new("dog");
+		{
+			STRING(d);
+			d = String_new("moo");
+		}
+	}
+	{
+		STRING(b);
+		STRING(c);
+		b = String_new("boo");
+		c = String_new("hoo");
+	}
+	e = Vector_new((double []){7}, 1);
+
+	gc_end_func();
 }
 
-int
-main(int argc, char *argv[])
+
+int main(int argc, char *argv[])
 {
-    setup_error_handlers();
-    ENTER();
-    EXIT();
-    return 0;
+	setup_error_handlers();
+	gc_begin_func();
+	gc_end_func();
+
+	gc();
+	Heap_Info info = get_heap_info();
+	if ( info.live!=0 ) fprintf(stderr, "%d objects remain after collection\n", info.live);
+	gc_shutdown();
+	return 0;
 }
+

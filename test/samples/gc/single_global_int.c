@@ -1,14 +1,19 @@
 #include <stdio.h>
 #include "wich.h"
-#include "refcounting.h"
-int
-main(int argc, char *argv[])
-{
-    setup_error_handlers();
-    ENTER();
-    int x;
+#include "gc.h"
 
-    x = 1;
-    EXIT();
-    return 0;
+int main(int argc, char *argv[])
+{
+	setup_error_handlers();
+	gc_begin_func();
+	int x;
+	x = 1;
+	gc_end_func();
+
+	gc();
+	Heap_Info info = get_heap_info();
+	if ( info.live!=0 ) fprintf(stderr, "%d objects remain after collection\n", info.live);
+	gc_shutdown();
+	return 0;
 }
+

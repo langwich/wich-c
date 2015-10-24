@@ -1,40 +1,38 @@
 #include <stdio.h>
 #include "wich.h"
-#include "refcounting.h"
+#include "gc.h"
+
 double f(int x);
 
-double
-f(int x)
+double f(int x)
 {
-    ENTER();
-    double y;
+	gc_begin_func();
+	double y;
+	y = 1.0;
+	{gc_end_func(); return (x + -y);}
 
-    y = 1.0;
-    {
-        EXIT();
-        return (x + -y);
-    }
-    EXIT();
+	gc_end_func();
 }
 
-int
-main(int argc, char *argv[])
-{
-    setup_error_handlers();
-    ENTER();
-    double z;
 
-    z = f(2);
-    if (!z) {
-        MARK();
-        print_string(String_new("z==0"));
-        RELEASE();
-    }
-    else {
-        MARK();
-        print_string(String_new("z!=0"));
-        RELEASE();
-    }
-    EXIT();
-    return 0;
+int main(int argc, char *argv[])
+{
+	setup_error_handlers();
+	gc_begin_func();
+	double z;
+	z = f(2);
+	if ((z == 0)) {
+		print_string(String_new("z==0"));
+	}
+	else {
+		print_string(String_new("z!=0"));
+	}
+	gc_end_func();
+
+	gc();
+	Heap_Info info = get_heap_info();
+	if ( info.live!=0 ) fprintf(stderr, "%d objects remain after collection\n", info.live);
+	gc_shutdown();
+	return 0;
 }
+

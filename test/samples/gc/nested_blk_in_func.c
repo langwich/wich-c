@@ -1,34 +1,36 @@
 #include <stdio.h>
 #include "wich.h"
-#include "refcounting.h"
+#include "gc.h"
+
 void f();
 
-void
-f()
+void f()
 {
-    ENTER();
-    STRING(x);
-    x = String_new("cat");
-    REF((void *)x);
-    {
-        MARK();
-        STRING(y);
-        STRING(z);
-        y = String_new("dog");
-        REF((void *)y);
-        z = x;
-        REF((void *)z);
-        RELEASE();
-    }
-    EXIT();
+	gc_begin_func();
+	STRING(x);
+	x = String_new("cat");
+	{
+		STRING(y);
+		STRING(z);
+		y = String_new("dog");
+		z = x;
+	}
+
+	gc_end_func();
 }
 
-int
-main(int argc, char *argv[])
+
+int main(int argc, char *argv[])
 {
-    setup_error_handlers();
-    ENTER();
-    f();
-    EXIT();
-    return 0;
+	setup_error_handlers();
+	gc_begin_func();
+	f();
+	gc_end_func();
+
+	gc();
+	Heap_Info info = get_heap_info();
+	if ( info.live!=0 ) fprintf(stderr, "%d objects remain after collection\n", info.live);
+	gc_shutdown();
+	return 0;
 }
+

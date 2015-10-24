@@ -1,56 +1,47 @@
 #include <stdio.h>
 #include "wich.h"
-#include "refcounting.h"
-bool foo(int x);
+#include "gc.h"
 
+bool foo(int x);
 bool bar(int x);
 
-bool
-foo(int x)
+bool foo(int x)
 {
-    ENTER();
-    {
-        EXIT();
-        return (x < 10);
-    }
-    EXIT();
+	gc_begin_func();
+	{gc_end_func(); return (x < 10);}
+
+	gc_end_func();
 }
 
-bool
-bar(int x)
+bool bar(int x)
 {
-    ENTER();
-    if ((x < 1)) {
-        MARK();
-        {
-            EXIT();
-            return true;
-        }
-        RELEASE();
-    }
-    else {
-        MARK();
-        {
-            EXIT();
-            return false;
-        }
-        RELEASE();
-    }
-    EXIT();
+	gc_begin_func();
+	if ((x < 1)) {
+		{gc_end_func(); return true;}
+	}
+	else {
+		{gc_end_func(); return false;}
+	}
+
+	gc_end_func();
 }
 
-int
-main(int argc, char *argv[])
+
+int main(int argc, char *argv[])
 {
-    setup_error_handlers();
-    ENTER();
-    bool x;
+	setup_error_handlers();
+	gc_begin_func();
+	bool x;
+	bool y;
+	x = bar(5);
+	y = foo(1);
+	printf("%d\n", (x || y));
+	gc_end_func();
 
-    bool y;
-
-    x = bar(5);
-    y = foo(1);
-    printf("%d\n", (x || y));
-    EXIT();
-    return 0;
+	gc();
+	Heap_Info info = get_heap_info();
+	if ( info.live!=0 ) fprintf(stderr, "%d objects remain after collection\n", info.live);
+	gc_shutdown();
+	return 0;
 }
+
