@@ -1,0 +1,9 @@
+@msg = private unnamed_addr constant [29 x i8] c"Hello World\0Anum1:%d\0Anum2:%d\0A\00"
+
+define i32 @main(i32 %argc, i8** %argv) {
+	%cast210 = getelementptr [29 x i8], [29 x i8]* @msg, i64 0, i64 0
+	call i32 (i8*, ...) @printf(i8* %cast210, i32 12, i8 42)
+	ret i32 0
+}
+
+declare i32 @printf(i8*, ...)
