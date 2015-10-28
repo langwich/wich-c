@@ -1,6 +1,6 @@
 package wich.codegen.model;
 
-import wich.codegen.CodeGenerator;
+import wich.codegen.source.CodeGenerator;
 import wich.semantics.SymbolTable;
 import wich.semantics.symbols.WVariableSymbol;
 

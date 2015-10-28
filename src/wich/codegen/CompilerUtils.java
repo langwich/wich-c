@@ -27,11 +27,15 @@ import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.TokenStream;
+import org.antlr.v4.runtime.misc.NotNull;
+import org.antlr.v4.runtime.misc.Nullable;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
 import wich.codegen.model.File;
+import wich.codegen.source.CodeGenerator;
+import wich.codegen.source.InjectRefCounting;
 import wich.errors.ErrorType;
 import wich.errors.WichErrorHandler;
 import wich.parser.WichLexer;
@@ -43,7 +47,9 @@ import wich.semantics.DefineSymbols;
 import wich.semantics.FinalComputeTypes;
 import wich.semantics.SymbolTable;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -195,4 +201,20 @@ public class CompilerUtils {
 	public static URL getResourceFile(String resName) {
 		return CompilerUtils.class.getClassLoader().getResource(resName);
 	}
+
+	public static String stripBrackets(String s) {
+		return s.substring(1,s.length()-1);
+	}
+
+	/** e.g., replaceFileSuffix("foo.om", ".java") */
+	public static String replaceFileSuffix(String s, String suffix) {
+		if ( s==null || suffix==null ) return s;
+		int dot = s.lastIndexOf('.');
+		return s.substring(0,dot)+suffix;
+	}
+
+	public static String stripFirstLast(String s) {
+		return s.substring(1,s.length()-1);
+	}
+
 }

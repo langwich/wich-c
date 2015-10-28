@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-package wich.codegen;
+package wich.codegen.source;
 
 import org.antlr.symtab.Scope;
 import wich.codegen.model.ArgDef;
@@ -36,6 +36,7 @@ import wich.codegen.model.RefCountREF;
 import wich.codegen.model.ReturnStat;
 import wich.codegen.model.VarInitStat;
 import wich.codegen.model.expr.VarRef;
+import wich.codegen.source.CodeGenerator;
 import wich.semantics.symbols.WVariableSymbol;
 
 public class InjectRefCounting {

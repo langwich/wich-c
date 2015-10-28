@@ -1,4 +1,4 @@
-package wich.codegen;
+package wich.codegen.source;
 
 import org.antlr.symtab.Scope;
 import org.antlr.symtab.Type;
