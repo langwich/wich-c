@@ -41,6 +41,7 @@ public class ASM {
 	public Instr fmul()				{ return new Instr("FMUL"); }
 	public Instr fdiv()				{ return new Instr("FDIV"); }
 
+
 	public Instr or()				{ return new Instr("OR"); }
 	public Instr and()				{ return new Instr("AND"); }
 

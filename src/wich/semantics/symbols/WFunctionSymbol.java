@@ -58,12 +58,10 @@ public class WFunctionSymbol extends FunctionSymbol {
 	}
 
 	public int nlocals() {
-		int count = 0 ;
-		for(org.antlr.symtab.Symbol v :getSymbols()){
-			if (v instanceof WVariableSymbol){
-				count++;
-			}
+		int num = getSymbols().size()-nargs();
+		if (block != null) {
+			num += block.getSymbols().size();
 		}
-		return count;
+		return num;
 	}
 }

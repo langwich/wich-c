@@ -70,11 +70,11 @@ public class TestBytecodeGen {
 				"1 globals\n"+
 					"0: type=5 1/v\n"+
 				"9 instr, 35 bytes\n"+
-					"ICONST 5\n"+
-					"ICONST 4\n"+
-					"ICONST 3\n"+
-					"ICONST 2\n"+
 					"ICONST 1\n"+
+					"ICONST 2\n"+
+					"ICONST 3\n"+
+					"ICONST 4\n"+
+					"ICONST 5\n"+
 					"ICONST 5\n"+
 					"VECTOR\n"+
 					"STORE_GLOBAL 0\n"+
@@ -101,193 +101,160 @@ public class TestBytecodeGen {
 		checkCodeGen(wich, expecting);
 	}
 
-//    @Test
-//    public void testCallFunc() throws Exception {
-//        String lava =
-//                "void f() { g(3); }\n" +
-//                        "int g(int z) { return z; }\n";
-//        String expecting =
-//                "7 instr, 15 bytes\n" +
-//                        "ICONST 3\n" +
-//                        "CALL 1\n" +
-//                        "RET\n" +
-//                        "ILOAD 0\n" +
-//                        "RETV\n" +
-//                        "RET\n" +
-//                        "HALT\n";
-//        checkCodeGen(lava, expecting);
-//    }
-//
-//    @Test
-//    public void testCallFuncArgs() throws Exception {
-//        String lava =
-//                "void f(int q) { int i = g(q,true); }\n" +
-//                        "int g(int z, boolean b) { print b; return z; }\n";
-//        String expecting =
-//                "11 instr, 25 bytes\n" +
-//                        "ILOAD 0\n" +
-//                        "ICONST 1\n" +
-//                        "CALL 1\n" +
-//                        "STORE 1\n" +
-//                        "RET\n" +
-//                        "ILOAD 1\n" +
-//                        "IPRINT\n" +
-//                        "ILOAD 0\n" +
-//                        "RETV\n" +
-//                        "RET\n" +
-//                        "HALT\n";
-//        checkCodeGen(lava, expecting);
-//    }
-//
-//    @Test
-//    public void testStructStore() throws Exception {
-//        String lava =
-//                "struct User {\n" +
-//                        "  int x;\n" +
-//                        "  boolean b;\n" +
-//                        "}\n" +
-//                        "User u = new User();\n" +
-//                        "u.x = 3;\n" +
-//                        "u.b = true;\n";
-//        String expecting =
-//                "9 instr, 29 bytes\n" +
-//                        "NEW 0\n" +
-//                        "STORE_GLOBAL 0\n" +
-//                        "LOAD_GLOBAL 0\n" +
-//                        "ICONST 3\n" +
-//                        "STORE_FIELD 0\n" +
-//                        "LOAD_GLOBAL 0\n" +
-//                        "ICONST 1\n" +
-//                        "STORE_FIELD 1\n" +
-//                        "HALT\n";
-//        checkCodeGen(lava, expecting);
-//    }
-//
-//    @Test
-//    public void testStructRef() throws Exception {
-//        String lava =
-//                "struct User {\n" +
-//                        "  int x;\n" +
-//                        "  boolean b;\n" +
-//                        "}\n" +
-//                        "User u = new User();\n" +
-//                        "print u.x;\n";
-//        String expecting =
-//                "6 instr, 14 bytes\n" +
-//                        "NEW 0\n" +
-//                        "STORE_GLOBAL 0\n" +
-//                        "LOAD_GLOBAL 0\n" +
-//                        "LOAD_FIELD 0\n" +
-//                        "IPRINT\n" +
-//                        "HALT\n";
-//        checkCodeGen(lava, expecting);
-//    }
-//
-//    @Test
-//    public void testIF() throws Exception {
-//        String lava =
-//                "int i = 3;" +
-//                        "if ( i>0 ) print i;\n";
-//        String expecting =
-//                "9 instr, 25 bytes\n" +
-//                        "ICONST 3\n" +
-//                        "STORE_GLOBAL 0\n" +
-//                        "LOAD_GLOBAL 0\n" +
-//                        "ICONST 0\n" +
-//                        "IGT\n" +
-//                        "BRF 7\n" +
-//                        "LOAD_GLOBAL 0\n" +
-//                        "IPRINT\n" +
-//                        "HALT\n";
-//        checkCodeGen(lava, expecting);
-//    }
-//
-//    @Test
-//    public void testIF_ELSE() throws Exception {
-//        String lava =
-//                "int i = 3;" +
-//                        "if ( i>0 ) print i;\n" +
-//                        "else print \"hi\";";
-//        String expecting =
-//                "12 instr, 32 bytes\n" +
-//                        "ICONST 3\n" +
-//                        "STORE_GLOBAL 0\n" +
-//                        "LOAD_GLOBAL 0\n" +
-//                        "ICONST 0\n" +
-//                        "IGT\n" +
-//                        "BRF 14\n" +
-//                        "LOAD_GLOBAL 0\n" +
-//                        "IPRINT\n" +
-//                        "BR 7\n" +
-//                        "SCONST 0\n" +
-//                        "PPRINT\n" +
-//                        "HALT\n";
-//        checkCodeGen(lava, expecting);
-//    }
-//
-//    @Test
-//    public void testWHILE() throws Exception {
-//        String lava =
-//                "int i = 0;" +
-//                        "while ( i<10 ) { print i; i = i + 1; }\n";
-//        String expecting =
-//                "14 instr, 40 bytes\n" +
-//                        "ICONST 0\n" +
-//                        "STORE_GLOBAL 0\n" +
-//                        "LOAD_GLOBAL 0\n" +
-//                        "ICONST 10\n" +
-//                        "ILT\n" +
-//                        "BRF 22\n" +
-//                        "LOAD_GLOBAL 0\n" +
-//                        "IPRINT\n" +
-//                        "LOAD_GLOBAL 0\n" +
-//                        "ICONST 1\n" +
-//                        "IADD\n" +
-//                        "STORE_GLOBAL 0\n" +
-//                        "BR -28\n" +
-//                        "HALT\n";
-//        checkCodeGen(lava, expecting);
-//    }
-//
-//    @Test
-//    public void testFOR() throws Exception {
-//        String lava =
-//                "for (int i = 0; i<10; i = i + 1) { print i; }\n";
-//        String expecting =
-//                "14 instr, 40 bytes\n" +
-//                        "ICONST 0\n" +
-//                        "STORE 0\n" +
-//                        "ILOAD 0\n" +
-//                        "ICONST 10\n" +
-//                        "ILT\n" +
-//                        "BRF 22\n" +
-//                        "ILOAD 0\n" +
-//                        "IPRINT\n" +
-//                        "ILOAD 0\n" +
-//                        "ICONST 1\n" +
-//                        "IADD\n" +
-//                        "STORE 0\n" +
-//                        "BR -28\n" +
-//                        "HALT\n";
-//        checkCodeGen(lava, expecting);
-//    }
-//
-//    @Test
-//    public void testRETURN() throws Exception {
-//        String lava =
-//                "return 3;\n";
-//        String expecting =
-//                "3 instr, 7 bytes\n" +
-//                        "ICONST 3\n" +
-//                        "RETV\n" +
-//                        "HALT\n";
-//        checkCodeGen(lava, expecting);
-//    }
+	@Test
+	public void testCallFunc() throws Exception {
+		String wich =
+				"func f(){g(3)}\n" +
+				"func g(z:int):int{ return z }\n";
+		String expecting =
+				"0 strings\n"+
+				"3 functions\n"+
+				"0: addr=0 args=0 locals=0 type=0 1/f\n"+
+				"1: addr=9 args=1 locals=0 type=1 1/g\n"+
+				"0: addr=14 args=0 locals=0 type=0 4/main\n"+
+				"0 globals\n"+
+				"7 instr, 15 bytes\n" +
+					"ICONST 3\n" +
+					"CALL 1\n" +
+					"RET\n" +
+					"ILOAD 0\n" +
+					"RETV\n" +
+					"RET\n" +
+					"HALT\n";
+		checkCodeGen(wich, expecting);
+	}
+
+	@Test
+	public void testCallFuncArgs() throws Exception {
+		String wich =
+				"func f(q:int){var i = g(q,true)}\n" +
+				"func g(z:int,b:boolean):int{ print(b) return z }\n";
+		String expecting =
+				"0 strings\n"+
+				"3 functions\n"+
+					"0: addr=0 args=1 locals=1 type=0 1/f\n"+
+					"1: addr=15 args=2 locals=0 type=1 1/g\n"+
+					"0: addr=24 args=0 locals=0 type=0 4/main\n"+
+				"0 globals\n"+
+				"11 instr, 25 bytes\n" +
+						"ILOAD 0\n" +
+						"ICONST 1\n" +
+						"CALL 1\n" +
+						"STORE 1\n" +
+						"RET\n" +
+						"ILOAD 1\n" +
+						"IPRINT\n" +
+						"ILOAD 0\n" +
+						"RETV\n" +
+						"RET\n" +
+						"HALT\n";
+		checkCodeGen(wich, expecting);
+	}
+
+	@Test
+	public void testIF() throws Exception {
+		String wich =
+				"var i = 3" +
+				"if ( i>0 ) print (i)\n";
+		String expecting =
+				"0 strings\n"+
+				"1 functions\n"+
+				"0: addr=0 args=0 locals=1 type=0 4/main\n"+
+				"1 globals\n"+
+					"0: type=1 1/i\n"+
+				"9 instr, 25 bytes\n" +
+						"ICONST 3\n" +
+						"STORE_GLOBAL 0\n" +
+						"LOAD_GLOBAL 0\n" +
+						"ICONST 0\n" +
+						"IGT\n" +
+						"BRF 7\n" +
+						"LOAD_GLOBAL 0\n" +
+						"IPRINT\n" +
+						"HALT\n";
+		checkCodeGen(wich, expecting);
+	}
+
+	@Test
+	public void testIF_ELSE() throws Exception {
+		String wich =
+				"var i = 3" +
+				"if ( i>0 ) print (i)\n" +
+				"else print (\"hi\")";
+		String expecting =
+				"1 strings\n"+
+				"0: 2/hi\n"+
+				"1 functions\n"+
+					"0: addr=0 args=0 locals=1 type=0 4/main\n"+
+				"1 globals\n"+
+						"0: type=1 1/i\n"+
+				"12 instr, 32 bytes\n" +
+						"ICONST 3\n" +
+						"STORE_GLOBAL 0\n" +
+						"LOAD_GLOBAL 0\n" +
+						"ICONST 0\n" +
+						"IGT\n" +
+						"BRF 14\n" +
+						"LOAD_GLOBAL 0\n" +
+						"IPRINT\n" +
+						"BR 7\n" +
+						"SCONST 0\n" +
+						"SPRINT\n" +
+						"HALT\n";
+		checkCodeGen(wich, expecting);
+	}
+
+	@Test
+	public void testWHILE() throws Exception {
+		String wich =
+				"var i = 0" +
+				"while ( i<10 ) {i = i + 1 }\n"+
+				"print(i)";
+		String expecting =
+				"0 strings\n"+
+				"1 functions\n"+
+				"0: addr=0 args=0 locals=1 type=0 4/main\n"+
+				"1 globals\n"+
+				"0: type=1 1/i\n"+
+				"14 instr, 40 bytes\n"+
+					"ICONST 0\n"+
+					"STORE_GLOBAL 0\n"+
+					"LOAD_GLOBAL 0\n"+
+					"ICONST 10\n"+
+					"ILT\n"+
+					"BRF 18\n"+
+					"LOAD_GLOBAL 0\n"+
+					"ICONST 1\n"+
+					"IADD\n"+
+					"STORE 0\n"+
+					"BR -24\n"+
+					"LOAD_GLOBAL 0\n"+
+					"IPRINT\n"+
+					"HALT\n";
+		checkCodeGen(wich, expecting);
+	}
+
+
+	@Test
+	public void testRETURN() throws Exception {
+		String wich =
+				"return 3\n";
+		String expecting =
+				"0 strings\n"+
+				"1 functions\n"+
+				"0: addr=0 args=0 locals=0 type=0 4/main\n"+
+				"0 globals\n"+
+				"3 instr, 7 bytes\n" +
+					"ICONST 3\n" +
+					"RETV\n" +
+					"HALT\n";
+		checkCodeGen(wich, expecting);
+	}
 
 	public void checkCodeGen(String wich, String expecting) throws IOException {
 		Trans tool = new Trans();
-        SymbolTable symtab = new SymbolTable();
-        WichParser.ScriptContext tree = tool.semanticsPhase(wich, symtab);
+		SymbolTable symtab = new SymbolTable();
+		WichParser.ScriptContext tree = tool.semanticsPhase(wich, symtab);
 		BytecodeWriter gen = new BytecodeWriter("foo", tool, symtab,tree);
 		String result = gen.generateObjectFile();
 		result = result.replaceAll("\t", "");

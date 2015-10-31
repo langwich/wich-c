@@ -88,6 +88,7 @@ public class DefineSymbols extends CommonWichListener {
 		}
 		ctx.scope = f;
 		currentScope.define(f);
+		symtab.functions.put(ctx.ID().getText(),f);
 		pushScope(f);
 	}
 

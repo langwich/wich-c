@@ -45,7 +45,7 @@ public class BytecodeWriter {
             int numLocalsAndArgs = f.nlocals();
             int numArgs = f.nargs();
             buf.append(String.format("\t%d: addr=%d args=%d locals=%d type=%d %d/%s\n",
-                    f.getSymbolIndex(), f.address, numArgs, numLocalsAndArgs-numArgs,
+                    f.getSymbolIndex(), f.address, numArgs, numLocalsAndArgs,
                     f.getType().getVMTypeIndex(), s.length(), s));
         }
         buf.append(String.format("%d globals\n", symtab.globals.size()));
