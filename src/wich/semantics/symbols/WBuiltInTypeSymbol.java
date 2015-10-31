@@ -43,4 +43,8 @@ public class WBuiltInTypeSymbol extends BaseSymbol implements Type {
 	public int getTypeIndex() {
 		return typename.ordinal();
 	}
+
+	public int getVMTypeIndex() {
+		return -1;
+	}
 }

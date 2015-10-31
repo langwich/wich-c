@@ -23,9 +23,15 @@ SOFTWARE.
 */
 package wich.semantics.symbols;
 
+import wich.codegen.CompilerUtils;
+
 public class WVector extends WBuiltInTypeSymbol {
 	public WVector() {
 		super("[]", TYPENAME.VECTOR);
+	}
+
+	public int getVMTypeIndex() {
+		return CompilerUtils.VECTOR_TYPE;
 	}
 
 }

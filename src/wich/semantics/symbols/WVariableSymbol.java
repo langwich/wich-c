@@ -24,12 +24,23 @@ SOFTWARE.
 package wich.semantics.symbols;
 
 import org.antlr.symtab.VariableSymbol;
+import wich.semantics.SymbolTable;
 
 public class WVariableSymbol extends VariableSymbol {
+	//public final int index;
+
 	public WVariableSymbol(String name) {
 		super(name);
+		//index = SymbolTable.globalVarIndex++;
 	}
 
+	public int getSymbolIndex() {
+		return this.getInsertionOrderNumber();
+	}
+
+	public WBuiltInTypeSymbol getType() {
+		return (WBuiltInTypeSymbol)type;
+	}
 
 	@Override
 	public String toString() {

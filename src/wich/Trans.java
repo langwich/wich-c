@@ -24,8 +24,13 @@ SOFTWARE.
 
 package wich;
 
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import wich.codegen.CompilerUtils;
 import wich.errors.WichErrorHandler;
+import wich.parser.WichParser;
+import wich.semantics.DefineSymbols;
 import wich.semantics.SymbolTable;
 
 import java.io.FileOutputStream;
@@ -82,5 +87,11 @@ public class Trans {
 		else {
 			System.out.println(code);
 		}
+	}
+
+	public WichParser.ScriptContext semanticsPhase(String lava,SymbolTable symtab) {
+		WichErrorHandler err = new WichErrorHandler();
+		return (WichParser.ScriptContext)CompilerUtils.checkCorrectness(lava,symtab,err);
+
 	}
 }

@@ -24,14 +24,46 @@ SOFTWARE.
 package wich.semantics.symbols;
 
 import org.antlr.symtab.FunctionSymbol;
+import org.antlr.symtab.Type;
+import wich.semantics.SymbolTable;
 
 import java.util.ArrayList;
 
 public class WFunctionSymbol extends FunctionSymbol {
 	public WBlock block; // code block of the function
+	public int address;
 	public ArrayList<WBuiltInTypeSymbol> argTypes = new ArrayList<>();
 
 	public WFunctionSymbol(String funcName) {
 		super(funcName);
+		address = -1;
+	}
+
+	public int getSymbolIndex() {
+		return this.getInsertionOrderNumber();
+	}
+
+	public WBuiltInTypeSymbol getType() {
+		return (WBuiltInTypeSymbol)retType;
+	}
+
+	public int nargs() {
+		int count = 0 ;
+		for(org.antlr.symtab.Symbol v :getSymbols()){
+			if (v instanceof WArgSymbol){
+				count++;
+			}
+		}
+		return count;
+	}
+
+	public int nlocals() {
+		int count = 0 ;
+		for(org.antlr.symtab.Symbol v :getSymbols()){
+			if (v instanceof WVariableSymbol){
+				count++;
+			}
+		}
+		return count;
 	}
 }
