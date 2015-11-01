@@ -23,8 +23,14 @@ SOFTWARE.
 */
 package wich.semantics.symbols;
 
+import wich.codegen.CompilerUtils;
+
 public class WInt extends WBuiltInTypeSymbol {
 	public WInt() {
 		super("int", TYPENAME.INT);
+	}
+
+	public int getVMTypeIndex() {
+		return CompilerUtils.INT_TYPE;
 	}
 }

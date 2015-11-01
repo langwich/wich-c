@@ -23,8 +23,14 @@ SOFTWARE.
 */
 package wich.semantics.symbols;
 
+import wich.codegen.CompilerUtils;
+
 public class WString extends WBuiltInTypeSymbol {
 	public WString() {
 		super("string", TYPENAME.STRING);
+	}
+
+	public int getVMTypeIndex() {
+		return CompilerUtils.STRING_TYPE;
 	}
 }

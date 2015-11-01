@@ -30,20 +30,21 @@ import org.antlr.symtab.PredefinedScope;
 import org.antlr.symtab.Scope;
 import org.antlr.symtab.Symbol;
 import org.antlr.symtab.Type;
+import wich.parser.WichParser;
 import wich.parser.WichParser.ExprContext;
-import wich.semantics.symbols.WBlock;
-import wich.semantics.symbols.WBoolean;
-import wich.semantics.symbols.WFloat;
-import wich.semantics.symbols.WFunctionSymbol;
-import wich.semantics.symbols.WInt;
-import wich.semantics.symbols.WString;
-import wich.semantics.symbols.WVector;
-import wich.semantics.symbols.WVoid;
+import wich.semantics.symbols.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class SymbolTable {
 	public BaseScope PREDEFINED = new PredefinedScope();
 	public GlobalScope GLOBALS = new GlobalScope(PREDEFINED);
 	public static final Type INVALID_TYPE = new InvalidType();
+
+	public HashMap<String,Integer> strings = new HashMap<>();
+	private int strIndex = -1;
 
 	public static final WInt _int = new WInt();
 	public static final WFloat _float = new WFloat();
@@ -72,6 +73,31 @@ public class SymbolTable {
 
 	public Scope getPredefinedScope() {
 		return PREDEFINED;
+	}
+
+	public int defineStringLiteral(String s) {
+		strings.put(s,++strIndex);
+		return strIndex;
+	}
+
+	public HashMap<String,WFunctionSymbol> getfunctions() {
+		HashMap<String,WFunctionSymbol> functions = new HashMap<>();
+		for (Symbol s :GLOBALS.getAllSymbols()) {
+			if(s instanceof WFunctionSymbol) {
+				functions.put(s.getName(),(WFunctionSymbol)s);
+			}
+		}
+		return functions;
+	}
+
+	public int computerFuncIndex(int index) {
+		int i = index;
+		for (Symbol v :GLOBALS.getSymbols()) {
+			if(v instanceof WVariableSymbol && v.getInsertionOrderNumber() < index) {
+				i--;
+			}
+		}
+		return i;
 	}
 
 	public static String dump(Scope s) {

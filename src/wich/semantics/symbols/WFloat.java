@@ -23,8 +23,14 @@ SOFTWARE.
 */
 package wich.semantics.symbols;
 
+import wich.codegen.CompilerUtils;
+
 public class WFloat extends WBuiltInTypeSymbol {
 	public WFloat() {
 		super("float", TYPENAME.FLOAT);
+	}
+
+	public int getVMTypeIndex() {
+		return CompilerUtils.FLOAT_TYPE;
 	}
 }

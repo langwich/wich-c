@@ -23,8 +23,14 @@ SOFTWARE.
 */
 package wich.semantics.symbols;
 
+import wich.codegen.CompilerUtils;
+
 public class WBoolean extends WBuiltInTypeSymbol {
 	public WBoolean() {
 		super("boolean", TYPENAME.BOOLEAN);
+	}
+
+	public int getVMTypeIndex() {
+		return CompilerUtils.BOOLEAN_TYPE;
 	}
 }

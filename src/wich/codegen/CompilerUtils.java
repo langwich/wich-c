@@ -51,6 +51,13 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class CompilerUtils {
+
+	public static final int VOID_TYPE = 0;
+	public static final int INT_TYPE = 1;
+	public static final int FLOAT_TYPE	= 2;
+	public static final int BOOLEAN_TYPE = 3;
+	public static final int STRING_TYPE = 4;
+	public static final int VECTOR_TYPE = 5;
 	/*
 -- Installing: /usr/local/wich/lib/libmalloc_common.a
 -- Installing: /usr/local/wich/lib/libfreelist.a
@@ -195,4 +202,22 @@ public class CompilerUtils {
 	public static URL getResourceFile(String resName) {
 		return CompilerUtils.class.getClassLoader().getResource(resName);
 	}
+
+
+	public static String stripBrackets(String s) {
+		return s.substring(1,s.length()-1);
+	}
+
+	/** e.g., replaceFileSuffix("foo.om", ".java") */
+	public static String replaceFileSuffix(String s, String suffix) {
+		if ( s==null || suffix==null ) return s;
+		int dot = s.lastIndexOf('.');
+		return s.substring(0,dot)+suffix;
+	}
+
+	public static String stripFirstLast(String s) {
+		return s.substring(1,s.length()-1);
+	}
+
 }
+
