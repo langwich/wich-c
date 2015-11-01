@@ -77,7 +77,7 @@ public class BytecodeGenerator extends WichBaseVisitor<Code> {
 
 		WFunctionSymbol f = new WFunctionSymbol("main");
 		f.setType(SymbolTable._void);
-		symtab.functions.put(f.getName(), f);
+		currentScope.define(f);
 		Code main = Code.None;
 		for (WichParser.StatementContext s : ctx.statement()){
 			main = main.join(visit(s));
@@ -95,8 +95,6 @@ public class BytecodeGenerator extends WichBaseVisitor<Code> {
 		Code func = visit(ctx.block());
 		String funcName = ctx.ID().getText();
 		functionBodies.put(funcName, func);
-		//symtab.functions.put(funcName,(WFunctionSymbol)currentScope.resolve(funcName));
-		//func = func.join(asm.ret());
 		popScope();
 		return Code.None; // don't hook onto other bodies
 	}
@@ -124,15 +122,7 @@ public class BytecodeGenerator extends WichBaseVisitor<Code> {
 	public Code visitAssign(@NotNull WichParser.AssignContext ctx) {
 		Code code = visit(ctx.expr());
 		WVariableSymbol v = (WVariableSymbol)currentScope.resolve(ctx.ID().getText());
-		Instr store;
-		if ( currentScope ==symtab.GLOBALS ) {
-			store = asm.store_global(v.getSymbolIndex());
-		}
-		else {
-			//store = asm.store(((WFunctionSymbol)currentScope.getEnclosingScope()).nargs()+v.getSymbolIndex());
-			store = asm.store(v.getSymbolIndex());
-		}
-		code = code.join(store);
+		code = code.join(asm.store(v.getInsertionOrderNumber()));
 		return code;
 	}
 
@@ -140,18 +130,18 @@ public class BytecodeGenerator extends WichBaseVisitor<Code> {
 	public Code visitVardef(@NotNull WichParser.VardefContext ctx) {
 		WVariableSymbol v = (WVariableSymbol)currentScope.resolve(ctx.ID().getText());
 		if (currentScope == symtab.GLOBALS) {
-			symtab.globals.put(ctx.ID().getText(),v);
-			symtab.functions.get("main").define(v);
+			symtab.getfunctions().get("main").define(v);
 		}
 		Code code = visit(ctx.expr());
-		Instr store;
-		if ( currentScope == symtab.GLOBALS ) {
-			store = asm.store_global(v.getSymbolIndex());
+		if (v.getType() != symtab._vector) {
+			Instr store;
+			if (currentScope == symtab.GLOBALS) {
+				store = asm.store(v.getInsertionOrderNumber());
+			} else {
+				store = asm.store(((WFunctionSymbol) currentScope.getEnclosingScope()).nargs() + v.getInsertionOrderNumber());
+			}
+			code = code.join(store);
 		}
-		else {
-			store = asm.store(((WFunctionSymbol)currentScope.getEnclosingScope()).nargs()+v.getSymbolIndex());
-		}
-		code = code.join(store);
 		return code;
 	}
 
@@ -166,7 +156,7 @@ public class BytecodeGenerator extends WichBaseVisitor<Code> {
 		if(ctx.expr_list() != null) {
 			code = code.join(visit(ctx.expr_list()));
 		}
-		int i = symtab.functions.get(ctx.ID().getText()).getInsertionOrderNumber();
+		int i =  currentScope.resolve(ctx.ID().getText()).getInsertionOrderNumber();
 		return code.join(asm.call(i));
 	}
 
@@ -198,8 +188,11 @@ public class BytecodeGenerator extends WichBaseVisitor<Code> {
 			else if(type instanceof WString) {
 				code = code.join(asm.sprint());
 			}
-			else {
+			else if(type instanceof WVector) {
 				code = code.join(asm.vprint());
+			}
+			else {
+				code = code.join(asm.bprint());
 			}
 		}
 		return code;
@@ -222,6 +215,13 @@ public class BytecodeGenerator extends WichBaseVisitor<Code> {
 	}
 
 	@Override
+	public Code visitFloat(@NotNull WichParser.FloatContext ctx) {
+		Code code = Code.None;
+		code = code.join(asm.fconst(Float.valueOf(ctx.FLOAT().getText())));
+		return code;
+	}
+
+	@Override
 	public Code visitIdentifier(@NotNull WichParser.IdentifierContext ctx) {
 		Symbol symbol = currentScope.resolve(ctx.ID().getText());
 		return load(symbol);
@@ -230,32 +230,26 @@ public class BytecodeGenerator extends WichBaseVisitor<Code> {
 	public Code load(Symbol symbol) {
 		if ( symbol!=null && symbol instanceof WVariableSymbol) {
 			WVariableSymbol s = (WVariableSymbol)symbol;
-			int index = s.getSymbolIndex();
-			if ( symbol.getScope().getName().equals("main")) {
-				return asm.load_global(index);
+			int index = s.getInsertionOrderNumber();
+			if ( s.getType() == SymbolTable._int ) {
+				return asm.iload(index);
 			}
-			else { // must be an arg or local
-				if ( s.getType() == SymbolTable._int ) {
-					return asm.iload(index);
-				}
-				else if ( s.getType() == SymbolTable._float ) {
-					return asm.fload(index);
-				}
-				else if ( s.getType() == SymbolTable._boolean ) {
-					return asm.iload(index);
-				}
-				else if ( s.getType() == SymbolTable._string ) {
-					return asm.sload(index);
-				}
-				else {
-					return asm.vload(index);
-				}
+			else if ( s.getType() == SymbolTable._float ) {
+				return asm.fload(index);
+			}
+			else if ( s.getType() == SymbolTable._boolean ) {
+				return asm.iload(index);
+			}
+			else if ( s.getType() == SymbolTable._string ) {
+				return asm.sload(index);
+			}
+			else {
+				return asm.vload(index);
 			}
 		}
 		return Code.None;
 	}
-
-
+	
 		@Override
 	public Code visitString(@NotNull WichParser.StringContext ctx) {
 		Code code = Code.None;
@@ -280,10 +274,12 @@ public class BytecodeGenerator extends WichBaseVisitor<Code> {
 
 	@Override
 	public Code visitVector(@NotNull WichParser.VectorContext ctx) {
+		Symbol vector = currentScope.resolve(((WichParser.VardefContext) ctx.getParent().getParent()).ID().getText());
 		Code code = Code.None;
-		code = code.join(visit(ctx.expr_list()));
 		code = code.join(asm.iconst(ctx.expr_list().expr().size()));
 		code = code.join(asm.vector());
+		code = code.join(asm.store(vector.getInsertionOrderNumber()));
+		code = code.join(visit(ctx.expr_list()));
 		return code;
 	}
 
@@ -291,10 +287,25 @@ public class BytecodeGenerator extends WichBaseVisitor<Code> {
 	public Code visitExpr_list(@NotNull WichParser.Expr_listContext ctx) {
 		Code code = Code.None;
 		List<WichParser.ExprContext> e = ctx.expr();
-		for (int i = 0; i < e.size(); i++) {
-			code = code.join(visit(e.get(i)));
+		if(ctx.getParent() instanceof WichParser.VectorContext) {
+			for(int i = 0; i < e.size(); i++) {
+				Symbol vector = getVectorSymbol(ctx, ((WichParser.VardefContext) ctx.getParent().getParent().getParent()).ID().getText());
+				code = code.join(asm.vload(vector.getInsertionOrderNumber()));
+				code = code.join(asm.iconst(i + 1));
+				code = code.join(visit(e.get(i)));
+				code = code.join(asm.store_index());
+			}
+		}
+		else {
+			for(int i = 0; i < e.size(); i++) {
+				code = code.join(visit(e.get(i)));
+			}
 		}
 		return code;
+	}
+
+	private Symbol getVectorSymbol(@NotNull WichParser.Expr_listContext ctx, String text) {
+		return currentScope.resolve(text);
 	}
 
 	@Override

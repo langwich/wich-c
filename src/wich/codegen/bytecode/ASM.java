@@ -16,9 +16,6 @@ import java.util.Map;
 public class ASM {
 	public List<String> instructions = new ArrayList<String>(); // final list of instructions
 	public List<String> buffer = new ArrayList<String>(); // build up code until we "commit"/save to a node
-	public int ip = 0;				// write to which address next?
-	public int instrIndex = 0;		// write to which instruction line next?
-	public Map<String, Integer> funcNameToAddr = new LinkedHashMap<String, Integer>();
 
 	/** assume little-endian (yuck) used by x86 and ARM on BeagleBone Black. */
 	public boolean littleEndian = true;
@@ -40,6 +37,8 @@ public class ASM {
 	public Instr fsub()				{ return new Instr("FSUB"); }
 	public Instr fmul()				{ return new Instr("FMUL"); }
 	public Instr fdiv()				{ return new Instr("FDIV"); }
+	public Instr vadd()				{ return new Instr("VADD");	}
+	public Instr sadd()				{ return new Instr("SADD");	}
 
 
 	public Instr or()				{ return new Instr("OR"); }
@@ -50,10 +49,11 @@ public class ASM {
 	public Instr not()				{ return new Instr("NOT"); }
 
 	public Instr i2f()				{ return new Instr("I2F"); }
-	public Instr f2i()				{ return new Instr("F2I"); }
 	public Instr i2s()				{ return new Instr("I2S"); }
+	public Instr i2v()				{ return new Instr("I2V"); }
+	public Instr f2v()				{ return new Instr("F2V"); }
+	public Instr f2s()				{ return new Instr("F2S"); }
 	public Instr v2s()              { return new Instr("V2S"); }
-    public Instr f2v()              { return new Instr("F2V"); }
 
 
 	public Instr ieq()				{ return new Instr("IEQ"); }
@@ -77,34 +77,31 @@ public class ASM {
 	public Instr brf()				{ return new Instr("BRF", 0); }
 	public Instr brf(int a)			{ return new Instr("BRF", a); } // opnd arg is relative to next instruction being 0
 
-    public Instr iconst(int v)		{ return new Instr("ICONST", v, 5); }
+	public Instr iconst(int v)		{ return new Instr("ICONST", v, 5); }
 	public Instr fconst(float v)	{ return new Instr("FCONST", v, 5); }
 	public Instr sconst(int i)		{ return new Instr("SCONST",i); }
 
-    public Instr iload(int i)		{ return new Instr("ILOAD", i); }
+	public Instr iload(int i)		{ return new Instr("ILOAD", i); }
 	public Instr fload(int i)		{ return new Instr("FLOAD", i); }
 	public Instr vload(int i)		{ return new Instr("VLOAD", i); }
 	public Instr sload(int i)		{ return new Instr("SLOAD", i); }
 	public Instr store(int i)		{ return new Instr("STORE", i); }
 
-    public Instr vector()           { return new Instr("VECTOR"); }
+	public Instr vector()           { return new Instr("VECTOR"); }
 
-	public Instr load_global(int i)	{ return new Instr("LOAD_GLOBAL", i); }
-	public Instr store_global(int i){ return new Instr("STORE_GLOBAL", i); }
-	public Instr _new(int i)		{ return new Instr("NEW", i); }
 	public Instr free()				{ return new Instr("FREE"); }
 
 	public Instr load_index()		{ return new Instr("LOAD_INDEX"); }
 	public Instr store_index()		{ return new Instr("STORE_INDEX"); }
 	public Instr nil()				{ return new Instr("NIL"); }
-    public Instr pop()              { return new Instr("POP");  }
+	public Instr pop()              { return new Instr("POP");  }
 	public Instr call(int i)		{ return new Instr("CALL", i); }
 	public Instr ret()				{ return new Instr("RET"); }
 	public Instr retv()				{ return new Instr("RETV"); }
 
 	public Instr iprint()			{ return new Instr("IPRINT"); }
 	public Instr fprint()			{ return new Instr("FPRINT"); }
-    public Instr bprint()			{ return new Instr("BPRINT"); }
+	public Instr bprint()			{ return new Instr("BPRINT"); }
 	public Instr sprint()			{ return new Instr("SPRINT"); }
 	public Instr vprint()			{ return new Instr("VPRINT"); }
 	public Instr nop()				{ return new Instr("NOP"); }

@@ -39,10 +39,6 @@ public class WFunctionSymbol extends FunctionSymbol {
 		address = -1;
 	}
 
-	public int getSymbolIndex() {
-		return this.getInsertionOrderNumber();
-	}
-
 	public WBuiltInTypeSymbol getType() {
 		return (WBuiltInTypeSymbol)retType;
 	}
@@ -64,4 +60,6 @@ public class WFunctionSymbol extends FunctionSymbol {
 		}
 		return num;
 	}
+
+
 }
