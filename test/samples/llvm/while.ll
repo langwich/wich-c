@@ -1,6 +1,9 @@
 target triple = "x86_64-apple-macosx10.11.0"
-
-@.str = private unnamed_addr constant [7 x i8] c"%1.2f\0A\00", align 1
+%PVector = type { %heap_object, i32, i64, [0 x %_PVectorFatNode] }
+%heap_object = type {}
+%_PVectorFatNode = type { double, %_PVectorFatNodeElem* }
+%_PVectorFatNodeElem = type { %heap_object, i32, double, %_PVectorFatNodeElem* }
+%PVector_ptr = type { i32, %PVector* }
 
 ; Function Attrs: nounwind
 define i32 @main(i32 %argc, i8** %argv) {
@@ -22,3 +25,5 @@ while.end:                                        ; preds = %while.body
 }
 
 declare i32 @printf(i8*, ...)
+
+@.str = private unnamed_addr constant [7 x i8] c"%1.2f\0A\00", align 1

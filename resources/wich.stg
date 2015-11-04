@@ -88,17 +88,17 @@ Func(f,returnType,args,body)::=<<
 <\n>
 >>
 
-MainBlock(b,varDefs,stats,cleanup)::= <<
+MainBlock(b,varDefs,stats,initialize,terminate)::= <<
 <Block(...)>
 >>
 
-FuncBlock(b,varDefs,stats,cleanup)::= <<
+FuncBlock(b,varDefs,stats,initialize,terminate)::= <<
 <varDefs; separator="\n">
 <stats; separator="\n">
-<cleanup; separator="\n">
+<terminate; separator="\n">
 >>
 
-Block(b,varDefs,stats,cleanup)::= <<
+Block(b,varDefs,stats,initialize,terminate)::= <<
 <varDefs; separator="\n">
 <stats; separator="\n">
 >>

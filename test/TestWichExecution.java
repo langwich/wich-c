@@ -81,7 +81,7 @@ public class TestWichExecution extends WichBaseTest {
 				break;
 			case LLVM :
 				expectedOutputURL =
-						CompilerUtils.getResourceFile(TEST_RES_LLVM_GEND_CODE+"/"+baseName+".bc");
+						CompilerUtils.getResourceFile(TEST_RES_LLVM_GEND_CODE+"/"+baseName+".ll");
 				break;
 			case MARK_AND_COMPACT:
 			case MARK_AND_SWEEP:
@@ -104,7 +104,15 @@ public class TestWichExecution extends WichBaseTest {
 		actual = actual.replace("\n\n", "\n");
 		CompilerUtils.writeFile("/tmp/__t.c", actual, StandardCharsets.UTF_8);
 
-		// normalize the file using gnu indent (brew install gnu-indent on OS X)
+		if (target != CompilerUtils.CodeGenTarget.LLVM) actual = normalizeFile();
+
+		expected = CompilerUtils.readFile("/tmp/__expected.c", StandardCharsets.UTF_8);
+
+		Assert.assertEquals(expected, actual);
+	}
+
+	private String normalizeFile() throws IOException, InterruptedException {
+		String actual;// normalize the file using gnu indent (brew install gnu-indent on OS X)
 		exec(
 			new String[] {
 				"gindent",
@@ -125,9 +133,7 @@ public class TestWichExecution extends WichBaseTest {
 				"/tmp/__expected.c"
 			}
 		);
-		expected = CompilerUtils.readFile("/tmp/__expected.c", StandardCharsets.UTF_8);
-
-		Assert.assertEquals(expected, actual);
+		return actual;
 	}
 
 	protected void executeAndCheck(String wichFileName,

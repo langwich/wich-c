@@ -90,7 +90,7 @@ public class InjectRefCounting {
 			}
 		}
 
-//		func.body.cleanup.add(new RefCountDEREF());
+//		func.body.terminate.add(new RefCountDEREF());
 
 		currentFunc = null;
 		return func;

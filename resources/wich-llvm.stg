@@ -22,3 +22,96 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+import "wich.stg"
+
+File(f, functions, main) ::= <<
+target triple = "x86_64-apple-macosx10.11.0"
+%PVector = type { %heap_object, i32, i64, [0 x %_PVectorFatNode] }
+%heap_object = type {}
+%_PVectorFatNode = type { double, %_PVectorFatNodeElem* }
+%_PVectorFatNodeElem = type { %heap_object, i32, double, %_PVectorFatNodeElem* }
+%PVector_ptr = type { i32, %PVector* }
+
+<functions>
+<main>
+>>
+
+funcDecl(funcTemplate) ::= <<
+<funcTemplate.returnType> <funcTemplate.f.name>(<funcTemplate.args;separator=",">);<\n>
+>>
+
+MainFunc(f,returnType,args,body) ::= <<
+define i32 @main(i32 %argc, i8** %argv) {
+entry:
+	%retval_ptr = alloca i32
+	%argc_ptr = alloca i32
+	%argv_ptr = alloca i8**
+	store i32 0, %retval_ptr
+	store i32 %argc, i32* %argc_ptr
+	store i8** %argv, i8*** %argv_ptr
+<body>
+}
+<\n>
+>>
+
+Func(f,returnType,args,body) ::= <<
+define <returnType> @<f.name>(<args;separator=", ">) {
+entry:
+<args:argAlloc();separator="\n">
+<body>
+}
+<\n>
+>>
+
+ArgDef(arg,type) ::= "<type> %<arg.name>"
+
+argAlloc(arg) ::= <<
+	%<arg.arg.name>_ = alloca <arg.type>
+	store <arg.type> %<arg.arg.name>, <arg.type>* %<arg.arg.name>_
+>>
+
+FuncBlock(b,varDefs,stats,initialize,terminate)::= <<
+<initialize; separator="\n">
+<varDefs; separator="\n">
+<stats; separator="\n">
+<terminate; separator="\n">
+>>
+
+Block(b,varDefs,stats,initialize,terminate)::= <<
+<varDefs; separator="\n">
+<stats; separator="\n">
+<terminate; separator="\n">
+>>
+
+ReturnStat(r,expr)  ::= "br label %ret__"
+
+VoidType(v) ::= "void"
+IntType(t) ::= "i32"
+FloatType(t) ::= "double"
+VectorType(t) ::= "%PVector_ptr"
+StringType(t) ::= "String *"
+BooleanType(t) ::= "bool"
+TmpVarDef(t,type) ::="<typeMo> tmp<t.varIndex>;"
+
+BlockTermination(term,type) ::= <<
+	br label %ret__
+ret__:
+	br label %ret_
+
+ret_:
+	%retval = load <type>, %retval_ptr
+	ret <type> %retval
+>>
+
+BlockTerminationVoid(term,type) ::= <<
+	br label %ret__
+ret__:
+	br label %ret_
+
+ret_:
+	ret void
+>>
+
+BlockInitialization(init,type) ::= <<
+	%retval_ptr = alloca <type>
+>>

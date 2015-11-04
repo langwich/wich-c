@@ -42,7 +42,8 @@ public class Block extends Stat {
 	/** Track vardefs separately. Using add() method ensures this. */
 	@ModelElement public List<VarDefStat> varDefs  = new ArrayList<>();
 	@ModelElement public List<Stat> stats    	   = new ArrayList<>();
-	@ModelElement public List<Stat> cleanup    	   = new ArrayList<>();
+	@ModelElement public List<Stat> initialize     = new ArrayList<>();
+	@ModelElement public List<Stat> terminate      = new ArrayList<>();
 
 	public Block(Block enclosingBlock) {
 		this.enclosingBlock = enclosingBlock;

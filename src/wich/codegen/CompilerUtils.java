@@ -162,10 +162,12 @@ public class CompilerUtils {
 				templates = new STGroupFile("wich.stg");
 				break;
 			case LLVM :
+				ModelWalker modelWalker = new ModelWalker(new InjectBlockGuard());
+				modelWalker.walk(modelRoot);
 				templates = new STGroupFile("wich-llvm.stg");
 				break;
 			case REFCOUNTING :
-				ModelWalker modelWalker = new ModelWalker(new InjectRefCounting());
+				modelWalker = new ModelWalker(new InjectRefCounting());
 				modelWalker.walk(modelRoot);
 //				System.out.println("\nfinal model walk:");
 //				modelWalker = new ModelWalker(new Object() {
