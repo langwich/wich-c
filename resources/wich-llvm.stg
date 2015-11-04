@@ -46,7 +46,7 @@ entry:
 	%retval_ptr = alloca i32
 	%argc_ptr = alloca i32
 	%argv_ptr = alloca i8**
-	store i32 0, %retval_ptr
+	store i32 0, i32* %retval_ptr
 	store i32 %argc, i32* %argc_ptr
 	store i8** %argv, i8*** %argv_ptr
 <body>
@@ -99,7 +99,7 @@ ret__:
 	br label %ret_
 
 ret_:
-	%retval = load <type>, %retval_ptr
+	%retval = load <type>, <type>* %retval_ptr
 	ret <type> %retval
 >>
 
