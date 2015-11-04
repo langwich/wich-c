@@ -23,6 +23,7 @@ SOFTWARE.
 */
 package wich.semantics.symbols;
 
+import org.antlr.symtab.Scope;
 import org.antlr.symtab.VariableSymbol;
 import wich.semantics.SymbolTable;
 
@@ -44,4 +45,5 @@ public class WVariableSymbol extends VariableSymbol {
 		if (type != null) return  s + getName() + ":" + type ;
 		return s + getName();
 	}
+
 }

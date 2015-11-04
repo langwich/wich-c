@@ -241,6 +241,85 @@ public class TestBytecodeGen {
 		checkCodeGen(wich, expecting);
 	}
 
+	@Test
+	public void testNestedBlock() throws Exception {
+		String wich =
+				"var x = 3\n"+
+				"{var y = 1 print (x+y)}\n";
+		String expecting =
+				"0 strings\n" +
+				"1 functions\n" +
+					"0: addr=0 args=0 locals=2 type=0 4/main\n" +
+				"9 instr, 25 bytes\n" +
+					"ICONST 3\n" +
+					"STORE 0\n" +
+					"ICONST 1\n" +
+					"STORE 1\n" +
+					"ILOAD 0\n" +
+					"ILOAD 1\n" +
+					"IADD\n" +
+					"IPRINT\n" +
+					"HALT\n";
+		checkCodeGen(wich, expecting);
+	}
+
+	@Test
+	public void testNestedBlock2() throws Exception {
+		String wich =
+				"func f(x:int){{var y = 1 print(x+y)}}\n"+
+				"f(1)\n";
+		String expecting =
+				"0 strings\n" +
+				"2 functions\n" +
+					"0: addr=0 args=1 locals=1 type=0 1/f\n" +
+					"1: addr=17 args=0 locals=0 type=0 4/main\n" +
+				"10 instr, 26 bytes\n" +
+					"ICONST 1\n" +
+					"STORE 1\n" +
+					"ILOAD 0\n" +
+					"ILOAD 1\n" +
+					"IADD\n" +
+					"IPRINT\n" +
+					"RET\n" +
+					"ICONST 1\n" +
+					"CALL 0\n" +
+					"HALT\n";
+		checkCodeGen(wich, expecting);
+	}
+
+	@Test
+	public void testElementAssign() throws Exception{
+		String wich =
+				"var v = [1.00,2.00,3.00]\n"+
+				"v[1] = 4.00\n";
+		String expecting =
+				"0 strings\n" +
+				"1 functions\n" +
+					"0: addr=0 args=0 locals=1 type=0 4/main\n" +
+				"20 instr, 66 bytes\n" +
+					"ICONST 3\n" +
+					"VECTOR\n" +
+					"STORE 0\n" +
+					"VLOAD 0\n" +
+					"ICONST 1\n" +
+					"FCONST 1.0\n" +
+					"STORE_INDEX\n" +
+					"VLOAD 0\n" +
+					"ICONST 2\n" +
+					"FCONST 2.0\n" +
+					"STORE_INDEX\n" +
+					"VLOAD 0\n" +
+					"ICONST 3\n" +
+					"FCONST 3.0\n" +
+					"STORE_INDEX\n" +
+					"VLOAD 0\n" +
+					"ICONST 1\n" +
+					"FCONST 4.0\n" +
+					"STORE_INDEX\n" +
+					"HALT\n";
+		checkCodeGen(wich,expecting);
+	}
+
 	public void checkCodeGen(String wich, String expecting) throws IOException {
 		Trans tool = new Trans();
 		SymbolTable symtab = new SymbolTable();

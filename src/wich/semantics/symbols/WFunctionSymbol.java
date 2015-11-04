@@ -57,6 +57,11 @@ public class WFunctionSymbol extends FunctionSymbol {
 		int num = getSymbols().size()-nargs();
 		if (block != null) {
 			num += block.getSymbols().size();
+			if (block.nestedBlocks.size() != 0) {
+				for (WBlock b: block.nestedBlocks) {
+					num += b.getSymbols().size();
+				}
+			}
 		}
 		return num;
 	}
