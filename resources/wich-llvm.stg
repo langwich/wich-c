@@ -23,14 +23,10 @@ SOFTWARE.
 */
 
 import "wich.stg"
+import "wich-llvm-include.stg"
 
 File(f, functions, main) ::= <<
-target triple = "x86_64-apple-macosx10.11.0"
-%PVector = type { %heap_object, i32, i64, [0 x %_PVectorFatNode] }
-%heap_object = type {}
-%_PVectorFatNode = type { double, %_PVectorFatNodeElem* }
-%_PVectorFatNodeElem = type { %heap_object, i32, double, %_PVectorFatNodeElem* }
-%PVector_ptr = type { i32, %PVector* }
+<include()>
 
 <functions>
 <main>
