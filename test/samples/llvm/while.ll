@@ -33,7 +33,7 @@ while.block_body_0:
 	%5 = sitofp i32 %4 to double
 	%6 = fadd double 1.0, 0.00
 	%7 = fadd double %5, %6
-	%call = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str, i64 0, i64 0), double %add)
+	call i32 (i8*, ...) @printf(i8* getelementptr ([7 x i8], [7 x i8]* @pf.str, i64 0, i64 0), double %7)
 	%sub = add i32 %x, -1
 	%cmp = icmp sgt i32 %x, 1
 br label %while.block_entry_0
