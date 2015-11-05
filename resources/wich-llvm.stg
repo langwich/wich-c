@@ -65,12 +65,12 @@ File(f, functions, main) ::= <<
 MainFunc(f,returnType,args,body) ::= <<
 define i32 @main(i32 %argc, i8** %argv) {
 entry:
-	%retval_ = alloca i32
-	%argc_ = alloca i32
-	%argv_ = alloca i8**
-	store i32 0, i32* %retval_
-	store i32 %argc, i32* %argc_
-	store i8** %argv, i8*** %argv_
+%retval_ = alloca i32
+%argc_ = alloca i32
+%argv_ = alloca i8**
+store i32 0, i32* %retval_
+store i32 %argc, i32* %argc_
+store i8** %argv, i8*** %argv_
 <body>
 }
 <\n>
@@ -88,8 +88,8 @@ entry:
 ArgDef(arg,type) ::= "<type> %<arg.name>"
 
 argAlloc(arg) ::= <<
-	%<arg.arg.name>_ = alloca <arg.type>
-	store <arg.type> %<arg.arg.name>, <arg.type>* %<arg.arg.name>_
+%<arg.arg.name>_ = alloca <arg.type>
+store <arg.type> %<arg.arg.name>, <arg.type>* %<arg.arg.name>_
 >>
 
 FuncBlock(b,varDefs,stats,initialize,terminate)::= <<
@@ -106,29 +106,34 @@ Block(b,varDefs,stats,initialize,terminate)::= <<
 >>
 
 WhileStat(w,condition, stat) ::= <<
-	br label %while.block_entry_<w.num>
+br label %while.block_entry_<w.num>
 while.block_entry_<w.num>:
-	<condition>
-	br i1 %<condition.e.tempVarRef>, label %while.block_body_<w.num>, label %while.block_exit_<w.num>
+<condition>
+br i1 %<condition.e.tempVarRef>, label %while.block_body_<w.num>, label %while.block_exit_<w.num>
 while.block_body_<w.num>:
 <stat>
-	br label %while.block_entry_<w.num>
+br label %while.block_entry_<w.num>
 while.block_exit_<w.num>:
 >>
 
 VarInitStat(v,varRef,expr,type) ::= <<
-	<expr>
-	store <type> %<v.expr.tempVarRef>, <type>* %<v.name>
+<expr>
+store <type> %<v.expr.tempVarRef>, <type>* %<v.name>
+>>
+
+AssignStat(v,varRef,expr,type)::=<<
+<expr>
+store <type> %<v.expr.tempVarRef>, <type>* %<v.name>
 >>
 
 VarDefStat(v,type) ::= <<
-	%<v.name> = alloca <type>
+%<v.name> = alloca <type>
 >>
 
 ReturnStat(r,expr)  ::= "br label %ret__"
 
 BlockStatement(b,block) ::= <<
-	<block>
+<block>
 >>
 
 IntLiteral(e)	::= <<
@@ -189,26 +194,26 @@ BooleanType(t) ::= "bool"
 TmpVarDef(t,type) ::="<typeMo> tmp<t.varIndex>;"
 
 BlockTermination(term,type) ::= <<
-	br label %ret__
+br label %ret__
 ret__:
-	br label %ret_
+br label %ret_
 
 ret_:
-	%retval = load <type>, <type>* %retval_
-	ret <type> %retval
+%retval = load <type>, <type>* %retval_
+ret <type> %retval
 >>
 
 BlockTerminationVoid(term,type) ::= <<
-	br label %ret__
+br label %ret__
 ret__:
-	br label %ret_
+br label %ret_
 
 ret_:
-	ret void
+ret void
 >>
 
 BlockInitialization(init,type) ::= <<
-	%retval = alloca <type>
+%retval = alloca <type>
 >>
 
 PrintNewLine(p) 		  ::= <<printf("\n");>>

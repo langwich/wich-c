@@ -11,35 +11,35 @@ declare i32 @printf(i8*, ...)
 
 define void @f(i32 %x, %PVector_ptr %v) {
 entry:
-	%x_ = alloca i32
-	store i32 %x, i32* %x_
-	%v_ = alloca %PVector_ptr
-	store %PVector_ptr %v, %PVector_ptr* %v_
+%x_ = alloca i32
+store i32 %x, i32* %x_
+%v_ = alloca %PVector_ptr
+store %PVector_ptr %v, %PVector_ptr* %v_
 
-	br label %ret__
+br label %ret__
 ret__:
-	br label %ret_
+br label %ret_
 
 ret_:
-	ret void
+ret void
 }
 
 
 define i32 @main(i32 %argc, i8** %argv) {
 entry:
-	%retval_ = alloca i32
-	%argc_ = alloca i32
-	%argv_ = alloca i8**
-	store i32 0, i32* %retval_
-	store i32 %argc, i32* %argc_
-	store i8** %argv, i8*** %argv_
+%retval_ = alloca i32
+%argc_ = alloca i32
+%argv_ = alloca i8**
+store i32 0, i32* %retval_
+store i32 %argc, i32* %argc_
+store i8** %argv, i8*** %argv_
 
-	br label %ret__
+br label %ret__
 ret__:
-	br label %ret_
+br label %ret_
 
 ret_:
-	%retval = load i32, i32* %retval_
-	ret i32 %retval
+%retval = load i32, i32* %retval_
+ret i32 %retval
 }
 
