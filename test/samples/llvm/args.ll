@@ -27,19 +27,19 @@ ret_:
 
 define i32 @main(i32 %argc, i8** %argv) {
 entry:
-	%retval_ptr = alloca i32
-	%argc_ptr = alloca i32
-	%argv_ptr = alloca i8**
-	store i32 0, i32* %retval_ptr
-	store i32 %argc, i32* %argc_ptr
-	store i8** %argv, i8*** %argv_ptr
+	%retval_ = alloca i32
+	%argc_ = alloca i32
+	%argv_ = alloca i8**
+	store i32 0, i32* %retval_
+	store i32 %argc, i32* %argc_
+	store i8** %argv, i8*** %argv_
 
 	br label %ret__
 ret__:
 	br label %ret_
 
 ret_:
-	%retval = load i32, i32* %retval_ptr
+	%retval = load i32, i32* %retval_
 	ret i32 %retval
 }
 

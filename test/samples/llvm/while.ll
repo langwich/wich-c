@@ -11,12 +11,12 @@ declare i32 @printf(i8*, ...)
 
 define i32 @main(i32 %argc, i8** %argv) {
 entry:
-	%retval = alloca i32
-	%argc = alloca i32
-	%argv = alloca i8**
-	store i32 0, i32* %retval
-	store i32 %argc, i32* %argc
-	store i8** %argv, i8*** %argv
+	%retval_ = alloca i32
+	%argc_ = alloca i32
+	%argv_ = alloca i8**
+	store i32 0, i32* %retval_
+	store i32 %argc, i32* %argc_
+	store i8** %argv, i8*** %argv_
 
 	%x = alloca i32
 	%0 = add i32 10, 0
@@ -46,6 +46,6 @@ ret__:
 	br label %ret_
 
 ret_:
-	%retval_ = load i32, i32* %retval
+	%retval = load i32, i32* %retval_
 	ret i32 %retval
 }

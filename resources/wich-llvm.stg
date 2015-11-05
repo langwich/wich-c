@@ -65,12 +65,12 @@ File(f, functions, main) ::= <<
 MainFunc(f,returnType,args,body) ::= <<
 define i32 @main(i32 %argc, i8** %argv) {
 entry:
-	%retval = alloca i32
-	%argc = alloca i32
-	%argv = alloca i8**
-	store i32 0, i32* %retval
-	store i32 %argc, i32* %argc
-	store i8** %argv, i8*** %argv
+	%retval_ = alloca i32
+	%argc_ = alloca i32
+	%argv_ = alloca i8**
+	store i32 0, i32* %retval_
+	store i32 %argc, i32* %argc_
+	store i8** %argv, i8*** %argv_
 <body>
 }
 <\n>
@@ -194,8 +194,8 @@ ret__:
 	br label %ret_
 
 ret_:
-	%retval_ = load <type>, <type>* %retval
-	ret <type> %retval_
+	%retval = load <type>, <type>* %retval_
+	ret <type> %retval
 >>
 
 BlockTerminationVoid(term,type) ::= <<
