@@ -222,6 +222,6 @@ PrintVectorStat(pv,expr)  ::= <<print_vector(<expr>);>>
 PrintIntStat(pi,expr) 	  ::= <<printf("%d\n", <expr>);>>
 PrintFloatStat(pf,expr)   ::= <<
 <expr>
-call i32 (i8*, ...) @printf(i8* getelementptr ([7 x i8], [7 x i8]* @pf.str, i64 0, i64 0), double %<expr.e.tempVarRef>)
+%call = call i32 (i8*, ...) @printf(i8* getelementptr ([7 x i8], [7 x i8]* @pf.str, i64 0, i64 0), double %<expr.e.tempVarRef>)
 >>
 PrintBooleanStat(pb,expr) ::= <<printf("%d\n", <expr>);>>
