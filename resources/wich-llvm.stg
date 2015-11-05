@@ -118,19 +118,19 @@ while.block_exit_<w.num>:
 
 VarInitStat(v,varRef,expr,type) ::= <<
 <expr>
-store <type> %<v.expr.tempVarRef>, <type>* %<v.name>
+store <type> %<expr.e.tempVarRef>, <type>* %<v.name>
 >>
 
-AssignStat(v,varRef,expr,type)::=<<
+AssignStat(v,varRef,expr,type)::= <<
 <expr>
-store <type> %<v.expr.tempVarRef>, <type>* %<v.name>
+store <type> %<expr.e.tempVarRef>, <type>* %<v.name>
 >>
 
 VarDefStat(v,type) ::= <<
 %<v.name> = alloca <type>
 >>
 
-ReturnStat(r,expr)  ::= "br label %ret__"
+ReturnStat(r,expr)  ::= "br label %ret_"
 
 BlockStatement(b,block) ::= <<
 <block>

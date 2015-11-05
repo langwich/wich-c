@@ -41,8 +41,6 @@ store i32 %10, i32* %x
 br label %while.block_entry_0
 while.block_exit_0:
 
-br label %ret_
-
 br label %ret__
 ret__:
 br label %ret_
