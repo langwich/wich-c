@@ -164,7 +164,7 @@ FloatLiteral(f)	::= "<f.value>"
 TrueLiteral(t) ::= "<t.value>"
 FalseLiteral(f) ::="<f.value>"
 VarRef(v,type)		::= "<v.name>"
-HeapVarRef(v)	::= "<v.name>"
+HeapVarRef(v,type)	::= "<v.name>"
 
 StringLiteral(s) ::= <<
 String_new(<s.literal>)
