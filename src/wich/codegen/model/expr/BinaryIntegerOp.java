@@ -26,5 +26,6 @@ package wich.codegen.model.expr;
 public class BinaryIntegerOp extends BinaryPrimitiveOp {
 	public BinaryIntegerOp(BinaryPrimitiveOp op) {
 		super(op.left, op.wichOp, op.right);
+		tempVarRef = op.tempVarRef;
 	}
 }

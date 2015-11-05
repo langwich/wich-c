@@ -29,8 +29,10 @@ while.block_entry_0:
 	%3 = icmp sgt i32 %1, %2
 	br i1 %3, label %while.block_body_0, label %while.block_exit_0
 while.block_body_0:
-	%conv_x = sitofp i32 %x to double
-	%add = fadd double %conv_x, 1.000000e+00
+	%4 = load i32, i32* %x
+	%5 = sitofp i32 %4 to double
+	%6 = fadd double 1.0, 0.00
+	%7 = fadd double %5, %6
 	%call = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str, i64 0, i64 0), double %add)
 	%sub = add i32 %x, -1
 	%cmp = icmp sgt i32 %x, 1

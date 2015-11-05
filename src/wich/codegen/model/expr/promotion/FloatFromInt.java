@@ -21,11 +21,22 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-package wich.codegen.model.expr;
+package wich.codegen.model.expr.promotion;
 
-public class BinaryFloatOp extends BinaryPrimitiveOp {
-	public BinaryFloatOp(BinaryPrimitiveOp op) {
-		super(op.left, op.wichOp, op.right);
-		tempVarRef = op.tempVarRef;
+import org.antlr.symtab.Type;
+import wich.codegen.model.ModelElement;
+import wich.codegen.model.expr.Expr;
+import wich.semantics.SymbolTable;
+
+public class FloatFromInt extends Expr {
+	@ModelElement public final Expr expr;
+
+	public FloatFromInt(Expr intExpr) {
+		this.expr = intExpr;
+	}
+
+	@Override
+	public Type getType() {
+		return SymbolTable._float;
 	}
 }

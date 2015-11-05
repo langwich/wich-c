@@ -111,7 +111,7 @@ while.block_entry_<w.num>:
 	<condition>
 	br i1 %<condition.e.tempVarRef>, label %while.block_body_<w.num>, label %while.block_exit_<w.num>
 while.block_body_<w.num>:
-<bodyStat>
+<stat>
 	br label %while.block_entry_<w.num>
 while.block_exit_<w.num>:
 >>
@@ -127,11 +127,18 @@ VarDefStat(v,type) ::= <<
 
 ReturnStat(r,expr)  ::= "br label %ret__"
 
+BlockStatement(b,block) ::= <<
+	<block>
+>>
+
 IntLiteral(e)	::= <<
 %<e.tempVarRef> = add i32 <e.value>, 0
 >>
 
-FloatLiteral(f)	::= "<f.value>"
+FloatLiteral(e)	::= <<
+%<e.tempVarRef> = fadd double <e.value>, 0.00
+>>
+
 TrueLiteral(t) ::= "<t.value>"
 FalseLiteral(f) ::="<f.value>"
 VarRef(e,type)		::= <<
@@ -159,7 +166,7 @@ BinaryFloatOp(e,left,right) ::= <<
 %<e.tempVarRef> = <LLVMBinaryFloatOpMap.(e.wichOp)> double %<left.e.tempVarRef>, %<right.e.tempVarRef>
 >>
 
-BinaryFloatOp(e,left,right) ::= <<
+BinaryIntOp(e,left,right) ::= <<
 <left>
 <right>
 %<e.tempVarRef> = <LLVMBinaryIntOpMap.(e.wichOp)> i32 %<left.e.tempVarRef>, %<right.e.tempVarRef>
@@ -168,6 +175,10 @@ BinaryFloatOp(e,left,right) ::= <<
 BinaryStringOp(e, left, right)  ::= "<CStringBinaryOpMap.(op.wichOp)>(<left>,<right>)"
 BinaryVectorOp(e, left, right)  ::= "<CVectorBinaryOpMap.(op.wichOp)>(<left>,<right>)"
 
+FloatFromInt(e,expr) ::= <<
+<expr>
+%<e.tempVarRef> = sitofp i32 %<expr.e.tempVarRef> to double
+>>
 
 VoidType(v) ::= "void"
 IntType(t) ::= "i32"

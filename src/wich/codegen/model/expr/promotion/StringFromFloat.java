@@ -33,6 +33,6 @@ public class StringFromFloat extends Expr {
 
     @Override
     public Type getType() {
-        return SymbolTable._float;
+        return SymbolTable._string;
     }
 }

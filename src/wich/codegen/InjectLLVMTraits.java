@@ -34,8 +34,10 @@ import wich.codegen.model.VarInitStat;
 import wich.codegen.model.expr.BinaryFloatOp;
 import wich.codegen.model.expr.BinaryIntegerOp;
 import wich.codegen.model.expr.BinaryPrimitiveOp;
+import wich.codegen.model.expr.FloatLiteral;
 import wich.codegen.model.expr.IntLiteral;
 import wich.codegen.model.expr.VarRef;
+import wich.codegen.model.expr.promotion.FloatFromInt;
 import wich.semantics.SymbolTable;
 import wich.semantics.symbols.WFunctionSymbol;
 
@@ -96,6 +98,11 @@ public class InjectLLVMTraits {
 		return expr;
 	}
 
+	public OutputModelObject exitModel(FloatLiteral expr) {
+		expr.tempVarRef = currentFunction.getTempVar();
+		return expr;
+	}
+
 	public OutputModelObject exitModel(VarRef varRef) {
 		if (!varRef.isAssignment) {
 			varRef.tempVarRef = currentFunction.getTempVar();
@@ -108,17 +115,22 @@ public class InjectLLVMTraits {
 		return getBinaryExprModel(op);
 	}
 
+	public OutputModelObject exitModel(FloatFromInt expr) {
+		expr.tempVarRef = currentFunction.getTempVar();
+		return expr;
+	}
+
 	protected OutputModelObject getBinaryExprModel(BinaryPrimitiveOp op) {
 		if (op.getType() == SymbolTable._float) {
+//			System.out.println("float tempVarRef: " + op.tempVarRef);
 			return new BinaryFloatOp(op);
 		}
 		else if (op.getType() == SymbolTable._int) {
 			return new BinaryIntegerOp(op);
 		}
-		else {
-			return op;
-		}
+		else return op;
 	}
+
 	protected void enterFunction(WFunctionSymbol func) {
 		currentFunction = func;
 	}

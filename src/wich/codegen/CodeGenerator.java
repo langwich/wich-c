@@ -64,6 +64,7 @@ import wich.codegen.model.expr.StringIndexExpr;
 import wich.codegen.model.expr.VarRef;
 import wich.codegen.model.expr.VectorIndexExpr;
 import wich.codegen.model.expr.VectorLiteral;
+import wich.codegen.model.expr.promotion.FloatFromInt;
 import wich.codegen.model.expr.promotion.StringFromFloat;
 import wich.codegen.model.expr.promotion.StringFromInt;
 import wich.codegen.model.expr.promotion.StringFromVector;
@@ -473,6 +474,16 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 			else if (ctx.promoteToType == SymbolTable._string) {
 				promoteExp = promoteToString(promoteExp);
 			}
+			else if (ctx.promoteToType == SymbolTable._float) {
+				promoteExp = promoteToFloat(promoteExp);
+			}
+		}
+		return promoteExp;
+	}
+
+	private static Expr promoteToFloat(Expr promoteExp) {
+		if (promoteExp.getType() == SymbolTable._int) {
+			promoteExp = new FloatFromInt(promoteExp);
 		}
 		return promoteExp;
 	}
