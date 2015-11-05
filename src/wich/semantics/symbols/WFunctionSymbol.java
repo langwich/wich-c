@@ -33,6 +33,7 @@ public class WFunctionSymbol extends FunctionSymbol {
 	public WBlock block; // code block of the function
 	public int address;
 	public ArrayList<WBuiltInTypeSymbol> argTypes = new ArrayList<>();
+	protected int uid = 0;
 
 	public WFunctionSymbol(String funcName) {
 		super(funcName);
@@ -61,5 +62,7 @@ public class WFunctionSymbol extends FunctionSymbol {
 		return num;
 	}
 
-
+	public String getTempVar() {
+		return String.valueOf(uid++);
+	}
 }

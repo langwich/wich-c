@@ -24,7 +24,7 @@ SOFTWARE.
 package wich.codegen.model;
 
 public class BlockTermination extends Stat {
-	@ModelElement public WichType type;
+	@ModelElement public final WichType type;
 
 	public BlockTermination(WichType type) {
 		this.type = type;

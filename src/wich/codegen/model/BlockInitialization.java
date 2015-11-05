@@ -24,7 +24,7 @@ SOFTWARE.
 package wich.codegen.model;
 
 public class BlockInitialization extends Stat {
-	@ModelElement public WichType type;
+	@ModelElement public final WichType type;
 
 	public BlockInitialization(WichType type) {
 		this.type = type;

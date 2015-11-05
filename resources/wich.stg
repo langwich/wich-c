@@ -103,7 +103,7 @@ Block(b,varDefs,stats,initialize,terminate)::= <<
 <stats; separator="\n">
 >>
 
-AssignStat(a,varRef,expr)::=<<
+AssignStat(a,varRef,expr,type)::=<<
 <varRef> = <expr>;
 >>
 
@@ -132,7 +132,7 @@ BlockStatement(b,block) ::= <<
 }
 >>
 
-VarInitStat(v,varRef,expr) ::= "<varRef> = <expr>;"
+VarInitStat(v,varRef,expr,type) ::= "<varRef> = <expr>;"
 
 VarDefStat(v,type) ::= "<type> <v.name>;"
 StringVarDefStat ::= VarDefStat
@@ -163,8 +163,8 @@ IntLiteral(i)	::= "<i.value>"
 FloatLiteral(f)	::= "<f.value>"
 TrueLiteral(t) ::= "<t.value>"
 FalseLiteral(f) ::="<f.value>"
-VarRef(v)		::= "<v.name>"
-HeapVarRef(v)	::= "<v.name>"
+VarRef(v,type)		::= "<v.name>"
+HeapVarRef(v,type)	::= "<v.name>"
 
 StringLiteral(s) ::= <<
 String_new(<s.literal>)

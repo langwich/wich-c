@@ -21,41 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-package wich.codegen;
+package wich.codegen.model.expr;
 
-import wich.codegen.model.BlockInitialization;
-import wich.codegen.model.Func;
-import wich.codegen.model.MainFunc;
-import wich.codegen.model.OutputModelObject;
-import wich.codegen.model.BlockTermination;
-import wich.codegen.model.BlockTerminationVoid;
-import wich.semantics.SymbolTable;
-
-public class InjectBlockGuard {
-	public OutputModelObject visitEveryModelObject(OutputModelObject o) {
-		return o;
-	}
-
-	public OutputModelObject exitModel(Func func) {
-//		System.out.println("exitModel func");
-		if (func.returnType.type == SymbolTable._void) {
-			func.body.terminate.add(new BlockTerminationVoid());
-		}
-		else {
-			func.body.terminate.add(new BlockTermination(func.returnType));
-			func.body.initialize.add(new BlockInitialization(func.returnType));
-		}
-
-		return func;
-	}
-
-	public OutputModelObject exitModel(MainFunc func) {
-//		System.out.println("exitModel mainFunc");
-		if (func.returnType.type == SymbolTable._void) {
-			func.body.terminate.add(new BlockTerminationVoid());
-		}
-		else func.body.terminate.add(new BlockTermination(func.returnType));
-
-		return func;
+public class BinaryFloatOp extends BinaryPrimitiveOp {
+	public BinaryFloatOp(BinaryPrimitiveOp op) {
+		super(op.left, op.wichOp, op.right);
+		tempVarRef = op.tempVarRef;
 	}
 }

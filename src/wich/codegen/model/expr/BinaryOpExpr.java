@@ -25,6 +25,7 @@ package wich.codegen.model.expr;
 
 import org.antlr.symtab.Type;
 import wich.codegen.model.ModelElement;
+import wich.codegen.model.WichType;
 
 /** An operation on two operands. Split out the operation into subclasses
  *  for primitive, string, vector operand types so the auto-template-construction
