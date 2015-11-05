@@ -28,4 +28,12 @@ import wich.codegen.model.expr.Expr;
 public class WhileStat extends Stat {
 	@ModelElement public Expr condition;
 	@ModelElement public Stat stat;
+
+	protected static int count = 0;
+
+	public int num;
+
+	public WhileStat() {
+		this.num = count++;
+	}
 }

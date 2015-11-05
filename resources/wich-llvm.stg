@@ -25,6 +25,36 @@ SOFTWARE.
 import "wich.stg"
 import "wich-llvm-include.stg"
 
+LLVMBinaryFloatOpMap ::= [
+	"*":"fmul",
+	"/":"fdiv",
+	"+":"fadd",
+	"-":"fsub",
+	">":"fcmp ogt",
+	">=":"fcmp oge",
+	"<":"fcmp olt",
+	"<=":"fcmp ole",
+	"==":"fcmp oeq",
+	"!=":"fcmp one",
+	"&&":"and",
+	"||":"or"
+]
+
+LLVMBinaryIntOpMap ::= [
+	"*":"mul",
+	"/":"div",
+	"+":"add",
+	"-":"sub",
+	">":"icmp sgt",
+	">=":"icmp sge",
+	"<":"icmp slt",
+	"<=":"icmp sle",
+	"==":"icmp eq",
+	"!=":"icmp ne",
+	"&&":"and",
+	"||":"or"
+]
+
 File(f, functions, main) ::= <<
 <include()>
 
@@ -32,19 +62,15 @@ File(f, functions, main) ::= <<
 <main>
 >>
 
-funcDecl(funcTemplate) ::= <<
-<funcTemplate.returnType> <funcTemplate.f.name>(<funcTemplate.args;separator=",">);<\n>
->>
-
 MainFunc(f,returnType,args,body) ::= <<
 define i32 @main(i32 %argc, i8** %argv) {
 entry:
-	%retval_ptr = alloca i32
-	%argc_ptr = alloca i32
-	%argv_ptr = alloca i8**
-	store i32 0, i32* %retval_ptr
-	store i32 %argc, i32* %argc_ptr
-	store i8** %argv, i8*** %argv_ptr
+	%retval = alloca i32
+	%argc = alloca i32
+	%argv = alloca i8**
+	store i32 0, i32* %retval
+	store i32 %argc, i32* %argc
+	store i8** %argv, i8*** %argv
 <body>
 }
 <\n>
@@ -79,7 +105,69 @@ Block(b,varDefs,stats,initialize,terminate)::= <<
 <terminate; separator="\n">
 >>
 
+WhileStat(w,condition, stat) ::= <<
+	br label %while.block_entry_<w.num>
+while.block_entry_<w.num>:
+	<condition>
+	br i1 %<condition.e.tempVarRef>, label %while.block_body_<w.num>, label %while.block_exit_<w.num>
+while.block_body_<w.num>:
+<bodyStat>
+	br label %while.block_entry_<w.num>
+while.block_exit_<w.num>:
+>>
+
+VarInitStat(v,varRef,expr,type) ::= <<
+	<expr>
+	store <type> %<v.expr.tempVarRef>, <type>* %<v.name>
+>>
+
+VarDefStat(v,type) ::= <<
+	%<v.name> = alloca <type>
+>>
+
 ReturnStat(r,expr)  ::= "br label %ret__"
+
+IntLiteral(e)	::= <<
+%<e.tempVarRef> = add i32 <e.value>, 0
+>>
+
+FloatLiteral(f)	::= "<f.value>"
+TrueLiteral(t) ::= "<t.value>"
+FalseLiteral(f) ::="<f.value>"
+VarRef(e,type)		::= <<
+%<e.tempVarRef> = load <type>, <type>* %<e.name>
+>>
+HeapVarRef(v)	::= "<v.name>"
+
+StringLiteral(s) ::= <<
+String_new(<s.literal>)
+>>
+
+VectorLiteral(e,elems) ::= <<
+Vector_new((double []){<elems; separator=",">}, <v.vectorLength>)
+>>
+
+BinaryPrimitiveOp(e,left,right) ::= <<
+<left>
+<right>
+%<e.tempVarRef> = <LLVMBinaryIntOpMap.(e.wichOp)> i32 %<left.e.tempVarRef>, %<right.e.tempVarRef>
+>>
+
+BinaryFloatOp(e,left,right) ::= <<
+<left>
+<right>
+%<e.tempVarRef> = <LLVMBinaryFloatOpMap.(e.wichOp)> double %<left.e.tempVarRef>, %<right.e.tempVarRef>
+>>
+
+BinaryFloatOp(e,left,right) ::= <<
+<left>
+<right>
+%<e.tempVarRef> = <LLVMBinaryIntOpMap.(e.wichOp)> i32 %<left.e.tempVarRef>, %<right.e.tempVarRef>
+>>
+
+BinaryStringOp(e, left, right)  ::= "<CStringBinaryOpMap.(op.wichOp)>(<left>,<right>)"
+BinaryVectorOp(e, left, right)  ::= "<CVectorBinaryOpMap.(op.wichOp)>(<left>,<right>)"
+
 
 VoidType(v) ::= "void"
 IntType(t) ::= "i32"
@@ -95,8 +183,8 @@ ret__:
 	br label %ret_
 
 ret_:
-	%retval = load <type>, <type>* %retval_ptr
-	ret <type> %retval
+	%retval_ = load <type>, <type>* %retval
+	ret <type> %retval_
 >>
 
 BlockTerminationVoid(term,type) ::= <<
@@ -109,5 +197,15 @@ ret_:
 >>
 
 BlockInitialization(init,type) ::= <<
-	%retval_ptr = alloca <type>
+	%retval = alloca <type>
 >>
+
+PrintNewLine(p) 		  ::= <<printf("\n");>>
+PrintStringStat(ps,expr)  ::= <<print_string(<expr>);>>
+PrintVectorStat(pv,expr)  ::= <<print_vector(<expr>);>>
+PrintIntStat(pi,expr) 	  ::= <<printf("%d\n", <expr>);>>
+PrintFloatStat(pf,expr)   ::= <<
+<expr>
+call i32 (i8*, ...) printf(i8* getelementptr ([7 x i8], [7 x i8]* @pf.str, i64 0, i64 0), aaa)
+>>
+PrintBooleanStat(pb,expr) ::= <<printf("%d\n", <expr>);>>

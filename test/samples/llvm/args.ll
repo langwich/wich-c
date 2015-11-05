@@ -5,6 +5,10 @@ target triple = "x86_64-apple-macosx10.11.0"
 %_PVectorFatNodeElem = type { %heap_object, i32, double, %_PVectorFatNodeElem* }
 %PVector_ptr = type { i32, %PVector* }
 
+@pf.str = private unnamed_addr constant [7 x i8] c"%1.2f\0A\00", align 1
+
+declare i32 @printf(i8*, ...)
+
 define void @f(i32 %x, %PVector_ptr %v) {
 entry:
 	%x_ = alloca i32
@@ -38,3 +42,4 @@ ret_:
 	%retval = load i32, i32* %retval_ptr
 	ret i32 %retval
 }
+

@@ -38,7 +38,7 @@ import wich.codegen.model.ReturnHeapVarStat;
 import wich.codegen.model.ReturnStat;
 import wich.codegen.model.ReturnVectorHeapVarStat;
 import wich.codegen.model.Stat;
-import wich.codegen.model.StringLiteral;
+import wich.codegen.model.expr.StringLiteral;
 import wich.codegen.model.StringType;
 import wich.codegen.model.StringVarDefStat;
 import wich.codegen.model.VarDefStat;
@@ -240,7 +240,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		String varName = ctx.ID().getText();
 		WVariableSymbol v = (WVariableSymbol)currentScope.resolve(varName);
 		Expr expr = (Expr)visit(ctx.expr());
-		VarInitStat varInit = new VarInitStat(getVarRef(varName), expr);
+		VarInitStat varInit = new VarInitStat(getVarRef(varName), expr, getTypeModel(expr.getType()));
 		VarDefStat varDef = getVarDefStat(v);
 		return new CompositeModelObject(varDef, varInit);
 	}
@@ -257,7 +257,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	public OutputModelObject visitAssign(@NotNull WichParser.AssignContext ctx) {
 		String varName = ctx.ID().getText();
 		Expr expr      = (Expr)visit(ctx.expr());
-		return new AssignStat(getVarRef(varName), expr);
+		return new AssignStat(getVarRef(varName), expr, getTypeModel(expr.getType()));
 	}
 
 	@Override
@@ -351,8 +351,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 
 	@Override
 	public OutputModelObject visitString(@NotNull WichParser.StringContext ctx) {
-		StringLiteral s = new StringLiteral(ctx.getText());
-		return s;
+		return new StringLiteral(ctx.getText());
 	}
 
 	@Override
@@ -402,7 +401,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		if ( isHeapType(varSym.getType()) ) {
 			return new HeapVarRef(varSym);
 		}
-		return new VarRef(varSym);
+		return new VarRef(varSym, getTypeModel(varSym.getType()));
 	}
 
 	public static VarDefStat getVarDefStat(WVariableSymbol varSym) {
@@ -558,4 +557,5 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	protected void pushScope(Scope s) {currentScope = s;}
 
 	protected void popScope() {currentScope = currentScope.getEnclosingScope();}
+
 }

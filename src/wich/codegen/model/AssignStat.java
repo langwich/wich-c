@@ -29,9 +29,13 @@ import wich.codegen.model.expr.VarRef;
 public class AssignStat extends Stat {
 	@ModelElement public final VarRef varRef;
 	@ModelElement public final Expr expr;
+	@ModelElement public final WichType type;
 
-	public AssignStat(VarRef varRef, Expr expr) {
+	public String getName() {return varRef.getName();}
+
+	public AssignStat(VarRef varRef, Expr expr, WichType type) {
 		this.varRef = varRef;
 		this.expr = expr;
+		this.type = type;
 	}
 }

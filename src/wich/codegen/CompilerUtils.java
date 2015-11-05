@@ -162,7 +162,7 @@ public class CompilerUtils {
 				templates = new STGroupFile("wich.stg");
 				break;
 			case LLVM :
-				ModelWalker modelWalker = new ModelWalker(new InjectBlockGuard());
+				ModelWalker modelWalker = new ModelWalker(new InjectLLVMTraits());
 				modelWalker.walk(modelRoot);
 				templates = new STGroupFile("wich-llvm.stg");
 				break;

@@ -27,5 +27,6 @@ import org.antlr.symtab.Type;
 import wich.codegen.model.OutputModelObject;
 
 public abstract class Expr extends OutputModelObject {
+	public String tempVarRef;
 	public abstract Type getType();
 }

@@ -21,14 +21,22 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-package wich.codegen.model;
+package wich.codegen.model.expr;
 
+
+import org.antlr.symtab.Type;
 import wich.codegen.model.expr.Expr;
-import wich.codegen.model.expr.VarRef;
+import wich.semantics.SymbolTable;
 
-/** Represents the init part of var x = <expr> statement. */
-public class VarInitStat extends AssignStat {
-	public VarInitStat(VarRef varRef, Expr expr, WichType type) {
-		super(varRef, expr, type);
+public class StringLiteral extends Expr {
+	public final String literal;
+
+	public StringLiteral(String literal) {
+		this.literal = literal;
+	}
+
+	@Override
+	public Type getType() {
+		return SymbolTable._string;
 	}
 }
