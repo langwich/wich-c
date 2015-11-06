@@ -158,6 +158,7 @@ VectorFromFloat(v,vector,floatLiteral)	::= "Vector_from_float(<floatLiteral>,(<v
 StringFromVector(s,vector) ::= "String_from_vector(<vector>)"
 StringFromInt(s,intExpr) ::= "String_from_int(<intExpr>)"
 StringFromFloat(s,floatExpr) ::= "String_from_float(<floatExpr>)"
+FloatFromInt(e,expr) ::= "<expr>"
 
 IntLiteral(i)	::= "<i.value>"
 FloatLiteral(f)	::= "<f.value>"

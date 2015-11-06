@@ -213,7 +213,7 @@ ret void
 >>
 
 BlockInitialization(init,type) ::= <<
-%retval = alloca <type>
+%retval_ = alloca <type>
 >>
 
 PrintNewLine(p) 		  ::= <<printf("\n");>>

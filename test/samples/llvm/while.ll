@@ -6,6 +6,7 @@ target triple = "x86_64-apple-macosx10.11.0"
 %PVector_ptr = type { i32, %PVector* }
 
 @pf.str = private unnamed_addr constant [7 x i8] c"%1.2f\0A\00", align 1
+@pi.str = private unnamed_addr constant [4 x i8] c"%d\0A\00", align 1
 
 declare i32 @printf(i8*, ...)
 

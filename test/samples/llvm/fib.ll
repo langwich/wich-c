@@ -5,10 +5,17 @@ target triple = "x86_64-apple-macosx10.11.0"
 %_PVectorFatNodeElem = type { %heap_object, i32, double, %_PVectorFatNodeElem* }
 %PVector_ptr = type { i32, %PVector* }
 
+@pf.str = private unnamed_addr constant [7 x i8] c"%1.2f\0A\00", align 1
+@pi.str = private unnamed_addr constant [4 x i8] c"%d\0A\00", align 1
+
+declare i32 @printf(i8*, ...)
+
 define i32 @fib(i32 %x) {
-; <label>:0
-	%1 = icmp eq i32 %x, 0
-	br i1 %1, label %4, label %2
+entry:
+%x_ = alloca i32
+store i32 %x, i32* %x_
+%retval_ = alloca i32
+br i1 %1, label %4, label %2
 ; <label>:2
 	%3 = icmp eq i32 %x, 1
 	br i1 %3, label %4, label %5
@@ -24,13 +31,11 @@ define i32 @fib(i32 %x) {
 }
 
 define i32 @main(i32 %argc, i8** %argv) {
-; <label>:0
-	%1 = call i32 (i32) @fib(i32 5)
-	call i32 (i8*, ...) @printf(i8* getelementptr ([4 x i8], [4 x i8]* @str, i32 0, i32 0), i32 %1)
+entry:
+	%0 = add i32 0, 5
+	%1 = call i32 (i32) @fib(i32 %0)
+	%call = call i32 (i8*, ...) @printf(i8* getelementptr ([4 x i8], [4 x i8]* @pi.str, i64 0, i64 0), i32 %1)
 	ret i32 0
 }
-
-; declare system function(s)
-declare i32 @printf(i8*, ...)
 
 @str = private unnamed_addr constant [4 x i8] c"%d\0A\00", align 1
