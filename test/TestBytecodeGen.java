@@ -57,27 +57,18 @@ public class TestBytecodeGen {
 	@Test
 	public void testVector() throws Exception {
 		String wich =
-				"var v = [1.00,2.00,3.00]\n";
+				"var v = [1.0,2.0,3.0]\n";
 		String excepting =
 				"0 strings\n"+
 				"1 functions\n"+
 				"0: addr=0 args=0 locals=1 type=0 4/main\n" +
-					"16 instr, 52 bytes\n"+
+					"7 instr, 25 bytes\n"+
+					"FCONST 1.0\n"+
+					"FCONST 2.0\n"+
+					"FCONST 3.0\n"+
 					"ICONST 3\n"+
 					"VECTOR\n"+
 					"STORE 0\n"+
-					"VLOAD 0\n"+
-					"ICONST 1\n"+
-					"FCONST 1.0\n"+
-					"STORE_INDEX\n"+
-					"VLOAD 0\n"+
-					"ICONST 2\n"+
-					"FCONST 2.0\n"+
-					"STORE_INDEX\n"+
-					"VLOAD 0\n"+
-					"ICONST 3\n"+
-					"FCONST 3.0\n"+
-					"STORE_INDEX\n"+
 					"HALT\n";
 		checkCodeGen(wich, excepting);
 	}
@@ -290,28 +281,19 @@ public class TestBytecodeGen {
 	@Test
 	public void testElementAssign() throws Exception{
 		String wich =
-				"var v = [1.00,2.00,3.00]\n"+
-				"v[1] = 4.00\n";
+				"var v = [1.0,2.0,3.0]\n"+
+				"v[1] = 4.0\n";
 		String expecting =
 				"0 strings\n" +
 				"1 functions\n" +
 					"0: addr=0 args=0 locals=1 type=0 4/main\n" +
-				"20 instr, 66 bytes\n" +
+				"11 instr, 39 bytes\n" +
+					"FCONST 1.0\n" +
+					"FCONST 2.0\n" +
+					"FCONST 3.0\n" +
 					"ICONST 3\n" +
 					"VECTOR\n" +
 					"STORE 0\n" +
-					"VLOAD 0\n" +
-					"ICONST 1\n" +
-					"FCONST 1.0\n" +
-					"STORE_INDEX\n" +
-					"VLOAD 0\n" +
-					"ICONST 2\n" +
-					"FCONST 2.0\n" +
-					"STORE_INDEX\n" +
-					"VLOAD 0\n" +
-					"ICONST 3\n" +
-					"FCONST 3.0\n" +
-					"STORE_INDEX\n" +
 					"VLOAD 0\n" +
 					"ICONST 1\n" +
 					"FCONST 4.0\n" +
