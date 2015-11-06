@@ -131,8 +131,15 @@ VarDefStat(v,type) ::= <<
 >>
 
 IfStat(i,condition,stat,elseStat) ::= <<
-if (<condition>) <stat><if(elseStat)>
-else <elseStat><endif>
+<condition>
+br i1 %<condition.e.tempVarRef>, label %if.block_true_<i.num>, label %if.block_false_<i.num>
+if.block_true_<i.num>:
+<stat>
+br label %if.block_exit_<i.num>
+if.block_false_<i.num>:
+<elseStat>
+br label %if.block_exit_<i.num>
+if.block_exit_<i.num>:
 >>
 
 ReturnStat(r,expr)  ::= "br label %ret_"
