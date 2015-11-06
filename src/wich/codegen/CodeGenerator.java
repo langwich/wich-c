@@ -251,6 +251,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		final Expr exprModel = (Expr)visit(ctx.expr());
 		ReturnStat ret = new ReturnStat(exprModel);
 		ret.enclosingScope = currentScope;
+		ret.returnType = getTypeModel(exprModel.getType());
 		return ret;
 	}
 

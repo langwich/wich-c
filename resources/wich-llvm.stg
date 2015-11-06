@@ -142,7 +142,11 @@ br label %if.block_exit_<i.num>
 if.block_exit_<i.num>:
 >>
 
-ReturnStat(r,expr)  ::= "br label %ret_"
+ReturnStat(r,expr,returnType)  ::= <<
+<expr>
+store <returnType> %<expr.e.tempVarRef>, <returnType>* %retval_
+br label %ret_
+>>
 
 BlockStatement(b,block) ::= <<
 <block>
@@ -161,7 +165,7 @@ FalseLiteral(f) ::="<f.value>"
 VarRef(e,type)		::= <<
 %<e.tempVarRef> = load <type>, <type>* %<e.name>_
 >>
-HeapVarRef(v)	::= "<v.name>"
+HeapVarRef(v,type)	::= "<v.name>"
 
 StringLiteral(s) ::= <<
 String_new(<s.literal>)

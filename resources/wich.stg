@@ -124,7 +124,7 @@ WhileStat(w,condition, stat) ::= <<
 while (<condition>) <stat;separator="\n">
 >>
 
-ReturnStat(r,expr)  ::= "return <expr>;"
+ReturnStat(r,expr,returnType)  ::= "return <expr>;"
 
 BlockStatement(b,block) ::= <<
 {
