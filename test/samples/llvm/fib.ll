@@ -15,6 +15,7 @@ entry:
 %x_ = alloca i32
 store i32 %x, i32* %x_
 %retval_ = alloca i32
+%0 = load i32, i32% %x_
 br i1 %1, label %4, label %2
 ; <label>:2
 	%3 = icmp eq i32 %x, 1

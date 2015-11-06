@@ -118,16 +118,21 @@ while.block_exit_<w.num>:
 
 VarInitStat(v,varRef,expr,type) ::= <<
 <expr>
-store <type> %<expr.e.tempVarRef>, <type>* %<v.name>
+store <type> %<expr.e.tempVarRef>, <type>* %<v.name>_
 >>
 
 AssignStat(v,varRef,expr,type)::= <<
 <expr>
-store <type> %<expr.e.tempVarRef>, <type>* %<v.name>
+store <type> %<expr.e.tempVarRef>, <type>* %<v.name>_
 >>
 
 VarDefStat(v,type) ::= <<
-%<v.name> = alloca <type>
+%<v.name>_ = alloca <type>
+>>
+
+IfStat(i,condition,stat,elseStat) ::= <<
+if (<condition>) <stat><if(elseStat)>
+else <elseStat><endif>
 >>
 
 ReturnStat(r,expr)  ::= "br label %ret_"
@@ -147,7 +152,7 @@ FloatLiteral(e)	::= <<
 TrueLiteral(t) ::= "<t.value>"
 FalseLiteral(f) ::="<f.value>"
 VarRef(e,type)		::= <<
-%<e.tempVarRef> = load <type>, <type>* %<e.name>
+%<e.tempVarRef> = load <type>, <type>* %<e.name>_
 >>
 HeapVarRef(v)	::= "<v.name>"
 
