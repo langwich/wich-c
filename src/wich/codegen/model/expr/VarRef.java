@@ -9,7 +9,7 @@ public class VarRef extends Expr {
 	public WVariableSymbol symbol;
 	public boolean isAssignment = false;
 
-	public VarRef(WVariableSymbol symbol, WichType type) {
+	public VarRef(WVariableSymbol symbol, WichType type, boolean isAssign) {
 		this.type = type;
 		this.symbol = symbol;
 	}
