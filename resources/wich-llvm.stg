@@ -146,6 +146,7 @@ ReturnStat(r,expr,returnType)  ::= <<
 <expr>
 store <returnType> %<expr.e.tempVarRef>, <returnType>* %retval_
 br label %ret_
+return.exit_<r.num>:
 >>
 
 CallStat(c,callExpr) ::=<<
@@ -194,7 +195,7 @@ BinaryFloatOp(e,left,right,type) ::= <<
 BinaryIntOp(e,left,right,type) ::= <<
 <left>
 <right>
-%<e.tempVarRef> = <LLVMBinaryIntOpMap.(e.wichOp)> i32 %<left.e.tempVarRef>, %<right.e.tempVarRef>
+%<e.tempVarRef> = <LLVMBinaryIntOpMap.(e.wichOp)> <type> %<left.e.tempVarRef>, %<right.e.tempVarRef>
 >>
 
 BinaryStringOp(e, left, right,type)  ::= "<CStringBinaryOpMap.(op.wichOp)>(<left>,<right>)"
@@ -223,7 +224,7 @@ IntType(t) ::= "i32"
 FloatType(t) ::= "double"
 VectorType(t) ::= "%PVector_ptr"
 StringType(t) ::= "String *"
-BooleanType(t) ::= "bool"
+BooleanType(t) ::= "i1"
 TmpVarDef(t,type) ::="<typeMo> tmp<t.varIndex>;"
 
 BlockTermination(term,type) ::= <<
@@ -252,9 +253,15 @@ BlockInitialization(init,type) ::= <<
 PrintNewLine(p) 		  ::= <<printf("\n");>>
 PrintStringStat(ps,expr)  ::= <<print_string(<expr>);>>
 PrintVectorStat(pv,expr)  ::= <<print_vector(<expr>);>>
-PrintIntStat(pi,expr) 	  ::= <<printf("%d\n", <expr>);>>
+PrintIntStat(pf,expr)   ::= <<
+<expr>
+%call = call i32 (i8*, ...) @printf(i8* getelementptr ([4 x i8], [4 x i8]* @pi.str, i64 0, i64 0), i32 %<expr.e.tempVarRef>)
+>>
 PrintFloatStat(pf,expr)   ::= <<
 <expr>
 %call = call i32 (i8*, ...) @printf(i8* getelementptr ([7 x i8], [7 x i8]* @pf.str, i64 0, i64 0), double %<expr.e.tempVarRef>)
 >>
-PrintBooleanStat(pb,expr) ::= <<printf("%d\n", <expr>);>>
+PrintBooleanStat(pf,expr)   ::= <<
+<expr>
+%call = call i32 (i8*, ...) @printf(i8* getelementptr ([4 x i8], [4 x i8]* @pi.str, i64 0, i64 0), i1 %<expr.e.tempVarRef>)
+>>

@@ -32,7 +32,7 @@ public class IfStat extends Stat {
 
 	protected static int count = 0;
 
-	public int num;
+	public final int num;
 
 	public IfStat() {
 		this.num = count++;

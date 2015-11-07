@@ -21,12 +21,13 @@ store i32 %x, i32* %x_
 %3 = load i32, i32* %x_
 %4 = add i32 1, 0
 %5 = icmp eq i32 %3, %4
-%6 = or i32 %2, %5
+%6 = or i1 %2, %5
 br i1 %6, label %if.block_true_0, label %if.block_false_0
 if.block_true_0:
 %7 = load i32, i32* %x_
 store i32 %7, i32* %retval_
 br label %ret_
+return.exit_0:
 br label %if.block_exit_0
 if.block_false_0:
 br label %if.block_exit_0
@@ -42,6 +43,7 @@ if.block_exit_0:
 %16 = add i32 %11, %15
 store i32 %16, i32* %retval_
 br label %ret_
+return.exit_1:
 
 br label %ret__
 ret__:
@@ -61,9 +63,13 @@ entry:
 store i32 0, i32* %retval_
 store i32 %argc, i32* %argc_
 store i8** %argv, i8*** %argv_
+%0 = add i32 5, 0
 %1 = call i32 (i32) @fib(i32 %0)
 %call = call i32 (i8*, ...) @printf(i8* getelementptr ([4 x i8], [4 x i8]* @pi.str, i64 0, i64 0), i32 %1)
-ret i32 0
+br label %ret__
+ret__:
+br label %ret_
+ret_:
+%retval = load i32, i32* %retval_
+ret i32 %retval
 }
-
-@str = private unnamed_addr constant [4 x i8] c"%d\0A\00", align 1
