@@ -10,16 +10,15 @@ import java.util.List;
 
 public class FuncCall extends Expr {
 	public final String funcName;
-	@ModelElement public WichType retType;
 	@ModelElement public List<Expr> args = new ArrayList<>();
 
-	public FuncCall(String funcName, WichType retType) {
+	public FuncCall(String funcName, WichType type) {
 		this.funcName = funcName;
-		this.retType = retType;
+		this.type = type;
 	}
 
 	@Override
 	public Type getType() {
-		return retType.type;
+		return type.type;
 	}
 }

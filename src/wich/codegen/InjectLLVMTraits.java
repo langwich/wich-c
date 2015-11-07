@@ -30,12 +30,12 @@ import wich.codegen.model.BlockTerminationVoid;
 import wich.codegen.model.Func;
 import wich.codegen.model.MainFunc;
 import wich.codegen.model.OutputModelObject;
-import wich.codegen.model.ReturnStat;
 import wich.codegen.model.VarInitStat;
 import wich.codegen.model.expr.BinaryFloatOp;
-import wich.codegen.model.expr.BinaryIntegerOp;
+import wich.codegen.model.expr.BinaryIntOp;
 import wich.codegen.model.expr.BinaryPrimitiveOp;
 import wich.codegen.model.expr.FloatLiteral;
+import wich.codegen.model.expr.FuncCall;
 import wich.codegen.model.expr.IntLiteral;
 import wich.codegen.model.expr.VarRef;
 import wich.codegen.model.expr.promotion.FloatFromInt;
@@ -121,13 +121,18 @@ public class InjectLLVMTraits {
 		return expr;
 	}
 
+	public OutputModelObject exitModel(FuncCall expr) {
+		expr.tempVarRef = currentFunction.getTempVar();
+		return expr;
+	}
+
 	protected OutputModelObject getBinaryExprModel(BinaryPrimitiveOp op) {
 		if (op.getType() == SymbolTable._float) {
 //			System.out.println("float tempVarRef: " + op.tempVarRef);
 			return new BinaryFloatOp(op);
 		}
 		else if (op.getType() == SymbolTable._int) {
-			return new BinaryIntegerOp(op);
+			return new BinaryIntOp(op);
 		}
 		else return op;
 	}

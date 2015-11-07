@@ -23,9 +23,11 @@ SOFTWARE.
 */
 package wich.codegen.model.expr;
 
-public class BinaryIntegerOp extends BinaryPrimitiveOp {
-	public BinaryIntegerOp(BinaryPrimitiveOp op) {
-		super(op.left, op.wichOp, op.right);
+import wich.codegen.model.IntType;
+
+public class BinaryIntOp extends BinaryPrimitiveOp {
+	public BinaryIntOp(BinaryPrimitiveOp op) {
+		super(op.left, op.wichOp, op.right, new IntType());
 		tempVarRef = op.tempVarRef;
 	}
 }

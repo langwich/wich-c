@@ -23,9 +23,11 @@ SOFTWARE.
 */
 package wich.codegen.model.expr;
 
+import wich.codegen.model.FloatType;
+
 public class BinaryFloatOp extends BinaryPrimitiveOp {
 	public BinaryFloatOp(BinaryPrimitiveOp op) {
-		super(op.left, op.wichOp, op.right);
+		super(op.left, op.wichOp, op.right, new FloatType());
 		tempVarRef = op.tempVarRef;
 	}
 }

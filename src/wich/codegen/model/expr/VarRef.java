@@ -6,8 +6,6 @@ import wich.codegen.model.WichType;
 import wich.semantics.symbols.WVariableSymbol;
 
 public class VarRef extends Expr {
-	@ModelElement public final WichType type;
-
 	public WVariableSymbol symbol;
 	public boolean isAssignment = false;
 

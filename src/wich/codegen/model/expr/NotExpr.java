@@ -24,6 +24,7 @@ SOFTWARE.
 package wich.codegen.model.expr;
 
 import org.antlr.symtab.Type;
+import wich.codegen.model.BooleanType;
 import wich.codegen.model.ModelElement;
 
 public class NotExpr extends Expr {
@@ -31,6 +32,7 @@ public class NotExpr extends Expr {
 
 	public NotExpr(Expr expr) {
 		this.expr = expr;
+		this.type = new BooleanType();
 	}
 
 	@Override

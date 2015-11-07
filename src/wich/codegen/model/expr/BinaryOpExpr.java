@@ -38,10 +38,11 @@ public abstract class BinaryOpExpr extends Expr {
 	@ModelElement public Expr left;
 	@ModelElement public Expr right;
 
-	public BinaryOpExpr(Expr left, String op, Expr right) {
+	public BinaryOpExpr(Expr left, String op, Expr right, WichType type) {
 		this.left = left;
 		this.wichOp = op;
 		this.right = right;
+		this.type = type;
 	}
 
 	@Override

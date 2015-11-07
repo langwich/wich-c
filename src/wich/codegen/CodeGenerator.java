@@ -303,7 +303,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 
 	@Override
 	public OutputModelObject visitNegate(@NotNull WichParser.NegateContext ctx) {
-		return new NegateExpr((Expr)visit(ctx.expr()));
+		return new NegateExpr((Expr)visit(ctx.expr()), getTypeModel(ctx.exprType));
 	}
 
 	@Override
@@ -461,7 +461,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 			opExpr = new BinaryStringOp(left, wichOp, right);
 		}
 		else {
-			opExpr = new BinaryPrimitiveOp(left, wichOp, right);
+			opExpr = new BinaryPrimitiveOp(left, wichOp, right, left.type);
 		}
 		opExpr.resultType = operandType;
 		return opExpr;

@@ -25,6 +25,7 @@ package wich.codegen.model.expr;
 
 
 import org.antlr.symtab.Type;
+import wich.codegen.model.FloatType;
 import wich.codegen.model.ModelElement;
 import wich.semantics.SymbolTable;
 
@@ -35,6 +36,7 @@ public class VectorIndexExpr extends Expr {
 	public VectorIndexExpr(String object, Expr indexExpr) {
 		this.varName = object;
 		this.expr = indexExpr;
+		this.type = new FloatType();
 	}
 
 	@Override
