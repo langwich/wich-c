@@ -23,6 +23,11 @@ SOFTWARE.
 */
 package wich.codegen.model;
 
+public abstract class PrintStat extends Stat {
+	public static int count = 0;
+	public final int num;
 
-public class PrintNewLine extends PrintStat {
+	public PrintStat() {
+		this.num = count++;
+	}
 }

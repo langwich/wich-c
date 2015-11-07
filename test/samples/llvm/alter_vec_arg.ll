@@ -8,13 +8,21 @@ target triple = "x86_64-apple-macosx10.11.0"
 @pf.str = private unnamed_addr constant [7 x i8] c"%1.2f\0A\00", align 1
 @pi.str = private unnamed_addr constant [4 x i8] c"%d\0A\00", align 1
 
+declare i32 @printf(i8*, ...)
 
-define void @bar(%PVector_ptr* %x) {
+define void @bar(%PVector_ptr %x) {
 entry:
-	%0 = load %PVector_ptr, %PVector_ptr* %x
-	call void (%PVector_ptr, i32, double) @set_ith(%PVector_ptr %0, i32 0, double 100.00e+00)
-	call void (%PVector_ptr) @print_vector(%PVector_ptr %0)
-	ret void
+%x_ = alloca %PVector_ptr
+store %PVector_ptr %x, %PVector_ptr* %x_
+call void (%PVector_ptr, i32, double) @set_ith(%PVector_ptr %0, i32 0, double 100.00e+00)
+call void (%PVector_ptr) @print_vector(%PVector_ptr %0)
+
+br label %ret__
+ret__:
+br label %ret_
+
+ret_:
+ret void
 }
 
 define i32 @main(i32 %argc, i8** %argv) {

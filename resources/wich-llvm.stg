@@ -253,15 +253,15 @@ BlockInitialization(init,type) ::= <<
 PrintNewLine(p) 		  ::= <<printf("\n");>>
 PrintStringStat(ps,expr)  ::= <<print_string(<expr>);>>
 PrintVectorStat(pv,expr)  ::= <<print_vector(<expr>);>>
-PrintIntStat(pf,expr)   ::= <<
+PrintIntStat(pi,expr) ::= <<
 <expr>
-%call = call i32 (i8*, ...) @printf(i8* getelementptr ([4 x i8], [4 x i8]* @pi.str, i64 0, i64 0), i32 %<expr.e.tempVarRef>)
+%pi_<pi.num> = call i32 (i8*, ...) @printf(i8* getelementptr ([4 x i8], [4 x i8]* @pi.str, i64 0, i64 0), i32 %<expr.e.tempVarRef>)
 >>
-PrintFloatStat(pf,expr)   ::= <<
+PrintFloatStat(pf,expr) ::= <<
 <expr>
-%call = call i32 (i8*, ...) @printf(i8* getelementptr ([7 x i8], [7 x i8]* @pf.str, i64 0, i64 0), double %<expr.e.tempVarRef>)
+%pf_<pf.num> = call i32 (i8*, ...) @printf(i8* getelementptr ([7 x i8], [7 x i8]* @pf.str, i64 0, i64 0), double %<expr.e.tempVarRef>)
 >>
-PrintBooleanStat(pf,expr)   ::= <<
+PrintBooleanStat(pb,expr) ::= <<
 <expr>
-%call = call i32 (i8*, ...) @printf(i8* getelementptr ([4 x i8], [4 x i8]* @pi.str, i64 0, i64 0), i1 %<expr.e.tempVarRef>)
+%pb_<pb.num> = call i32 (i8*, ...) @printf(i8* getelementptr ([4 x i8], [4 x i8]* @pi.str, i64 0, i64 0), i1 %<expr.e.tempVarRef>)
 >>

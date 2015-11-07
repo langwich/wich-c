@@ -65,7 +65,7 @@ store i32 %argc, i32* %argc_
 store i8** %argv, i8*** %argv_
 %0 = add i32 5, 0
 %1 = call i32 (i32) @fib(i32 %0)
-%call = call i32 (i8*, ...) @printf(i8* getelementptr ([4 x i8], [4 x i8]* @pi.str, i64 0, i64 0), i32 %1)
+%pi_0 = call i32 (i8*, ...) @printf(i8* getelementptr ([4 x i8], [4 x i8]* @pi.str, i64 0, i64 0), i32 %1)
 br label %ret__
 ret__:
 br label %ret_
