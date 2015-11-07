@@ -29,21 +29,18 @@ target triple = "x86_64-apple-macosx10.11.0"
 %struct.heap_object = type {}
 %struct._PVectorFatNode = type { double, %struct._PVectorFatNodeElem* }
 %struct._PVectorFatNodeElem = type { %struct.heap_object, i32, double, %struct._PVectorFatNodeElem* }
-%PVector = type { %heap_object, i32, i64, [0 x %_PVectorFatNode] }
 
-declare { i32, %struct.PVector* } @PVector_init(double, i64) #1
+declare %struct.PVector_ptr @PVector_init(double, i64) #1
 
-declare void @print_pvector(i32, %struct.PVector*) #1
+declare void @print_pvector(%struct.PVector_ptr) #1
 
-declare { i32, %struct.PVector* } @PVector_new(double*, i64) #1
+declare %struct.PVector_ptr @PVector_new(double*, i64) #1
 
-declare void @set_ith(i32, %struct.PVector*, i32, double) #1
+declare void @set_ith(%struct.PVector_ptr, i32, double) #1
 
-declare i32 @printf(i8*, ...) #1
+declare double @ith(%struct.PVector_ptr, i32) #1
 
-declare double @ith(i32, %struct.PVector*, i32) #1
-
-declare i8* @PVector_as_string(i32, %struct.PVector*) #1
+declare i8* @PVector_as_string(%struct.PVector_ptr) #1
 
 ; Function Attrs: inlinehint nounwind ssp uwtable
 define internal { i32, %struct.PVector* } @PVector_copy(i32 %v.coerce0, %struct.PVector* %v.coerce1) #2 {
