@@ -34,11 +34,11 @@ if.block_exit_0:
 %8 = load i32, i32* %x_
 %9 = add i32 1, 0
 %10 = sub i32 %8, %9
-%11 = call i32 (i32) @fib(%10)
+%11 = call i32 (i32) @fib(i32 %10)
 %12 = load i32, i32* %x_
 %13 = add i32 2, 0
 %14 = sub i32 %12, %13
-%15 = call i32 (i32) @fib(%14)
+%15 = call i32 (i32) @fib(i32 %14)
 %16 = add i32 %11, %15
 store i32 %16, i32* %retval_
 br label %ret_
@@ -48,16 +48,22 @@ ret__:
 br label %ret_
 
 ret_:
-%retval = load <type>, <type>* %retval_
-ret <type> %retval
+%retval = load i32, i32* %retval_
+ret i32 %retval
 }
+
 
 define i32 @main(i32 %argc, i8** %argv) {
 entry:
-	%0 = add i32 0, 5
-	%1 = call i32 (i32) @fib(i32 %0)
-	%call = call i32 (i8*, ...) @printf(i8* getelementptr ([4 x i8], [4 x i8]* @pi.str, i64 0, i64 0), i32 %1)
-	ret i32 0
+%retval_ = alloca i32
+%argc_ = alloca i32
+%argv_ = alloca i8**
+store i32 0, i32* %retval_
+store i32 %argc, i32* %argc_
+store i8** %argv, i8*** %argv_
+%1 = call i32 (i32) @fib(i32 %0)
+%call = call i32 (i8*, ...) @printf(i8* getelementptr ([4 x i8], [4 x i8]* @pi.str, i64 0, i64 0), i32 %1)
+ret i32 0
 }
 
 @str = private unnamed_addr constant [4 x i8] c"%d\0A\00", align 1

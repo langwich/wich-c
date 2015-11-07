@@ -200,15 +200,17 @@ BinaryIntOp(e,left,right,type) ::= <<
 BinaryStringOp(e, left, right,type)  ::= "<CStringBinaryOpMap.(op.wichOp)>(<left>,<right>)"
 BinaryVectorOp(e, left, right,type)  ::= "<CVectorBinaryOpMap.(op.wichOp)>(<left>,<right>)"
 
-FuncCall(c,args,type) ::= <<
-%<c.tempVarRef> = call type (<args:argType();separator=",">) @<c.funcName>(<args:argExpr();separator=",">)
+FuncCall(e,args,type) ::= <<
+<args;separator="\n">
+%<e.tempVarRef> = call <type> (<args:argType();separator=",">) @<e.funcName>(<args:argPass();separator=",">)
 >>
 
 argType(arg) ::= <<
 <arg.type>
 >>
 
-argExpr(arg) ::= <<
+argPass(arg) ::= <<
+<arg.type> %<arg.e.tempVarRef>
 >>
 
 FloatFromInt(e,expr,type) ::= <<
