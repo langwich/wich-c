@@ -5,6 +5,9 @@ target triple = "x86_64-apple-macosx10.11.0"
 %_PVectorFatNodeElem = type { %heap_object, i32, double, %_PVectorFatNodeElem* }
 %PVector_ptr = type { i32, %PVector* }
 
+@pf.str = private unnamed_addr constant [7 x i8] c"%1.2f\0A\00", align 1
+@pi.str = private unnamed_addr constant [4 x i8] c"%d\0A\00", align 1
+
 
 define void @bar(%PVector_ptr* %x) {
 entry:

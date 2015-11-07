@@ -23,19 +23,17 @@ SOFTWARE.
 */
 package wich.codegen;
 
-import wich.codegen.model.AssignStat;
 import wich.codegen.model.BlockInitialization;
 import wich.codegen.model.BlockTermination;
 import wich.codegen.model.BlockTerminationVoid;
 import wich.codegen.model.Func;
 import wich.codegen.model.MainFunc;
 import wich.codegen.model.OutputModelObject;
-import wich.codegen.model.ReturnStat;
-import wich.codegen.model.VarInitStat;
 import wich.codegen.model.expr.BinaryFloatOp;
-import wich.codegen.model.expr.BinaryIntegerOp;
+import wich.codegen.model.expr.BinaryIntOp;
 import wich.codegen.model.expr.BinaryPrimitiveOp;
 import wich.codegen.model.expr.FloatLiteral;
+import wich.codegen.model.expr.FuncCall;
 import wich.codegen.model.expr.IntLiteral;
 import wich.codegen.model.expr.VarRef;
 import wich.codegen.model.expr.promotion.FloatFromInt;
@@ -84,16 +82,6 @@ public class InjectLLVMTraits {
 		return func;
 	}
 
-	public OutputModelObject enterModel(VarInitStat varInit) {
-		varInit.varRef.isAssignment = true;
-		return varInit;
-	}
-
-	public OutputModelObject enterModel(AssignStat assignStat) {
-		assignStat.varRef.isAssignment = true;
-		return assignStat;
-	}
-
 	public OutputModelObject exitModel(IntLiteral expr) {
 		expr.tempVarRef = currentFunction.getTempVar();
 		return expr;
@@ -105,7 +93,7 @@ public class InjectLLVMTraits {
 	}
 
 	public OutputModelObject exitModel(VarRef varRef) {
-		if (!varRef.isAssignment) {
+		if (!varRef.isAssign) {
 			varRef.tempVarRef = currentFunction.getTempVar();
 		}
 		return varRef;
@@ -121,14 +109,21 @@ public class InjectLLVMTraits {
 		return expr;
 	}
 
+	public OutputModelObject exitModel(FuncCall expr) {
+		expr.tempVarRef = currentFunction.getTempVar();
+		return expr;
+	}
+
 	protected OutputModelObject getBinaryExprModel(BinaryPrimitiveOp op) {
 		if (op.getType() == SymbolTable._float) {
-//			System.out.println("float tempVarRef: " + op.tempVarRef);
+//			System.out.println("float");
 			return new BinaryFloatOp(op);
 		}
-		else if (op.getType() == SymbolTable._int) {
-			return new BinaryIntegerOp(op);
+		else if (op.type.type == SymbolTable._int || op.type.type == SymbolTable._boolean) {
+//			System.out.println("int");
+			return new BinaryIntOp(op);
 		}
+
 		else return op;
 	}
 

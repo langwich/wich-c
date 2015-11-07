@@ -26,6 +26,7 @@ package wich.codegen.model.expr;
 
 import org.antlr.symtab.Type;
 import wich.codegen.model.ModelElement;
+import wich.codegen.model.VectorType;
 import wich.semantics.SymbolTable;
 
 import java.util.ArrayList;
@@ -37,6 +38,7 @@ public class VectorLiteral extends Expr {
 
 	public VectorLiteral(int vectorLength) {
 		this.vectorLength = vectorLength;
+		this.type = new VectorType();
 	}
 
 	@Override

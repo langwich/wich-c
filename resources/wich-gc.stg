@@ -43,9 +43,9 @@ BlockStatement(b,block) ::= <<
 }
 >>
 
-ReturnStat(r,expr)			 ::= "{gc_end_func(); return <expr>;}"
-ReturnHeapVarStat(r,expr)	 ::= "{gc_end_func(); return <expr>;}"
-ReturnVectorHeapVarStat(r,expr)::= "{gc_end_func(); return <expr>;}"
+ReturnStat(r,expr,returnType)   ::= "{gc_end_func(); return <expr>;}"
+ReturnHeapVarStat(r,expr)	    ::= "{gc_end_func(); return <expr>;}"
+ReturnVectorHeapVarStat(r,expr,type) ::= "{gc_end_func(); return <expr>;}"
 
 StringVarDefStat(v,type)	 ::= "STRING(<v.name>);"
 VectorVarDefStat(v,type)	 ::= "VECTOR(<v.name>);"

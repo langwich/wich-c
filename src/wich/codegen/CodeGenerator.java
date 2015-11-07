@@ -91,6 +91,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	protected File currentFile;
 	protected Scope currentScope;
 	protected Block currentBlock;
+	protected WFunctionSymbol currentFunction;
 
 	public CodeGenerator(SymbolTable symtab) {
 		this.templates = new STGroupFile("wich.stg");
@@ -98,8 +99,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	}
 
 	public File generate(ParserRuleContext tree) {
-		File f = (File)visit(tree);
-		return f;
+		return (File)visit(tree);
 	}
 
 	// TODO: try to add aggregate value thing
@@ -241,7 +241,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		String varName = ctx.ID().getText();
 		WVariableSymbol v = (WVariableSymbol)currentScope.resolve(varName);
 		Expr expr = (Expr)visit(ctx.expr());
-		VarInitStat varInit = new VarInitStat(getVarRef(varName), expr, getTypeModel(expr.getType()));
+		VarInitStat varInit = new VarInitStat(getVarRef(varName, true), expr, getTypeModel(expr.getType()));
 		VarDefStat varDef = getVarDefStat(v);
 		return new CompositeModelObject(varDef, varInit);
 	}
@@ -251,6 +251,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		final Expr exprModel = (Expr)visit(ctx.expr());
 		ReturnStat ret = new ReturnStat(exprModel);
 		ret.enclosingScope = currentScope;
+		ret.returnType = getTypeModel(exprModel.getType());
 		return ret;
 	}
 
@@ -258,7 +259,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	public OutputModelObject visitAssign(@NotNull WichParser.AssignContext ctx) {
 		String varName = ctx.ID().getText();
 		Expr expr      = (Expr)visit(ctx.expr());
-		return new AssignStat(getVarRef(varName), expr, getTypeModel(expr.getType()));
+		return new AssignStat(getVarRef(varName, true), expr, getTypeModel(expr.getType()));
 	}
 
 	@Override
@@ -266,7 +267,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		String varName = ctx.ID().getText();
 		Expr index     = (Expr)visit(ctx.expr(0));
 		Expr expr      = (Expr)visit(ctx.expr(1));
-		return new ElementAssignStat(getVarRef(varName), index, expr);
+		return new ElementAssignStat(getVarRef(varName, false), index, expr);
 	}
 
 	@Override
@@ -302,7 +303,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 
 	@Override
 	public OutputModelObject visitNegate(@NotNull WichParser.NegateContext ctx) {
-		return new NegateExpr((Expr)visit(ctx.expr()));
+		return new NegateExpr((Expr)visit(ctx.expr()), getTypeModel(ctx.exprType));
 	}
 
 	@Override
@@ -388,21 +389,21 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	@Override
 	public OutputModelObject visitIdentifier(@NotNull WichParser.IdentifierContext ctx) {
 		final String varName = ctx.getText();
-		return getVarRef(varName);
+		return getVarRef(varName, false);
 	}
 
 	// S U P P O R T  C O D E
 
-	public VarRef getVarRef(String varName) {
+	public VarRef getVarRef(String varName, boolean isAssign) {
 		final WVariableSymbol varSym = (WVariableSymbol)currentScope.resolve(varName);
-		return getVarRef(varSym);
+		return getVarRef(varSym, isAssign);
 	}
 
-	public static VarRef getVarRef(WVariableSymbol varSym) {
+	public static VarRef getVarRef(WVariableSymbol varSym, boolean isAssign) {
 		if ( isHeapType(varSym.getType()) ) {
-			return new HeapVarRef(varSym);
+			return new HeapVarRef(varSym, isAssign);
 		}
-		return new VarRef(varSym, getTypeModel(varSym.getType()));
+		return new VarRef(varSym, getTypeModel(varSym.getType()), isAssign);
 	}
 
 	public static VarDefStat getVarDefStat(WVariableSymbol varSym) {
@@ -416,7 +417,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	}
 
 	public static RefCountREF getREF(WVariableSymbol varSym) {
-		final VarRef varRef = getVarRef(varSym);
+		final VarRef varRef = getVarRef(varSym, false);
 		if (varSym.getType() == SymbolTable._vector) {
 			return new RefCountREFVector(varRef);
 		}
@@ -426,7 +427,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	}
 
 	public static RefCountDEREF getDEREF(WVariableSymbol varSym) {
-		final VarRef varRef = getVarRef(varSym);
+		final VarRef varRef = getVarRef(varSym, false);
 		if (varSym.getType() == SymbolTable._vector) {
 			return new RefCountDEREFVector(varRef);
 		}
@@ -460,7 +461,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 			opExpr = new BinaryStringOp(left, wichOp, right);
 		}
 		else {
-			opExpr = new BinaryPrimitiveOp(left, wichOp, right);
+			opExpr = new BinaryPrimitiveOp(left, wichOp, right, getTypeModel(left.getType()));
 		}
 		opExpr.resultType = operandType;
 		return opExpr;
@@ -568,5 +569,4 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	protected void pushScope(Scope s) {currentScope = s;}
 
 	protected void popScope() {currentScope = currentScope.getEnclosingScope();}
-
 }

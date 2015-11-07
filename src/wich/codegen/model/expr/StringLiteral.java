@@ -25,6 +25,7 @@ package wich.codegen.model.expr;
 
 
 import org.antlr.symtab.Type;
+import wich.codegen.model.StringType;
 import wich.codegen.model.expr.Expr;
 import wich.semantics.SymbolTable;
 
@@ -33,6 +34,7 @@ public class StringLiteral extends Expr {
 
 	public StringLiteral(String literal) {
 		this.literal = literal;
+		this.type = new StringType();
 	}
 
 	@Override

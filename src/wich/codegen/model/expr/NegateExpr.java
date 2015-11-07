@@ -24,13 +24,16 @@ SOFTWARE.
 package wich.codegen.model.expr;
 
 import org.antlr.symtab.Type;
+import wich.codegen.model.BooleanType;
 import wich.codegen.model.ModelElement;
+import wich.codegen.model.WichType;
 
 public class NegateExpr extends Expr{
 	@ModelElement public Expr expr;
 
-	public NegateExpr(Expr expr) {
+	public NegateExpr(Expr expr, WichType type) {
 		this.expr = expr;
+		this.type = type;
 	}
 
 	@Override
