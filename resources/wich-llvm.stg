@@ -153,6 +153,10 @@ CallStat(c,callExpr) ::=<<
 <callExpr>
 >>
 
+ElementAssignStat(e,varRef,index,expr) ::= <<
+set_ith(<varRef>, <index>-1, <expr>);
+>>
+
 BlockStatement(b,block) ::= <<
 <block>
 >>
