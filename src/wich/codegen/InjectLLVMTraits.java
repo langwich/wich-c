@@ -128,12 +128,14 @@ public class InjectLLVMTraits {
 
 	protected OutputModelObject getBinaryExprModel(BinaryPrimitiveOp op) {
 		if (op.getType() == SymbolTable._float) {
-//			System.out.println("float tempVarRef: " + op.tempVarRef);
+//			System.out.println("float");
 			return new BinaryFloatOp(op);
 		}
-		else if (op.getType() == SymbolTable._int) {
+		else if (op.type.type == SymbolTable._int || op.type.type == SymbolTable._boolean) {
+//			System.out.println("int");
 			return new BinaryIntOp(op);
 		}
+
 		else return op;
 	}
 

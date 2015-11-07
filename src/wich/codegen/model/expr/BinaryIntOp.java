@@ -27,7 +27,7 @@ import wich.codegen.model.IntType;
 
 public class BinaryIntOp extends BinaryPrimitiveOp {
 	public BinaryIntOp(BinaryPrimitiveOp op) {
-		super(op.left, op.wichOp, op.right, new IntType());
+		super(op.left, op.wichOp, op.right, op.type);
 		tempVarRef = op.tempVarRef;
 	}
 }

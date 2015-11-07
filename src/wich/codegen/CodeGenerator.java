@@ -98,8 +98,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	}
 
 	public File generate(ParserRuleContext tree) {
-		File f = (File)visit(tree);
-		return f;
+		return (File)visit(tree);
 	}
 
 	// TODO: try to add aggregate value thing
@@ -461,7 +460,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 			opExpr = new BinaryStringOp(left, wichOp, right);
 		}
 		else {
-			opExpr = new BinaryPrimitiveOp(left, wichOp, right, left.type);
+			opExpr = new BinaryPrimitiveOp(left, wichOp, right, getTypeModel(left.getType()));
 		}
 		opExpr.resultType = operandType;
 		return opExpr;

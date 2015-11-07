@@ -189,7 +189,7 @@ BinaryPrimitiveOp(e,left,right,type) ::= <<
 BinaryFloatOp(e,left,right,type) ::= <<
 <left>
 <right>
-%<e.tempVarRef> = <LLVMBinaryFloatOpMap.(e.wichOp)> double %<left.e.tempVarRef>, %<right.e.tempVarRef>
+%<e.tempVarRef> = <LLVMBinaryFloatOpMap.(e.wichOp)> <type> %<left.e.tempVarRef>, %<right.e.tempVarRef>
 >>
 
 BinaryIntOp(e,left,right,type) ::= <<
