@@ -93,7 +93,7 @@ public class InjectLLVMTraits {
 	}
 
 	public OutputModelObject exitModel(VarRef varRef) {
-		if (!varRef.isAssignment) {
+		if (!varRef.isAssign) {
 			varRef.tempVarRef = currentFunction.getTempVar();
 		}
 		return varRef;
