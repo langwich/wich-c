@@ -154,7 +154,11 @@ CallStat(c,callExpr) ::=<<
 >>
 
 ElementAssignStat(e,varRef,index,expr) ::= <<
-set_ith(<varRef>, <index>-1, <expr>);
+<varRef>
+<index>
+%index_<index.e.tempVarRef> = sub i32 %<index.e.tempVarRef>, 1
+<expr>
+call void (%struct.PVector_ptr,i32,double) @set_ith(%struct.PVector_ptr %<varRef.e.tempVarRef>, i32 %index_<index.e.tempVarRef>, double %<expr.e.tempVarRef>)
 >>
 
 BlockStatement(b,block) ::= <<
@@ -174,7 +178,10 @@ FalseLiteral(f,type) ::="<f.value>"
 VarRef(e,type)		::= <<
 %<e.tempVarRef> = load <type>, <type>* %<e.name>_
 >>
-HeapVarRef(v,type)	::= "<v.name>"
+
+HeapVarRef(e,type)	::= <<
+%<e.tempVarRef> = load <type>, <type>* %<e.name>_
+>>
 
 StringLiteral(s,type) ::= <<
 String_new(<s.literal>)
@@ -226,7 +233,7 @@ FloatFromInt(e,expr,type) ::= <<
 VoidType(v) ::= "void"
 IntType(t) ::= "i32"
 FloatType(t) ::= "double"
-VectorType(t) ::= "%PVector_ptr"
+VectorType(t) ::= "%struct.PVector_ptr"
 StringType(t) ::= "String *"
 BooleanType(t) ::= "i1"
 TmpVarDef(t,type) ::="<typeMo> tmp<t.varIndex>;"

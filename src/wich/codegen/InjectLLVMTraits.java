@@ -34,6 +34,7 @@ import wich.codegen.model.expr.BinaryIntOp;
 import wich.codegen.model.expr.BinaryPrimitiveOp;
 import wich.codegen.model.expr.FloatLiteral;
 import wich.codegen.model.expr.FuncCall;
+import wich.codegen.model.expr.HeapVarRef;
 import wich.codegen.model.expr.IntLiteral;
 import wich.codegen.model.expr.VarRef;
 import wich.codegen.model.expr.promotion.FloatFromInt;
@@ -93,6 +94,13 @@ public class InjectLLVMTraits {
 	}
 
 	public OutputModelObject exitModel(VarRef varRef) {
+		if (!varRef.isAssign) {
+			varRef.tempVarRef = currentFunction.getTempVar();
+		}
+		return varRef;
+	}
+
+	public OutputModelObject exitModel(HeapVarRef varRef) {
 		if (!varRef.isAssign) {
 			varRef.tempVarRef = currentFunction.getTempVar();
 		}

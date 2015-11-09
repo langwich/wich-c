@@ -324,7 +324,8 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		FuncCall fc = new FuncCall(funcName, retType);
 		if( ctx.expr_list()!=null ) {
 			for (WichParser.ExprContext e : ctx.expr_list().expr()) {
-				fc.args.add( (Expr)visit(e) );
+				Expr arg = (Expr) visit(e);
+				fc.args.add( arg );
 			}
 		}
 		return fc;
@@ -401,7 +402,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 
 	public static VarRef getVarRef(WVariableSymbol varSym, boolean isAssign) {
 		if ( isHeapType(varSym.getType()) ) {
-			return new HeapVarRef(varSym, isAssign);
+			return new HeapVarRef(varSym, getTypeModel(varSym.getType()), isAssign);
 		}
 		return new VarRef(varSym, getTypeModel(varSym.getType()), isAssign);
 	}
