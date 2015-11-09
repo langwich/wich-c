@@ -55,9 +55,10 @@ store %struct.PVector_ptr %x, %struct.PVector_ptr* %x_
 %0 = load %struct.PVector_ptr, %struct.PVector_ptr* %x_
 %1 = add i32 1, 0
 %index_1 = sub i32 %1, 1
-%2 = fadd 100, 0.00
+%2 = fadd double 100, 0.00
 call void (%struct.PVector_ptr,i32,double) @set_ith(%struct.PVector_ptr %0, i32 %index_1, double %2)
-call void (%struct.PVector_ptr) @print_pvector(%struct.PVector_ptr %0)
+%3 = load %struct.PVector_ptr, %struct.PVector_ptr* %x_
+call void (%struct.PVector_ptr) @print_pvector(%struct.PVector_ptr %3)
 
 br label %ret__
 ret__:
@@ -67,10 +68,17 @@ ret_:
 ret void
 }
 
+
 define i32 @main(i32 %argc, i8** %argv) {
 entry:
-; declare variable
-%x = alloca %struct.PVector_ptr
+%retval_ = alloca i32
+%argc_ = alloca i32
+%argv_ = alloca i8**
+store i32 0, i32* %retval_
+store i32 %argc, i32* %argc_
+store i8** %argv, i8*** %argv_
+
+%x_ = alloca %struct.PVector_ptr
 ; expression double[]{1,2,3}
 %0 = alloca [3 x double]
 %1 = getelementptr [3 x double], [3 x double]* %0, i64 0, i64 0

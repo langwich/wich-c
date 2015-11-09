@@ -129,6 +129,8 @@ store <type> %<expr.e.tempVarRef>, <type>* %<v.name>_
 VarDefStat(v,type) ::= <<
 %<v.name>_ = alloca <type>
 >>
+StringVarDefStat ::= VarDefStat
+VectorVarDefStat ::= VarDefStat
 
 IfStat(i,condition,stat,elseStat) ::= <<
 <condition>
@@ -263,7 +265,10 @@ BlockInitialization(init,type) ::= <<
 
 PrintNewLine(p) 		  ::= <<printf("\n");>>
 PrintStringStat(ps,expr)  ::= <<print_string(<expr>);>>
-PrintVectorStat(pv,expr)  ::= <<print_vector(<expr>);>>
+PrintVectorStat(pv,expr)  ::= <<
+<expr>
+call void (%struct.PVector_ptr) @print_pvector(%struct.PVector_ptr %<expr.e.tempVarRef>)
+>>
 PrintIntStat(pi,expr) ::= <<
 <expr>
 %pi_<pi.num> = call i32 (i8*, ...) @printf(i8* getelementptr ([4 x i8], [4 x i8]* @pi.str, i64 0, i64 0), i32 %<expr.e.tempVarRef>)

@@ -26,6 +26,7 @@ package wich.codegen;
 import wich.codegen.model.BlockInitialization;
 import wich.codegen.model.BlockTermination;
 import wich.codegen.model.BlockTerminationVoid;
+import wich.codegen.model.ElementAssignStat;
 import wich.codegen.model.Func;
 import wich.codegen.model.MainFunc;
 import wich.codegen.model.OutputModelObject;
@@ -84,6 +85,7 @@ public class InjectLLVMTraits {
 	}
 
 	public OutputModelObject exitModel(IntLiteral expr) {
+
 		expr.tempVarRef = currentFunction.getTempVar();
 		return expr;
 	}

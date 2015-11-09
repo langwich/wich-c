@@ -267,6 +267,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		String varName = ctx.ID().getText();
 		Expr index     = (Expr)visit(ctx.expr(0));
 		Expr expr      = (Expr)visit(ctx.expr(1));
+		if (expr instanceof IntLiteral) expr = new FloatLiteral(((IntLiteral) expr).value);
 		return new ElementAssignStat(getVarRef(varName, false), index, expr);
 	}
 
