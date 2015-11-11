@@ -55,8 +55,9 @@ store %struct.PVector_ptr %x, %struct.PVector_ptr* %x_
 %0 = load %struct.PVector_ptr, %struct.PVector_ptr* %x_
 %1 = add i32 1, 0
 %index_1 = sub i32 %1, 1
-%2 = fadd double 100, 0.00
-call void (%struct.PVector_ptr,i32,double) @set_ith(%struct.PVector_ptr %0, i32 %index_1, double %2)
+%2 = add i32 100, 0
+%promo0 = sitofp i32 %2 to double
+call void (%struct.PVector_ptr,i32,double) @set_ith(%struct.PVector_ptr %0, i32 %index_1, double %promo0)
 %3 = load %struct.PVector_ptr, %struct.PVector_ptr* %x_
 call void (%struct.PVector_ptr) @print_pvector(%struct.PVector_ptr %3)
 

@@ -358,7 +358,8 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 
 	@Override
 	public OutputModelObject visitAtom(@NotNull WichParser.AtomContext ctx) {
-		return visit(ctx.primary());
+		Expr primary = (Expr) visit(ctx.primary());
+		return getPromotionObject(ctx, primary);
 	}
 
 	@Override
@@ -487,6 +488,15 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		}
 		opExpr.resultType = operandType;
 		return opExpr;
+	}
+
+	public Expr getPromotionObject(WichParser.AtomContext ctx, Expr promoteExp) {
+		if (promoteExp.getType() != ctx.promoteToType) {
+			if (ctx.promoteToType == SymbolTable._float) {
+				promoteExp = promoteToFloat(promoteExp, getPromoteVarRef());
+			}
+		}
+		return promoteExp;
 	}
 
 	public Expr getPromotionObject(WichParser.OpContext ctx, Expr promoteExp, Expr targetExp) {
