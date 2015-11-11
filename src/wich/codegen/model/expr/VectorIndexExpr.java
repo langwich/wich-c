@@ -33,10 +33,11 @@ public class VectorIndexExpr extends Expr {
 	public final String varName;
 	@ModelElement public Expr expr;
 
-	public VectorIndexExpr(String object, Expr indexExpr) {
+	public VectorIndexExpr(String object, Expr indexExpr, String tempVar) {
 		this.varName = object;
 		this.expr = indexExpr;
 		this.type = new FloatType();
+		this.varRef = tempVar;
 	}
 
 	@Override

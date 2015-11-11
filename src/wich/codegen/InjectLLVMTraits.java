@@ -50,11 +50,6 @@ public class InjectLLVMTraits {
 		return o;
 	}
 
-	public OutputModelObject enterModel(Func func) {
-		enterFunction(func.scope);
-		return func;
-	}
-
 	public OutputModelObject exitModel(Func func) {
 //		System.out.println("exitModel func");
 		if (func.returnType.type == SymbolTable._void) {
@@ -64,12 +59,6 @@ public class InjectLLVMTraits {
 			func.body.terminate.add(new BlockTermination(func.returnType));
 			func.body.initialize.add(new BlockInitialization(func.returnType));
 		}
-		exitFunction();
-		return func;
-	}
-
-	public OutputModelObject enterModel(MainFunc func) {
-		enterFunction(func.scope);
 		return func;
 	}
 
@@ -80,68 +69,21 @@ public class InjectLLVMTraits {
 		}
 		else func.body.terminate.add(new BlockTermination(func.returnType));
 
-		exitFunction();
 		return func;
 	}
 
-	public OutputModelObject exitModel(IntLiteral expr) {
-
-		expr.tempVarRef = currentFunction.getTempVar();
-		return expr;
-	}
-
-	public OutputModelObject exitModel(FloatLiteral expr) {
-		expr.tempVarRef = currentFunction.getTempVar();
-		return expr;
-	}
-
-	public OutputModelObject exitModel(VarRef varRef) {
-		if (!varRef.isAssign) {
-			varRef.tempVarRef = currentFunction.getTempVar();
-		}
-		return varRef;
-	}
-
-	public OutputModelObject exitModel(HeapVarRef varRef) {
-		if (!varRef.isAssign) {
-			varRef.tempVarRef = currentFunction.getTempVar();
-		}
-		return varRef;
-	}
-
 	public OutputModelObject exitModel(BinaryPrimitiveOp op) {
-		op.tempVarRef = currentFunction.getTempVar();
 		return getBinaryExprModel(op);
-	}
-
-	public OutputModelObject exitModel(FloatFromInt expr) {
-		expr.tempVarRef = currentFunction.getTempVar();
-		return expr;
-	}
-
-	public OutputModelObject exitModel(FuncCall expr) {
-		expr.tempVarRef = currentFunction.getTempVar();
-		return expr;
 	}
 
 	protected OutputModelObject getBinaryExprModel(BinaryPrimitiveOp op) {
 		if (op.getType() == SymbolTable._float) {
-//			System.out.println("float");
 			return new BinaryFloatOp(op);
 		}
 		else if (op.type.type == SymbolTable._int || op.type.type == SymbolTable._boolean) {
-//			System.out.println("int");
 			return new BinaryIntOp(op);
 		}
 
 		else return op;
-	}
-
-	protected void enterFunction(WFunctionSymbol func) {
-		currentFunction = func;
-	}
-
-	protected void exitFunction() {
-		currentFunction = null;
 	}
 }

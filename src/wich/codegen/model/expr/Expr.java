@@ -30,6 +30,6 @@ import wich.codegen.model.WichType;
 
 public abstract class Expr extends OutputModelObject {
 	@ModelElement public WichType type;
-	public String tempVarRef;
+	public String varRef;
 	public abstract Type getType();
 }

@@ -30,9 +30,10 @@ import wich.codegen.model.ModelElement;
 public class NotExpr extends Expr {
 	@ModelElement public Expr expr;
 
-	public NotExpr(Expr expr) {
+	public NotExpr(Expr expr, String tempVar) {
 		this.expr = expr;
 		this.type = new BooleanType();
+		this.varRef = tempVar;
 	}
 
 	@Override

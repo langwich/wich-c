@@ -69,14 +69,14 @@ while.block_entry_0:
 br i1 %3, label %while.block_body_0, label %while.block_exit_0
 while.block_body_0:
 %4 = load i32, i32* %x_
-%5 = sitofp i32 %4 to double
-%6 = fadd double 1.0, 0.00
-%7 = fadd double %5, %6
-%pf_0 = call i32 (i8*, ...) @printf(i8* getelementptr ([7 x i8], [7 x i8]* @pf.str, i64 0, i64 0), double %7)
-%8 = load i32, i32* %x_
-%9 = add i32 1, 0
-%10 = sub i32 %8, %9
-store i32 %10, i32* %x_
+%promo0 = sitofp i32 %4 to double
+%5 = fadd double 1.0, 0.00
+%6 = fadd double %promo0, %5
+%pf_0 = call i32 (i8*, ...) @printf(i8* getelementptr ([7 x i8], [7 x i8]* @pf.str, i64 0, i64 0), double %6)
+%7 = load i32, i32* %x_
+%8 = add i32 1, 0
+%9 = sub i32 %7, %8
+store i32 %9, i32* %x_
 br label %while.block_entry_0
 while.block_exit_0:
 

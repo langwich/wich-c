@@ -26,15 +26,15 @@ package wich.codegen.model.expr;
 
 import org.antlr.symtab.Type;
 import wich.codegen.model.StringType;
-import wich.codegen.model.expr.Expr;
 import wich.semantics.SymbolTable;
 
 public class StringLiteral extends Expr {
 	public final String literal;
 
-	public StringLiteral(String literal) {
+	public StringLiteral(String literal, String tempVar) {
 		this.literal = literal;
 		this.type = new StringType();
+		this.varRef = tempVar;
 	}
 
 	@Override

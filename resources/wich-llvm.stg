@@ -109,7 +109,7 @@ WhileStat(w,condition, stat) ::= <<
 br label %while.block_entry_<w.num>
 while.block_entry_<w.num>:
 <condition>
-br i1 %<condition.e.tempVarRef>, label %while.block_body_<w.num>, label %while.block_exit_<w.num>
+br i1 %<condition.e.varRef>, label %while.block_body_<w.num>, label %while.block_exit_<w.num>
 while.block_body_<w.num>:
 <stat>
 br label %while.block_entry_<w.num>
@@ -118,12 +118,12 @@ while.block_exit_<w.num>:
 
 VarInitStat(v,varRef,expr,type) ::= <<
 <expr>
-store <type> %<expr.e.tempVarRef>, <type>* %<v.name>_
+store <type> %<expr.e.varRef>, <type>* %<v.name>_
 >>
 
 AssignStat(v,varRef,expr,type)::= <<
 <expr>
-store <type> %<expr.e.tempVarRef>, <type>* %<v.name>_
+store <type> %<expr.e.varRef>, <type>* %<v.name>_
 >>
 
 VarDefStat(v,type) ::= <<
@@ -134,7 +134,7 @@ VectorVarDefStat ::= VarDefStat
 
 IfStat(i,condition,stat,elseStat) ::= <<
 <condition>
-br i1 %<condition.e.tempVarRef>, label %if.block_true_<i.num>, label %if.block_false_<i.num>
+br i1 %<condition.e.varRef>, label %if.block_true_<i.num>, label %if.block_false_<i.num>
 if.block_true_<i.num>:
 <stat>
 br label %if.block_exit_<i.num>
@@ -146,7 +146,7 @@ if.block_exit_<i.num>:
 
 ReturnStat(r,expr,returnType)  ::= <<
 <expr>
-store <returnType> %<expr.e.tempVarRef>, <returnType>* %retval_
+store <returnType> %<expr.e.varRef>, <returnType>* %retval_
 br label %ret_
 return.exit_<r.num>:
 >>
@@ -158,9 +158,9 @@ CallStat(c,callExpr) ::=<<
 ElementAssignStat(e,varRef,index,expr) ::= <<
 <varRef>
 <index>
-%index_<index.e.tempVarRef> = sub i32 %<index.e.tempVarRef>, 1
+%index_<index.e.varRef> = sub i32 %<index.e.varRef>, 1
 <expr>
-call void (%struct.PVector_ptr,i32,double) @set_ith(%struct.PVector_ptr %<varRef.e.tempVarRef>, i32 %index_<index.e.tempVarRef>, double %<expr.e.tempVarRef>)
+call void (%struct.PVector_ptr,i32,double) @set_ith(%struct.PVector_ptr %<varRef.e.varRef>, i32 %index_<index.e.varRef>, double %<expr.e.varRef>)
 >>
 
 BlockStatement(b,block) ::= <<
@@ -168,21 +168,21 @@ BlockStatement(b,block) ::= <<
 >>
 
 IntLiteral(e,type)	::= <<
-%<e.tempVarRef> = add i32 <e.value>, 0
+%<e.varRef> = add i32 <e.value>, 0
 >>
 
 FloatLiteral(e,type)	::= <<
-%<e.tempVarRef> = fadd double <e.value>, 0.00
+%<e.varRef> = fadd double <e.value>, 0.00
 >>
 
 TrueLiteral(t,type) ::= "<t.value>"
 FalseLiteral(f,type) ::="<f.value>"
 VarRef(e,type)		::= <<
-%<e.tempVarRef> = load <type>, <type>* %<e.name>_
+%<e.varRef> = load <type>, <type>* %<e.name>_
 >>
 
 HeapVarRef(e,type)	::= <<
-%<e.tempVarRef> = load <type>, <type>* %<e.name>_
+%<e.varRef> = load <type>, <type>* %<e.name>_
 >>
 
 StringLiteral(s,type) ::= <<
@@ -196,19 +196,19 @@ Vector_new((double []){<elems; separator=",">}, <v.vectorLength>)
 BinaryPrimitiveOp(e,left,right,type) ::= <<
 <left>
 <right>
-%<e.tempVarRef> = <LLVMBinaryIntOpMap.(e.wichOp)> i32 %<left.e.tempVarRef>, %<right.e.tempVarRef>
+%<e.varRef> = <LLVMBinaryIntOpMap.(e.wichOp)> i32 %<left.e.varRef>, %<right.e.varRef>
 >>
 
 BinaryFloatOp(e,left,right,type) ::= <<
 <left>
 <right>
-%<e.tempVarRef> = <LLVMBinaryFloatOpMap.(e.wichOp)> <type> %<left.e.tempVarRef>, %<right.e.tempVarRef>
+%<e.varRef> = <LLVMBinaryFloatOpMap.(e.wichOp)> <type> %<left.e.varRef>, %<right.e.varRef>
 >>
 
 BinaryIntOp(e,left,right,type) ::= <<
 <left>
 <right>
-%<e.tempVarRef> = <LLVMBinaryIntOpMap.(e.wichOp)> <type> %<left.e.tempVarRef>, %<right.e.tempVarRef>
+%<e.varRef> = <LLVMBinaryIntOpMap.(e.wichOp)> <type> %<left.e.varRef>, %<right.e.varRef>
 >>
 
 BinaryStringOp(e, left, right,type)  ::= "<CStringBinaryOpMap.(op.wichOp)>(<left>,<right>)"
@@ -216,7 +216,7 @@ BinaryVectorOp(e, left, right,type)  ::= "<CVectorBinaryOpMap.(op.wichOp)>(<left
 
 FuncCall(e,args,type) ::= <<
 <args;separator="\n">
-%<e.tempVarRef> = call <type> (<args:argType();separator=",">) @<e.funcName>(<args:argPass();separator=",">)
+%<e.varRef> = call <type> (<args:argType();separator=",">) @<e.funcName>(<args:argPass();separator=",">)
 >>
 
 argType(arg) ::= <<
@@ -224,12 +224,12 @@ argType(arg) ::= <<
 >>
 
 argPass(arg) ::= <<
-<arg.type> %<arg.e.tempVarRef>
+<arg.type> %<arg.e.varRef>
 >>
 
 FloatFromInt(e,expr,type) ::= <<
 <expr>
-%<e.tempVarRef> = sitofp i32 %<expr.e.tempVarRef> to double
+%<e.varRef> = sitofp i32 %<expr.e.varRef> to double
 >>
 
 VoidType(v) ::= "void"
@@ -267,17 +267,17 @@ PrintNewLine(p) 		  ::= <<printf("\n");>>
 PrintStringStat(ps,expr)  ::= <<print_string(<expr>);>>
 PrintVectorStat(pv,expr)  ::= <<
 <expr>
-call void (%struct.PVector_ptr) @print_pvector(%struct.PVector_ptr %<expr.e.tempVarRef>)
+call void (%struct.PVector_ptr) @print_pvector(%struct.PVector_ptr %<expr.e.varRef>)
 >>
 PrintIntStat(pi,expr) ::= <<
 <expr>
-%pi_<pi.num> = call i32 (i8*, ...) @printf(i8* getelementptr ([4 x i8], [4 x i8]* @pi.str, i64 0, i64 0), i32 %<expr.e.tempVarRef>)
+%pi_<pi.num> = call i32 (i8*, ...) @printf(i8* getelementptr ([4 x i8], [4 x i8]* @pi.str, i64 0, i64 0), i32 %<expr.e.varRef>)
 >>
 PrintFloatStat(pf,expr) ::= <<
 <expr>
-%pf_<pf.num> = call i32 (i8*, ...) @printf(i8* getelementptr ([7 x i8], [7 x i8]* @pf.str, i64 0, i64 0), double %<expr.e.tempVarRef>)
+%pf_<pf.num> = call i32 (i8*, ...) @printf(i8* getelementptr ([7 x i8], [7 x i8]* @pf.str, i64 0, i64 0), double %<expr.e.varRef>)
 >>
 PrintBooleanStat(pb,expr) ::= <<
 <expr>
-%pb_<pb.num> = call i32 (i8*, ...) @printf(i8* getelementptr ([4 x i8], [4 x i8]* @pi.str, i64 0, i64 0), i1 %<expr.e.tempVarRef>)
+%pb_<pb.num> = call i32 (i8*, ...) @printf(i8* getelementptr ([4 x i8], [4 x i8]* @pi.str, i64 0, i64 0), i1 %<expr.e.varRef>)
 >>

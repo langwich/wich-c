@@ -4,7 +4,7 @@ import wich.codegen.model.WichType;
 import wich.semantics.symbols.WVariableSymbol;
 
 public class HeapVarRef extends VarRef {
-	public HeapVarRef(WVariableSymbol symbol, WichType type, boolean isAssign) {
-		super(symbol, type, isAssign);
+	public HeapVarRef(WVariableSymbol symbol, WichType type) {
+		super(symbol, type);
 	}
 }
