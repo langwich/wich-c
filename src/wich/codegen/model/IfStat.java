@@ -30,11 +30,9 @@ public class IfStat extends Stat {
 	@ModelElement public Stat stat;
 	@ModelElement public Stat elseStat;
 
-	protected static int count = 0;
+	public String label;
 
-	public final int num;
-
-	public IfStat() {
-		this.num = count++;
+	public IfStat(String label) {
+		this.label = label;
 	}
 }

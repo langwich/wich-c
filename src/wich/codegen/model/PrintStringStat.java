@@ -28,8 +28,8 @@ import wich.codegen.model.expr.Expr;
 public class PrintStringStat extends PrintStat {
 	@ModelElement public Expr expr;
 
-	public PrintStringStat(Expr expr) {
-		super();
+	public PrintStringStat(Expr expr, String label) {
+		super(label);
 		this.expr = expr;
 	}
 }

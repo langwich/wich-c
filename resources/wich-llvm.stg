@@ -106,14 +106,14 @@ Block(b,varDefs,stats,initialize,terminate)::= <<
 >>
 
 WhileStat(w,condition, stat) ::= <<
-br label %while.block_entry_<w.num>
-while.block_entry_<w.num>:
+br label %while.block_entry_<w.label>
+while.block_entry_<w.label>:
 <condition>
-br i1 %<condition.e.varRef>, label %while.block_body_<w.num>, label %while.block_exit_<w.num>
-while.block_body_<w.num>:
+br i1 %<condition.e.varRef>, label %while.block_body_<w.label>, label %while.block_exit_<w.label>
+while.block_body_<w.label>:
 <stat>
-br label %while.block_entry_<w.num>
-while.block_exit_<w.num>:
+br label %while.block_entry_<w.label>
+while.block_exit_<w.label>:
 >>
 
 VarInitStat(v,varRef,expr,type) ::= <<
@@ -134,14 +134,14 @@ VectorVarDefStat ::= VarDefStat
 
 IfStat(i,condition,stat,elseStat) ::= <<
 <condition>
-br i1 %<condition.e.varRef>, label %if.block_true_<i.num>, label %if.block_false_<i.num>
-if.block_true_<i.num>:
+br i1 %<condition.e.varRef>, label %if.block_true_<i.label>, label %if.block_false_<i.label>
+if.block_true_<i.label>:
 <stat>
-br label %if.block_exit_<i.num>
-if.block_false_<i.num>:
+br label %if.block_exit_<i.label>
+if.block_false_<i.label>:
 <elseStat>
-br label %if.block_exit_<i.num>
-if.block_exit_<i.num>:
+br label %if.block_exit_<i.label>
+if.block_exit_<i.label>:
 >>
 
 ReturnStat(r,expr,returnType)  ::= <<
@@ -287,13 +287,13 @@ call void (%struct.PVector_ptr) @print_pvector(%struct.PVector_ptr %<expr.e.varR
 >>
 PrintIntStat(pi,expr) ::= <<
 <expr>
-%pi_<pi.num> = call i32 (i8*, ...) @printf(i8* getelementptr ([4 x i8], [4 x i8]* @pi.str, i64 0, i64 0), i32 %<expr.e.varRef>)
+%pi_<pi.label> = call i32 (i8*, ...) @printf(i8* getelementptr ([4 x i8], [4 x i8]* @pi.str, i64 0, i64 0), i32 %<expr.e.varRef>)
 >>
 PrintFloatStat(pf,expr) ::= <<
 <expr>
-%pf_<pf.num> = call i32 (i8*, ...) @printf(i8* getelementptr ([7 x i8], [7 x i8]* @pf.str, i64 0, i64 0), double %<expr.e.varRef>)
+%pf_<pf.label> = call i32 (i8*, ...) @printf(i8* getelementptr ([7 x i8], [7 x i8]* @pf.str, i64 0, i64 0), double %<expr.e.varRef>)
 >>
 PrintBooleanStat(pb,expr) ::= <<
 <expr>
-%pb_<pb.num> = call i32 (i8*, ...) @printf(i8* getelementptr ([4 x i8], [4 x i8]* @pi.str, i64 0, i64 0), i1 %<expr.e.varRef>)
+%pb_<pb.label> = call i32 (i8*, ...) @printf(i8* getelementptr ([4 x i8], [4 x i8]* @pi.str, i64 0, i64 0), i1 %<expr.e.varRef>)
 >>

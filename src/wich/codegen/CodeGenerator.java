@@ -226,7 +226,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 
 	@Override
 	public OutputModelObject visitIf(@NotNull WichParser.IfContext ctx) {
-		IfStat ifStat    = new IfStat();
+		IfStat ifStat    = new IfStat(getIfLabel());
 		ifStat.condition = (Expr)visit(ctx.expr());
 		ifStat.stat      = (Stat)visit(ctx.statement(0));
 		if (ctx.statement().size()>1) {
@@ -237,7 +237,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 
 	@Override
 	public OutputModelObject visitWhile(@NotNull WichParser.WhileContext ctx) {
-		WhileStat whileStat = new WhileStat();
+		WhileStat whileStat = new WhileStat(getWhileLabel());
 		whileStat.condition = (Expr)visit(ctx.expr());
 		whileStat.stat      = (Stat)visit(ctx.statement());
 		return whileStat;
@@ -256,7 +256,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	@Override
 	public OutputModelObject visitReturn(@NotNull WichParser.ReturnContext ctx) {
 		final Expr exprModel = (Expr)visit(ctx.expr());
-		ReturnStat ret = new ReturnStat(exprModel);
+		ReturnStat ret = new ReturnStat(exprModel, getReturnLabel());
 		ret.enclosingScope = currentScope;
 		ret.returnType = getTypeModel(exprModel.getType());
 		return ret;
@@ -288,10 +288,10 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	@Override
 	public OutputModelObject visitPrint(@NotNull WichParser.PrintContext ctx) {
 		if ( ctx.expr()==null ) {
-			return new PrintNewLine();
+			return new PrintNewLine(getPrintLabel());
 		}
 		Expr expr = (Expr)visit(ctx.expr());
-		return getPrintModel(ctx.expr().exprType, expr);
+		return getPrintModel(ctx.expr().exprType, expr, getPrintLabel());
 	}
 
 
@@ -560,19 +560,19 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	}
 
 
-	public static Stat getPrintModel(Type type, Expr expr) {
+	public static Stat getPrintModel(Type type, Expr expr, String num) {
 		// split into granularity sufficient for most potential target languages
 		switch ( ((WBuiltInTypeSymbol)type).typename ) {
 			case VECTOR :
-				return new PrintVectorStat(expr);
+				return new PrintVectorStat(expr, num);
 			case STRING :
-				return new PrintStringStat(expr);
+				return new PrintStringStat(expr, num);
 			case INT :
-				return new PrintIntStat(expr);
+				return new PrintIntStat(expr, num);
 			case FLOAT:
-				return new PrintFloatStat(expr);
+				return new PrintFloatStat(expr, num);
 			case BOOLEAN:
-				return new PrintBooleanStat(expr);
+				return new PrintBooleanStat(expr, num);
 		}
 		return null;
 	}
@@ -622,11 +622,23 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	}
 
 	protected String getTempVar() {
-		return currentFunction == null ? "" : currentFunction.getTempVar();
+		return currentFunction == null ? "" : String.valueOf(currentFunction.getTempVar());
 	}
 
-	protected String getLabelNum() {
-		return currentFunction == null ? "" : currentFunction.getNextLabelNum();
+	protected String getIfLabel() {
+		return currentFunction == null ? "" : String.valueOf(currentFunction.getNextIfNum());
+	}
+
+	protected String getWhileLabel() {
+		return currentFunction == null ? "" : String.valueOf(currentFunction.getNextWhileNum());
+	}
+
+	protected String getReturnLabel() {
+		return currentFunction == null ? "" : String.valueOf(currentFunction.getNextReturnNum());
+	}
+
+	protected String getPrintLabel() {
+		return currentFunction == null ? "" : String.valueOf(currentFunction.getNextPrintNum());
 	}
 
 	protected String getPromoteVarRef() {

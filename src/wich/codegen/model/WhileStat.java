@@ -29,11 +29,9 @@ public class WhileStat extends Stat {
 	@ModelElement public Expr condition;
 	@ModelElement public Stat stat;
 
-	protected static int count = 0;
+	public String label;
 
-	public final int num;
-
-	public WhileStat() {
-		this.num = count++;
+	public WhileStat(String label) {
+		this.label = label;
 	}
 }

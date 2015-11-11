@@ -29,8 +29,8 @@ import wich.codegen.model.expr.Expr;
 public class PrintFloatStat extends PrintStat {
 	@ModelElement public Expr expr;
 
-	public PrintFloatStat(Expr expr) {
-		super();
+	public PrintFloatStat(Expr expr, String label) {
+		super(label);
 		this.expr = expr;
 	}
 }
