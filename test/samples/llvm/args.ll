@@ -48,12 +48,12 @@ ret { i32, %struct.PVector* } %15
 
 declare i32 @printf(i8*, ...)
 
-define void @f(i32 %x, %PVector_ptr %v) {
+define void @f(i32 %x, %struct.PVector_ptr %v) {
 entry:
 %x_ = alloca i32
 store i32 %x, i32* %x_
-%v_ = alloca %PVector_ptr
-store %PVector_ptr %v, %PVector_ptr* %v_
+%v_ = alloca %struct.PVector_ptr
+store %struct.PVector_ptr %v, %struct.PVector_ptr* %v_
 
 br label %ret__
 ret__:
