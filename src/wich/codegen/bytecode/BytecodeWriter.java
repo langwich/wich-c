@@ -7,6 +7,7 @@ import wich.semantics.SymbolTable;
 import wich.semantics.symbols.WFunctionSymbol;
 import wich.semantics.symbols.WVariableSymbol;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /** Generate a file containing bytecode and symbol table information
@@ -34,10 +35,11 @@ public class BytecodeWriter {
 
 		StringBuilder buf = new StringBuilder();
 		buf.append(String.format("%d strings\n", symtab.strings.size()));
-		for (String s : symtab.strings.keySet()) {
-			Integer i = symtab.strings.get(s);
-			s = CompilerUtils.stripFirstLast(s);
-			buf.append(String.format("\t%d: %d/%s\n", i, s.length(), s));
+		LinkedHashMap sortedMap = (LinkedHashMap<String, Integer>)symtab.sortHashMapByValues(symtab.strings);
+		for (Object s : sortedMap.keySet()) {
+			Integer i = (Integer) sortedMap.get(s);
+			String literal = CompilerUtils.stripFirstLast((String)s);
+			buf.append(String.format("\t%d: %d/%s\n", i, literal.length(), literal));
 		}
 		buf.append(String.format("%d functions\n", symtab.getfunctions().size()));
 		for (String s : symtab.getfunctions().keySet()) {
