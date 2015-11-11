@@ -19,6 +19,7 @@ import wich.codegen.model.File;
 import wich.codegen.model.FloatType;
 import wich.codegen.model.Func;
 import wich.codegen.model.FuncBlock;
+import wich.codegen.model.FuncCallVoid;
 import wich.codegen.model.IfStat;
 import wich.codegen.model.IntType;
 import wich.codegen.model.MainBlock;
@@ -329,14 +330,20 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		String funcName = ctx.ID().getText();
 		WFunctionSymbol funcSymbol = (WFunctionSymbol)currentScope.resolve(funcName);
 		WichType retType = getTypeModel(funcSymbol.getType());
-		FuncCall fc = new FuncCall(funcName, retType);
+
+		FuncCall fc;
+		if (funcSymbol.getType() == SymbolTable._void) fc = new FuncCallVoid(funcName, retType);
+		else {
+			fc = new FuncCall(funcName, getTypeModel(funcSymbol.getType()));
+			fc.varRef = getTempVar();
+		}
+
 		if( ctx.expr_list()!=null ) {
 			for (WichParser.ExprContext e : ctx.expr_list().expr()) {
 				Expr arg = (Expr) visit(e);
 				fc.args.add( arg );
 			}
 		}
-		fc.varRef = getTempVar();
 		return fc;
 	}
 

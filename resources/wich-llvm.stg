@@ -230,6 +230,11 @@ FuncCall(e,args,type) ::= <<
 %<e.varRef> = call <type> (<args:argType();separator=",">) @<e.funcName>(<args:argPass();separator=",">)
 >>
 
+FuncCallVoid(e,args,type) ::= <<
+<args;separator="\n">
+call <type> (<args:argType();separator=",">) @<e.funcName>(<args:argPass();separator=",">)
+>>
+
 argType(arg) ::= <<
 <arg.type>
 >>
