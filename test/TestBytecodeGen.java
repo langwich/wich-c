@@ -74,6 +74,27 @@ public class TestBytecodeGen {
 	}
 
 	@Test
+	public void testVectorPromotion() throws Exception {
+		String wich =
+				"var v = [1,2,3]\n";
+		String excepting =
+				"0 strings\n"+
+						"1 functions\n"+
+						"0: addr=0 args=0 locals=1 type=0 4/main\n" +
+						"10 instr, 28 bytes\n"+
+						"ICONST 1\n"+
+						"I2F\n"+
+						"ICONST 2\n"+
+						"I2F\n"+
+						"ICONST 3\n"+
+						"I2F\n"+
+						"ICONST 3\n"+
+						"VECTOR\n"+
+						"STORE 0\n"+
+						"HALT\n";
+		checkCodeGen(wich, excepting);
+	}
+	@Test
 	public void testEmptyFuncs() throws Exception {
 		String wich =
 				"func f() {}\n" +
@@ -131,7 +152,7 @@ public class TestBytecodeGen {
 						"STORE 1\n" +
 						"RET\n" +
 						"ILOAD 1\n" +
-						"IPRINT\n" +
+						"BPRINT\n" +
 						"ILOAD 0\n" +
 						"RETV\n" +
 						"RET\n" +
@@ -302,6 +323,295 @@ public class TestBytecodeGen {
 		checkCodeGen(wich,expecting);
 	}
 
+	@Test
+	public void testElementAssignPromotion() throws Exception{
+		String wich =
+				"var v = [1.0,2.0,3.0]\n"+
+						"v[1] = 4\n";
+		String expecting =
+				"0 strings\n" +
+						"1 functions\n" +
+						"0: addr=0 args=0 locals=1 type=0 4/main\n" +
+						"12 instr, 40 bytes\n" +
+						"FCONST 1.0\n" +
+						"FCONST 2.0\n" +
+						"FCONST 3.0\n" +
+						"ICONST 3\n" +
+						"VECTOR\n" +
+						"STORE 0\n" +
+						"VLOAD 0\n" +
+						"ICONST 1\n" +
+						"ICONST 4\n" +
+						"I2F\n" +
+						"STORE_INDEX\n" +
+						"HALT\n";
+		checkCodeGen(wich,expecting);
+	}
+
+	@Test
+	public void testOpI2FPromotion() throws Exception{
+		String wich =
+				"var x = 1\n"+
+				"var y = 3.14 + x\n";
+		String expecting =
+				"0 strings\n" +
+						"1 functions\n" +
+						"0: addr=0 args=0 locals=2 type=0 4/main\n" +
+						"8 instr, 22 bytes\n" +
+						"ICONST 1\n" +
+						"STORE 0\n" +
+						"FCONST 3.14\n" +
+						"ILOAD 0\n" +
+						"I2F\n" +
+						"FADD\n" +
+						"STORE 1\n" +
+						"HALT\n";
+		checkCodeGen(wich,expecting);
+	}
+
+	@Test
+	public void testVOpI() throws Exception{
+		String wich =
+				"var v = [1.0,2.0,3.0]\n"+
+				"v = v + 4\n";
+
+		String expecting =
+				"0 strings\n" +
+						"1 functions\n" +
+						"0: addr=0 args=0 locals=1 type=0 4/main\n" +
+						"12 instr, 38 bytes\n" +
+						"FCONST 1.0\n" +
+						"FCONST 2.0\n" +
+						"FCONST 3.0\n" +
+						"ICONST 3\n" +
+						"VECTOR\n" +
+						"STORE 0\n" +
+						"VLOAD 0\n" +
+						"ICONST 4\n" +
+						"I2F\n" +
+						"VADDI\n" +
+						"STORE 0\n" +
+						"HALT\n";
+		checkCodeGen(wich,expecting);
+	}
+
+	@Test
+	public void testVOpIReverse() throws Exception{
+		String wich =
+				"var v = [1.0,2.0,3.0]\n"+
+						"v = 4 + v\n";
+
+		String expecting =
+				"0 strings\n" +
+						"1 functions\n" +
+						"0: addr=0 args=0 locals=1 type=0 4/main\n" +
+						"12 instr, 38 bytes\n" +
+						"FCONST 1.0\n" +
+						"FCONST 2.0\n" +
+						"FCONST 3.0\n" +
+						"ICONST 3\n" +
+						"VECTOR\n" +
+						"STORE 0\n" +
+						"VLOAD 0\n" +
+						"ICONST 4\n" +
+						"I2F\n" +
+						"VADDI\n" +
+						"STORE 0\n" +
+						"HALT\n";
+		checkCodeGen(wich,expecting);
+	}
+
+	@Test
+	public void testVOpF() throws Exception{
+		String wich =
+				"var v = [1.0,2.0,3.0]\n"+
+						"v = v + 3.14\n";
+
+		String expecting =
+				"0 strings\n" +
+						"1 functions\n" +
+						"0: addr=0 args=0 locals=1 type=0 4/main\n" +
+						"11 instr, 37 bytes\n" +
+						"FCONST 1.0\n" +
+						"FCONST 2.0\n" +
+						"FCONST 3.0\n" +
+						"ICONST 3\n" +
+						"VECTOR\n" +
+						"STORE 0\n" +
+						"VLOAD 0\n" +
+						"FCONST 3.14\n" +
+						"VADDF\n" +
+						"STORE 0\n" +
+						"HALT\n";
+		checkCodeGen(wich,expecting);
+	}
+
+	@Test
+	public void testVOpFReverse() throws Exception{
+		String wich =
+				"var v = [1.0,2.0,3.0]\n"+
+						"v = 3.14 + v\n";
+
+		String expecting =
+				"0 strings\n" +
+						"1 functions\n" +
+						"0: addr=0 args=0 locals=1 type=0 4/main\n" +
+						"11 instr, 37 bytes\n" +
+						"FCONST 1.0\n" +
+						"FCONST 2.0\n" +
+						"FCONST 3.0\n" +
+						"ICONST 3\n" +
+						"VECTOR\n" +
+						"STORE 0\n" +
+						"VLOAD 0\n" +
+						"FCONST 3.14\n" +
+						"VADDF\n" +
+						"STORE 0\n" +
+						"HALT\n";
+		checkCodeGen(wich,expecting);
+	}
+
+	@Test
+	public void testCompareNumeric() throws Exception {
+		String wich =
+				"var i = 3\n" +
+						"if (i == 3 ) print (i)\n";
+		String expecting =
+				"0 strings\n"+
+						"1 functions\n"+
+						"0: addr=0 args=0 locals=1 type=0 4/main\n"+
+						"9 instr, 25 bytes\n" +
+						"ICONST 3\n" +
+						"STORE 0\n" +
+						"ILOAD 0\n" +
+						"ICONST 3\n" +
+						"IEQ\n" +
+						"BRF 7\n" +
+						"ILOAD 0\n" +
+						"IPRINT\n" +
+						"HALT\n";
+		checkCodeGen(wich, expecting);
+	}
+
+
+	@Test
+	public void testCompareString() throws Exception {
+		String wich =
+				"var s = \"abc\" \n" +
+						"if (s == \"abc\" ) print (s)\n";
+		String expecting =
+				"1 strings\n"+
+						"0: 3/abc\n"+
+						"1 functions\n"+
+						"0: addr=0 args=0 locals=1 type=0 4/main\n"+
+						"9 instr, 21 bytes\n" +
+						"SCONST 0\n" +
+						"STORE 0\n" +
+						"SLOAD 0\n" +
+						"SCONST 0\n" +
+						"SEQ\n" +
+						"BRF 7\n" +
+						"SLOAD 0\n" +
+						"SPRINT\n" +
+						"HALT\n";
+		checkCodeGen(wich, expecting);
+	}
+
+	@Test
+	public void testStrAddStr() throws Exception {
+		String wich =
+				"var s1 = \"abc\" \n" +
+						"var s2 = s1 + \"xyz\" \n";
+		String expecting =
+				"2 strings\n"+
+						"0: 3/abc\n"+
+						"1: 3/xyz\n"+
+						"1 functions\n"+
+						"0: addr=0 args=0 locals=2 type=0 4/main\n"+
+						"7 instr, 17 bytes\n" +
+						"SCONST 0\n" +
+						"STORE 0\n" +
+						"SLOAD 0\n" +
+						"SCONST 1\n" +
+						"SADD\n" +
+						"STORE 1\n" +
+						"HALT\n";
+		checkCodeGen(wich, expecting);
+	}
+
+	@Test
+	public void testStrAddInt() throws Exception {
+		String wich =
+				"var s1 = \"abc\" \n" +
+						"var s2 = s1 + 100 \n";
+		String expecting =
+				"1 strings\n"+
+						"0: 3/abc\n"+
+						"1 functions\n"+
+						"0: addr=0 args=0 locals=2 type=0 4/main\n"+
+						"8 instr, 20 bytes\n" +
+						"SCONST 0\n" +
+						"STORE 0\n" +
+						"SLOAD 0\n" +
+						"ICONST 100\n" +
+						"I2S\n" +
+						"SADD\n" +
+						"STORE 1\n" +
+						"HALT\n";
+		checkCodeGen(wich, expecting);
+	}
+
+	@Test
+	public void testStrAddFloat() throws Exception {
+		String wich =
+				"var s1 = \"abc\" \n" +
+						"var s2 = s1 + 3.14 \n";
+		String expecting =
+				"1 strings\n"+
+						"0: 3/abc\n"+
+						"1 functions\n"+
+						"0: addr=0 args=0 locals=2 type=0 4/main\n"+
+						"8 instr, 20 bytes\n" +
+						"SCONST 0\n" +
+						"STORE 0\n" +
+						"SLOAD 0\n" +
+						"FCONST 3.14\n" +
+						"F2S\n" +
+						"SADD\n" +
+						"STORE 1\n" +
+						"HALT\n";
+		checkCodeGen(wich, expecting);
+	}
+
+
+	@Test
+	public void testStrAddVector() throws Exception {
+		String wich =
+				"var s1 = \"abc\" \n" +
+						"var s2 = s1 + [1,2,3] \n";
+		String expecting =
+				"1 strings\n"+
+						"0: 3/abc\n"+
+						"1 functions\n"+
+						"0: addr=0 args=0 locals=2 type=0 4/main\n"+
+						"15 instr, 39 bytes\n" +
+						"SCONST 0\n" +
+						"STORE 0\n" +
+						"SLOAD 0\n" +
+						"ICONST 1\n" +
+                		"I2F\n" +
+						"ICONST 2\n" +
+						"I2F\n" +
+						"ICONST 3\n" +
+						"I2F\n" +
+						"ICONST 3\n" +
+						"VECTOR\n" +
+						"V2S\n" +
+						"SADD\n" +
+						"STORE 1\n" +
+						"HALT\n";
+		checkCodeGen(wich, expecting);
+	}
 	public void checkCodeGen(String wich, String expecting) throws IOException {
 		Trans tool = new Trans();
 		SymbolTable symtab = new SymbolTable();

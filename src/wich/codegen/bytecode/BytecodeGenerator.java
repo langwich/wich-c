@@ -155,7 +155,11 @@ public class BytecodeGenerator extends WichBaseVisitor<Code> {
 	@Override
 	public Code visitElementAssign(@NotNull WichParser.ElementAssignContext ctx) {
 		WVariableSymbol v = (WVariableSymbol)currentScope.resolve(ctx.ID().getText());
-		Code code = CodeBlock.join(asm.vload(getSymbolIndex(v)),visit(ctx.expr(0)), visit(ctx.expr(1)),asm.store_index());
+		Code code = CodeBlock.join(asm.vload(getSymbolIndex(v)),visit(ctx.expr(0)), visit(ctx.expr(1)));
+		if (ctx.expr(1).exprType == SymbolTable._int) {
+			code = code.join(asm.i2f());
+		}
+		code = code.join(asm.store_index());
 		return code;
 	}
 
@@ -193,7 +197,7 @@ public class BytecodeGenerator extends WichBaseVisitor<Code> {
 		if(ctx.expr() != null) {
 			code = code.join(visit(ctx.expr()));
 			Type type = getExprType(ctx.expr());
-			if (type instanceof WInt || type instanceof WBoolean) {
+			if (type instanceof WInt) {
 				code = code.join(asm.iprint());
 			}
 			else if(type instanceof WFloat) {
@@ -294,12 +298,18 @@ public class BytecodeGenerator extends WichBaseVisitor<Code> {
 
 	@Override
 	public Code visitVector(@NotNull WichParser.VectorContext ctx) {
-		Symbol vector = currentScope.resolve(((WichParser.VardefContext) ctx.getParent().getParent()).ID().getText());
 		Code code = Code.None;
 		code = code.join(visit(ctx.expr_list()));
 		code = code.join(asm.iconst(ctx.expr_list().expr().size()));
 		code = code.join(asm.vector());
-		code = code.join(asm.store(getSymbolIndex(vector)));
+		if (ctx.getParent() instanceof WichParser.OpContext &&
+				((WichParser.OpContext) ctx.getParent()).exprType == SymbolTable._string) {
+			code = code.join(asm.v2s());
+		}
+		else if (ctx.getParent().getParent() instanceof WichParser.VardefContext) {
+			Symbol vector = currentScope.resolve(((WichParser.VardefContext) ctx.getParent().getParent()).ID().getText());
+			code = code.join(asm.store(getSymbolIndex(vector)));
+		}
 		return code;
 	}
 
@@ -353,19 +363,19 @@ public class BytecodeGenerator extends WichBaseVisitor<Code> {
 			//promote to string: string op(add) with int, float, vector
 			if (ctx.exprType == SymbolTable._string) {
 				if (ctx.expr(0).exprType != SymbolTable._string) {
-					promote2S(left, ctx.expr(0).exprType);
+					left = promote2S(left, ctx.expr(0).exprType);
 				}
 				else if (ctx.expr(1).exprType != SymbolTable._string) {
-					promote2S(right, ctx.expr(1).exprType);
+					right = promote2S(right, ctx.expr(1).exprType);
 				}
 			}
 			//promote int to float: with vector or with float
 			else if(ctx.exprType == SymbolTable._vector || ctx.exprType == SymbolTable._float) {
 				if (ctx.expr(0).exprType == SymbolTable._int) {
-					promoteI2F(left);
+					left = promoteI2F(left);
 				}
 				else if (ctx.expr(1).exprType == SymbolTable._int) {
-					promoteI2F(right);
+					right = promoteI2F(right);
 				}
 			}
 		}
@@ -378,20 +388,21 @@ public class BytecodeGenerator extends WichBaseVisitor<Code> {
 		}
 	}
 
-	public void promote2S(Code code, Type type){
+	public Code promote2S(Code code, Type type){
 		if (type == SymbolTable._int) {
-			code.join(asm.i2s());
+			code = code.join(asm.i2s());
 		}
 		else if (type == SymbolTable._float) {
-			code.join(asm.f2s());
+			code = code.join(asm.f2s());
 		}
 		else if (type == SymbolTable._vector) {
-			code.join(asm.v2s());
+			code = code.join(asm.v2s());
 		}
+		return code;
 	}
-
-	public void promoteI2F(Code code){
-		code.join(asm.i2f());
+	public Code promoteI2F(Code code){
+		code = code.join(asm.i2f());
+		return code;
 	}
 
 	@Override
@@ -421,132 +432,158 @@ public class BytecodeGenerator extends WichBaseVisitor<Code> {
 		WichParser.OpContext expr = (WichParser.OpContext) ctx.getParent();
 		WichParser.ExprContext left = expr.expr(0);
 		WichParser.ExprContext right = expr.expr(1);
-		//vector operation
+		//vector operations
 		if (type == SymbolTable._vector) {
-			//both operands are vectors, operator can only be add, sub, mul, div, eq, neq
+			//both operands are vectors
 			if(left.exprType == SymbolTable._vector && right.exprType == SymbolTable._vector) {
-				if(ctx.ADD() != null) {
-					op = op.join(asm.vadd());
-				}
-				else if(ctx.SUB() != null) {
-					op = op.join(asm.vsub());
-				}
-				else if(ctx.MUL() != null) {
-					op = op.join(asm.vmul());
-				}
-				else if(ctx.DIV() != null) {
-					op = op.join(asm.vdiv());
-				}
-				else if(ctx.EQUAL_EQUAL() != null) {
-					op = op.join(asm.veq());
-				}
-				else if (ctx.NOT_EQUAL() != null) {
-					op =  op.join(asm.vneq());
-				}
+				op = vOpV(ctx, op);
 			}
 			// only one operand is vector
 			else {
 				//vector op int
 				if(left.exprType == SymbolTable._int || right.exprType == SymbolTable._int) {
-					if(ctx.ADD() != null) {
-						op = op.join(asm.vaddi());
-					}
-					else if(ctx.SUB() != null) {
-						op = op.join(asm.vsubi());
-					}
-					else if(ctx.MUL() != null) {
-						op = op.join(asm.vmuli());
-					}
-					else if(ctx.DIV() != null) {
-						op = op.join(asm.vdivi());
-					}
+					op = vOpI(ctx, op);
 				}
 				//vector op float
 				else if(left.exprType == SymbolTable._float || right.exprType == SymbolTable._float) {
-					if(ctx.ADD() != null) {
-						op = op.join(asm.vaddf());
-					}
-					else if(ctx.SUB() != null) {
-						op = op.join(asm.vsubf());
-					}
-					else if(ctx.MUL() != null) {
-						op = op.join(asm.vmulf());
-					}
-					else if(ctx.DIV() != null) {
-						op = op.join(asm.vdivf());
-					}
+					op = vOpF(ctx, op);
 				}
 			}
 		}
 		// boolean operation
 		else if (type == SymbolTable._boolean) {
-			if(ctx.GE() != null) {
-				if (left.exprType == SymbolTable._string && right.exprType == SymbolTable._string) {
-					op = op.join(asm.sge());
-				} else {
-					op = (left.exprType == SymbolTable._float || right.exprType == SymbolTable._float )?
-							op.join(asm.fge()) : op.join(asm.ige());
-				}
-			}
-			else if(ctx.GT() != null) {
-				if (left.exprType == SymbolTable._string && right.exprType == SymbolTable._string) {
-					op = op.join(asm.sgt());
-				} else {
-					op = (left.exprType == SymbolTable._float || right.exprType == SymbolTable._float )?
-							op.join(asm.fgt()) : op.join(asm.igt());
-				}
-			}
-			else if(ctx.LE() != null) {
-				if (left.exprType == SymbolTable._string && right.exprType == SymbolTable._string) {
-					op = op.join(asm.sle());
-				} else {
-					op = (left.exprType == SymbolTable._float || right.exprType == SymbolTable._float )?
-							op.join(asm.fle()) : op.join(asm.ile());
-				}
-			}
-			else if(ctx.LT() != null) {
-				if (left.exprType == SymbolTable._string && right.exprType == SymbolTable._string) {
-					op = op.join(asm.slt());
-				} else {
-					op = (left.exprType == SymbolTable._float || right.exprType == SymbolTable._float )?
-							op.join(asm.flt()) : op.join(asm.ilt());
-				}
-			}
-			else if(ctx.EQUAL_EQUAL() != null) {
-				if (left.exprType == SymbolTable._string && right.exprType == SymbolTable._string) {
-					op = op.join(asm.seq());
-				} else {
-					op = (left.exprType == SymbolTable._float || right.exprType == SymbolTable._float )?
-							op.join(asm.feq()) : op.join(asm.ieq());
-				}
-			}
-			else if(ctx.NOT_EQUAL() != null) {
-				if (left.exprType == SymbolTable._string && right.exprType == SymbolTable._string) {
-					op = op.join(asm.sneq());
-				} else {
-					op = (left.exprType == SymbolTable._float || right.exprType == SymbolTable._float )?
-							op.join(asm.fneq()) : op.join(asm.ineq());
-				}
-			}
+			op = compareOp(ctx, op, left, right);
 		}
 		//simple arithmetic and string add
 		else {
-			if(ctx.ADD() != null) {
-				if (type == SymbolTable._string) {
-					op = op.join(asm.sadd());
-				} else {
-					op = type == SymbolTable._int ? op.join(asm.iadd()) : op.join(asm.fadd());
-				}
+			op = arithmeticOp(ctx, op, type);
+		}
+		return op;
+	}
+
+	private Code arithmeticOp(WichParser.OperatorContext ctx, Code op, Type type) {
+		if(ctx.ADD() != null) {
+			if (type == SymbolTable._string) {
+				op = op.join(asm.sadd());
+			} else {
+				op = type == SymbolTable._int ? op.join(asm.iadd()) : op.join(asm.fadd());
 			}
-			else if(ctx.SUB() != null) {
-				op = type == SymbolTable._int ? op.join(asm.isub()) : op.join(asm.fsub());
+		}
+		else if(ctx.SUB() != null) {
+			op = type == SymbolTable._int ? op.join(asm.isub()) : op.join(asm.fsub());
+		}
+		else if(ctx.MUL() != null) {
+			op = type == SymbolTable._int ? op.join(asm.imul()) : op.join(asm.fmul());
+		}
+		else if(ctx.DIV() != null) {
+			op = type == SymbolTable._int ? op.join(asm.idiv()) : op.join(asm.fdiv());
+		}
+		return op;
+	}
+
+	private Code compareOp(WichParser.OperatorContext ctx, Code op, WichParser.ExprContext left, WichParser.ExprContext right) {
+		if(ctx.GE() != null) {
+			if (left.exprType == SymbolTable._string && right.exprType == SymbolTable._string) {
+				op = op.join(asm.sge());
+			} else {
+				op = (left.exprType == SymbolTable._float || right.exprType == SymbolTable._float )?
+						op.join(asm.fge()) : op.join(asm.ige());
 			}
-			else if(ctx.MUL() != null) {
-				op = type == SymbolTable._int ? op.join(asm.imul()) : op.join(asm.fmul());
+		}
+		else if(ctx.GT() != null) {
+			if (left.exprType == SymbolTable._string && right.exprType == SymbolTable._string) {
+				op = op.join(asm.sgt());
+			} else {
+				op = (left.exprType == SymbolTable._float || right.exprType == SymbolTable._float )?
+						op.join(asm.fgt()) : op.join(asm.igt());
 			}
-			else if(ctx.DIV() != null) {
-				op = type == SymbolTable._int ? op.join(asm.idiv()) : op.join(asm.fdiv());
+		}
+		else if(ctx.LE() != null) {
+			if (left.exprType == SymbolTable._string && right.exprType == SymbolTable._string) {
+				op = op.join(asm.sle());
+			} else {
+				op = (left.exprType == SymbolTable._float || right.exprType == SymbolTable._float )?
+						op.join(asm.fle()) : op.join(asm.ile());
 			}
+		}
+		else if(ctx.LT() != null) {
+			if (left.exprType == SymbolTable._string && right.exprType == SymbolTable._string) {
+				op = op.join(asm.slt());
+			} else {
+				op = (left.exprType == SymbolTable._float || right.exprType == SymbolTable._float )?
+						op.join(asm.flt()) : op.join(asm.ilt());
+			}
+		}
+		else if(ctx.EQUAL_EQUAL() != null) {
+			if (left.exprType == SymbolTable._string && right.exprType == SymbolTable._string) {
+				op = op.join(asm.seq());
+			} else {
+				op = (left.exprType == SymbolTable._float || right.exprType == SymbolTable._float )?
+						op.join(asm.feq()) : op.join(asm.ieq());
+			}
+		}
+		else if(ctx.NOT_EQUAL() != null) {
+			if (left.exprType == SymbolTable._string && right.exprType == SymbolTable._string) {
+				op = op.join(asm.sneq());
+			} else {
+				op = (left.exprType == SymbolTable._float || right.exprType == SymbolTable._float )?
+						op.join(asm.fneq()) : op.join(asm.ineq());
+			}
+		}
+		return op;
+	}
+
+	private Code vOpF(WichParser.OperatorContext ctx, Code op) {
+		if(ctx.ADD() != null) {
+			op = op.join(asm.vaddf());
+		}
+		else if(ctx.SUB() != null) {
+			op = op.join(asm.vsubf());
+		}
+		else if(ctx.MUL() != null) {
+			op = op.join(asm.vmulf());
+		}
+		else if(ctx.DIV() != null) {
+			op = op.join(asm.vdivf());
+		}
+		return op;
+	}
+
+	private Code vOpI(WichParser.OperatorContext ctx, Code op) {
+		if(ctx.ADD() != null) {
+			op = op.join(asm.vaddi());
+		}
+		else if(ctx.SUB() != null) {
+			op = op.join(asm.vsubi());
+		}
+		else if(ctx.MUL() != null) {
+			op = op.join(asm.vmuli());
+		}
+		else if(ctx.DIV() != null) {
+			op = op.join(asm.vdivi());
+		}
+		return op;
+	}
+
+	// vector op vector
+	private Code vOpV(WichParser.OperatorContext ctx, Code op) {
+		if(ctx.ADD() != null) {
+			op = op.join(asm.vadd());
+		}
+		else if(ctx.SUB() != null) {
+			op = op.join(asm.vsub());
+		}
+		else if(ctx.MUL() != null) {
+			op = op.join(asm.vmul());
+		}
+		else if(ctx.DIV() != null) {
+			op = op.join(asm.vdiv());
+		}
+		else if(ctx.EQUAL_EQUAL() != null) {
+			op = op.join(asm.veq());
+		}
+		else if (ctx.NOT_EQUAL() != null) {
+			op =  op.join(asm.vneq());
 		}
 		return op;
 	}

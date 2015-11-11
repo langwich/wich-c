@@ -34,9 +34,7 @@ import wich.parser.WichParser;
 import wich.parser.WichParser.ExprContext;
 import wich.semantics.symbols.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class SymbolTable {
 	public BaseScope PREDEFINED = new PredefinedScope();
@@ -76,9 +74,39 @@ public class SymbolTable {
 	}
 
 	public int defineStringLiteral(String s) {
-		strings.put(s,++strIndex);
+		if (strings.containsKey(s))
+			return strings.get(s);
+		else
+			strings.put(s,++strIndex);
 		return strIndex;
 	}
+
+
+	public LinkedHashMap sortHashMapByValues(HashMap map) {
+		List mapKeys = new ArrayList(map.keySet());
+		List mapValues = new ArrayList(map.values());
+		Collections.sort(mapValues);
+		Collections.sort(mapKeys);
+
+		LinkedHashMap sortedMap = new LinkedHashMap();
+
+		Iterator valueIt = mapValues.iterator();
+		while (valueIt.hasNext()) {
+			Object val = valueIt.next();
+			Iterator keyIt = mapKeys.iterator();
+
+			while (keyIt.hasNext()) {
+				Object key = keyIt.next();
+				Object keyVal = map.get(key);
+				if (keyVal == val) {
+					sortedMap.put(key, keyVal);
+				}
+			}
+
+		}
+		return sortedMap;
+	}
+
 
 	public HashMap<String,WFunctionSymbol> getfunctions() {
 		HashMap<String,WFunctionSymbol> functions = new HashMap<>();
