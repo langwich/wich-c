@@ -191,7 +191,7 @@ NotExpr(ne,expr,type) ::= "!<expr>"
 
 OpExpr(o,lExp,rExp,type) ::= "<lExp> <o.op> <rExp>"
 
-VectorElement(e, expr) ::= "<expr>"
+VectorElement(e, expr, type) ::= "<expr>"
 
 ArgDef(arg,type) ::= "<type> <arg.name>"
 

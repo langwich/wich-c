@@ -190,17 +190,19 @@ String_new(<s.literal>)
 >>
 
 VectorLiteral(e,elems,type) ::= <<
+%<e.varRef> = alloca [<e.vectorLength> x double]
 <elems:elementAlloc(); separator="\n">
-%<e.tempVarRef> = alloca [<e.vectorLength> x double]
-<elems:elementStore(); separator="\n">
-Vector_new((double []){<elems; separator=",">}, <v.vectorLength>)
+%vec_ptr_<e.varRef> = getelementptr [<e.vectorLength> x double], [<e.vectorLength> x double]* %<e.varRef>, i64 0, i64 0
+%vec_new_<e.varRef> = call %struct.PVector_ptr @PVector_new(double* %vec_ptr_<e.varRef>, i64 <e.vectorLength>)
 >>
 
-elementAlloc(e) ::= <<
+elementAlloc(expr) ::= <<
+%<expr.e.varRef>_ = getelementptr [3 x double], [3 x double]* %<expr.e.vecRef>, i64 0, i64 <expr.e.index>
+<expr>
+store double %<expr.e.varRef>, double* %<expr.e.varRef>_
 >>
 
-elementStore(e) ::= <<
->>
+VectorElement(e, expr, type) ::= "<expr>"
 
 BinaryPrimitiveOp(e,left,right,type) ::= <<
 <left>

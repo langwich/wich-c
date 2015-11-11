@@ -80,26 +80,24 @@ store i32 %argc, i32* %argc_
 store i8** %argv, i8*** %argv_
 
 %x_ = alloca %struct.PVector_ptr
-; expression double[]{1,2,3}
 %0 = alloca [3 x double]
-%1 = getelementptr [3 x double], [3 x double]* %0, i64 0, i64 0
-store double 1.00e+00, double* %1
-%2 = getelementptr double, double* %1, i64 1
-store double 2.00e+00, double* %2
-%3 = getelementptr double, double* %2, i64 1
-store double 3.00e+00, double* %3
-%4 = getelementptr [3 x double], [3 x double]* %0, i64 0, i64 0
-
-; x = Vector_new(...);
-%5 = call %struct.PVector_ptr (double*, i64) @PVector_new(double* %4, i64 3)
-store %struct.PVector_ptr %5, %struct.PVector_ptr* %x
-
-%local_str = getelementptr [4 x i8], [4 x i8]* @pi.str, i32 0, i32 0
-%version = getelementptr %struct.PVector_ptr, %struct.PVector_ptr* %x, i32 0, i32 0
-
-; bar(x)
-%x_ = load %struct.PVector_ptr, %struct.PVector_ptr* %x
-call void (%struct.PVector_ptr) @bar(%struct.PVector_ptr %x_)
+%promo0_ = getelementptr [3 x double], [3 x double]* %0, i64 0, i64 0
+%1 = add i32 1, 0
+%promo0 = sitofp i32 %1 to double
+store double %promo0, double* %promo0_
+%promo1_ = getelementptr [3 x double], [3 x double]* %0, i64 0, i64 1
+%2 = add i32 2, 0
+%promo1 = sitofp i32 %2 to double
+store double %promo1, double* %promo1_
+%promo2_ = getelementptr [3 x double], [3 x double]* %0, i64 0, i64 2
+%3 = add i32 3, 0
+%promo2 = sitofp i32 %3 to double
+store double %promo2, double* %promo2_
+%vec_ptr_0 = getelementptr [3 x double], [3 x double]* %0, i64 0, i64 0
+%vec_new_0 = call %struct.PVector_ptr @PVector_new(double* %vec_ptr_0, i64 3)
+store %struct.PVector_ptr %0, %struct.PVector_ptr* %x_
+%4 = load %struct.PVector_ptr, %struct.PVector_ptr* %x_
+call void (%struct.PVector_ptr) @bar(%struct.PVector_ptr %4)
 
 %6 = load %struct.PVector_ptr, %struct.PVector_ptr* %x
 ; set_ith(x, 1-1, 99)

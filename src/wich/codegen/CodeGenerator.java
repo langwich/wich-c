@@ -370,10 +370,10 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	@Override
 	public OutputModelObject visitVector(@NotNull WichParser.VectorContext ctx) {
 		int length = ctx.expr_list().expr().size();
-		VectorLiteral v = new VectorLiteral(length, getTempVar());
-//		for (WichParser.ExprContext e : ctx.expr_list().expr()) {
+		String vecRef = getTempVar();
+		VectorLiteral v = new VectorLiteral(length, vecRef);
 		for (int i = 0; i < ctx.expr_list().expr().size(); ++i) {
-			v.elems.add(new VectorElement((Expr) visit(ctx.expr_list().expr(i)), i));
+			v.elems.add(new VectorElement((Expr) visit(ctx.expr_list().expr(i)), i, vecRef));
 		}
 		return v;
 	}

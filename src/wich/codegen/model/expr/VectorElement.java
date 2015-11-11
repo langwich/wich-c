@@ -30,10 +30,13 @@ public class VectorElement extends Expr {
 	@ModelElement public Expr expr;
 
 	public int index;
+	public String vecRef;
 
-	public VectorElement(Expr expr, int index) {
+	public VectorElement(Expr expr, int index, String vecRef) {
 		this.expr = expr;
 		this.index = index;
+		this.varRef = expr.varRef;
+		this.vecRef = vecRef;
 	}
 
 	@Override
