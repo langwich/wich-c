@@ -62,6 +62,7 @@ import wich.codegen.model.expr.NegateExpr;
 import wich.codegen.model.expr.NotExpr;
 import wich.codegen.model.expr.StringIndexExpr;
 import wich.codegen.model.expr.VarRef;
+import wich.codegen.model.expr.VectorElement;
 import wich.codegen.model.expr.VectorIndexExpr;
 import wich.codegen.model.expr.VectorLiteral;
 import wich.codegen.model.expr.promotion.FloatFromInt;
@@ -369,8 +370,9 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	public OutputModelObject visitVector(@NotNull WichParser.VectorContext ctx) {
 		int length = ctx.expr_list().expr().size();
 		VectorLiteral v = new VectorLiteral(length, getTempVar());
-		for (WichParser.ExprContext e : ctx.expr_list().expr()) {
-			v.elems.add((Expr)visit(e));
+//		for (WichParser.ExprContext e : ctx.expr_list().expr()) {
+		for (int i = 0; i < ctx.expr_list().expr().size(); ++i) {
+			v.elems.add(new VectorElement((Expr) visit(ctx.expr_list().expr(i)), i));
 		}
 		return v;
 	}

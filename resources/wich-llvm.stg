@@ -190,7 +190,16 @@ String_new(<s.literal>)
 >>
 
 VectorLiteral(e,elems,type) ::= <<
+<elems:elementAlloc(); separator="\n">
+%<e.tempVarRef> = alloca [<e.vectorLength> x double]
+<elems:elementStore(); separator="\n">
 Vector_new((double []){<elems; separator=",">}, <v.vectorLength>)
+>>
+
+elementAlloc(e) ::= <<
+>>
+
+elementStore(e) ::= <<
 >>
 
 BinaryPrimitiveOp(e,left,right,type) ::= <<

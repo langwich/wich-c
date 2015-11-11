@@ -38,6 +38,7 @@ import wich.codegen.model.expr.FuncCall;
 import wich.codegen.model.expr.HeapVarRef;
 import wich.codegen.model.expr.IntLiteral;
 import wich.codegen.model.expr.VarRef;
+import wich.codegen.model.expr.VectorLiteral;
 import wich.codegen.model.expr.promotion.FloatFromInt;
 import wich.semantics.SymbolTable;
 import wich.semantics.symbols.WFunctionSymbol;
