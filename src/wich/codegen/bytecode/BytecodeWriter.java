@@ -7,8 +7,7 @@ import wich.semantics.SymbolTable;
 import wich.semantics.symbols.WFunctionSymbol;
 import wich.semantics.symbols.WVariableSymbol;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 /** Generate a file containing bytecode and symbol table information
  *  so that an interpreter/VM can execute the code.  For ease
@@ -42,12 +41,21 @@ public class BytecodeWriter {
 			buf.append(String.format("\t%d: %d/%s\n", i, literal.length(), literal));
 		}
 		buf.append(String.format("%d functions\n", symtab.getfunctions().size()));
+		List<Integer> insertOrder = new ArrayList<>();
+		HashMap<Integer, String> indexMapName = new HashMap<>();
 		for (String s : symtab.getfunctions().keySet()) {
+			int index = symtab.computerFuncIndex(s);
+			insertOrder.add(index);
+			indexMapName.put(index, s);
+		}
+		Collections.sort(insertOrder);
+		for (Integer i :insertOrder) {
+			String s = indexMapName.get(i);
 			WFunctionSymbol f = symtab.getfunctions().get(s);
 			int numLocalsAndArgs = f.nlocals();
 			int numArgs = f.nargs();
 			buf.append(String.format("\t%d: addr=%d args=%d locals=%d type=%d %d/%s\n",
-					symtab.computerFuncIndex(f.getInsertionOrderNumber()), f.address, numArgs, numLocalsAndArgs,
+					symtab.computerFuncIndex(f.getName()), f.address, numArgs, numLocalsAndArgs,
 					f.getType().getVMTypeIndex(), s.length(), s));
 		}
 
