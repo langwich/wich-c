@@ -271,10 +271,10 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	@Override
 	public OutputModelObject visitElementAssign(@NotNull WichParser.ElementAssignContext ctx) {
 		String varName = ctx.ID().getText();
+		VarRef vecRef = getVarRef(varName, false);
 		Expr index     = (Expr)visit(ctx.expr(0));
 		Expr expr      = (Expr)visit(ctx.expr(1));
-		if (expr instanceof IntLiteral) expr = new FloatLiteral(((IntLiteral) expr).value, getTempVar());
-		return new ElementAssignStat(getVarRef(varName, false), index, expr);
+		return new ElementAssignStat(vecRef, index, expr);
 	}
 
 	@Override
@@ -421,7 +421,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	public static VarRef getVarRef(WVariableSymbol varSym, String tempVarRef) {
 		VarRef varRef = new VarRef(varSym, getTypeModel(varSym.getType()));
 		if ( isHeapType(varSym.getType()) ) {
-			return new HeapVarRef(varSym, getTypeModel(varSym.getType()));
+			varRef = new HeapVarRef(varSym, getTypeModel(varSym.getType()));
 		}
 		varRef.varRef = tempVarRef;
 		return varRef;
