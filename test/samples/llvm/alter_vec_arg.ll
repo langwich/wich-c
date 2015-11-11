@@ -99,13 +99,18 @@ store %struct.PVector_ptr %0, %struct.PVector_ptr* %x_
 %4 = load %struct.PVector_ptr, %struct.PVector_ptr* %x_
 call void (%struct.PVector_ptr) @bar(%struct.PVector_ptr %4)
 
-%6 = load %struct.PVector_ptr, %struct.PVector_ptr* %x
-; set_ith(x, 1-1, 99)
-
-call void (%struct.PVector_ptr, i32, double) @set_ith(%struct.PVector_ptr %6, i32 0, double 99.00e+00)
-
-; print_vector(x)
-call void (%struct.PVector_ptr) @print_pvector(%struct.PVector_ptr %6)
-
-ret i32 0
+%5 = load %struct.PVector_ptr, %struct.PVector_ptr* %x_
+%6 = add i32 1, 0
+%index_6 = sub i32 %6, 1
+%7 = add i32 99, 0
+%promo3 = sitofp i32 %7 to double
+call void (%struct.PVector_ptr,i32,double) @set_ith(%struct.PVector_ptr %5, i32 %index_6, double %promo3)
+%8 = load %struct.PVector_ptr, %struct.PVector_ptr* %x_
+call void (%struct.PVector_ptr) @print_pvector(%struct.PVector_ptr %8)
+br label %ret__
+ret__:
+br label %ret_
+ret_:
+%retval = load i32, i32* %retval_
+ret i32 %retval
 }

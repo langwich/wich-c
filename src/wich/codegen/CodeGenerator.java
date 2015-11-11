@@ -331,12 +331,9 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		WFunctionSymbol funcSymbol = (WFunctionSymbol)currentScope.resolve(funcName);
 		WichType retType = getTypeModel(funcSymbol.getType());
 
-		FuncCall fc;
-		if (funcSymbol.getType() == SymbolTable._void) fc = new FuncCallVoid(funcName, retType);
-		else {
-			fc = new FuncCall(funcName, getTypeModel(funcSymbol.getType()));
-			fc.varRef = getTempVar();
-		}
+		FuncCall fc = new FuncCall(funcName, retType);
+		if (funcSymbol.getType() == SymbolTable._void)
+			fc = new FuncCallVoid(funcName, retType);
 
 		if( ctx.expr_list()!=null ) {
 			for (WichParser.ExprContext e : ctx.expr_list().expr()) {
@@ -344,6 +341,9 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 				fc.args.add( arg );
 			}
 		}
+
+		if (funcSymbol.getType() != SymbolTable._void) fc.varRef = getTempVar();
+
 		return fc;
 	}
 
