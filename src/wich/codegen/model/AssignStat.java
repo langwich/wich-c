@@ -27,7 +27,7 @@ import wich.codegen.model.expr.Expr;
 import wich.codegen.model.expr.VarRef;
 
 public class AssignStat extends Stat {
-	@ModelElement public final VarRef varRef;
+	@ModelElement public VarRef varRef;
 	@ModelElement public final Expr expr;
 	@ModelElement public final WichType type;
 

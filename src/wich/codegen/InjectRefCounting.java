@@ -85,7 +85,7 @@ public class InjectRefCounting {
 		// Inject REF(x) for all heap args x at start of function, DEREF at end
 		for (ArgDef arg : func.args) {
 			if ( CodeGenerator.isHeapType(arg.type.type) ) {
-				final WVariableSymbol argSym = (WVariableSymbol)func.scope.resolve(arg.name);
+				final WVariableSymbol argSym = (WVariableSymbol)func.scope.resolve(arg.getName());
 				func.body.stats.add(0, CodeGenerator.getREF(argSym));
 			}
 		}

@@ -83,7 +83,9 @@ import wich.semantics.symbols.WVariableSymbol;
 import wich.semantics.symbols.WVector;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static wich.parser.WichParser.FunctionContext;
 
@@ -97,6 +99,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	protected WFunctionSymbol currentFunction;
 
 	protected List<StringDecl> strDecls = new ArrayList<>();
+	protected Map<String, Integer> nameOccurrenceMap = new HashMap<>(); // tracks name occurrence across scopes
 
 	protected static final String PROMO = "promo";
 
@@ -168,8 +171,10 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	@Override
 	public OutputModelObject visitFormal_arg(@NotNull WichParser.Formal_argContext ctx) {
 		String name = ctx.ID().getText();
+		WVariableSymbol v = (WVariableSymbol) currentScope.resolve(name);
+		updateLexicalOrder(v);
 		WichType argType = (WichType) visit(ctx.type());
-		return new ArgDef(name, argType);
+		return new ArgDef(v, argType);
 	}
 
 	@Override
@@ -250,6 +255,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	public CompositeModelObject visitVardef(@NotNull WichParser.VardefContext ctx) {
 		String varName = ctx.ID().getText();
 		WVariableSymbol v = (WVariableSymbol)currentScope.resolve(varName);
+		updateLexicalOrder(v);
 		Expr expr = (Expr)visit(ctx.expr());
 		VarInitStat varInit = new VarInitStat(getVarRef(varName, true), expr, getTypeModel(expr.getType()));
 		VarDefStat varDef = getVarDefStat(v);
@@ -387,7 +393,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		String vecRef = getTempVar();
 		VectorLiteral v = new VectorLiteral(length, vecRef);
 		for (int i = 0; i < ctx.expr_list().expr().size(); ++i) {
-			v.elems.add(new VectorElement((Expr) visit(ctx.expr_list().expr(i)), i, vecRef));
+			v.elems.add(new VectorElement((Expr) visit(ctx.expr_list().expr(i)), i, vecRef, v.vectorLength));
 		}
 		v.varRef = getTempVar();
 		return v;
@@ -617,6 +623,14 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 
 	protected static String getDeclString(String strWithQuotes) {
 		return strWithQuotes.substring(1, strWithQuotes.length()-1)+"\\00";
+	}
+
+	protected void updateLexicalOrder(WVariableSymbol v) {
+		String name = v.getName();
+		int num = 0;
+		if (nameOccurrenceMap.containsKey(name)) num = nameOccurrenceMap.get(name);
+		nameOccurrenceMap.put(name, num+1);
+		v.setInsertionOrderNumber(num);
 	}
 
 	protected void pushScope(Scope s) {currentScope = s;}

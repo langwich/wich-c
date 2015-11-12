@@ -21,28 +21,17 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-package wich.codegen.model.expr;
+package wich.codegen.model;
 
-import org.antlr.symtab.Type;
-import wich.codegen.model.ModelElement;
+import wich.semantics.symbols.WVariableSymbol;
 
-public class VectorElement extends Expr {
-	@ModelElement public Expr expr;
-
-	public int index;
-	public String vecRef;
-	public int len;
-
-	public VectorElement(Expr expr, int index, String vecRef, int vectorLength) {
-		this.expr = expr;
-		this.index = index;
-		this.varRef = expr.varRef;
-		this.vecRef = vecRef;
-		this.len = vectorLength;
+public class ScopedArgDef extends ArgDef {
+	public ScopedArgDef(WVariableSymbol symbol, WichType type) {
+		super(symbol, type);
 	}
 
 	@Override
-	public Type getType() {
-		return expr.getType();
+	public String getName() {
+		return symbol.getName()+symbol.getInsertionOrderNumber();
 	}
 }

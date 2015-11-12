@@ -23,26 +23,17 @@ SOFTWARE.
 */
 package wich.codegen.model.expr;
 
-import org.antlr.symtab.Type;
-import wich.codegen.model.ModelElement;
+import wich.codegen.model.VarDefStat;
+import wich.codegen.model.WichType;
+import wich.semantics.symbols.WVariableSymbol;
 
-public class VectorElement extends Expr {
-	@ModelElement public Expr expr;
-
-	public int index;
-	public String vecRef;
-	public int len;
-
-	public VectorElement(Expr expr, int index, String vecRef, int vectorLength) {
-		this.expr = expr;
-		this.index = index;
-		this.varRef = expr.varRef;
-		this.vecRef = vecRef;
-		this.len = vectorLength;
+public class ScopedVarDefStat extends VarDefStat {
+	public ScopedVarDefStat(WVariableSymbol symbol, WichType type) {
+		super(symbol, type);
 	}
 
 	@Override
-	public Type getType() {
-		return expr.getType();
+	public String getName() {
+		return symbol.getName()+symbol.getInsertionOrderNumber();
 	}
 }

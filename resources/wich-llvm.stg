@@ -87,7 +87,7 @@ entry:
 <\n>
 >>
 
-ArgDef(arg,type) ::= "<type> %<arg.name>"
+ScopedArgDef(arg,type) ::= "<type> %<arg.name>"
 
 argAlloc(arg) ::= <<
 %<arg.arg.name>_ = alloca <arg.type>
@@ -128,11 +128,11 @@ AssignStat(v,varRef,expr,type)::= <<
 store <type> %<expr.e.varRef>, <type>* %<v.name>_
 >>
 
-VarDefStat(v,type) ::= <<
+ScopedVarDefStat(v,type) ::= <<
 %<v.name>_ = alloca <type>
 >>
-StringVarDefStat ::= VarDefStat
-VectorVarDefStat ::= VarDefStat
+StringVarDefStat ::= ScopedVarDefStat
+VectorVarDefStat ::= ScopedVarDefStat
 
 IfStat(i,condition,stat,elseStat) ::= <<
 <condition>
@@ -183,11 +183,8 @@ FloatLiteral(e,type)	::= <<
 
 TrueLiteral(t,type) ::= "<t.value>"
 FalseLiteral(f,type) ::="<f.value>"
-VarRef(e,type)		::= <<
-%<e.varRef> = load <type>, <type>* %<e.name>_
->>
 
-HeapVarRef(e,type)	::= <<
+ScopedVarRef(e,type)		::= <<
 %<e.varRef> = load <type>, <type>* %<e.name>_
 >>
 
@@ -204,7 +201,7 @@ VectorLiteral(e,elems,type) ::= <<
 >>
 
 elementAlloc(expr) ::= <<
-%<expr.e.varRef>_ = getelementptr [3 x double], [3 x double]* %<expr.e.vecRef>, i64 0, i64 <expr.e.index>
+%<expr.e.varRef>_ = getelementptr [<expr.e.len> x double], [<expr.e.len> x double]* %<expr.e.vecRef>, i64 0, i64 <expr.e.index>
 <expr>
 store double %<expr.e.varRef>, double* %<expr.e.varRef>_
 >>
@@ -259,7 +256,7 @@ VoidType(v) ::= "void"
 IntType(t) ::= "i32"
 FloatType(t) ::= "double"
 VectorType(t) ::= "%struct.PVector_ptr"
-StringType(t) ::= "%struct.string"
+StringType(t) ::= "%struct.string*"
 BooleanType(t) ::= "i1"
 TmpVarDef(t,type) ::="<typeMo> tmp<t.varIndex>;"
 
