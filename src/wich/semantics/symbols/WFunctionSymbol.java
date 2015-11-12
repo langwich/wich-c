@@ -24,8 +24,6 @@ SOFTWARE.
 package wich.semantics.symbols;
 
 import org.antlr.symtab.FunctionSymbol;
-import org.antlr.symtab.Type;
-import wich.semantics.SymbolTable;
 
 import java.util.ArrayList;
 
@@ -33,7 +31,13 @@ public class WFunctionSymbol extends FunctionSymbol {
 	public WBlock block; // code block of the function
 	public int address;
 	public ArrayList<WBuiltInTypeSymbol> argTypes = new ArrayList<>();
-	protected int uid = 0;
+
+	protected int tempVarNum = 0;
+	protected int ifStatNum = 0;
+	protected int whileStatNum = 0;
+	protected int returnStatNum = 0;
+	protected int printStatNum = 0;
+	protected int promoteNum = 0;
 
 	public WFunctionSymbol(String funcName) {
 		super(funcName);
@@ -62,7 +66,22 @@ public class WFunctionSymbol extends FunctionSymbol {
 		return num;
 	}
 
-	public String getTempVar() {
-		return String.valueOf(uid++);
+	public int getTempVar() {
+		return tempVarNum++;
+	}
+	public int getNextIfNum() {
+		return ifStatNum++;
+	}
+	public int getNextWhileNum() {
+		return whileStatNum++;
+	}
+	public int getNextReturnNum() {
+		return returnStatNum++;
+	}
+	public int getNextPrintNum() {
+		return printStatNum++;
+	}
+	public int getNextPromoteNum() {
+		return promoteNum++;
 	}
 }

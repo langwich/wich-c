@@ -7,9 +7,10 @@ import wich.semantics.SymbolTable;
 public class TrueLiteral extends Expr{
 	public String value;
 
-	public TrueLiteral(String value) {
+	public TrueLiteral(String value, String tempVar) {
 		this.value = value;
 		this.type = new BooleanType();
+		this.varRef = tempVar;
 	}
 
 	@Override

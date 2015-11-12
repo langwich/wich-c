@@ -24,7 +24,6 @@ SOFTWARE.
 package wich.codegen.model.expr;
 
 import org.antlr.symtab.Type;
-import wich.codegen.model.FloatType;
 import wich.codegen.model.ModelElement;
 import wich.codegen.model.StringType;
 import wich.semantics.SymbolTable;
@@ -33,10 +32,11 @@ public class StringIndexExpr extends Expr {
 	public final String varName;
 	@ModelElement public Expr expr;
 
-	public StringIndexExpr(String object, Expr indexExpr) {
+	public StringIndexExpr(String object, Expr indexExpr, String tempVar) {
 		this.varName = object;
 		this.expr = indexExpr;
 		this.type = new StringType();
+		this.varRef = tempVar;
 	}
 
 	@Override

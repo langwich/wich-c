@@ -9,10 +9,9 @@ public class VarRef extends Expr {
 	public WVariableSymbol symbol;
 	public boolean isAssign;
 
-	public VarRef(WVariableSymbol symbol, WichType type, boolean isAssign) {
+	public VarRef(WVariableSymbol symbol, WichType type) {
 		this.type = type;
 		this.symbol = symbol;
-		this.isAssign = isAssign;
 	}
 
 	public String getName() { return symbol.getName(); }

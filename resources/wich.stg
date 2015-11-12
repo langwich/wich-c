@@ -179,6 +179,10 @@ FuncCall(c,args,type) ::= <<
 <c.funcName>(<args;separator=",">)
 >>
 
+FuncCallVoid(c,args,type) ::= <<
+<c.funcName>(<args;separator=",">)
+>>
+
 StringIndexExpr(s,expr,type) ::= <<
 String_from_char(<s.varName>->str[(<expr>)-1])
 >>
@@ -190,6 +194,8 @@ NegateExpr(n,expr,type) ::= "-<expr>"
 NotExpr(ne,expr,type) ::= "!<expr>"
 
 OpExpr(o,lExp,rExp,type) ::= "<lExp> <o.op> <rExp>"
+
+VectorElement(e, expr, type) ::= "<expr>"
 
 ArgDef(arg,type) ::= "<type> <arg.name>"
 

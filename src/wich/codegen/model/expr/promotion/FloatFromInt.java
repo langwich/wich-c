@@ -31,8 +31,9 @@ import wich.semantics.SymbolTable;
 public class FloatFromInt extends Expr {
 	@ModelElement public final Expr expr;
 
-	public FloatFromInt(Expr intExpr) {
+	public FloatFromInt(Expr intExpr, String tempVarRef) {
 		this.expr = intExpr;
+		this.varRef = tempVarRef;
 	}
 
 	@Override

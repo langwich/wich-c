@@ -21,27 +21,13 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-package wich.codegen.model.expr;
+package wich.codegen.model;
 
+import wich.codegen.model.expr.FuncCall;
 
-import org.antlr.symtab.Type;
-import wich.codegen.model.FloatType;
-import wich.codegen.model.ModelElement;
-import wich.semantics.SymbolTable;
+public class FuncCallVoid extends FuncCall {
 
-public class VectorIndexExpr extends Expr {
-	public final String varName;
-	@ModelElement public Expr expr;
-
-	public VectorIndexExpr(String object, Expr indexExpr, String tempVar) {
-		this.varName = object;
-		this.expr = indexExpr;
-		this.type = new FloatType();
-		this.varRef = tempVar;
-	}
-
-	@Override
-	public Type getType() {
-		return SymbolTable._float;
+	public FuncCallVoid(String funcName, WichType type) {
+		super(funcName, type);
 	}
 }

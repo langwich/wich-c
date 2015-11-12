@@ -23,25 +23,24 @@ SOFTWARE.
 */
 package wich.codegen.model.expr;
 
-
 import org.antlr.symtab.Type;
-import wich.codegen.model.FloatType;
 import wich.codegen.model.ModelElement;
-import wich.semantics.SymbolTable;
 
-public class VectorIndexExpr extends Expr {
-	public final String varName;
+public class VectorElement extends Expr {
 	@ModelElement public Expr expr;
 
-	public VectorIndexExpr(String object, Expr indexExpr, String tempVar) {
-		this.varName = object;
-		this.expr = indexExpr;
-		this.type = new FloatType();
-		this.varRef = tempVar;
+	public int index;
+	public String vecRef;
+
+	public VectorElement(Expr expr, int index, String vecRef) {
+		this.expr = expr;
+		this.index = index;
+		this.varRef = expr.varRef;
+		this.vecRef = vecRef;
 	}
 
 	@Override
 	public Type getType() {
-		return SymbolTable._float;
+		return expr.getType();
 	}
 }
