@@ -33,11 +33,6 @@ public class TestStandardMalloc extends TestWichExecution {
 	}
 
 	@Test
-	public void testLLVMCodeGen() throws Exception {
-		testCodeGen(CompilerUtils.CodeGenTarget.LLVM);
-	}
-
-	@Test
 	public void testPlainCodeGen() throws Exception {
 		testCodeGen(CompilerUtils.CodeGenTarget.PLAIN);
 	}
@@ -66,4 +61,5 @@ public class TestStandardMalloc extends TestWichExecution {
 		}
 		executeAndCheck(input.getAbsolutePath(), expected, true, CompilerUtils.CodeGenTarget.REFCOUNTING);
 	}
+
 }

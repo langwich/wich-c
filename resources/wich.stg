@@ -57,7 +57,7 @@ CVectorBinaryOpMap ::= [
 	".":"Vector_dot"
 ]
 
-File(f, functions, main) ::= <<
+File(f, functions, main, decls) ::= <<
 #include \<stdio.h>
 #include "wich.h"
 
@@ -137,6 +137,8 @@ VarInitStat(v,varRef,expr,type) ::= "<varRef> = <expr>;"
 VarDefStat(v,type) ::= "<type> <v.name>;"
 StringVarDefStat ::= VarDefStat
 VectorVarDefStat ::= VarDefStat
+
+StringDecl(s) ::= ""
 
 CompositeModelObject(cs, modelObjects) ::= <<
 <modelObjects; separator="\n">

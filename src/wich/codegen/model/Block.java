@@ -72,13 +72,6 @@ public class Block extends Stat {
 		}
 	}
 
-//	public String getEnclosingCleanupLabel() {
-//		if ( enclosingBlock!=null ) {
-//			return enclosingBlock;
-//		}
-//		return "_cleanup_"+FUNC_BLOCK_NUMBER;
-//	}
-
 	public List<OutputModelObject> getStatementsNoVarDefs() {
 		return ModelWalker.findAll(this, (o) -> !(o instanceof VarDefStat));
 	}

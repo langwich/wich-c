@@ -55,11 +55,12 @@ LLVMBinaryIntOpMap ::= [
 	"||":"or"
 ]
 
-File(f, functions, main) ::= <<
+File(f, functions, main, decls) ::= <<
 <include()>
 
 <functions>
 <main>
+<decls;separator="\n">
 >>
 
 MainFunc(f,returnType,args,body) ::= <<
@@ -71,6 +72,7 @@ entry:
 store i32 0, i32* %retval_
 store i32 %argc, i32* %argc_
 store i8** %argv, i8*** %argv_
+call void () @setup_error_handlers()
 <body>
 }
 <\n>
@@ -167,6 +169,10 @@ BlockStatement(b,block) ::= <<
 <block>
 >>
 
+StringDecl(s) ::= <<
+@sl.str<s.varRef> = private unnamed_addr constant [<s.len> x i8] c"<s.str>", align 1
+>>
+
 IntLiteral(e,type)	::= <<
 %<e.varRef> = add i32 <e.value>, 0
 >>
@@ -185,8 +191,9 @@ HeapVarRef(e,type)	::= <<
 %<e.varRef> = load <type>, <type>* %<e.name>_
 >>
 
-StringLiteral(s,type) ::= <<
-String_new(<s.literal>)
+StringLiteral(e,type) ::= <<
+%sl_<e.varRef> = getelementptr [<e.len> x i8], [<e.len> x i8]* @sl.str<e.varRef>, i32 0, i32 0
+%<e.varRef> = call %struct.string* (i8*) @String_new(i8* %sl_<e.varRef>)
 >>
 
 VectorLiteral(e,elems,type) ::= <<
@@ -252,7 +259,7 @@ VoidType(v) ::= "void"
 IntType(t) ::= "i32"
 FloatType(t) ::= "double"
 VectorType(t) ::= "%struct.PVector_ptr"
-StringType(t) ::= "String *"
+StringType(t) ::= "%struct.string"
 BooleanType(t) ::= "i1"
 TmpVarDef(t,type) ::="<typeMo> tmp<t.varIndex>;"
 
@@ -280,7 +287,11 @@ BlockInitialization(init,type) ::= <<
 >>
 
 PrintNewLine(p) 		  ::= <<printf("\n");>>
-PrintStringStat(ps,expr)  ::= <<print_string(<expr>);>>
+PrintStringStat(ps,expr)  ::= <<
+<expr>
+call void (%struct.string*) @print_string(%struct.string* %<expr.e.varRef>)
+>>
+
 PrintVectorStat(pv,expr)  ::= <<
 <expr>
 call void (%struct.PVector_ptr) @print_pvector(%struct.PVector_ptr %<expr.e.varRef>)
