@@ -93,20 +93,20 @@ store double %promo1, double* %promo1_
 %3 = add i32 3, 0
 %promo2 = sitofp i32 %3 to double
 store double %promo2, double* %promo2_
-%vec_ptr_0 = getelementptr [3 x double], [3 x double]* %0, i64 0, i64 0
-%vec_new_0 = call %struct.PVector_ptr @PVector_new(double* %vec_ptr_0, i64 3)
-store %struct.PVector_ptr %0, %struct.PVector_ptr* %x_
-%4 = load %struct.PVector_ptr, %struct.PVector_ptr* %x_
-call void (%struct.PVector_ptr) @bar(%struct.PVector_ptr %4)
-
+%vec_ptr_4 = getelementptr [3 x double], [3 x double]* %0, i64 0, i64 0
+%4 = call %struct.PVector_ptr @PVector_new(double* %vec_ptr_4, i64 3)
+store %struct.PVector_ptr %4, %struct.PVector_ptr* %x_
 %5 = load %struct.PVector_ptr, %struct.PVector_ptr* %x_
-%6 = add i32 1, 0
-%index_6 = sub i32 %6, 1
-%7 = add i32 99, 0
-%promo3 = sitofp i32 %7 to double
-call void (%struct.PVector_ptr,i32,double) @set_ith(%struct.PVector_ptr %5, i32 %index_6, double %promo3)
-%8 = load %struct.PVector_ptr, %struct.PVector_ptr* %x_
-call void (%struct.PVector_ptr) @print_pvector(%struct.PVector_ptr %8)
+call void (%struct.PVector_ptr) @bar(%struct.PVector_ptr %5)
+
+%6 = load %struct.PVector_ptr, %struct.PVector_ptr* %x_
+%7 = add i32 1, 0
+%index_7 = sub i32 %7, 1
+%8 = add i32 99, 0
+%promo3 = sitofp i32 %8 to double
+call void (%struct.PVector_ptr,i32,double) @set_ith(%struct.PVector_ptr %6, i32 %index_7, double %promo3)
+%9 = load %struct.PVector_ptr, %struct.PVector_ptr* %x_
+call void (%struct.PVector_ptr) @print_pvector(%struct.PVector_ptr %9)
 br label %ret__
 ret__:
 br label %ret_

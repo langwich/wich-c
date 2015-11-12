@@ -33,13 +33,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class VectorLiteral extends Expr {
-	public final int vectorLength;
 	@ModelElement public List<Expr> elems = new ArrayList<>();
+
+	public final int vectorLength;
+	public final String tempVar;
 
 	public VectorLiteral(int vectorLength, String tempVar) {
 		this.vectorLength = vectorLength;
 		this.type = new VectorType();
-		this.varRef = tempVar;
+		this.tempVar = tempVar;
 	}
 
 	@Override

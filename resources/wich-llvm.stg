@@ -190,10 +190,10 @@ String_new(<s.literal>)
 >>
 
 VectorLiteral(e,elems,type) ::= <<
-%<e.varRef> = alloca [<e.vectorLength> x double]
+%<e.tempVar> = alloca [<e.vectorLength> x double]
 <elems:elementAlloc(); separator="\n">
-%vec_ptr_<e.varRef> = getelementptr [<e.vectorLength> x double], [<e.vectorLength> x double]* %<e.varRef>, i64 0, i64 0
-%vec_new_<e.varRef> = call %struct.PVector_ptr @PVector_new(double* %vec_ptr_<e.varRef>, i64 <e.vectorLength>)
+%vec_ptr_<e.varRef> = getelementptr [<e.vectorLength> x double], [<e.vectorLength> x double]* %<e.tempVar>, i64 0, i64 0
+%<e.varRef> = call %struct.PVector_ptr @PVector_new(double* %vec_ptr_<e.varRef>, i64 <e.vectorLength>)
 >>
 
 elementAlloc(expr) ::= <<

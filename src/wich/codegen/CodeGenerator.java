@@ -382,6 +382,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		for (int i = 0; i < ctx.expr_list().expr().size(); ++i) {
 			v.elems.add(new VectorElement((Expr) visit(ctx.expr_list().expr(i)), i, vecRef));
 		}
+		v.varRef = getTempVar();
 		return v;
 	}
 
