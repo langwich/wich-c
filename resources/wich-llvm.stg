@@ -192,7 +192,8 @@ HeapVarRef(e,type)	::= <<
 >>
 
 StringLiteral(e,type) ::= <<
-String_new(<e.literal>)
+%sl_<e.varRef> = getelementptr [<e.len> x i8], [<e.len> x i8]* @sl.str<e.varRef>, i32 0, i32 0
+%<e.varRef> = call %struct.string* (i8*) @String_new(i8* %sl_<e.varRef>)
 >>
 
 VectorLiteral(e,elems,type) ::= <<
@@ -258,7 +259,7 @@ VoidType(v) ::= "void"
 IntType(t) ::= "i32"
 FloatType(t) ::= "double"
 VectorType(t) ::= "%struct.PVector_ptr"
-StringType(t) ::= "String *"
+StringType(t) ::= "%struct.string"
 BooleanType(t) ::= "i1"
 TmpVarDef(t,type) ::="<typeMo> tmp<t.varIndex>;"
 
@@ -286,7 +287,11 @@ BlockInitialization(init,type) ::= <<
 >>
 
 PrintNewLine(p) 		  ::= <<printf("\n");>>
-PrintStringStat(ps,expr)  ::= <<print_string(<expr>);>>
+PrintStringStat(ps,expr)  ::= <<
+<expr>
+call void (%struct.string*) @print_string(%struct.string* %<expr.e.varRef>)
+>>
+
 PrintVectorStat(pv,expr)  ::= <<
 <expr>
 call void (%struct.PVector_ptr) @print_pvector(%struct.PVector_ptr %<expr.e.varRef>)

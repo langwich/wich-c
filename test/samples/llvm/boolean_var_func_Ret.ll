@@ -199,10 +199,14 @@ store i1 %2, i1* %y_
 %3 = load i1, i1* %y_
 br i1 %3, label %if.block_true_0, label %if.block_false_0
 if.block_true_0:
-print_string(String_new("happy"));
+%sl_4 = getelementptr [6 x i8], [6 x i8]* @sl.str4, i32 0, i32 0
+%4 = call %struct.string* (i8*) @String_new(i8* %sl_4)
+call void (%struct.string*) @print_string(%struct.string* %4)
 br label %if.block_exit_0
 if.block_false_0:
-print_string(String_new("sad"));
+%sl_5 = getelementptr [4 x i8], [4 x i8]* @sl.str5, i32 0, i32 0
+%5 = call %struct.string* (i8*) @String_new(i8* %sl_5)
+call void (%struct.string*) @print_string(%struct.string* %5)
 br label %if.block_exit_0
 if.block_exit_0:
 br label %ret__

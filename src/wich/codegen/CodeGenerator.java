@@ -375,7 +375,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	@Override
 	public OutputModelObject visitString(@NotNull WichParser.StringContext ctx) {
 		String tempVarRef = getTempVar();
-		StringLiteral sl = new StringLiteral(ctx.getText(), tempVarRef);
+		StringLiteral sl = new StringLiteral(ctx.getText(), tempVarRef, ctx.getText().length()-1);
 		String declStr = getDeclString(sl.literal);
 		strDecls.add(new StringDecl(declStr, declStr.length()-2, tempVarRef));
 		return sl;
