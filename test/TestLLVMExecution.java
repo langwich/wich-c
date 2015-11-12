@@ -21,45 +21,31 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+
 import org.junit.Test;
 import wich.codegen.CompilerUtils;
 
 import java.io.File;
 import java.net.URL;
 
-public class TestStandardMalloc extends TestWichExecution {
-	public TestStandardMalloc(File input, String baseName) {
+public class TestLLVMExecution extends TestWichExecution {
+
+	public TestLLVMExecution(File input, String baseName) {
 		super(input, baseName);
 	}
 
 	@Test
-	public void testPlainCodeGen() throws Exception {
-		testCodeGen(CompilerUtils.CodeGenTarget.PLAIN);
+	public void testLLVMCodeGen() throws Exception {
+		testCodeGen(CompilerUtils.CodeGenTarget.LLVM);
 	}
 
 	@Test
-	public void testRefCountingCodeGen() throws Exception {
-		testCodeGen(CompilerUtils.CodeGenTarget.REFCOUNTING);
-	}
-
-	@Test
-	public void testPlainExecution() throws Exception {
+	public void testLLVMExecution() throws Exception {
 		URL expectedFile = CompilerUtils.getResourceFile(baseName + ".output");
 		String expected = "";
 		if (expectedFile != null) {
 			expected = CompilerUtils.readFile(expectedFile.getPath(), CompilerUtils.FILE_ENCODING);
 		}
-		executeAndCheck(input.getAbsolutePath(), expected, false, CompilerUtils.CodeGenTarget.PLAIN);
+		executeAndCheck(input.getAbsolutePath(), expected, true, CompilerUtils.CodeGenTarget.LLVM);
 	}
-
-	@Test
-	public void testRefCountingExecution() throws Exception {
-		URL expectedFile = CompilerUtils.getResourceFile(baseName + ".output");
-		String expected = "";
-		if (expectedFile != null) {
-			expected = CompilerUtils.readFile(expectedFile.getPath(), CompilerUtils.FILE_ENCODING);
-		}
-		executeAndCheck(input.getAbsolutePath(), expected, true, CompilerUtils.CodeGenTarget.REFCOUNTING);
-	}
-
 }

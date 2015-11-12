@@ -27,6 +27,7 @@ import org.antlr.v4.runtime.misc.Triple;
 import org.antlr.v4.runtime.misc.Utils;
 import org.junit.Before;
 import wich.codegen.CompilerUtils;
+import wich.codegen.CompilerUtils.CodeGenTarget;
 import wich.errors.ErrorType;
 import wich.errors.WichErrorHandler;
 import wich.semantics.SymbolTable;
@@ -66,7 +67,7 @@ public class TestWichExecution extends WichBaseTest {
 		}
 	}
 
-	protected void testCodeGen(CompilerUtils.CodeGenTarget target) throws IOException, InterruptedException {
+	protected void testCodeGen(CodeGenTarget target) throws IOException, InterruptedException {
 		WichErrorHandler err = new WichErrorHandler();
 		SymbolTable symtab = new SymbolTable();
 		URL expectedOutputURL = null;
@@ -104,7 +105,7 @@ public class TestWichExecution extends WichBaseTest {
 		actual = actual.replace("\n\n", "\n");
 		CompilerUtils.writeFile("/tmp/__t.c", actual, StandardCharsets.UTF_8);
 
-		if (target != CompilerUtils.CodeGenTarget.LLVM) actual = normalizeFile();
+		if (target != CodeGenTarget.LLVM) actual = normalizeFile();
 
 		expected = CompilerUtils.readFile("/tmp/__expected.c", StandardCharsets.UTF_8);
 
@@ -139,10 +140,40 @@ public class TestWichExecution extends WichBaseTest {
 	protected void executeAndCheck(String wichFileName,
 								   String expected,
 								   boolean valgrind,
-								   CompilerUtils.CodeGenTarget target)
+								   CodeGenTarget target)
 		throws IOException, InterruptedException
 	{
-		String executable = compileC(wichFileName, target);
+		String executable = "./" + baseName;
+		String targetName;
+		List<String> cc;
+		if (target != CodeGenTarget.LLVM) {
+			targetName = WORKING_DIR + baseName + ".c";
+			cc = new ArrayList<>();
+			cc.addAll(
+					Arrays.asList(
+							"cc", "-g", "-o", executable,
+							targetName,
+							"-L", LIB_DIR,
+							"-D" + target.flag,
+							"-I", INCLUDE_DIR, "-std=c99", "-O0"
+					)
+			);
+		}
+		else {
+			targetName = WORKING_DIR + baseName + ".ll";
+			cc = new ArrayList<>();
+			cc.addAll(
+					Arrays.asList(
+							"/usr/local/llvm/bin/clang", "-o", executable,
+							targetName,
+							"-L", LIB_DIR,
+							"-D" + target.flag,
+							"-I", INCLUDE_DIR
+					)
+			);
+		}
+		compile(wichFileName, target, cc, targetName, executable);
+
 		String output = executeC(executable);
 		System.out.println(output);
 		assertEquals(expected, output);
@@ -166,7 +197,7 @@ public class TestWichExecution extends WichBaseTest {
 		return Integer.parseInt(summary.substring(summary.indexOf(":") + 1, summary.lastIndexOf("errors")).trim());
 	}
 
-	protected String compileC(String wichInputFilename, CompilerUtils.CodeGenTarget target)
+	protected void compile(String wichInputFilename, CodeGenTarget target, List<String> cc, String gen, String exec)
 		throws IOException, InterruptedException
 	{
 		// Translate to C file.
@@ -175,24 +206,12 @@ public class TestWichExecution extends WichBaseTest {
 		String wichInput = CompilerUtils.readFile(wichInputFilename, CompilerUtils.FILE_ENCODING);
 		String actual = CompilerUtils.genCode(wichInput, symtab, err, target);
 		assertTrue(err.toString(), err.getErrorNum()==0);
-		String generatedFileName = WORKING_DIR + baseName + ".c";
-		CompilerUtils.writeFile(generatedFileName, actual, StandardCharsets.UTF_8);
-		// Compile C code and return the path to the executable.
-		String executable = "./" + baseName;
-		File execF = new File(executable);
+		CompilerUtils.writeFile(gen, actual, StandardCharsets.UTF_8);
+
+		File execF = new File(exec);
 		if ( execF.exists() ) {
 			execF.delete();
 		}
-		List<String> cc = new ArrayList<>();
-		cc.addAll(
-			Arrays.asList(
-				"cc", "-g", "-o", executable,
-				generatedFileName,
-				"-L", LIB_DIR,
-				"-D" + target.flag,
-				"-I", INCLUDE_DIR, "-std=c99", "-O0"
-		    )
-		);
 		for (String lib : target.libs) {
 			cc.add("-l"+lib);
 		}
@@ -204,12 +223,10 @@ public class TestWichExecution extends WichBaseTest {
 		String cmdS = Utils.join(cmd, " ");
 		System.out.println(cmdS);
 		if ( result.a!=0 ) {
-			throw new RuntimeException("failed compilation of "+generatedFileName+" with result code "+result.a+
+			throw new RuntimeException("failed compilation of "+gen+" with result code "+result.a+
 									   " from\n"+
 			                           cmdS+"\nstderr:\n"+result.c);
 		}
-//		System.out.println(result.c);
-		return executable;
 	}
 
 	protected Triple<Integer, String, String> exec(String[] cmd) throws IOException, InterruptedException {
