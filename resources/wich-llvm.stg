@@ -201,7 +201,7 @@ VectorLiteral(e,elems,type) ::= <<
 >>
 
 elementAlloc(expr) ::= <<
-%<expr.e.varRef>_ = getelementptr [3 x double], [3 x double]* %<expr.e.vecRef>, i64 0, i64 <expr.e.index>
+%<expr.e.varRef>_ = getelementptr [<expr.e.len> x double], [<expr.e.len> x double]* %<expr.e.vecRef>, i64 0, i64 <expr.e.index>
 <expr>
 store double %<expr.e.varRef>, double* %<expr.e.varRef>_
 >>

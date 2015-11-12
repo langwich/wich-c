@@ -142,7 +142,7 @@ store %struct.string* %3, %struct.string** %b_
 %4 = call %struct.string* (i8*) @String_new(i8* %sl_4)
 store %struct.string* %4, %struct.string** %c_
 %5 = alloca [1 x double]
-%promo0_ = getelementptr [3 x double], [3 x double]* %5, i64 0, i64 0
+%promo0_ = getelementptr [1 x double], [1 x double]* %5, i64 0, i64 0
 %6 = add i32 7, 0
 %promo0 = sitofp i32 %6 to double
 store double %promo0, double* %promo0_

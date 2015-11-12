@@ -31,12 +31,14 @@ public class VectorElement extends Expr {
 
 	public int index;
 	public String vecRef;
+	public int len;
 
-	public VectorElement(Expr expr, int index, String vecRef) {
+	public VectorElement(Expr expr, int index, String vecRef, int vectorLength) {
 		this.expr = expr;
 		this.index = index;
 		this.varRef = expr.varRef;
 		this.vecRef = vecRef;
+		this.len = vectorLength;
 	}
 
 	@Override
