@@ -114,9 +114,16 @@ ret void
 @__stderrp = external global %struct.__sFILE*, align 8
 @.str.5 = private unnamed_addr constant [34 x i8] c"Wich is confused; signal %s (%d)\0A\00", align 1
 ; ///////// ///////// G E N E R A T E D  C O D E ///////// /////////
-define %struct.PVector_ptr @foo() {
+define i32 @main(i32 %argc, i8** %argv) {
 entry:
-%retval_ = alloca %struct.PVector_ptr
+%retval_ = alloca i32
+%argc_ = alloca i32
+%argv_ = alloca i8**
+store i32 0, i32* %retval_
+store i32 %argc, i32* %argc_
+store i8** %argv, i8*** %argv_
+call void () @setup_error_handlers()
+%x0_ = alloca %struct.PVector_ptr
 %0 = alloca [5 x double]
 %promo0_ = getelementptr [5 x double], [5 x double]* %0, i64 0, i64 0
 %1 = add i32 1, 0
@@ -140,32 +147,7 @@ store double %promo3, double* %promo3_
 store double %promo4, double* %promo4_
 %vec_ptr_6 = getelementptr [5 x double], [5 x double]* %0, i64 0, i64 0
 %6 = call %struct.PVector_ptr @PVector_new(double* %vec_ptr_6, i64 5)
-store %struct.PVector_ptr %6, %struct.PVector_ptr* %retval_
-br label %ret_
-return.exit_0:
-br label %ret__
-ret__:
-br label %ret_
-ret_:
-%retval = load %struct.PVector_ptr, %struct.PVector_ptr* %retval_
-ret %struct.PVector_ptr %retval
-}
-
-
-define i32 @main(i32 %argc, i8** %argv) {
-entry:
-%retval_ = alloca i32
-%argc_ = alloca i32
-%argv_ = alloca i8**
-store i32 0, i32* %retval_
-store i32 %argc, i32* %argc_
-store i8** %argv, i8*** %argv_
-call void () @setup_error_handlers()
-%x0_ = alloca %struct.PVector_ptr
-%0 = call %struct.PVector_ptr () @foo()
-store %struct.PVector_ptr %0, %struct.PVector_ptr* %x0_
-%1 = call %struct.PVector_ptr () @foo()
-call void (%struct.PVector_ptr) @print_pvector(%struct.PVector_ptr %1)
+store %struct.PVector_ptr %6, %struct.PVector_ptr* %x0_
 br label %ret__
 ret__:
 br label %ret_
@@ -173,6 +155,5 @@ ret_:
 %retval = load i32, i32* %retval_
 ret i32 %retval
 }
-
 
 
