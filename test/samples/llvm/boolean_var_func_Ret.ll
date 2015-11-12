@@ -159,12 +159,12 @@ ret void
 
 ; ///////// ///////// G E N E R A T E D  C O D E ///////// /////////
 
-define i1 @foo(i32 %x) {
+define i1 @foo(i32 %x0) {
 entry:
-%x_ = alloca i32
-store i32 %x, i32* %x_
+%x0_ = alloca i32
+store i32 %x0, i32* %x0_
 %retval_ = alloca i1
-%0 = load i32, i32* %x_
+%0 = load i32, i32* %x0_
 %1 = add i32 10, 0
 %2 = icmp slt i32 %0, %1
 store i1 %2, i1* %retval_
@@ -189,14 +189,14 @@ store i32 %argc, i32* %argc_
 store i8** %argv, i8*** %argv_
 call void () @setup_error_handlers()
 
-%x_ = alloca i32
-%y_ = alloca i1
+%x1_ = alloca i32
+%y0_ = alloca i1
 %0 = add i32 5, 0
-store i32 %0, i32* %x_
-%1 = load i32, i32* %x_
+store i32 %0, i32* %x1_
+%1 = load i32, i32* %x1_
 %2 = call i1 (i32) @foo(i32 %1)
-store i1 %2, i1* %y_
-%3 = load i1, i1* %y_
+store i1 %2, i1* %y0_
+%3 = load i1, i1* %y0_
 br i1 %3, label %if.block_true_0, label %if.block_false_0
 if.block_true_0:
 %sl_4 = getelementptr [6 x i8], [6 x i8]* @sl.str4, i32 0, i32 0

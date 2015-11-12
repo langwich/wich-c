@@ -7,7 +7,6 @@ import wich.semantics.symbols.WVariableSymbol;
 
 public class VarRef extends Expr {
 	public WVariableSymbol symbol;
-	public boolean isAssign;
 
 	public VarRef(WVariableSymbol symbol, WichType type) {
 		this.type = type;

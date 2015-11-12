@@ -124,14 +124,14 @@ store i32 0, i32* %retval_
 store i32 %argc, i32* %argc_
 store i8** %argv, i8*** %argv_
 call void () @setup_error_handlers()
-%x_ = alloca i32
-%y_ = alloca i32
+%x0_ = alloca i32
+%y0_ = alloca i32
 %0 = add i32 2, 0
-store i32 %0, i32* %x_
+store i32 %0, i32* %x0_
 %1 = add i32 1, 0
-store i32 %1, i32* %y_
-%2 = load i32, i32* %x_
-%3 = load i32, i32* %y_
+store i32 %1, i32* %y0_
+%2 = load i32, i32* %x0_
+%3 = load i32, i32* %y0_
 %4 = icmp sgt i32 %2, %3
 br i1 %4, label %if.block_true_0, label %if.block_false_0
 if.block_true_0:

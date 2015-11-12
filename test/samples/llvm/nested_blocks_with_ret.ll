@@ -114,23 +114,51 @@ ret void
 @__stderrp = external global %struct.__sFILE*, align 8
 @.str.5 = private unnamed_addr constant [34 x i8] c"Wich is confused; signal %s (%d)\0A\00", align 1
 ; ///////// ///////// G E N E R A T E D  C O D E ///////// /////////
-define i1 @bar(i32 %x0) {
+define i32 @f(%struct.PVector_ptr %a0) {
 entry:
+%a0_ = alloca %struct.PVector_ptr
+store %struct.PVector_ptr %a0, %struct.PVector_ptr* %a0_
+%retval_ = alloca i32
 %x0_ = alloca i32
-store i32 %x0, i32* %x0_
-%retval_ = alloca i1
-%0 = load i32, i32* %x0_
-%1 = add i32 10, 0
-%2 = icmp slt i32 %0, %1
-store i1 %2, i1* %retval_
+%b0_ = alloca %struct.string*
+%e0_ = alloca %struct.PVector_ptr
+%0 = add i32 32, 0
+store i32 %0, i32* %x0_
+%sl_1 = getelementptr [4 x i8], [4 x i8]* @sl.str1, i32 0, i32 0
+%1 = call %struct.string* (i8*) @String_new(i8* %sl_1)
+store %struct.string* %1, %struct.string** %b0_
+%c0_ = alloca %struct.string*
+%sl_2 = getelementptr [4 x i8], [4 x i8]* @sl.str2, i32 0, i32 0
+%2 = call %struct.string* (i8*) @String_new(i8* %sl_2)
+store %struct.string* %2, %struct.string** %c0_
+%d0_ = alloca %struct.string*
+%sl_3 = getelementptr [4 x i8], [4 x i8]* @sl.str3, i32 0, i32 0
+%3 = call %struct.string* (i8*) @String_new(i8* %sl_3)
+store %struct.string* %3, %struct.string** %d0_
+%4 = load i32, i32* %x0_
+store i32 %4, i32* %retval_
 br label %ret_
 return.exit_0:
+
+
+%b1_ = alloca %struct.string*
+%sl_5 = getelementptr [4 x i8], [4 x i8]* @sl.str5, i32 0, i32 0
+%5 = call %struct.string* (i8*) @String_new(i8* %sl_5)
+store %struct.string* %5, %struct.string** %b1_
+%6 = alloca [1 x double]
+%promo0_ = getelementptr [1 x double], [1 x double]* %6, i64 0, i64 0
+%7 = add i32 7, 0
+%promo0 = sitofp i32 %7 to double
+store double %promo0, double* %promo0_
+%vec_ptr_8 = getelementptr [1 x double], [1 x double]* %6, i64 0, i64 0
+%8 = call %struct.PVector_ptr @PVector_new(double* %vec_ptr_8, i64 1)
+store %struct.PVector_ptr %8, %struct.PVector_ptr* %e0_
 br label %ret__
 ret__:
 br label %ret_
 ret_:
-%retval = load i1, i1* %retval_
-ret i1 %retval
+%retval = load i32, i32* %retval_
+ret i32 %retval
 }
 
 
@@ -143,12 +171,15 @@ store i32 0, i32* %retval_
 store i32 %argc, i32* %argc_
 store i8** %argv, i8*** %argv_
 call void () @setup_error_handlers()
-%x1_ = alloca i32
-%0 = add i32 5, 0
-store i32 %0, i32* %x1_
-%1 = load i32, i32* %x1_
-%2 = call i1 (i32) @bar(i32 %1)
-%pb_0 = call i32 (i8*, ...) @printf(i8* getelementptr ([4 x i8], [4 x i8]* @pi.str, i64 0, i64 0), i1 %2)
+%0 = alloca [1 x double]
+%promo0_ = getelementptr [1 x double], [1 x double]* %0, i64 0, i64 0
+%1 = add i32 1, 0
+%promo0 = sitofp i32 %1 to double
+store double %promo0, double* %promo0_
+%vec_ptr_2 = getelementptr [1 x double], [1 x double]* %0, i64 0, i64 0
+%2 = call %struct.PVector_ptr @PVector_new(double* %vec_ptr_2, i64 1)
+%3 = call i32 (%struct.PVector_ptr) @f(%struct.PVector_ptr %2)
+%pi_0 = call i32 (i8*, ...) @printf(i8* getelementptr ([4 x i8], [4 x i8]* @pi.str, i64 0, i64 0), i32 %3)
 br label %ret__
 ret__:
 br label %ret_
@@ -158,3 +189,7 @@ ret i32 %retval
 }
 
 
+@sl.str1 = private unnamed_addr constant [4 x i8] c"cat\00", align 1
+@sl.str2 = private unnamed_addr constant [4 x i8] c"dog\00", align 1
+@sl.str3 = private unnamed_addr constant [4 x i8] c"moo\00", align 1
+@sl.str5 = private unnamed_addr constant [4 x i8] c"boo\00", align 1

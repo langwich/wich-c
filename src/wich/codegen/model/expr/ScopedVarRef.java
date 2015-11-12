@@ -27,8 +27,9 @@ import wich.codegen.model.WichType;
 import wich.semantics.symbols.WVariableSymbol;
 
 public class ScopedVarRef extends VarRef {
-	public ScopedVarRef(WVariableSymbol symbol, WichType type) {
+	public ScopedVarRef(WVariableSymbol symbol, WichType type, String varRef) {
 		super(symbol, type);
+		super.varRef = varRef;
 	}
 
 	@Override

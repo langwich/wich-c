@@ -159,21 +159,21 @@ ret void
 
 ; ///////// ///////// G E N E R A T E D  C O D E ///////// /////////
 
-define i32 @fib(i32 %x) {
+define i32 @fib(i32 %x0) {
 entry:
-%x_ = alloca i32
-store i32 %x, i32* %x_
+%x0_ = alloca i32
+store i32 %x0, i32* %x0_
 %retval_ = alloca i32
-%0 = load i32, i32* %x_
+%0 = load i32, i32* %x0_
 %1 = add i32 0, 0
 %2 = icmp eq i32 %0, %1
-%3 = load i32, i32* %x_
+%3 = load i32, i32* %x0_
 %4 = add i32 1, 0
 %5 = icmp eq i32 %3, %4
 %6 = or i1 %2, %5
 br i1 %6, label %if.block_true_0, label %if.block_false_0
 if.block_true_0:
-%7 = load i32, i32* %x_
+%7 = load i32, i32* %x0_
 store i32 %7, i32* %retval_
 br label %ret_
 return.exit_0:
@@ -181,11 +181,11 @@ br label %if.block_exit_0
 if.block_false_0:
 br label %if.block_exit_0
 if.block_exit_0:
-%8 = load i32, i32* %x_
+%8 = load i32, i32* %x0_
 %9 = add i32 1, 0
 %10 = sub i32 %8, %9
 %11 = call i32 (i32) @fib(i32 %10)
-%12 = load i32, i32* %x_
+%12 = load i32, i32* %x0_
 %13 = add i32 2, 0
 %14 = sub i32 %12, %13
 %15 = call i32 (i32) @fib(i32 %14)
