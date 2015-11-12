@@ -39,6 +39,7 @@ import wich.codegen.model.ReturnHeapVarStat;
 import wich.codegen.model.ReturnStat;
 import wich.codegen.model.ReturnVectorHeapVarStat;
 import wich.codegen.model.Stat;
+import wich.codegen.model.StringDecl;
 import wich.codegen.model.expr.StringLiteral;
 import wich.codegen.model.StringType;
 import wich.codegen.model.StringVarDefStat;
@@ -95,6 +96,8 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	protected Block currentBlock;
 	protected WFunctionSymbol currentFunction;
 
+	protected List<StringDecl> strDecls = new ArrayList<>();
+
 	protected static final String PROMO = "promo";
 
 	public CodeGenerator(SymbolTable symtab) {
@@ -132,7 +135,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		exitFunction();
 		MainFunc main = new MainFunc(mainSym, body);
 
-		currentFile = new File(funcs,main);
+		currentFile = new File(funcs,main, strDecls);
 
 		popScope();
 		return currentFile;
@@ -371,7 +374,11 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 
 	@Override
 	public OutputModelObject visitString(@NotNull WichParser.StringContext ctx) {
-		return new StringLiteral(ctx.getText(), getTempVar());
+		String tempVarRef = getTempVar();
+		StringLiteral sl = new StringLiteral(ctx.getText(), tempVarRef);
+		String declStr = getDeclString(sl.literal);
+		strDecls.add(new StringDecl(declStr, declStr.length()-2, tempVarRef));
+		return sl;
 	}
 
 	@Override
@@ -606,6 +613,10 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 			}
 		}
 		return null;
+	}
+
+	protected static String getDeclString(String strWithQuotes) {
+		return strWithQuotes.substring(1, strWithQuotes.length()-1)+"\\00";
 	}
 
 	protected void pushScope(Scope s) {currentScope = s;}

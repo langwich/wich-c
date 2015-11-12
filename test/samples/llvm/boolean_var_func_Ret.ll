@@ -213,5 +213,6 @@ ret_:
 ret i32 %retval
 }
 
-@str1 = private unnamed_addr constant [6 x i8] c"happy\00", align 1
-@str2 = private unnamed_addr constant [4 x i8] c"sad\00", align 1
+
+@sl.str4 = private unnamed_addr constant [6 x i8] c"happy\00", align 1
+@sl.str5 = private unnamed_addr constant [4 x i8] c"sad\00", align 1

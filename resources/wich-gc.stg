@@ -1,6 +1,6 @@
 import "wich.stg"
 
-File(f, functions, main) ::= <<
+File(f, functions, main, decls) ::= <<
 #include \<stdio.h>
 #include "wich.h"
 #include "gc.h"

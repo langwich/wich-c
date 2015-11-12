@@ -55,11 +55,12 @@ LLVMBinaryIntOpMap ::= [
 	"||":"or"
 ]
 
-File(f, functions, main) ::= <<
+File(f, functions, main, decls) ::= <<
 <include()>
 
 <functions>
 <main>
+<decls;separator="\n">
 >>
 
 MainFunc(f,returnType,args,body) ::= <<
@@ -168,6 +169,10 @@ BlockStatement(b,block) ::= <<
 <block>
 >>
 
+StringDecl(s) ::= <<
+@sl.str<s.varRef> = private unnamed_addr constant [<s.len> x i8] c"<s.str>", align 1
+>>
+
 IntLiteral(e,type)	::= <<
 %<e.varRef> = add i32 <e.value>, 0
 >>
@@ -186,8 +191,8 @@ HeapVarRef(e,type)	::= <<
 %<e.varRef> = load <type>, <type>* %<e.name>_
 >>
 
-StringLiteral(s,type) ::= <<
-String_new(<s.literal>)
+StringLiteral(e,type) ::= <<
+String_new(<e.literal>)
 >>
 
 VectorLiteral(e,elems,type) ::= <<
