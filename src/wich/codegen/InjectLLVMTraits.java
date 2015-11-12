@@ -30,6 +30,9 @@ import wich.codegen.model.ElementAssignStat;
 import wich.codegen.model.Func;
 import wich.codegen.model.MainFunc;
 import wich.codegen.model.OutputModelObject;
+import wich.codegen.model.StringVarDefStat;
+import wich.codegen.model.VarDefStat;
+import wich.codegen.model.VectorVarDefStat;
 import wich.codegen.model.expr.BinaryFloatOp;
 import wich.codegen.model.expr.BinaryIntOp;
 import wich.codegen.model.expr.BinaryPrimitiveOp;
@@ -37,6 +40,8 @@ import wich.codegen.model.expr.FloatLiteral;
 import wich.codegen.model.expr.FuncCall;
 import wich.codegen.model.expr.HeapVarRef;
 import wich.codegen.model.expr.IntLiteral;
+import wich.codegen.model.expr.ScopedVarDefStat;
+import wich.codegen.model.expr.ScopedVarRef;
 import wich.codegen.model.expr.VarRef;
 import wich.codegen.model.expr.VectorLiteral;
 import wich.codegen.model.expr.promotion.FloatFromInt;
@@ -52,7 +57,6 @@ public class InjectLLVMTraits {
 	}
 
 	public OutputModelObject exitModel(Func func) {
-//		System.out.println("exitModel func");
 		if (func.returnType.type == SymbolTable._void) {
 			func.body.terminate.add(new BlockTerminationVoid());
 		}
@@ -64,13 +68,32 @@ public class InjectLLVMTraits {
 	}
 
 	public OutputModelObject exitModel(MainFunc func) {
-//		System.out.println("exitModel mainFunc");
 		if (func.returnType.type == SymbolTable._void) {
 			func.body.terminate.add(new BlockTerminationVoid());
 		}
 		else func.body.terminate.add(new BlockTermination(func.returnType));
 
 		return func;
+	}
+
+	public OutputModelObject exitModel(VarDefStat varDefStat) {
+		return new ScopedVarDefStat(varDefStat.symbol, varDefStat.type);
+	}
+
+	public OutputModelObject exitModel(StringVarDefStat varDefStat) {
+		return new ScopedVarDefStat(varDefStat.symbol, varDefStat.type);
+	}
+
+	public OutputModelObject exitModel(VectorVarDefStat varDefStat) {
+		return new ScopedVarDefStat(varDefStat.symbol, varDefStat.type);
+	}
+
+	public OutputModelObject enterModel(VarRef varRef) {
+		return new ScopedVarRef(varRef.symbol, varRef.type);
+	}
+
+	public OutputModelObject enterModel(HeapVarRef heapVarRef) {
+		return new ScopedVarRef(heapVarRef.symbol, heapVarRef.type);
 	}
 
 	public OutputModelObject exitModel(BinaryPrimitiveOp op) {
