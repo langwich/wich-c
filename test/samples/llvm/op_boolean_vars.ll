@@ -142,14 +142,14 @@ store i32 %x1, i32* %x1_
 %2 = icmp slt i32 %0, %1
 br i1 %2, label %if.block_true_0, label %if.block_false_0
 if.block_true_0:
-true
-store i1 %, i1* %retval_
+%3 = add i1 0, 0
+store i1 %3, i1* %retval_
 br label %ret_
 return.exit_0:
 br label %if.block_exit_0
 if.block_false_0:
-false
-store i1 %, i1* %retval_
+%4 = add i1 0, 0
+store i1 %4, i1* %retval_
 br label %ret_
 return.exit_1:
 br label %if.block_exit_0

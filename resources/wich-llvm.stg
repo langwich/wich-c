@@ -181,8 +181,13 @@ FloatLiteral(e,type)	::= <<
 %<e.varRef> = fadd double <e.value>, 0.00
 >>
 
-TrueLiteral(t,type) ::= "<t.value>"
-FalseLiteral(f,type) ::="<f.value>"
+TrueLiteral(e,type) ::= <<
+%<e.varRef> = add i1 1, 0
+>>
+
+FalseLiteral(e,type) ::= <<
+%<e.varRef> = add i1 0, 0
+>>
 
 ScopedVarRef(e,type)		::= <<
 %<e.varRef> = load <type>, <type>* %<e.name>_
