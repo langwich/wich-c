@@ -164,7 +164,7 @@ public class TestWichExecution extends WichBaseTest {
 			cc = new ArrayList<>();
 			cc.addAll(
 					Arrays.asList(
-							"/usr/local/llvm/bin/clang", "-o", executable,
+							"clang-3.8", "-o", executable,
 							targetName,
 							"-L", LIB_DIR,
 							"-D" + target.flag,
