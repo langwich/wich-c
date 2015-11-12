@@ -158,21 +158,21 @@ ret void
 @.str.5 = private unnamed_addr constant [34 x i8] c"Wich is confused; signal %s (%d)\0A\00", align 1
 
 ; ///////// ///////// G E N E R A T E D  C O D E ///////// /////////
-define %struct.string @f() {
+define %struct.string* @f() {
 entry:
-%retval_ = alloca %struct.string
+%retval_ = alloca %struct.string*
 %0 = call double () @g()
 br label %ret__
 ret__:
 br label %ret_
 ret_:
-%retval = load %struct.string, %struct.string* %retval_
-ret %struct.string %retval
+%retval = load %struct.string*, %struct.string** %retval_
+ret %struct.string* %retval
 }
 define double @g() {
 entry:
 %retval_ = alloca double
-%0 = call %struct.string () @f()
+%0 = call %struct.string* () @f()
 br label %ret__
 ret__:
 br label %ret_

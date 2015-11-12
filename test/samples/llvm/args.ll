@@ -159,12 +159,12 @@ ret void
 
 ; ///////// ///////// G E N E R A T E D  C O D E ///////// /////////
 
-define void @f(i32 %x, %struct.PVector_ptr %v) {
+define void @f(i32 %x0, %struct.PVector_ptr %v0) {
 entry:
-%x_ = alloca i32
-store i32 %x, i32* %x_
-%v_ = alloca %struct.PVector_ptr
-store %struct.PVector_ptr %v, %struct.PVector_ptr* %v_
+%x0_ = alloca i32
+store i32 %x0, i32* %x0_
+%v0_ = alloca %struct.PVector_ptr
+store %struct.PVector_ptr %v0, %struct.PVector_ptr* %v0_
 
 br label %ret__
 ret__:

@@ -91,11 +91,11 @@ public class InjectLLVMTraits {
 	}
 
 	public OutputModelObject exitModel(VarRef varRef) {
-		return new ScopedVarRef(varRef.symbol, varRef.type);
+		return new ScopedVarRef(varRef.symbol, varRef.type, varRef.varRef);
 	}
 
 	public OutputModelObject exitModel(HeapVarRef heapVarRef) {
-		return new ScopedVarRef(heapVarRef.symbol, heapVarRef.type);
+		return new ScopedVarRef(heapVarRef.symbol, heapVarRef.type, heapVarRef.varRef);
 	}
 
 	public OutputModelObject exitModel(ArgDef argDef) {

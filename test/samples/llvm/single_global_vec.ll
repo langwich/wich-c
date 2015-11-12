@@ -114,26 +114,6 @@ ret void
 @__stderrp = external global %struct.__sFILE*, align 8
 @.str.5 = private unnamed_addr constant [34 x i8] c"Wich is confused; signal %s (%d)\0A\00", align 1
 ; ///////// ///////// G E N E R A T E D  C O D E ///////// /////////
-define i1 @bar(i32 %x0) {
-entry:
-%x0_ = alloca i32
-store i32 %x0, i32* %x0_
-%retval_ = alloca i1
-%0 = load i32, i32* %x0_
-%1 = add i32 10, 0
-%2 = icmp slt i32 %0, %1
-store i1 %2, i1* %retval_
-br label %ret_
-return.exit_0:
-br label %ret__
-ret__:
-br label %ret_
-ret_:
-%retval = load i1, i1* %retval_
-ret i1 %retval
-}
-
-
 define i32 @main(i32 %argc, i8** %argv) {
 entry:
 %retval_ = alloca i32
@@ -143,12 +123,31 @@ store i32 0, i32* %retval_
 store i32 %argc, i32* %argc_
 store i8** %argv, i8*** %argv_
 call void () @setup_error_handlers()
-%x1_ = alloca i32
-%0 = add i32 5, 0
-store i32 %0, i32* %x1_
-%1 = load i32, i32* %x1_
-%2 = call i1 (i32) @bar(i32 %1)
-%pb_0 = call i32 (i8*, ...) @printf(i8* getelementptr ([4 x i8], [4 x i8]* @pi.str, i64 0, i64 0), i1 %2)
+%x0_ = alloca %struct.PVector_ptr
+%0 = alloca [5 x double]
+%promo0_ = getelementptr [5 x double], [5 x double]* %0, i64 0, i64 0
+%1 = add i32 1, 0
+%promo0 = sitofp i32 %1 to double
+store double %promo0, double* %promo0_
+%promo1_ = getelementptr [5 x double], [5 x double]* %0, i64 0, i64 1
+%2 = add i32 2, 0
+%promo1 = sitofp i32 %2 to double
+store double %promo1, double* %promo1_
+%promo2_ = getelementptr [5 x double], [5 x double]* %0, i64 0, i64 2
+%3 = add i32 3, 0
+%promo2 = sitofp i32 %3 to double
+store double %promo2, double* %promo2_
+%promo3_ = getelementptr [5 x double], [5 x double]* %0, i64 0, i64 3
+%4 = add i32 4, 0
+%promo3 = sitofp i32 %4 to double
+store double %promo3, double* %promo3_
+%promo4_ = getelementptr [5 x double], [5 x double]* %0, i64 0, i64 4
+%5 = add i32 5, 0
+%promo4 = sitofp i32 %5 to double
+store double %promo4, double* %promo4_
+%vec_ptr_6 = getelementptr [5 x double], [5 x double]* %0, i64 0, i64 0
+%6 = call %struct.PVector_ptr @PVector_new(double* %vec_ptr_6, i64 5)
+store %struct.PVector_ptr %6, %struct.PVector_ptr* %x0_
 br label %ret__
 ret__:
 br label %ret_
