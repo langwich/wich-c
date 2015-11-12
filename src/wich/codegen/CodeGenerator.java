@@ -171,8 +171,10 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	@Override
 	public OutputModelObject visitFormal_arg(@NotNull WichParser.Formal_argContext ctx) {
 		String name = ctx.ID().getText();
+		WVariableSymbol v = (WVariableSymbol) currentScope.resolve(name);
+		updateLexicalOrder(v);
 		WichType argType = (WichType) visit(ctx.type());
-		return new ArgDef(name, argType);
+		return new ArgDef(v, argType);
 	}
 
 	@Override

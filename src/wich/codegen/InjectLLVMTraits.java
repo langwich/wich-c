@@ -23,6 +23,7 @@ SOFTWARE.
 */
 package wich.codegen;
 
+import wich.codegen.model.ArgDef;
 import wich.codegen.model.BlockInitialization;
 import wich.codegen.model.BlockTermination;
 import wich.codegen.model.BlockTerminationVoid;
@@ -30,6 +31,7 @@ import wich.codegen.model.ElementAssignStat;
 import wich.codegen.model.Func;
 import wich.codegen.model.MainFunc;
 import wich.codegen.model.OutputModelObject;
+import wich.codegen.model.ScopedArgDef;
 import wich.codegen.model.StringVarDefStat;
 import wich.codegen.model.VarDefStat;
 import wich.codegen.model.VectorVarDefStat;
@@ -88,12 +90,16 @@ public class InjectLLVMTraits {
 		return new ScopedVarDefStat(varDefStat.symbol, varDefStat.type);
 	}
 
-	public OutputModelObject enterModel(VarRef varRef) {
+	public OutputModelObject exitModel(VarRef varRef) {
 		return new ScopedVarRef(varRef.symbol, varRef.type);
 	}
 
-	public OutputModelObject enterModel(HeapVarRef heapVarRef) {
+	public OutputModelObject exitModel(HeapVarRef heapVarRef) {
 		return new ScopedVarRef(heapVarRef.symbol, heapVarRef.type);
+	}
+
+	public OutputModelObject exitModel(ArgDef argDef) {
+		return new ScopedArgDef(argDef.symbol, argDef.type);
 	}
 
 	public OutputModelObject exitModel(BinaryPrimitiveOp op) {

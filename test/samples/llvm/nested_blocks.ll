@@ -114,33 +114,33 @@ ret void
 @__stderrp = external global %struct.__sFILE*, align 8
 @.str.5 = private unnamed_addr constant [34 x i8] c"Wich is confused; signal %s (%d)\0A\00", align 1
 ; ///////// ///////// G E N E R A T E D  C O D E ///////// /////////
-define void @f(%struct.PVector_ptr %a) {
+define void @f(%struct.PVector_ptr %a0) {
 entry:
-%a_ = alloca %struct.PVector_ptr
-store %struct.PVector_ptr %a, %struct.PVector_ptr* %a_
+%a0_ = alloca %struct.PVector_ptr
+store %struct.PVector_ptr %a0, %struct.PVector_ptr* %a0_
 %b0_ = alloca %struct.string*
 %e0_ = alloca %struct.PVector_ptr
 %sl_0 = getelementptr [4 x i8], [4 x i8]* @sl.str0, i32 0, i32 0
 %0 = call %struct.string* (i8*) @String_new(i8* %sl_0)
-store %struct.string* %0, %struct.string** %b_
+store %struct.string* %0, %struct.string** %b0_
 %c0_ = alloca %struct.string*
 %sl_1 = getelementptr [4 x i8], [4 x i8]* @sl.str1, i32 0, i32 0
 %1 = call %struct.string* (i8*) @String_new(i8* %sl_1)
-store %struct.string* %1, %struct.string** %c_
+store %struct.string* %1, %struct.string** %c0_
 %d0_ = alloca %struct.string*
 %sl_2 = getelementptr [4 x i8], [4 x i8]* @sl.str2, i32 0, i32 0
 %2 = call %struct.string* (i8*) @String_new(i8* %sl_2)
-store %struct.string* %2, %struct.string** %d_
+store %struct.string* %2, %struct.string** %d0_
 
 
 %b1_ = alloca %struct.string*
 %c1_ = alloca %struct.string*
 %sl_3 = getelementptr [4 x i8], [4 x i8]* @sl.str3, i32 0, i32 0
 %3 = call %struct.string* (i8*) @String_new(i8* %sl_3)
-store %struct.string* %3, %struct.string** %b_
+store %struct.string* %3, %struct.string** %b1_
 %sl_4 = getelementptr [4 x i8], [4 x i8]* @sl.str4, i32 0, i32 0
 %4 = call %struct.string* (i8*) @String_new(i8* %sl_4)
-store %struct.string* %4, %struct.string** %c_
+store %struct.string* %4, %struct.string** %c1_
 %5 = alloca [1 x double]
 %promo0_ = getelementptr [1 x double], [1 x double]* %5, i64 0, i64 0
 %6 = add i32 7, 0
@@ -148,7 +148,7 @@ store %struct.string* %4, %struct.string** %c_
 store double %promo0, double* %promo0_
 %vec_ptr_7 = getelementptr [1 x double], [1 x double]* %5, i64 0, i64 0
 %7 = call %struct.PVector_ptr @PVector_new(double* %vec_ptr_7, i64 1)
-store %struct.PVector_ptr %7, %struct.PVector_ptr* %e_
+store %struct.PVector_ptr %7, %struct.PVector_ptr* %e0_
 br label %ret__
 ret__:
 br label %ret_

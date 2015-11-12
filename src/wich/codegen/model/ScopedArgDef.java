@@ -25,18 +25,13 @@ package wich.codegen.model;
 
 import wich.semantics.symbols.WVariableSymbol;
 
-public class ArgDef extends OutputModelObject{
-
-	@ModelElement public WichType type;
-
-	public WVariableSymbol symbol;
-
-	public ArgDef(WVariableSymbol symbol, WichType type) {
-		this.symbol = symbol;
-		this.type = type;
+public class ScopedArgDef extends ArgDef {
+	public ScopedArgDef(WVariableSymbol symbol, WichType type) {
+		super(symbol, type);
 	}
 
+	@Override
 	public String getName() {
-		return symbol.getName();
+		return symbol.getName()+symbol.getInsertionOrderNumber();
 	}
 }

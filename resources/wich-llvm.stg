@@ -87,7 +87,7 @@ entry:
 <\n>
 >>
 
-ArgDef(arg,type) ::= "<type> %<arg.name>"
+ScopedArgDef(arg,type) ::= "<type> %<arg.name>"
 
 argAlloc(arg) ::= <<
 %<arg.arg.name>_ = alloca <arg.type>
