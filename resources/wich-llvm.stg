@@ -71,6 +71,7 @@ entry:
 store i32 0, i32* %retval_
 store i32 %argc, i32* %argc_
 store i8** %argv, i8*** %argv_
+call void () @setup_error_handlers()
 <body>
 }
 <\n>
