@@ -31,12 +31,14 @@ import wich.semantics.SymbolTable;
 public class StringLiteral extends Expr {
 	public final String literal;
 	public final int len;
+	public final int num;
 
-	public StringLiteral(String literal, String tempVar, int len) {
+	public StringLiteral(String literal, String tempVar, int len, int num) {
 		this.literal = literal;
 		this.type = new StringType();
 		this.varRef = tempVar;
 		this.len = len;
+		this.num = num;
 	}
 
 	@Override

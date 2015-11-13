@@ -144,7 +144,7 @@ store i32 0, i32* %retval_
 store i32 %argc, i32* %argc_
 store i8** %argv, i8*** %argv_
 call void () @setup_error_handlers()
-%sl_0 = getelementptr [4 x i8], [4 x i8]* @sl.str0, i32 0, i32 0
+%sl_0 = getelementptr [4 x i8], [4 x i8]* @sl.str1, i32 0, i32 0
 %0 = call %struct.string* (i8*) @String_new(i8* %sl_0)
 %1 = call %struct.string* (%struct.string*) @becomeSuper(%struct.string* %0)
 call void (%struct.string*) @print_string(%struct.string* %1)
@@ -162,5 +162,5 @@ ret i32 %retval
 
 
 @sl.str0 = private unnamed_addr constant [6 x i8] c"super\00", align 1
-@sl.str0 = private unnamed_addr constant [4 x i8] c"man\00", align 1
+@sl.str1 = private unnamed_addr constant [4 x i8] c"man\00", align 1
 @sl.str2 = private unnamed_addr constant [6 x i8] c"duper\00", align 1

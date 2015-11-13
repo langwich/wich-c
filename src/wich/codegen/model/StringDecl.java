@@ -26,11 +26,11 @@ package wich.codegen.model;
 public class StringDecl extends Stat {
 	public String str;
 	public int len;
-	public String varRef;
+	public int num;
 
-	public StringDecl(String str, int len, String varRef) {
+	public StringDecl(String str, int len, int num) {
 		this.str = str;
 		this.len = len;
-		this.varRef = varRef;
+		this.num = num;
 	}
 }

@@ -191,7 +191,7 @@ BlockStatement(b,block) ::= <<
 >>
 
 StringDecl(s) ::= <<
-@sl.str<s.varRef> = private unnamed_addr constant [<s.len> x i8] c"<s.str>", align 1
+@sl.str<s.num> = private unnamed_addr constant [<s.len> x i8] c"<s.str>", align 1
 >>
 
 IntLiteral(e,type)	::= <<
@@ -215,7 +215,7 @@ ScopedVarRef(e,type)		::= <<
 >>
 
 StringLiteral(e,type) ::= <<
-%sl_<e.varRef> = getelementptr [<e.len> x i8], [<e.len> x i8]* @sl.str<e.varRef>, i32 0, i32 0
+%sl_<e.varRef> = getelementptr [<e.len> x i8], [<e.len> x i8]* @sl.str<e.num>, i32 0, i32 0
 %<e.varRef> = call %struct.string* (i8*) @String_new(i8* %sl_<e.varRef>)
 >>
 
