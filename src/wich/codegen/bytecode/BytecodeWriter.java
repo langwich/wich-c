@@ -32,10 +32,6 @@ public class BytecodeWriter {
 		this.tree = tree;
 	}
 
-
-	public static void writeFile(String path, String output, Charset encoding) throws IOException {
-		Files.write(Paths.get(path), output.getBytes(encoding));
-	}
 	/** Return a string representation of the object file. */
 	public String generateObjectFile() {
 		Code code = genBytecode();
