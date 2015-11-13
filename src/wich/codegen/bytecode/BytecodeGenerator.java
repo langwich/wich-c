@@ -131,15 +131,16 @@ public class BytecodeGenerator extends WichBaseVisitor<Code> {
 			symtab.getfunctions().get("main").define(v);
 		}
 		Code code = visit(ctx.expr());
-		if (v.getType() != symtab._vector) {
-//			Instr store;
-//			if (currentScope == symtab.GLOBALS || currentScope.getEnclosingScope() == symtab.GLOBALS) {
-//				store = asm.store(v.getInsertionOrderNumber());
-//			} else {
-//				store = asm.store( v.getInsertionOrderNumber());
-//			}
-			code = code.join(asm.store(getSymbolIndex(v)));
-		}
+//		if (v.getType() != symtab._vector) {
+////			Instr store;
+////			if (currentScope == symtab.GLOBALS || currentScope.getEnclosingScope() == symtab.GLOBALS) {
+////				store = asm.store(v.getInsertionOrderNumber());
+////			} else {
+////				store = asm.store( v.getInsertionOrderNumber());
+////			}
+//			code = code.join(asm.store(getSymbolIndex(v)));
+//		}
+		code = code.join(asm.store(getSymbolIndex(v)));
 		return code;
 	}
 
@@ -306,10 +307,10 @@ public class BytecodeGenerator extends WichBaseVisitor<Code> {
 				((WichParser.OpContext) ctx.getParent()).exprType == SymbolTable._string) {
 			code = code.join(asm.v2s());
 		}
-		else if (ctx.getParent().getParent() instanceof WichParser.VardefContext) {
-			Symbol vector = currentScope.resolve(((WichParser.VardefContext) ctx.getParent().getParent()).ID().getText());
-			code = code.join(asm.store(getSymbolIndex(vector)));
-		}
+//		else if (ctx.getParent().getParent() instanceof WichParser.VardefContext) {
+//			Symbol vector = currentScope.resolve(((WichParser.VardefContext) ctx.getParent().getParent()).ID().getText());
+//			code = code.join(asm.store(getSymbolIndex(vector)));
+//		}
 		return code;
 	}
 
@@ -347,7 +348,7 @@ public class BytecodeGenerator extends WichBaseVisitor<Code> {
 		}
 		else {
 			Code stat2 = visit(ctx.statement(1));
-			return CodeBlock.join(cond, asm.brf(stat.sizeBytes()+stat2.sizeBytes()+asm.br().size+asm.br().size),
+			return CodeBlock.join(cond, asm.brf(stat.sizeBytes()+asm.brf().size+asm.br().size),
 					stat,asm.br(stat2.sizeBytes() + asm.br().size), stat2);
 		}
 	}
@@ -422,6 +423,19 @@ public class BytecodeGenerator extends WichBaseVisitor<Code> {
 	public Code visitNot(@NotNull WichParser.NotContext ctx) {
 		Code code = visit(ctx.expr());
 		code = code.join(asm.not());
+		return code;
+	}
+
+	@Override
+	public Code visitIndex(@NotNull WichParser.IndexContext ctx) {
+		Code code = Code.None;
+		WVariableSymbol var = (WVariableSymbol)currentScope.resolve(ctx.ID().getText());
+		if (var.getType() == symtab._vector) {
+			code = CodeBlock.join(asm.vload(getSymbolIndex(var)),visit(ctx.expr()),asm.vload_index());
+		}
+		else {
+			code = CodeBlock.join(asm.sload(getSymbolIndex(var)),visit(ctx.expr()),asm.sload_index());
+		}
 		return code;
 	}
 
@@ -530,6 +544,9 @@ public class BytecodeGenerator extends WichBaseVisitor<Code> {
 						op.join(asm.fneq()) : op.join(asm.ineq());
 			}
 		}
+		else if(ctx.OR() != null) {
+			op = op.join(asm.or());
+		}
 		return op;
 	}
 
@@ -597,7 +614,7 @@ public class BytecodeGenerator extends WichBaseVisitor<Code> {
 		if (s.getScope() instanceof WFunctionSymbol || s.getScope() == symtab.GLOBALS) {
 			return index;
 		}
-		Scope enScope = currentScope.getEnclosingScope();
+		Scope enScope = s.getScope().getEnclosingScope();
 		while (!(enScope instanceof WFunctionSymbol || enScope == symtab.GLOBALS)){
 			index += enScope.getAllSymbols().size();
 			enScope = enScope.getEnclosingScope();

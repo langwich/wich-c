@@ -118,11 +118,14 @@ public class SymbolTable {
 		return functions;
 	}
 
-	public int computerFuncIndex(int index) {
-		int i = index;
+	public int computerFuncIndex(String name) {
+		int i = -1;
 		for (Symbol v :GLOBALS.getSymbols()) {
-			if(v instanceof WVariableSymbol && v.getInsertionOrderNumber() < index) {
-				i--;
+			if(v instanceof WFunctionSymbol){
+				i++;
+				if (v.getName().equals(name)){
+					return i;
+				}
 			}
 		}
 		return i;

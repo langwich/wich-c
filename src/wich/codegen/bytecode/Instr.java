@@ -52,6 +52,9 @@ public class Instr implements Code {
 
     @Override
     public int sizeBytes() {
+        if(size ==1 && opcode == null) {
+            return 0;
+        }
         return size;
     }
 

@@ -5,11 +5,13 @@ import wich.codegen.bytecode.Code;
 import wich.parser.WichParser;
 import wich.semantics.SymbolTable;
 
+import java.io.File;
 import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 
 public class TestBytecodeGen {
+
 	@Test
 	public void testEmptyMain() throws Exception {
 		String wich =
@@ -610,6 +612,7 @@ public class TestBytecodeGen {
 						"HALT\n";
 		checkCodeGen(wich, expecting);
 	}
+
 	public void checkCodeGen(String wich, String expecting) throws IOException {
 		Trans tool = new Trans();
 		SymbolTable symtab = new SymbolTable();
