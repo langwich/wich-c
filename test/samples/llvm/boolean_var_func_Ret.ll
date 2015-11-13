@@ -199,12 +199,12 @@ store i1 %2, i1* %y0_
 %3 = load i1, i1* %y0_
 br i1 %3, label %if.block_true_0, label %if.block_false_0
 if.block_true_0:
-%sl_4 = getelementptr [6 x i8], [6 x i8]* @sl.str4, i32 0, i32 0
+%sl_4 = getelementptr [6 x i8], [6 x i8]* @sl.str0, i32 0, i32 0
 %4 = call %struct.string* (i8*) @String_new(i8* %sl_4)
 call void (%struct.string*) @print_string(%struct.string* %4)
 br label %if.block_exit_0
 if.block_false_0:
-%sl_5 = getelementptr [4 x i8], [4 x i8]* @sl.str5, i32 0, i32 0
+%sl_5 = getelementptr [4 x i8], [4 x i8]* @sl.str1, i32 0, i32 0
 %5 = call %struct.string* (i8*) @String_new(i8* %sl_5)
 call void (%struct.string*) @print_string(%struct.string* %5)
 br label %if.block_exit_0
@@ -218,5 +218,5 @@ ret i32 %retval
 }
 
 
-@sl.str4 = private unnamed_addr constant [6 x i8] c"happy\00", align 1
-@sl.str5 = private unnamed_addr constant [4 x i8] c"sad\00", align 1
+@sl.str0 = private unnamed_addr constant [6 x i8] c"happy\00", align 1
+@sl.str1 = private unnamed_addr constant [4 x i8] c"sad\00", align 1
