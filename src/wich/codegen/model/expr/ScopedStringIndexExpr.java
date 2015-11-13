@@ -23,28 +23,14 @@ SOFTWARE.
 */
 package wich.codegen.model.expr;
 
-import org.antlr.symtab.Type;
-import wich.codegen.model.ModelElement;
-import wich.codegen.model.StringType;
-import wich.semantics.SymbolTable;
 import wich.semantics.symbols.WVariableSymbol;
 
-public class StringIndexExpr extends Expr {
-	public final String varName;
-	public final WVariableSymbol symbol;
-
-	@ModelElement public Expr expr;
-
-	public StringIndexExpr(String object, WVariableSymbol v, Expr indexExpr, String tempVar) {
-		this.varName = object;
-		this.symbol = v;
-		this.expr = indexExpr;
-		this.type = new StringType();
-		this.varRef = tempVar;
+public class ScopedStringIndexExpr extends StringIndexExpr {
+	public ScopedStringIndexExpr(String object, WVariableSymbol v, Expr indexExpr, String tempVar) {
+		super(object, v, indexExpr, tempVar);
 	}
 
-	@Override
-	public Type getType() {
-		return SymbolTable._string;
+	public String getName() {
+		return symbol.getName()+symbol.getInsertionOrderNumber();
 	}
 }

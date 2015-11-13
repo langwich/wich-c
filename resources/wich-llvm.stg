@@ -263,6 +263,18 @@ BinaryVectorOp(e,left,right,resType,type)  ::= <<
 %<e.varRef> = call <type> (<type>,<type>) @<LLVMVectorBinaryOpMap.(e.wichOp)>(<type> %<left.e.varRef>,<type> %<right.e.varRef>)
 >>
 
+ScopedStringIndexExpr(e,expr,type) ::= <<
+<expr>
+%str_<e.varRef>_ = load %struct.string*, %struct.string** %<e.name>_
+%str_<e.varRef>_str_ = getelementptr %struct.string, %struct.string* %str_<e.varRef>_, i64 0, i32 2
+%index_<e.varRef> = sub i32 %<expr.e.varRef>, 1
+%c_<e.varRef>_ = getelementptr [0 x i8], [0 x i8]* %str_<e.varRef>_str_, i64 0, i32 %index_<e.varRef>
+%c_<e.varRef> = load i8, i8* %c_<e.varRef>_
+%<e.varRef> = call %struct.string* (i8) @String_from_char(i8 %c_<e.varRef>)
+>>
+
+VectorIndexExpr(v,expr,type) ::= "ith(<v.varName>, (<expr>)-1)"
+
 NegateIntExpr(e,expr,type) ::= <<
 <expr>
 %<e.varRef> = sub <type> 0, %<expr.e.varRef>

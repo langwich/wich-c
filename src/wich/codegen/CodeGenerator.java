@@ -365,7 +365,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		if ( s.getType()==SymbolTable._vector ) {
 			return new VectorIndexExpr(varName, index, getTempVar());
 		}
-		return new StringIndexExpr(varName, index, getTempVar());
+		return new StringIndexExpr(varName, s, index, getTempVar());
 	}
 
 	@Override
