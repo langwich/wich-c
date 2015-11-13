@@ -292,6 +292,37 @@ argPass(arg) ::= <<
 <arg.type> %<arg.e.varRef>
 >>
 
+VectorFromInt(e,vector,intLiteral,type)	::= <<
+<intLiteral>
+%vec_<vector.e.varRef>_ = extractvalue %struct.PVector_ptr %<vector.e.varRef>, 1
+%vec_<vector.e.varRef> = load %struct.PVector, %struct.PVector* %vec_<vector.e.varRef>
+%len_<vector.e.varRef> = extractvalue %struct.PVector %vec_<vector.e.varRef>, 2
+%<e.varRef> = call <type> (double, i64) @Vector_from_float(double %<intLiteral.e.varRef>, i64 %len_<vector.e.varRef>)
+>>
+
+VectorFromFloat(e,vector,floatLiteral,type)	::= <<
+<floatLiteral>
+%vec_<vector.e.varRef>_ = extractvalue %struct.PVector_ptr %<vector.e.varRef>, 1
+%vec_<vector.e.varRef> = load %struct.PVector, %struct.PVector* %vec_<vector.e.varRef>
+%len_<vector.e.varRef> = extractvalue %struct.PVector %vec_<vector.e.varRef>, 2
+%<e.varRef> = call <type> (double, i64) @Vector_from_float(double %<floatLiteral.e.varRef>, i64 %len_<vector.e.varRef>)
+>>
+
+StringFromVector(e,vector,type) ::= <<
+<vector>
+%<e.varRef> = call %struct.string* (<vector.type>) @String_from_vector(<vector.type> %<vector.e.varRef>)
+>>
+
+StringFromInt(e,intExpr,type) ::= <<
+<intExpr>
+%<e.varRef> = call %struct.string* (i32) @String_from_int(i32 %<intExpr.e.varRef>)
+>>
+
+StringFromFloat(e,floatExpr,type) ::= <<
+<floatExpr>
+%<e.varRef> = call %struct.string* (double) @String_from_float(double %<floatExpr.e.varRef>)
+>>
+
 FloatFromInt(e,expr,type) ::= <<
 <expr>
 %<e.varRef> = sitofp i32 %<expr.e.varRef> to double
