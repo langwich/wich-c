@@ -84,7 +84,7 @@ public class ASM {
 	public Instr veq()              { return new Instr("VEQ"); }
 	public Instr vneq()             { return new Instr("VNEQ"); }
 	public Instr seq()              { return new Instr("SEQ"); }
-	public Instr sneq()              { return new Instr("SNEQ"); }
+	public Instr sneq()             { return new Instr("SNEQ"); }
 	public Instr slt()				{ return new Instr("SLT"); }
 	public Instr sle()				{ return new Instr("SLE"); }
 	public Instr sgt()				{ return new Instr("SGT"); }
@@ -118,6 +118,7 @@ public class ASM {
 	public Instr vload_index()      { return new Instr("VLOAD_INDEX"); }
 	public Instr store_index()		{ return new Instr("STORE_INDEX"); }
 	public Instr nil()				{ return new Instr("NIL"); }
+	public Instr push(int i)		{ return new Instr("PUSH", i); }
 	public Instr pop()              { return new Instr("POP");  }
 	public Instr call(int i)		{ return new Instr("CALL", i); }
 	public Instr ret()				{ return new Instr("RET"); }
@@ -144,36 +145,4 @@ public class ASM {
 		instructions.clear();
 		return code;
 	}
-
-	//	public String opnd16(int i) {
-//		byte[] bytes = intToBytes(i);
-//		if ( littleEndian ) {
-//			return String.format("0x%02x 0x%02x", bytes[1], bytes[0]);
-//		}
-//		else {
-//			return String.format("0x%02x 0x%02x", bytes[0], bytes[1]);
-//		}
-//	}
-//
-//	public String opnd32(String is) {
-//		return opnd32(Integer.valueOf(is));
-//	}
-//
-//	public String opnd32(int i) {
-//		byte[] bytes = intToBytes(i);
-//		if ( littleEndian ) {
-//			return String.format("0x%02x 0x%02x 0x%02x 0x%02x", bytes[3], bytes[2], bytes[1], bytes[0]);
-//		}
-//		else {
-//			return String.format("0x%02x 0x%02x 0x%02x 0x%02x", bytes[0], bytes[1], bytes[2], bytes[3]);
-//		}
-//	}
-//
-//	public byte[] intStringToBytes(String vs) { // comes out in big-endian form
-//		return intToBytes(Integer.valueOf(vs));
-//	}
-//
-//	public byte[] intToBytes(int v) { // comes out in big-endian form
-//		return ByteBuffer.allocate(4).putInt(v).array();
-//	}
 }

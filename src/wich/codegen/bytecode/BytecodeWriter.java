@@ -92,7 +92,6 @@ public class BytecodeWriter {
 			WFunctionSymbol fsym = symtab.getfunctions().get(fname);
 			Code body = functionBodies.get(fname);
 			for (Instr I : body.instructions()) {
-//				System.out.println(ip+": "+I);
 				I.address = ip;
 				ip += I.size;
 			}

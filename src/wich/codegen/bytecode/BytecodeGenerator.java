@@ -34,7 +34,6 @@ import java.util.Map;
  *  gen'd class actually does that for me. It makes sure we visit everything.
  */
 public class BytecodeGenerator extends WichBaseVisitor<Code> {
-	//	public Tool tool;
 	public SymbolTable symtab;
 	public Scope currentScope;
 
@@ -95,6 +94,13 @@ public class BytecodeGenerator extends WichBaseVisitor<Code> {
 	public Code visitFunction(@NotNull WichParser.FunctionContext ctx) {
 		pushScope(ctx.scope);
 		Code func = visit(ctx.block());
+		if (ctx.type() == null){
+			func = func.join(asm.ret());
+		}
+		else {
+			func = func.join(asm.push((ctx.scope).getType().getVMTypeIndex()));
+			func = func.join(asm.retv());
+		}
 		String funcName = ctx.ID().getText();
 		functionBodies.put(funcName, func);
 		popScope();
@@ -112,8 +118,8 @@ public class BytecodeGenerator extends WichBaseVisitor<Code> {
 		for (WichParser.StatementContext s : ctx.statement()) {
 			blk = blk.join(visit(s));
 		}
-		if (ctx.getParent() instanceof WichParser.FunctionContext) {
-			blk = blk.join(asm.ret());
+		if (blk == Code.None){
+			blk = blk.join(asm.nop());
 		}
 		popScope();
 		return blk;
@@ -131,15 +137,6 @@ public class BytecodeGenerator extends WichBaseVisitor<Code> {
 			symtab.getfunctions().get("main").define(v);
 		}
 		Code code = visit(ctx.expr());
-//		if (v.getType() != symtab._vector) {
-////			Instr store;
-////			if (currentScope == symtab.GLOBALS || currentScope.getEnclosingScope() == symtab.GLOBALS) {
-////				store = asm.store(v.getInsertionOrderNumber());
-////			} else {
-////				store = asm.store( v.getInsertionOrderNumber());
-////			}
-//			code = code.join(asm.store(getSymbolIndex(v)));
-//		}
 		code = code.join(asm.store(getSymbolIndex(v)));
 		return code;
 	}
@@ -148,7 +145,6 @@ public class BytecodeGenerator extends WichBaseVisitor<Code> {
 	public Code visitAssign(@NotNull WichParser.AssignContext ctx) {
 		Code code = visit(ctx.expr());
 		WVariableSymbol v = (WVariableSymbol)currentScope.resolve(ctx.ID().getText());
-		//code = code.join(asm.store(v.getInsertionOrderNumber()));
 		code = code.join(asm.store(getSymbolIndex(v)));
 		return code;
 	}
@@ -166,6 +162,7 @@ public class BytecodeGenerator extends WichBaseVisitor<Code> {
 
 	@Override
 	public Code visitCallStatement(@NotNull WichParser.CallStatementContext ctx) {
+
 		return visit(ctx.call_expr());
 	}
 
@@ -254,7 +251,6 @@ public class BytecodeGenerator extends WichBaseVisitor<Code> {
 	public Code load(Symbol symbol) {
 		if ( symbol!=null && symbol instanceof WVariableSymbol) {
 			WVariableSymbol s = (WVariableSymbol)symbol;
-			//int index = s.getInsertionOrderNumber();
 			int index = getSymbolIndex(s);
 			if ( s.getType() == SymbolTable._int ) {
 				return asm.iload(index);
@@ -307,13 +303,8 @@ public class BytecodeGenerator extends WichBaseVisitor<Code> {
 				((WichParser.OpContext) ctx.getParent()).exprType == SymbolTable._string) {
 			code = code.join(asm.v2s());
 		}
-//		else if (ctx.getParent().getParent() instanceof WichParser.VardefContext) {
-//			Symbol vector = currentScope.resolve(((WichParser.VardefContext) ctx.getParent().getParent()).ID().getText());
-//			code = code.join(asm.store(getSymbolIndex(vector)));
-//		}
 		return code;
 	}
-
 
 	@Override
 	public Code visitExpr_list(@NotNull WichParser.Expr_listContext ctx) {
@@ -335,10 +326,6 @@ public class BytecodeGenerator extends WichBaseVisitor<Code> {
 		return code;
 	}
 
-	private Symbol getVectorSymbol(@NotNull WichParser.Expr_listContext ctx, String text) {
-		return currentScope.resolve(text);
-	}
-
 	@Override
 	public Code visitIf(@NotNull WichParser.IfContext ctx) {
 		Code cond = visit(ctx.expr());
@@ -349,7 +336,7 @@ public class BytecodeGenerator extends WichBaseVisitor<Code> {
 		else {
 			Code stat2 = visit(ctx.statement(1));
 			return CodeBlock.join(cond, asm.brf(stat.sizeBytes()+asm.brf().size+asm.br().size),
-					stat,asm.br(stat2.sizeBytes() + asm.br().size), stat2);
+				stat,asm.br(stat2.sizeBytes() + asm.br().size), stat2);
 		}
 	}
 
@@ -428,7 +415,7 @@ public class BytecodeGenerator extends WichBaseVisitor<Code> {
 
 	@Override
 	public Code visitIndex(@NotNull WichParser.IndexContext ctx) {
-		Code code = Code.None;
+		Code code;
 		WVariableSymbol var = (WVariableSymbol)currentScope.resolve(ctx.ID().getText());
 		if (var.getType() == symtab._vector) {
 			code = CodeBlock.join(asm.vload(getSymbolIndex(var)),visit(ctx.expr()),asm.vload_index());
