@@ -379,7 +379,7 @@ public class TestBytecodeGen {
 				"0 strings\n" +
 						"1 functions\n" +
 						"0: addr=0 args=0 locals=1 type=0 4/main\n" +
-						"12 instr, 38 bytes\n" +
+						"11 instr, 37 bytes\n" +
 						"FCONST 1.0\n" +
 						"FCONST 2.0\n" +
 						"FCONST 3.0\n" +
@@ -388,7 +388,6 @@ public class TestBytecodeGen {
 						"STORE 0\n" +
 						"VLOAD 0\n" +
 						"ICONST 4\n" +
-						"I2F\n" +
 						"VADDI\n" +
 						"STORE 0\n" +
 						"HALT\n";
@@ -405,7 +404,7 @@ public class TestBytecodeGen {
 				"0 strings\n" +
 						"1 functions\n" +
 						"0: addr=0 args=0 locals=1 type=0 4/main\n" +
-						"12 instr, 38 bytes\n" +
+						"11 instr, 37 bytes\n" +
 						"FCONST 1.0\n" +
 						"FCONST 2.0\n" +
 						"FCONST 3.0\n" +
@@ -414,7 +413,6 @@ public class TestBytecodeGen {
 						"STORE 0\n" +
 						"VLOAD 0\n" +
 						"ICONST 4\n" +
-						"I2F\n" +
 						"VADDI\n" +
 						"STORE 0\n" +
 						"HALT\n";
