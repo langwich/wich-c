@@ -122,19 +122,20 @@ public class TestBytecodeGen {
 				"func f(){g(3)}\n" +
 				"func g(z:int):int{ return z }\n";
 		String expecting =
-				"0 strings\n"+
-				"3 functions\n"+
-					"0: addr=0 args=0 locals=0 type=0 1/f\n"+
-					"1: addr=10 args=1 locals=0 type=1 1/g\n"+
-					"2: addr=15 args=0 locals=0 type=0 4/main\n"+
-				"8 instr, 16 bytes\n" +
+				"0 strings\n" +
+				"3 functions\n" +
+					"0: addr=0 args=0 locals=0 type=0 1/f\n" +
+					"1: addr=10 args=1 locals=0 type=1 1/g\n" +
+					"2: addr=18 args=0 locals=0 type=0 4/main\n" +
+					"9 instr, 19 bytes\n" +
 					"ICONST 3\n" +
 					"CALL 1\n" +
 					"POP\n" +
 					"RET\n" +
 					"ILOAD 0\n" +
 					"RETV\n" +
-					"RET\n" +
+					"PUSH 1\n" +
+					"RETV\n" +
 					"HALT\n";
 		checkCodeGen(wich, expecting);
 	}
@@ -145,23 +146,24 @@ public class TestBytecodeGen {
 				"func f(q:int){var i = g(q,true)}\n" +
 				"func g(z:int,b:boolean):int{ print(b) return z }\n";
 		String expecting =
-				"0 strings\n"+
-				"3 functions\n"+
-					"0: addr=0 args=1 locals=1 type=0 1/f\n"+
-					"1: addr=15 args=2 locals=0 type=1 1/g\n"+
-					"2: addr=24 args=0 locals=0 type=0 4/main\n"+
-				"11 instr, 25 bytes\n" +
-						"ILOAD 0\n" +
-						"ICONST 1\n" +
-						"CALL 1\n" +
-						"STORE 1\n" +
-						"RET\n" +
-						"ILOAD 1\n" +
-						"BPRINT\n" +
-						"ILOAD 0\n" +
-						"RETV\n" +
-						"RET\n" +
-						"HALT\n";
+				"0 strings\n" +
+				"3 functions\n" +
+					"0: addr=0 args=1 locals=1 type=0 1/f\n" +
+					"1: addr=15 args=2 locals=0 type=1 1/g\n" +
+					"2: addr=27 args=0 locals=0 type=0 4/main\n" +
+				"12 instr, 28 bytes\n" +
+					"ILOAD 0\n" +
+					"ICONST 1\n" +
+					"CALL 1\n" +
+					"STORE 1\n" +
+					"RET\n" +
+					"ILOAD 1\n" +
+					"BPRINT\n" +
+					"ILOAD 0\n" +
+					"RETV\n" +
+					"PUSH 1\n" +
+					"RETV\n" +
+					"HALT\n";
 		checkCodeGen(wich, expecting);
 	}
 
