@@ -162,8 +162,11 @@ public class BytecodeGenerator extends WichBaseVisitor<Code> {
 
 	@Override
 	public Code visitCallStatement(@NotNull WichParser.CallStatementContext ctx) {
-
-		return visit(ctx.call_expr());
+		Code code = visit(ctx.call_expr());
+		if(ctx.call_expr().exprType != SymbolTable._void) {
+			code = code.join(asm.pop());
+		}
+		return code;
 	}
 
 	@Override

@@ -125,11 +125,12 @@ public class TestBytecodeGen {
 				"0 strings\n"+
 				"3 functions\n"+
 					"0: addr=0 args=0 locals=0 type=0 1/f\n"+
-					"1: addr=9 args=1 locals=0 type=1 1/g\n"+
-					"2: addr=14 args=0 locals=0 type=0 4/main\n"+
-				"7 instr, 15 bytes\n" +
+					"1: addr=10 args=1 locals=0 type=1 1/g\n"+
+					"2: addr=15 args=0 locals=0 type=0 4/main\n"+
+				"8 instr, 16 bytes\n" +
 					"ICONST 3\n" +
 					"CALL 1\n" +
+					"POP\n" +
 					"RET\n" +
 					"ILOAD 0\n" +
 					"RETV\n" +
@@ -585,7 +586,6 @@ public class TestBytecodeGen {
 		checkCodeGen(wich, expecting);
 	}
 
-
 	@Test
 	public void testStrAddVector() throws Exception {
 		String wich =
@@ -611,6 +611,29 @@ public class TestBytecodeGen {
 						"V2S\n" +
 						"SADD\n" +
 						"STORE 1\n" +
+						"HALT\n";
+		checkCodeGen(wich, expecting);
+	}
+
+	public void testPopReturnVal() throws Exception {
+		String wich =
+				"func sq(q:int): int {return q*q}\n"+
+						"sq(10)\n";
+
+		String expecting =
+				"0 strings\n"+
+						"2 functions\n"+
+						"0: addr=0 args=1 locals=0 type=1 2/sq\n"+
+						"1: addr=9 args=0 locals=0 type=0 4/main\n"+
+						"9 instr, 19 bytes\n" +
+						"ILOAD 0\n" +
+						"ILOAD 0\n" +
+						"IMUL\n" +
+						"RETV\n" +
+						"RET\n" +
+						"ICONST 10\n" +
+						"CALL 0\n" +
+						"POP\n" +
 						"HALT\n";
 		checkCodeGen(wich, expecting);
 	}
@@ -641,7 +664,7 @@ public class TestBytecodeGen {
 
 	@Test
 	public void testFuncWithReturnError() throws Exception {
-		String Wich ="func f(x:int):[] {\n" +
+		String Wich = "func f(x:int):[] {\n" +
 				"\tif(x<0) {\n" +
 				"\t\treturn x+[0]\n" +
 				"\t}\n" +
@@ -651,33 +674,33 @@ public class TestBytecodeGen {
 				"}";
 		String expecting =
 				"0 strings\n" +
-				"2 functions\n" +
-				"0: addr=0 args=1 locals=0 type=5 1/f\n" +
-				"1: addr=55 args=0 locals=0 type=0 4/main\n" +
-				"22 instr, 56 bytes\n" +
-				"ILOAD 0\n" +
-				"ICONST 0\n" +
-				"ILT\n" +
-				"BRF 23\n" +
-				"ICONST 0\n" +
-				"I2F\n" +
-				"ICONST 1\n" +
-				"VECTOR\n" +
-				"ILOAD 0\n" +
-				"VADDI\n" +
-				"RETV\n" +
-				"BR 22\n" +
-				"ICONST 1\n" +
-				"I2F\n" +
-				"ICONST 1\n" +
-				"VECTOR\n" +
-				"ILOAD 0\n" +
-				"VADDI\n" +
-				"STORE 0\n" +
-				"PUSH 5\n" +
-				"RETV\n" +
-				"HALT\n";
-		checkCodeGen(Wich,expecting);
+						"2 functions\n" +
+						"0: addr=0 args=1 locals=0 type=5 1/f\n" +
+						"1: addr=55 args=0 locals=0 type=0 4/main\n" +
+						"22 instr, 56 bytes\n" +
+						"ILOAD 0\n" +
+						"ICONST 0\n" +
+						"ILT\n" +
+						"BRF 23\n" +
+						"ICONST 0\n" +
+						"I2F\n" +
+						"ICONST 1\n" +
+						"VECTOR\n" +
+						"ILOAD 0\n" +
+						"VADDI\n" +
+						"RETV\n" +
+						"BR 22\n" +
+						"ICONST 1\n" +
+						"I2F\n" +
+						"ICONST 1\n" +
+						"VECTOR\n" +
+						"ILOAD 0\n" +
+						"VADDI\n" +
+						"STORE 0\n" +
+						"PUSH 5\n" +
+						"RETV\n" +
+						"HALT\n";
+		checkCodeGen(Wich, expecting);
 	}
 
 	public void checkCodeGen(String wich, String expecting) throws IOException {
