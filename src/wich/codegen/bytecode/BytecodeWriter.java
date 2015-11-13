@@ -7,6 +7,10 @@ import wich.semantics.SymbolTable;
 import wich.semantics.symbols.WFunctionSymbol;
 import wich.semantics.symbols.WVariableSymbol;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 
 /** Generate a file containing bytecode and symbol table information
@@ -28,6 +32,10 @@ public class BytecodeWriter {
 		this.tree = tree;
 	}
 
+
+	public static void writeFile(String path, String output, Charset encoding) throws IOException {
+		Files.write(Paths.get(path), output.getBytes(encoding));
+	}
 	/** Return a string representation of the object file. */
 	public String generateObjectFile() {
 		Code code = genBytecode();
