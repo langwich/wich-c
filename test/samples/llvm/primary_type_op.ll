@@ -154,7 +154,8 @@ call void () @setup_error_handlers()
 store double %1, double* %z0_
 %2 = load double, double* %z0_
 %3 = add i32 0, 0
-%4 = icmp eq i32 %2, %3
+%promo0 = sitofp i32 %3 to double
+%4 = fcmp oeq double %2, %promo0
 br i1 %4, label %if.block_true_0, label %if.block_false_0
 if.block_true_0:
 %sl_5 = getelementptr [5 x i8], [5 x i8]* @sl.str5, i32 0, i32 0

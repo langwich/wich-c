@@ -199,8 +199,8 @@ public class TypeHelper {
 		if (resultType == null) {
 			return SymbolTable.INVALID_TYPE;
 		}
-		le.promoteToType = operandPromotionMap[op][li][resultType.getTypeIndex()];
-		re.promoteToType = operandPromotionMap[op][ri][resultType.getTypeIndex()];
+		le.promoteToType = operandPromotionMap[op][li][ri];
+		re.promoteToType = operandPromotionMap[op][ri][li];
 		return resultType;
 	}
 

@@ -55,6 +55,27 @@ LLVMBinaryIntOpMap ::= [
 	"||":"or"
 ]
 
+
+LLVMVectorBinaryOpMap ::= [
+	"*":"Vector_mul",
+	"/":"Vector_div",
+	"+":"Vector_add",
+	"-":"Vector_sub",
+	"==":"Vector_eq",
+	"!=":"Vector_neq",
+	".":"Vector_dot"
+]
+
+LLVMStringBinaryOpMap ::= [
+	"+":"String_add",
+	">":"String_gt",
+	">=":"String_ge",
+	"<":"String_lt",
+	"<=":"String_le",
+	"==":"String_eq",
+	"!=":"String_neq"
+]
+
 File(f, functions, main, decls) ::= <<
 <include()>
 
@@ -231,8 +252,17 @@ BinaryIntOp(e,left,right,type) ::= <<
 %<e.varRef> = <LLVMBinaryIntOpMap.(e.wichOp)> <type> %<left.e.varRef>, %<right.e.varRef>
 >>
 
-BinaryStringOp(e, left, right,type)  ::= "<CStringBinaryOpMap.(op.wichOp)>(<left>,<right>)"
-BinaryVectorOp(e, left, right,type)  ::= "<CVectorBinaryOpMap.(op.wichOp)>(<left>,<right>)"
+BinaryStringOp(e,left,right,type)  ::= <<
+<left>
+<right>
+%<e.varRef> = call <type> (<type>,<type>) @<LLVMStringBinaryOpMap.(e.wichOp)>(<type> %<left.e.varRef>,<type> %<right.e.varRef>)
+>>
+
+BinaryVectorOp(e,left,right,type)  ::= <<
+<left>
+<right>
+%<e.varRef> = call <type> (<type>,<type>) @<CVectorBinaryOpMap.(e.wichOp)>(<type> %<left.e.varRef>,<type> %<right.e.varRef>)
+>>
 
 NegateIntExpr(e,expr,type) ::= <<
 <expr>
@@ -306,7 +336,7 @@ call void (%struct.string*) @print_string(%struct.string* %<expr.e.varRef>)
 
 PrintVectorStat(pv,expr)  ::= <<
 <expr>
-call void (%struct.PVector_ptr) @print_pvector(%struct.PVector_ptr %<expr.e.varRef>)
+call void (%struct.PVector_ptr) @print_vector(%struct.PVector_ptr %<expr.e.varRef>)
 >>
 PrintIntStat(pi,expr) ::= <<
 <expr>
