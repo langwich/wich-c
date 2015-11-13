@@ -119,8 +119,10 @@ entry:
 %name0_ = alloca %struct.string*
 store %struct.string* %name0, %struct.string** %name0_
 %retval_ = alloca %struct.string*
-(%sl_0 = getelementptr [6 x i8], [6 x i8]* @sl.str0, i32 0, i32 0
-%0 = call %struct.string* (i8*) @String_new(i8* %sl_0),%1 = load %struct.string*, %struct.string** %name0_)
+%sl_0 = getelementptr [6 x i8], [6 x i8]* @sl.str0, i32 0, i32 0
+%0 = call %struct.string* (i8*) @String_new(i8* %sl_0)
+%1 = load %struct.string*, %struct.string** %name0_
+%2 = call %struct.string* (%struct.string*,%struct.string*) @String_add(%struct.string* %0,%struct.string* %1)
 store %struct.string* %2, %struct.string** %retval_
 br label %ret_
 return.exit_0:
