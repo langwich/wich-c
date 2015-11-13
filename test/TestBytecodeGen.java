@@ -201,7 +201,7 @@ public class TestBytecodeGen {
 						"ILOAD 0\n" +
 						"ICONST 0\n" +
 						"IGT\n" +
-						"BRF 14\n" +
+						"BRF 10\n" +
 						"ILOAD 0\n" +
 						"IPRINT\n" +
 						"BR 7\n" +
