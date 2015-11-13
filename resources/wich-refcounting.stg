@@ -1,6 +1,6 @@
 import "wich.stg"
 
-File(f, functions, main) ::= <<
+File(f, functions, main, decls) ::= <<
 #include \<stdio.h>
 #include "wich.h"
 #include "refcounting.h"
@@ -42,7 +42,7 @@ BlockStatement(b,block) ::= <<
 
 ReturnStat(r,expr,returnType)   ::= "{EXIT(); return <expr>;}"
 ReturnHeapVarStat(r,expr)       ::= "{REF((void *)<expr>); EXIT(); DEC((void *)<expr>); return <expr>;}"
-ReturnVectorHeapVarStat(r,expr,type) ::= "{REF((void *)<expr>.vector); EXIT(); DEC((void *)<expr>.vector); return <expr>;}"
+ReturnVectorHeapVarStat(r,expr,returnType) ::= "{REF((void *)<expr>.vector); EXIT(); DEC((void *)<expr>.vector); return <expr>;}"
 
 StringVarDefStat(v,type)     ::= "STRING(<v.name>);"
 VectorVarDefStat(v,type)     ::= "VECTOR(<v.name>);"

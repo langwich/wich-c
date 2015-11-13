@@ -27,7 +27,6 @@ import wich.codegen.model.ArgDef;
 import wich.codegen.model.BlockInitialization;
 import wich.codegen.model.BlockTermination;
 import wich.codegen.model.BlockTerminationVoid;
-import wich.codegen.model.ElementAssignStat;
 import wich.codegen.model.Func;
 import wich.codegen.model.MainFunc;
 import wich.codegen.model.OutputModelObject;
@@ -38,15 +37,13 @@ import wich.codegen.model.VectorVarDefStat;
 import wich.codegen.model.expr.BinaryFloatOp;
 import wich.codegen.model.expr.BinaryIntOp;
 import wich.codegen.model.expr.BinaryPrimitiveOp;
-import wich.codegen.model.expr.FloatLiteral;
-import wich.codegen.model.expr.FuncCall;
 import wich.codegen.model.expr.HeapVarRef;
-import wich.codegen.model.expr.IntLiteral;
+import wich.codegen.model.expr.NegateExpr;
+import wich.codegen.model.expr.NegateFloatExpr;
+import wich.codegen.model.expr.NegateIntExpr;
 import wich.codegen.model.expr.ScopedVarDefStat;
 import wich.codegen.model.expr.ScopedVarRef;
 import wich.codegen.model.expr.VarRef;
-import wich.codegen.model.expr.VectorLiteral;
-import wich.codegen.model.expr.promotion.FloatFromInt;
 import wich.semantics.SymbolTable;
 import wich.semantics.symbols.WFunctionSymbol;
 
@@ -104,6 +101,18 @@ public class InjectLLVMTraits {
 
 	public OutputModelObject exitModel(BinaryPrimitiveOp op) {
 		return getBinaryExprModel(op);
+	}
+
+	public OutputModelObject exitModel(NegateExpr n) {
+		return getNegateExprModel(n);
+	}
+
+	protected OutputModelObject getNegateExprModel(NegateExpr n) {
+		n = new NegateIntExpr(n.expr, n.type, n.varRef);
+		if (n.getType() == SymbolTable._float) {
+			n = new NegateFloatExpr(n.expr, n.type, n.varRef);
+		}
+		return n;
 	}
 
 	protected OutputModelObject getBinaryExprModel(BinaryPrimitiveOp op) {

@@ -165,7 +165,7 @@ call void () @setup_error_handlers()
 %0 = call %struct.PVector_ptr () @foo()
 store %struct.PVector_ptr %0, %struct.PVector_ptr* %x0_
 %1 = call %struct.PVector_ptr () @foo()
-call void (%struct.PVector_ptr) @print_pvector(%struct.PVector_ptr %1)
+call void (%struct.PVector_ptr) @print_vector(%struct.PVector_ptr %1)
 br label %ret__
 ret__:
 br label %ret_

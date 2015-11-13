@@ -257,6 +257,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		WVariableSymbol v = (WVariableSymbol)currentScope.resolve(varName);
 		updateLexicalOrder(v);
 		Expr expr = (Expr)visit(ctx.expr());
+
 		VarInitStat varInit = new VarInitStat(getVarRef(varName, true), expr, getTypeModel(expr.getType()));
 		VarDefStat varDef = getVarDefStat(v);
 		return new CompositeModelObject(varDef, varInit);
@@ -380,10 +381,9 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 
 	@Override
 	public OutputModelObject visitString(@NotNull WichParser.StringContext ctx) {
-		String tempVarRef = getTempVar();
-		StringLiteral sl = new StringLiteral(ctx.getText(), tempVarRef, ctx.getText().length()-1);
+		StringLiteral sl = new StringLiteral(ctx.getText(), getTempVar(), ctx.getText().length()-1, strDecls.size());
 		String declStr = getDeclString(sl.literal);
-		strDecls.add(new StringDecl(declStr, declStr.length()-2, tempVarRef));
+		strDecls.add(new StringDecl(declStr, declStr.length()-2, strDecls.size()));
 		return sl;
 	}
 

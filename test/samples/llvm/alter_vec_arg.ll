@@ -170,7 +170,7 @@ store %struct.PVector_ptr %x0, %struct.PVector_ptr* %x0_
 %promo0 = sitofp i32 %2 to double
 call void (%struct.PVector_ptr,i32,double) @set_ith(%struct.PVector_ptr %0, i32 %index_1, double %promo0)
 %3 = load %struct.PVector_ptr, %struct.PVector_ptr* %x0_
-call void (%struct.PVector_ptr) @print_pvector(%struct.PVector_ptr %3)
+call void (%struct.PVector_ptr) @print_vector(%struct.PVector_ptr %3)
 
 br label %ret__
 ret__:
@@ -218,7 +218,7 @@ call void (%struct.PVector_ptr) @bar(%struct.PVector_ptr %5)
 %promo3 = sitofp i32 %8 to double
 call void (%struct.PVector_ptr,i32,double) @set_ith(%struct.PVector_ptr %6, i32 %index_7, double %promo3)
 %9 = load %struct.PVector_ptr, %struct.PVector_ptr* %x1_
-call void (%struct.PVector_ptr) @print_pvector(%struct.PVector_ptr %9)
+call void (%struct.PVector_ptr) @print_vector(%struct.PVector_ptr %9)
 br label %ret__
 ret__:
 br label %ret_

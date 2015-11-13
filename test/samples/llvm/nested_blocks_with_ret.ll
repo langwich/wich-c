@@ -124,15 +124,15 @@ store %struct.PVector_ptr %a0, %struct.PVector_ptr* %a0_
 %e0_ = alloca %struct.PVector_ptr
 %0 = add i32 32, 0
 store i32 %0, i32* %x0_
-%sl_1 = getelementptr [4 x i8], [4 x i8]* @sl.str1, i32 0, i32 0
+%sl_1 = getelementptr [4 x i8], [4 x i8]* @sl.str0, i32 0, i32 0
 %1 = call %struct.string* (i8*) @String_new(i8* %sl_1)
 store %struct.string* %1, %struct.string** %b0_
 %c0_ = alloca %struct.string*
-%sl_2 = getelementptr [4 x i8], [4 x i8]* @sl.str2, i32 0, i32 0
+%sl_2 = getelementptr [4 x i8], [4 x i8]* @sl.str1, i32 0, i32 0
 %2 = call %struct.string* (i8*) @String_new(i8* %sl_2)
 store %struct.string* %2, %struct.string** %c0_
 %d0_ = alloca %struct.string*
-%sl_3 = getelementptr [4 x i8], [4 x i8]* @sl.str3, i32 0, i32 0
+%sl_3 = getelementptr [4 x i8], [4 x i8]* @sl.str2, i32 0, i32 0
 %3 = call %struct.string* (i8*) @String_new(i8* %sl_3)
 store %struct.string* %3, %struct.string** %d0_
 %4 = load i32, i32* %x0_
@@ -142,7 +142,7 @@ return.exit_0:
 
 
 %b1_ = alloca %struct.string*
-%sl_5 = getelementptr [4 x i8], [4 x i8]* @sl.str5, i32 0, i32 0
+%sl_5 = getelementptr [4 x i8], [4 x i8]* @sl.str3, i32 0, i32 0
 %5 = call %struct.string* (i8*) @String_new(i8* %sl_5)
 store %struct.string* %5, %struct.string** %b1_
 %6 = alloca [1 x double]
@@ -189,7 +189,7 @@ ret i32 %retval
 }
 
 
-@sl.str1 = private unnamed_addr constant [4 x i8] c"cat\00", align 1
-@sl.str2 = private unnamed_addr constant [4 x i8] c"dog\00", align 1
-@sl.str3 = private unnamed_addr constant [4 x i8] c"moo\00", align 1
-@sl.str5 = private unnamed_addr constant [4 x i8] c"boo\00", align 1
+@sl.str0 = private unnamed_addr constant [4 x i8] c"cat\00", align 1
+@sl.str1 = private unnamed_addr constant [4 x i8] c"dog\00", align 1
+@sl.str2 = private unnamed_addr constant [4 x i8] c"moo\00", align 1
+@sl.str3 = private unnamed_addr constant [4 x i8] c"boo\00", align 1

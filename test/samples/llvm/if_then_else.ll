@@ -135,12 +135,12 @@ store i32 %1, i32* %y0_
 %4 = icmp sgt i32 %2, %3
 br i1 %4, label %if.block_true_0, label %if.block_false_0
 if.block_true_0:
-%sl_5 = getelementptr [5 x i8], [5 x i8]* @sl.str5, i32 0, i32 0
+%sl_5 = getelementptr [5 x i8], [5 x i8]* @sl.str0, i32 0, i32 0
 %5 = call %struct.string* (i8*) @String_new(i8* %sl_5)
 call void (%struct.string*) @print_string(%struct.string* %5)
 br label %if.block_exit_0
 if.block_false_0:
-%sl_6 = getelementptr [6 x i8], [6 x i8]* @sl.str6, i32 0, i32 0
+%sl_6 = getelementptr [6 x i8], [6 x i8]* @sl.str1, i32 0, i32 0
 %6 = call %struct.string* (i8*) @String_new(i8* %sl_6)
 call void (%struct.string*) @print_string(%struct.string* %6)
 br label %if.block_exit_0
@@ -154,5 +154,5 @@ ret i32 %retval
 }
 
 
-@sl.str5 = private unnamed_addr constant [5 x i8] c"TRUE\00", align 1
-@sl.str6 = private unnamed_addr constant [6 x i8] c"FALSE\00", align 1
+@sl.str0 = private unnamed_addr constant [5 x i8] c"TRUE\00", align 1
+@sl.str1 = private unnamed_addr constant [6 x i8] c"FALSE\00", align 1

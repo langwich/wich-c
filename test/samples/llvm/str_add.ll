@@ -114,55 +114,6 @@ ret void
 @__stderrp = external global %struct.__sFILE*, align 8
 @.str.5 = private unnamed_addr constant [34 x i8] c"Wich is confused; signal %s (%d)\0A\00", align 1
 ; ///////// ///////// G E N E R A T E D  C O D E ///////// /////////
-define i1 @foo(i32 %x0) {
-entry:
-%x0_ = alloca i32
-store i32 %x0, i32* %x0_
-%retval_ = alloca i1
-%0 = load i32, i32* %x0_
-%1 = add i32 10, 0
-%2 = icmp slt i32 %0, %1
-store i1 %2, i1* %retval_
-br label %ret_
-return.exit_0:
-br label %ret__
-ret__:
-br label %ret_
-ret_:
-%retval = load i1, i1* %retval_
-ret i1 %retval
-}
-define i1 @bar(i32 %x1) {
-entry:
-%x1_ = alloca i32
-store i32 %x1, i32* %x1_
-%retval_ = alloca i1
-%0 = load i32, i32* %x1_
-%1 = add i32 1, 0
-%2 = icmp slt i32 %0, %1
-br i1 %2, label %if.block_true_0, label %if.block_false_0
-if.block_true_0:
-%3 = add i1 0, 0
-store i1 %3, i1* %retval_
-br label %ret_
-return.exit_0:
-br label %if.block_exit_0
-if.block_false_0:
-%4 = add i1 0, 0
-store i1 %4, i1* %retval_
-br label %ret_
-return.exit_1:
-br label %if.block_exit_0
-if.block_exit_0:
-br label %ret__
-ret__:
-br label %ret_
-ret_:
-%retval = load i1, i1* %retval_
-ret i1 %retval
-}
-
-
 define i32 @main(i32 %argc, i8** %argv) {
 entry:
 %retval_ = alloca i32
@@ -172,18 +123,18 @@ store i32 0, i32* %retval_
 store i32 %argc, i32* %argc_
 store i8** %argv, i8*** %argv_
 call void () @setup_error_handlers()
-%x2_ = alloca i1
-%y0_ = alloca i1
-%0 = add i32 5, 0
-%1 = call i1 (i32) @bar(i32 %0)
-store i1 %1, i1* %x2_
-%2 = add i32 1, 0
-%3 = call i1 (i32) @foo(i32 %2)
-store i1 %3, i1* %y0_
-%4 = load i1, i1* %x2_
-%5 = load i1, i1* %y0_
-%6 = or i1 %4, %5
-%pb_0 = call i32 (i8*, ...) @printf(i8* getelementptr ([4 x i8], [4 x i8]* @pi.str, i64 0, i64 0), i1 %6)
+%hello0_ = alloca %struct.string*
+%world0_ = alloca %struct.string*
+%sl_0 = getelementptr [6 x i8], [6 x i8]* @sl.str0, i32 0, i32 0
+%0 = call %struct.string* (i8*) @String_new(i8* %sl_0)
+store %struct.string* %0, %struct.string** %hello0_
+%sl_1 = getelementptr [6 x i8], [6 x i8]* @sl.str1, i32 0, i32 0
+%1 = call %struct.string* (i8*) @String_new(i8* %sl_1)
+store %struct.string* %1, %struct.string** %world0_
+%2 = load %struct.string*, %struct.string** %hello0_
+%3 = load %struct.string*, %struct.string** %world0_
+%4 = call %struct.string* (%struct.string*,%struct.string*) @String_add(%struct.string* %2,%struct.string* %3)
+call void (%struct.string*) @print_string(%struct.string* %4)
 br label %ret__
 ret__:
 br label %ret_
@@ -193,3 +144,5 @@ ret i32 %retval
 }
 
 
+@sl.str0 = private unnamed_addr constant [6 x i8] c"hello\00", align 1
+@sl.str1 = private unnamed_addr constant [6 x i8] c"world\00", align 1

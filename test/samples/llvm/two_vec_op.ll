@@ -114,55 +114,6 @@ ret void
 @__stderrp = external global %struct.__sFILE*, align 8
 @.str.5 = private unnamed_addr constant [34 x i8] c"Wich is confused; signal %s (%d)\0A\00", align 1
 ; ///////// ///////// G E N E R A T E D  C O D E ///////// /////////
-define i1 @foo(i32 %x0) {
-entry:
-%x0_ = alloca i32
-store i32 %x0, i32* %x0_
-%retval_ = alloca i1
-%0 = load i32, i32* %x0_
-%1 = add i32 10, 0
-%2 = icmp slt i32 %0, %1
-store i1 %2, i1* %retval_
-br label %ret_
-return.exit_0:
-br label %ret__
-ret__:
-br label %ret_
-ret_:
-%retval = load i1, i1* %retval_
-ret i1 %retval
-}
-define i1 @bar(i32 %x1) {
-entry:
-%x1_ = alloca i32
-store i32 %x1, i32* %x1_
-%retval_ = alloca i1
-%0 = load i32, i32* %x1_
-%1 = add i32 1, 0
-%2 = icmp slt i32 %0, %1
-br i1 %2, label %if.block_true_0, label %if.block_false_0
-if.block_true_0:
-%3 = add i1 0, 0
-store i1 %3, i1* %retval_
-br label %ret_
-return.exit_0:
-br label %if.block_exit_0
-if.block_false_0:
-%4 = add i1 0, 0
-store i1 %4, i1* %retval_
-br label %ret_
-return.exit_1:
-br label %if.block_exit_0
-if.block_exit_0:
-br label %ret__
-ret__:
-br label %ret_
-ret_:
-%retval = load i1, i1* %retval_
-ret i1 %retval
-}
-
-
 define i32 @main(i32 %argc, i8** %argv) {
 entry:
 %retval_ = alloca i32
@@ -172,18 +123,52 @@ store i32 0, i32* %retval_
 store i32 %argc, i32* %argc_
 store i8** %argv, i8*** %argv_
 call void () @setup_error_handlers()
-%x2_ = alloca i1
-%y0_ = alloca i1
-%0 = add i32 5, 0
-%1 = call i1 (i32) @bar(i32 %0)
-store i1 %1, i1* %x2_
-%2 = add i32 1, 0
-%3 = call i1 (i32) @foo(i32 %2)
-store i1 %3, i1* %y0_
-%4 = load i1, i1* %x2_
-%5 = load i1, i1* %y0_
-%6 = or i1 %4, %5
-%pb_0 = call i32 (i8*, ...) @printf(i8* getelementptr ([4 x i8], [4 x i8]* @pi.str, i64 0, i64 0), i1 %6)
+%x0_ = alloca %struct.PVector_ptr
+%y0_ = alloca %struct.PVector_ptr
+%z0_ = alloca %struct.PVector_ptr
+%q0_ = alloca %struct.PVector_ptr
+%0 = alloca [3 x double]
+%promo0_ = getelementptr [3 x double], [3 x double]* %0, i64 0, i64 0
+%1 = add i32 4, 0
+%promo0 = sitofp i32 %1 to double
+store double %promo0, double* %promo0_
+%promo1_ = getelementptr [3 x double], [3 x double]* %0, i64 0, i64 1
+%2 = add i32 6, 0
+%promo1 = sitofp i32 %2 to double
+store double %promo1, double* %promo1_
+%promo2_ = getelementptr [3 x double], [3 x double]* %0, i64 0, i64 2
+%3 = add i32 8, 0
+%promo2 = sitofp i32 %3 to double
+store double %promo2, double* %promo2_
+%vec_ptr_4 = getelementptr [3 x double], [3 x double]* %0, i64 0, i64 0
+%4 = call %struct.PVector_ptr @PVector_new(double* %vec_ptr_4, i64 3)
+store %struct.PVector_ptr %4, %struct.PVector_ptr* %x0_
+%5 = alloca [3 x double]
+%promo3_ = getelementptr [3 x double], [3 x double]* %5, i64 0, i64 0
+%6 = add i32 2, 0
+%promo3 = sitofp i32 %6 to double
+store double %promo3, double* %promo3_
+%promo4_ = getelementptr [3 x double], [3 x double]* %5, i64 0, i64 1
+%7 = add i32 3, 0
+%promo4 = sitofp i32 %7 to double
+store double %promo4, double* %promo4_
+%promo5_ = getelementptr [3 x double], [3 x double]* %5, i64 0, i64 2
+%8 = add i32 4, 0
+%promo5 = sitofp i32 %8 to double
+store double %promo5, double* %promo5_
+%vec_ptr_9 = getelementptr [3 x double], [3 x double]* %5, i64 0, i64 0
+%9 = call %struct.PVector_ptr @PVector_new(double* %vec_ptr_9, i64 3)
+store %struct.PVector_ptr %9, %struct.PVector_ptr* %y0_
+%10 = load %struct.PVector_ptr, %struct.PVector_ptr* %x0_
+%11 = load %struct.PVector_ptr, %struct.PVector_ptr* %y0_
+%12 = call %struct.PVector_ptr (%struct.PVector_ptr,%struct.PVector_ptr) @Vector_mul(%struct.PVector_ptr %10,%struct.PVector_ptr %11)
+store %struct.PVector_ptr %12, %struct.PVector_ptr* %z0_
+%13 = load %struct.PVector_ptr, %struct.PVector_ptr* %z0_
+%14 = load %struct.PVector_ptr, %struct.PVector_ptr* %y0_
+%15 = call %struct.PVector_ptr (%struct.PVector_ptr,%struct.PVector_ptr) @Vector_div(%struct.PVector_ptr %13,%struct.PVector_ptr %14)
+store %struct.PVector_ptr %15, %struct.PVector_ptr* %q0_
+%16 = load %struct.PVector_ptr, %struct.PVector_ptr* %q0_
+call void (%struct.PVector_ptr) @print_vector(%struct.PVector_ptr %16)
 br label %ret__
 ret__:
 br label %ret_

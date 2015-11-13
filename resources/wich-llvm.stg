@@ -55,6 +55,27 @@ LLVMBinaryIntOpMap ::= [
 	"||":"or"
 ]
 
+
+LLVMVectorBinaryOpMap ::= [
+	"*":"Vector_mul",
+	"/":"Vector_div",
+	"+":"Vector_add",
+	"-":"Vector_sub",
+	"==":"Vector_eq",
+	"!=":"Vector_neq",
+	".":"Vector_dot"
+]
+
+LLVMStringBinaryOpMap ::= [
+	"+":"String_add",
+	">":"String_gt",
+	">=":"String_ge",
+	"<":"String_lt",
+	"<=":"String_le",
+	"==":"String_eq",
+	"!=":"String_neq"
+]
+
 File(f, functions, main, decls) ::= <<
 <include()>
 
@@ -170,7 +191,7 @@ BlockStatement(b,block) ::= <<
 >>
 
 StringDecl(s) ::= <<
-@sl.str<s.varRef> = private unnamed_addr constant [<s.len> x i8] c"<s.str>", align 1
+@sl.str<s.num> = private unnamed_addr constant [<s.len> x i8] c"<s.str>", align 1
 >>
 
 IntLiteral(e,type)	::= <<
@@ -181,15 +202,20 @@ FloatLiteral(e,type)	::= <<
 %<e.varRef> = fadd double <e.value>, 0.00
 >>
 
-TrueLiteral(t,type) ::= "<t.value>"
-FalseLiteral(f,type) ::="<f.value>"
+TrueLiteral(e,type) ::= <<
+%<e.varRef> = add i1 1, 0
+>>
+
+FalseLiteral(e,type) ::= <<
+%<e.varRef> = add i1 0, 0
+>>
 
 ScopedVarRef(e,type)		::= <<
 %<e.varRef> = load <type>, <type>* %<e.name>_
 >>
 
 StringLiteral(e,type) ::= <<
-%sl_<e.varRef> = getelementptr [<e.len> x i8], [<e.len> x i8]* @sl.str<e.varRef>, i32 0, i32 0
+%sl_<e.varRef> = getelementptr [<e.len> x i8], [<e.len> x i8]* @sl.str<e.num>, i32 0, i32 0
 %<e.varRef> = call %struct.string* (i8*) @String_new(i8* %sl_<e.varRef>)
 >>
 
@@ -226,8 +252,27 @@ BinaryIntOp(e,left,right,type) ::= <<
 %<e.varRef> = <LLVMBinaryIntOpMap.(e.wichOp)> <type> %<left.e.varRef>, %<right.e.varRef>
 >>
 
-BinaryStringOp(e, left, right,type)  ::= "<CStringBinaryOpMap.(op.wichOp)>(<left>,<right>)"
-BinaryVectorOp(e, left, right,type)  ::= "<CVectorBinaryOpMap.(op.wichOp)>(<left>,<right>)"
+BinaryStringOp(e,left,right,type)  ::= <<
+<left>
+<right>
+%<e.varRef> = call <type> (<type>,<type>) @<LLVMStringBinaryOpMap.(e.wichOp)>(<type> %<left.e.varRef>,<type> %<right.e.varRef>)
+>>
+
+BinaryVectorOp(e,left,right,type)  ::= <<
+<left>
+<right>
+%<e.varRef> = call <type> (<type>,<type>) @<CVectorBinaryOpMap.(e.wichOp)>(<type> %<left.e.varRef>,<type> %<right.e.varRef>)
+>>
+
+NegateIntExpr(e,expr,type) ::= <<
+<expr>
+%<e.varRef> = sub <type> 0, %<expr.e.varRef>
+>>
+
+NegateFloatExpr(e,expr,type) ::= <<
+<expr>
+%<e.varRef> = fsub <type> 0.0, %<expr.e.varRef>
+>>
 
 FuncCall(e,args,type) ::= <<
 <args;separator="\n">
@@ -291,7 +336,7 @@ call void (%struct.string*) @print_string(%struct.string* %<expr.e.varRef>)
 
 PrintVectorStat(pv,expr)  ::= <<
 <expr>
-call void (%struct.PVector_ptr) @print_pvector(%struct.PVector_ptr %<expr.e.varRef>)
+call void (%struct.PVector_ptr) @print_vector(%struct.PVector_ptr %<expr.e.varRef>)
 >>
 PrintIntStat(pi,expr) ::= <<
 <expr>
