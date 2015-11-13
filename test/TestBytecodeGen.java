@@ -123,11 +123,12 @@ public class TestBytecodeGen {
 				"0 strings\n"+
 				"3 functions\n"+
 					"0: addr=0 args=0 locals=0 type=0 1/f\n"+
-					"1: addr=9 args=1 locals=0 type=1 1/g\n"+
-					"2: addr=14 args=0 locals=0 type=0 4/main\n"+
-				"7 instr, 15 bytes\n" +
+					"1: addr=10 args=1 locals=0 type=1 1/g\n"+
+					"2: addr=15 args=0 locals=0 type=0 4/main\n"+
+				"8 instr, 16 bytes\n" +
 					"ICONST 3\n" +
 					"CALL 1\n" +
+					"POP\n" +
 					"RET\n" +
 					"ILOAD 0\n" +
 					"RETV\n" +
