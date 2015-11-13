@@ -371,7 +371,7 @@ public class BytecodeGenerator extends WichBaseVisitor<Code> {
 				}
 			}
 			//promote int to float: with vector or with float
-			else if(ctx.exprType == SymbolTable._vector || ctx.exprType == SymbolTable._float) {
+			else if(ctx.exprType == SymbolTable._float) {
 				if (ctx.expr(0).exprType == SymbolTable._int) {
 					left = promoteI2F(left);
 				}
