@@ -35,7 +35,7 @@ public class TestTranslatorError {
 		String input =
 				"var x = 1\n" +
 				"x = 1.0";
-		String expected = "error: incompatible type in assignment (cannot promote from float to int)\n";
+		String expected = "error: line 2:0 incompatible type in assignment (cannot promote from float to int)";
 		compileAndCheckError(input, expected);
 	}
 
@@ -43,7 +43,7 @@ public class TestTranslatorError {
 	public void testInvalidElementStr() throws Exception {
 		String input =
 				"var x = [1,2,3,4,\"5\"]\n";
-		String expected = "error: incorrect element type (should be float, but string was given)\n";
+		String expected = "error: line 1:8 incorrect element type (should be float, but string was given)";
 		compileAndCheckError(input, expected);
 	}
 
@@ -52,7 +52,7 @@ public class TestTranslatorError {
 		String input =
 				"var x = [1,2,3,4,5]\n" +
 				"x[1.0] = 1\n";
-		String expected = "error: invalid vector index type (should be int, but float was given)\n";
+		String expected = "error: line 2:0 invalid vector index type (should be int, but float was given)";
 		compileAndCheckError(input, expected);
 	}
 
@@ -61,7 +61,7 @@ public class TestTranslatorError {
 		String input =
 				"var x = [1,2,3,4,5]\n" +
 				"x[[1]] = 1.0\n";
-		String expected = "error: invalid vector index type (should be int, but [] was given)\n";
+		String expected = "error: line 2:0 invalid vector index type (should be int, but [] was given)";
 		compileAndCheckError(input, expected);
 	}
 
@@ -70,7 +70,7 @@ public class TestTranslatorError {
 		String input =
 				"var x = [1,2,3,4,5]\n" +
 				"x[2 > 1] = 1.0\n";
-		String expected = "error: invalid vector index type (should be int, but boolean was given)\n";
+		String expected = "error: line 2:0 invalid vector index type (should be int, but boolean was given)";
 		compileAndCheckError(input, expected);
 	}
 
@@ -80,7 +80,7 @@ public class TestTranslatorError {
 				"func f() : boolean { return 2 > 1 }\n" +
 				"var x = 1 + f()\n";
 		String expected =
-				"error: incompatible operand types (int + boolean)\n";
+				"error: line 2:8 incompatible operand types (int + boolean)";
 		compileAndCheckError(input, expected);
 	}
 
@@ -89,7 +89,7 @@ public class TestTranslatorError {
 		String input =
 				"var x = \"1\" > [1.0]\n";
 		String expected =
-				"error: incompatible operand types (string > [])\n";
+				"error: line 1:8 incompatible operand types (string > [])";
 		compileAndCheckError(input, expected);
 	}
 
@@ -98,7 +98,7 @@ public class TestTranslatorError {
 		String input =
 				"var x = (2 > 1) && 1\n";
 		String expected =
-				"error: incompatible operand types (boolean && int)\n";
+				"error: line 1:8 incompatible operand types (boolean && int)";
 		compileAndCheckError(input, expected);
 	}
 
@@ -107,7 +107,7 @@ public class TestTranslatorError {
 		String input =
 				"if (1) { }\n";
 		String expected =
-				"error: invalid condition type (boolean expected but int was given)\n";
+				"error: line 1:0 invalid condition type (boolean expected but int was given)";
 		compileAndCheckError(input, expected);
 	}
 
@@ -116,7 +116,7 @@ public class TestTranslatorError {
 		String input =
 				"while ([1]) { }\n";
 		String expected =
-				"error: invalid condition type (boolean expected but [] was given)\n";
+				"error: line 1:0 invalid condition type (boolean expected but [] was given)";
 		compileAndCheckError(input, expected);
 	}
 
@@ -126,8 +126,8 @@ public class TestTranslatorError {
 				"func foo(x:float,y:int, c:boolean):int { }\n" +
 				"foo(1, 1.0, 2)\n";
 		String expected =
-				"error: incompatible argument type (cannot promote from float to int)\n" +
-				"error: incompatible argument type (cannot promote from int to boolean)\n";
+				"error: line 2:0 incompatible argument type (cannot promote from float to int)\n" +
+						" error: line 2:0 incompatible argument type (cannot promote from int to boolean)";
 		compileAndCheckError(input, expected);
 	}
 
@@ -137,7 +137,7 @@ public class TestTranslatorError {
 				"func foo(x:float,y:int, c:boolean):int { }\n" +
 						"foo(1.0, 1)\n";
 		String expected =
-				"error: incorrect number of args (3 args expected but 2 was given)\n";
+				"error: line 2:0 incorrect number of args (3 args expected but 2 was given)";
 		compileAndCheckError(input, expected);
 	}
 	@Test
@@ -145,7 +145,7 @@ public class TestTranslatorError {
 		String input =
 				"func foo(x:float,y:int,c:Boolean):int { }\n" ;
 		String expected =
-				"error: invalid type for (c)\n";
+				"error: line 1:23 invalid type for (c)";
 		compileAndCheckError(input, expected);
 	}
 
@@ -155,7 +155,7 @@ public class TestTranslatorError {
 				"var x = 1\n" +
 				"x()\n";
 		String expected =
-				"error: function x not defined\n";
+				"error: line 2:0 function x not defined";
 		compileAndCheckError(input, expected);
 	}
 
@@ -165,7 +165,7 @@ public class TestTranslatorError {
 				"var x = 1\n" +
 				"x[1] = 1\n";
 		String expected =
-				"error: invalid operation ([] expected, but int was given)\n";
+				"error: line 2:0 invalid operation ([] expected, but int was given)";
 		compileAndCheckError(input, expected);
 	}
 
