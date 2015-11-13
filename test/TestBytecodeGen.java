@@ -583,7 +583,6 @@ public class TestBytecodeGen {
 		checkCodeGen(wich, expecting);
 	}
 
-
 	@Test
 	public void testStrAddVector() throws Exception {
 		String wich =
@@ -609,6 +608,30 @@ public class TestBytecodeGen {
 						"V2S\n" +
 						"SADD\n" +
 						"STORE 1\n" +
+						"HALT\n";
+		checkCodeGen(wich, expecting);
+	}
+
+	@Test
+	public void testPopReturnVal() throws Exception {
+		String wich =
+				"func sq(q:int): int {return q*q}\n"+
+						"sq(10)\n";
+
+		String expecting =
+				"0 strings\n"+
+						"2 functions\n"+
+						"0: addr=0 args=1 locals=0 type=1 2/sq\n"+
+						"1: addr=9 args=0 locals=0 type=0 4/main\n"+
+						"9 instr, 19 bytes\n" +
+						"ILOAD 0\n" +
+						"ILOAD 0\n" +
+						"IMUL\n" +
+						"RETV\n" +
+						"RET\n" +
+						"ICONST 10\n" +
+						"CALL 0\n" +
+						"POP\n" +
 						"HALT\n";
 		checkCodeGen(wich, expecting);
 	}
