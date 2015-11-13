@@ -55,6 +55,15 @@ LLVMBinaryIntOpMap ::= [
 	"||":"or"
 ]
 
+LLVMStringBinaryOpMap ::= [
+	"+":"String_add",
+	">":"String_gt",
+	">=":"String_ge",
+	"<":"String_lt",
+	"<=":"String_le",
+	"==":"String_eq",
+	"!=":"String_neq"
+]
 
 LLVMVectorBinaryOpMap ::= [
 	"*":"Vector_mul",
@@ -64,16 +73,6 @@ LLVMVectorBinaryOpMap ::= [
 	"==":"Vector_eq",
 	"!=":"Vector_neq",
 	".":"Vector_dot"
-]
-
-LLVMStringBinaryOpMap ::= [
-	"+":"String_add",
-	">":"String_gt",
-	">=":"String_ge",
-	"<":"String_lt",
-	"<=":"String_le",
-	"==":"String_eq",
-	"!=":"String_neq"
 ]
 
 File(f, functions, main, decls) ::= <<
@@ -252,16 +251,16 @@ BinaryIntOp(e,left,right,type) ::= <<
 %<e.varRef> = <LLVMBinaryIntOpMap.(e.wichOp)> <type> %<left.e.varRef>, %<right.e.varRef>
 >>
 
-BinaryStringOp(e,left,right,type)  ::= <<
+BinaryStringOp(e,left,right,resType,type)  ::= <<
 <left>
 <right>
-%<e.varRef> = call <type> (<type>,<type>) @<LLVMStringBinaryOpMap.(e.wichOp)>(<type> %<left.e.varRef>,<type> %<right.e.varRef>)
+%<e.varRef> = call <resType> (<type>,<type>) @<LLVMStringBinaryOpMap.(e.wichOp)>(<type> %<left.e.varRef>,<type> %<right.e.varRef>)
 >>
 
-BinaryVectorOp(e,left,right,type)  ::= <<
+BinaryVectorOp(e,left,right,resType,type)  ::= <<
 <left>
 <right>
-%<e.varRef> = call <type> (<type>,<type>) @<CVectorBinaryOpMap.(e.wichOp)>(<type> %<left.e.varRef>,<type> %<right.e.varRef>)
+%<e.varRef> = call <type> (<type>,<type>) @<LLVMVectorBinaryOpMap.(e.wichOp)>(<type> %<left.e.varRef>,<type> %<right.e.varRef>)
 >>
 
 NegateIntExpr(e,expr,type) ::= <<

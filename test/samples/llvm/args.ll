@@ -54,7 +54,7 @@ declare %struct.string* @String_from_vector(%struct.PVector_ptr)
 
 declare %struct.string* @String_from_int(i32)
 
-declare %struct.string* @String_from_float(float)
+declare %struct.string* @String_from_float(double)
 
 declare void @print_string(%struct.string*)
 
@@ -165,7 +165,6 @@ entry:
 store i32 %x0, i32* %x0_
 %v0_ = alloca %struct.PVector_ptr
 store %struct.PVector_ptr %v0, %struct.PVector_ptr* %v0_
-
 br label %ret__
 ret__:
 br label %ret_
@@ -184,7 +183,6 @@ store i32 0, i32* %retval_
 store i32 %argc, i32* %argc_
 store i8** %argv, i8*** %argv_
 call void () @setup_error_handlers()
-
 br label %ret__
 ret__:
 br label %ret_

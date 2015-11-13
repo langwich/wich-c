@@ -116,13 +116,12 @@ public class InjectLLVMTraits {
 	}
 
 	protected OutputModelObject getBinaryExprModel(BinaryPrimitiveOp op) {
-		if (op.getType() == SymbolTable._float) {
+		if (op.type.type == SymbolTable._float) {
 			return new BinaryFloatOp(op);
 		}
 		else if (op.type.type == SymbolTable._int || op.type.type == SymbolTable._boolean) {
 			return new BinaryIntOp(op);
 		}
-
 		else return op;
 	}
 }

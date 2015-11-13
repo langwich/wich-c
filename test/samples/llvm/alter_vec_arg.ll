@@ -54,7 +54,7 @@ declare %struct.string* @String_from_vector(%struct.PVector_ptr)
 
 declare %struct.string* @String_from_int(i32)
 
-declare %struct.string* @String_from_float(float)
+declare %struct.string* @String_from_float(double)
 
 declare void @print_string(%struct.string*)
 
@@ -171,7 +171,6 @@ store %struct.PVector_ptr %x0, %struct.PVector_ptr* %x0_
 call void (%struct.PVector_ptr,i32,double) @set_ith(%struct.PVector_ptr %0, i32 %index_1, double %promo0)
 %3 = load %struct.PVector_ptr, %struct.PVector_ptr* %x0_
 call void (%struct.PVector_ptr) @print_vector(%struct.PVector_ptr %3)
-
 br label %ret__
 ret__:
 br label %ret_
@@ -190,7 +189,6 @@ store i32 0, i32* %retval_
 store i32 %argc, i32* %argc_
 store i8** %argv, i8*** %argv_
 call void () @setup_error_handlers()
-
 %x1_ = alloca %struct.PVector_ptr
 %0 = alloca [3 x double]
 %promo0_ = getelementptr [3 x double], [3 x double]* %0, i64 0, i64 0
@@ -210,7 +208,6 @@ store double %promo2, double* %promo2_
 store %struct.PVector_ptr %4, %struct.PVector_ptr* %x1_
 %5 = load %struct.PVector_ptr, %struct.PVector_ptr* %x1_
 call void (%struct.PVector_ptr) @bar(%struct.PVector_ptr %5)
-
 %6 = load %struct.PVector_ptr, %struct.PVector_ptr* %x1_
 %7 = add i32 1, 0
 %index_7 = sub i32 %7, 1
@@ -222,6 +219,7 @@ call void (%struct.PVector_ptr) @print_vector(%struct.PVector_ptr %9)
 br label %ret__
 ret__:
 br label %ret_
+
 ret_:
 %retval = load i32, i32* %retval_
 ret i32 %retval

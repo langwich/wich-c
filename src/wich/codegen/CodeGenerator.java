@@ -63,6 +63,7 @@ import wich.codegen.model.expr.IntLiteral;
 import wich.codegen.model.expr.NegateExpr;
 import wich.codegen.model.expr.NotExpr;
 import wich.codegen.model.expr.StringIndexExpr;
+import wich.codegen.model.expr.TrueLiteral;
 import wich.codegen.model.expr.VarRef;
 import wich.codegen.model.expr.VectorElement;
 import wich.codegen.model.expr.VectorIndexExpr;
@@ -315,9 +316,8 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 			left = getPromotionObject(ctx, left, right);
 			right = getPromotionObject(ctx, right, left);
 		}
-		final Type resultType = ctx.promoteToType!=null ? ctx.promoteToType : ctx.exprType;
-		Expr model = getBinaryOperationModel(ctx.operator(), resultType, left, right, getTempVar());
-		return model;
+		final Type operandType = ctx.promoteToType!=null ? ctx.promoteToType : left.getType();
+		return getBinaryOperationModel(ctx.operator(), operandType, ctx.exprType, left, right, getTempVar());
 	}
 
 	@Override
@@ -416,7 +416,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 
 	@Override
 	public OutputModelObject visitTrueLiteral(@NotNull WichParser.TrueLiteralContext ctx) {
-		return new FalseLiteral(ctx.getText(), getTempVar());
+		return new TrueLiteral(ctx.getText(), getTempVar());
 	}
 
 	@Override
@@ -489,25 +489,28 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	}
 
 	public static BinaryOpExpr getBinaryOperationModel(WichParser.OperatorContext opCtx,
-													   Type operandType,
-													   Expr left,
-													   Expr right,
+	                                                   Type operandType,
+	                                                   Type resultType,
+	                                                   Expr left,
+	                                                   Expr right,
 	                                                   String tempVarRef)
 	{
 		Token opToken = opCtx.getStart();
 		String wichOp = opToken.getText();
 		BinaryOpExpr opExpr;
+		WichType opTypeModel = getTypeModel(operandType);
+		WichType resTypeModel = getTypeModel(resultType);
 		// split into granularity sufficient for most potential target languages
 		if ( operandType == SymbolTable._vector ) {
-			opExpr = new BinaryVectorOp(left, wichOp, right, tempVarRef);
+			opExpr = new BinaryVectorOp(left, wichOp, right, opTypeModel, resTypeModel, tempVarRef);
 		}
 		else if ( operandType == SymbolTable._string ) {
-			opExpr = new BinaryStringOp(left, wichOp, right, tempVarRef);
+			opExpr = new BinaryStringOp(left, wichOp, right, opTypeModel, resTypeModel, tempVarRef);
 		}
 		else {
-			opExpr = new BinaryPrimitiveOp(left, wichOp, right, getTypeModel(left.getType()), tempVarRef);
+			opExpr = new BinaryPrimitiveOp(left, wichOp, right, opTypeModel, tempVarRef);
 		}
-		opExpr.resultType = operandType;
+		opExpr.resultType = resultType;
 		return opExpr;
 	}
 
