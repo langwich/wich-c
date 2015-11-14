@@ -27,13 +27,17 @@ import org.antlr.symtab.Type;
 import wich.codegen.model.ModelElement;
 import wich.codegen.model.StringType;
 import wich.semantics.SymbolTable;
+import wich.semantics.symbols.WVariableSymbol;
 
 public class StringIndexExpr extends Expr {
 	public final String varName;
+	public final WVariableSymbol symbol;
+
 	@ModelElement public Expr expr;
 
-	public StringIndexExpr(String object, Expr indexExpr, String tempVar) {
+	public StringIndexExpr(String object, WVariableSymbol v, Expr indexExpr, String tempVar) {
 		this.varName = object;
+		this.symbol = v;
 		this.expr = indexExpr;
 		this.type = new StringType();
 		this.varRef = tempVar;

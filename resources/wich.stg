@@ -152,8 +152,8 @@ PrintFloatStat(pf,expr)   ::= <<printf("%1.2f\n", <expr>);>>
 PrintBooleanStat(pb,expr) ::= <<printf("%d\n", <expr>);>>
 
 BinaryPrimitiveOp(op,left,right,type) ::= "(<left> <CPrimitiveBinaryOpMap.(op.wichOp)> <right>)"
-BinaryStringOp(op, left, right,type)  ::= "<CStringBinaryOpMap.(op.wichOp)>(<left>,<right>)"
-BinaryVectorOp(op, left, right,type)  ::= "<CVectorBinaryOpMap.(op.wichOp)>(<left>,<right>)"
+BinaryStringOp(op, left, right,resType,type)  ::= "<CStringBinaryOpMap.(op.wichOp)>(<left>,<right>)"
+BinaryVectorOp(op, left, right,resType,type)  ::= "<CVectorBinaryOpMap.(op.wichOp)>(<left>,<right>)"
 
 VectorFromInt(v,vector,intLiteral,type)	::= "Vector_from_int(<intLiteral>,(<vector>).vector->length)"
 VectorFromFloat(v,vector,floatLiteral,type)	::= "Vector_from_float(<floatLiteral>,(<vector>).vector->length)"

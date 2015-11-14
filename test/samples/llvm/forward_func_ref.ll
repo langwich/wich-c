@@ -54,7 +54,7 @@ declare %struct.string* @String_from_vector(%struct.PVector_ptr)
 
 declare %struct.string* @String_from_int(i32)
 
-declare %struct.string* @String_from_float(float)
+declare %struct.string* @String_from_float(double)
 
 declare void @print_string(%struct.string*)
 
@@ -158,6 +158,7 @@ ret void
 @.str.5 = private unnamed_addr constant [34 x i8] c"Wich is confused; signal %s (%d)\0A\00", align 1
 
 ; ///////// ///////// G E N E R A T E D  C O D E ///////// /////////
+
 define %struct.string* @f() {
 entry:
 %retval_ = alloca %struct.string*
@@ -165,10 +166,12 @@ entry:
 br label %ret__
 ret__:
 br label %ret_
+
 ret_:
 %retval = load %struct.string*, %struct.string** %retval_
 ret %struct.string* %retval
 }
+
 define double @g() {
 entry:
 %retval_ = alloca double
@@ -176,6 +179,7 @@ entry:
 br label %ret__
 ret__:
 br label %ret_
+
 ret_:
 %retval = load double, double* %retval_
 ret double %retval
@@ -194,6 +198,7 @@ call void () @setup_error_handlers()
 br label %ret__
 ret__:
 br label %ret_
+
 ret_:
 %retval = load i32, i32* %retval_
 ret i32 %retval

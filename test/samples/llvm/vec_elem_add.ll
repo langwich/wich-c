@@ -114,38 +114,6 @@ ret void
 @__stderrp = external global %struct.__sFILE*, align 8
 @.str.5 = private unnamed_addr constant [34 x i8] c"Wich is confused; signal %s (%d)\0A\00", align 1
 ; ///////// ///////// G E N E R A T E D  C O D E ///////// /////////
-define i1 @f(%struct.string* %s0) {
-entry:
-%s0_ = alloca %struct.string*
-store %struct.string* %s0, %struct.string** %s0_
-%retval_ = alloca i1
-%0 = load %struct.string*, %struct.string** %s0_
-%sl_1 = getelementptr [4 x i8], [4 x i8]* @sl.str0, i32 0, i32 0
-%1 = call %struct.string* (i8*) @String_new(i8* %sl_1)
-%2 = call i1 (%struct.string*,%struct.string*) @String_le(%struct.string* %0,%struct.string* %1)
-br i1 %2, label %if.block_true_0, label %if.block_false_0
-if.block_true_0:
-%3 = add i1 1, 0
-store i1 %3, i1* %retval_
-br label %ret_
-return.exit_0:
-br label %if.block_exit_0
-if.block_false_0:
-br label %if.block_exit_0
-if.block_exit_0:
-%4 = add i1 0, 0
-store i1 %4, i1* %retval_
-br label %ret_
-return.exit_1:
-br label %ret__
-ret__:
-br label %ret_
-ret_:
-%retval = load i1, i1* %retval_
-ret i1 %retval
-}
-
-
 define i32 @main(i32 %argc, i8** %argv) {
 entry:
 %retval_ = alloca i32
@@ -155,29 +123,50 @@ store i32 0, i32* %retval_
 store i32 %argc, i32* %argc_
 store i8** %argv, i8*** %argv_
 call void () @setup_error_handlers()
-%s10_ = alloca %struct.string*
-%s20_ = alloca %struct.string*
-%sl_0 = getelementptr [1 x i8], [1 x i8]* @sl.str1, i32 0, i32 0
-%0 = call %struct.string* (i8*) @String_new(i8* %sl_0)
-store %struct.string* %0, %struct.string** %s10_
-%sl_1 = getelementptr [4 x i8], [4 x i8]* @sl.str2, i32 0, i32 0
-%1 = call %struct.string* (i8*) @String_new(i8* %sl_1)
-store %struct.string* %1, %struct.string** %s20_
-%2 = load %struct.string*, %struct.string** %s10_
-%3 = load %struct.string*, %struct.string** %s20_
-%4 = call i1 (%struct.string*,%struct.string*) @String_gt(%struct.string* %2,%struct.string* %3)
-br i1 %4, label %if.block_true_0, label %if.block_false_0
-if.block_true_0:
-br label %if.block_exit_0
-if.block_false_0:
-%sl_5 = getelementptr [6 x i8], [6 x i8]* @sl.str3, i32 0, i32 0
-%5 = call %struct.string* (i8*) @String_new(i8* %sl_5)
-call void (%struct.string*) @print_string(%struct.string* %5)
-br label %if.block_exit_0
-if.block_exit_0:
-%6 = load %struct.string*, %struct.string** %s20_
-%7 = call i1 (%struct.string*) @f(%struct.string* %6)
-%pb_1 = call i32 (i8*, ...) @printf(i8* getelementptr ([4 x i8], [4 x i8]* @pi.str, i64 0, i64 0), i1 %7)
+%u0_ = alloca %struct.PVector_ptr
+%v0_ = alloca %struct.PVector_ptr
+%0 = alloca [3 x double]
+%promo0_ = getelementptr [3 x double], [3 x double]* %0, i64 0, i64 0
+%1 = add i32 1, 0
+%promo0 = sitofp i32 %1 to double
+store double %promo0, double* %promo0_
+%promo1_ = getelementptr [3 x double], [3 x double]* %0, i64 0, i64 1
+%2 = add i32 2, 0
+%promo1 = sitofp i32 %2 to double
+store double %promo1, double* %promo1_
+%promo2_ = getelementptr [3 x double], [3 x double]* %0, i64 0, i64 2
+%3 = add i32 3, 0
+%promo2 = sitofp i32 %3 to double
+store double %promo2, double* %promo2_
+%vec_ptr_4 = getelementptr [3 x double], [3 x double]* %0, i64 0, i64 0
+%4 = call %struct.PVector_ptr @PVector_new(double* %vec_ptr_4, i64 3)
+store %struct.PVector_ptr %4, %struct.PVector_ptr* %u0_
+%5 = alloca [3 x double]
+%promo3_ = getelementptr [3 x double], [3 x double]* %5, i64 0, i64 0
+%6 = add i32 2, 0
+%promo3 = sitofp i32 %6 to double
+store double %promo3, double* %promo3_
+%promo4_ = getelementptr [3 x double], [3 x double]* %5, i64 0, i64 1
+%7 = add i32 3, 0
+%promo4 = sitofp i32 %7 to double
+store double %promo4, double* %promo4_
+%promo5_ = getelementptr [3 x double], [3 x double]* %5, i64 0, i64 2
+%8 = add i32 4, 0
+%promo5 = sitofp i32 %8 to double
+store double %promo5, double* %promo5_
+%vec_ptr_9 = getelementptr [3 x double], [3 x double]* %5, i64 0, i64 0
+%9 = call %struct.PVector_ptr @PVector_new(double* %vec_ptr_9, i64 3)
+store %struct.PVector_ptr %9, %struct.PVector_ptr* %v0_
+%vec_11 = load %struct.PVector_ptr, %struct.PVector_ptr* %u0_
+%10 = add i32 1, 0
+%index_10 = sub i32 %10, 1
+%11 = call double (%struct.PVector_ptr, i32) @ith(%struct.PVector_ptr %vec_11, i32 %index_10)
+%vec_13 = load %struct.PVector_ptr, %struct.PVector_ptr* %v0_
+%12 = add i32 3, 0
+%index_12 = sub i32 %12, 1
+%13 = call double (%struct.PVector_ptr, i32) @ith(%struct.PVector_ptr %vec_13, i32 %index_12)
+%14 = fadd double %11, %13
+%pf_0 = call i32 (i8*, ...) @printf(i8* getelementptr ([7 x i8], [7 x i8]* @pf.str, i64 0, i64 0), double %14)
 br label %ret__
 ret__:
 br label %ret_
@@ -187,7 +176,3 @@ ret i32 %retval
 }
 
 
-@sl.str0 = private unnamed_addr constant [4 x i8] c"cat\00", align 1
-@sl.str1 = private unnamed_addr constant [1 x i8] c"\00", align 1
-@sl.str2 = private unnamed_addr constant [4 x i8] c"cat\00", align 1
-@sl.str3 = private unnamed_addr constant [6 x i8] c"miaow\00", align 1

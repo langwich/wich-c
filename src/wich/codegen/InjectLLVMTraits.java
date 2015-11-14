@@ -41,9 +41,13 @@ import wich.codegen.model.expr.HeapVarRef;
 import wich.codegen.model.expr.NegateExpr;
 import wich.codegen.model.expr.NegateFloatExpr;
 import wich.codegen.model.expr.NegateIntExpr;
+import wich.codegen.model.expr.ScopedStringIndexExpr;
 import wich.codegen.model.expr.ScopedVarDefStat;
 import wich.codegen.model.expr.ScopedVarRef;
+import wich.codegen.model.expr.ScopedVectorIndexExpr;
+import wich.codegen.model.expr.StringIndexExpr;
 import wich.codegen.model.expr.VarRef;
+import wich.codegen.model.expr.VectorIndexExpr;
 import wich.semantics.SymbolTable;
 import wich.semantics.symbols.WFunctionSymbol;
 
@@ -91,6 +95,14 @@ public class InjectLLVMTraits {
 		return new ScopedVarRef(varRef.symbol, varRef.type, varRef.varRef);
 	}
 
+	public OutputModelObject exitModel(StringIndexExpr e) {
+		return new ScopedStringIndexExpr(e.varName, e.symbol, e.expr, e.varRef);
+	}
+
+	public OutputModelObject exitModel(VectorIndexExpr e) {
+		return new ScopedVectorIndexExpr(e.varName, e.symbol, e.expr, e.varRef);
+	}
+
 	public OutputModelObject exitModel(HeapVarRef heapVarRef) {
 		return new ScopedVarRef(heapVarRef.symbol, heapVarRef.type, heapVarRef.varRef);
 	}
@@ -116,13 +128,12 @@ public class InjectLLVMTraits {
 	}
 
 	protected OutputModelObject getBinaryExprModel(BinaryPrimitiveOp op) {
-		if (op.getType() == SymbolTable._float) {
+		if (op.type.type == SymbolTable._float) {
 			return new BinaryFloatOp(op);
 		}
 		else if (op.type.type == SymbolTable._int || op.type.type == SymbolTable._boolean) {
 			return new BinaryIntOp(op);
 		}
-
 		else return op;
 	}
 }

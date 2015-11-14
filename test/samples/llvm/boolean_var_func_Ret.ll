@@ -54,7 +54,7 @@ declare %struct.string* @String_from_vector(%struct.PVector_ptr)
 
 declare %struct.string* @String_from_int(i32)
 
-declare %struct.string* @String_from_float(float)
+declare %struct.string* @String_from_float(double)
 
 declare void @print_string(%struct.string*)
 
@@ -173,6 +173,7 @@ return.exit_0:
 br label %ret__
 ret__:
 br label %ret_
+
 ret_:
 %retval = load i1, i1* %retval_
 ret i1 %retval
@@ -188,7 +189,6 @@ store i32 0, i32* %retval_
 store i32 %argc, i32* %argc_
 store i8** %argv, i8*** %argv_
 call void () @setup_error_handlers()
-
 %x1_ = alloca i32
 %y0_ = alloca i1
 %0 = add i32 5, 0
@@ -202,16 +202,19 @@ if.block_true_0:
 %sl_4 = getelementptr [6 x i8], [6 x i8]* @sl.str0, i32 0, i32 0
 %4 = call %struct.string* (i8*) @String_new(i8* %sl_4)
 call void (%struct.string*) @print_string(%struct.string* %4)
+
 br label %if.block_exit_0
 if.block_false_0:
 %sl_5 = getelementptr [4 x i8], [4 x i8]* @sl.str1, i32 0, i32 0
 %5 = call %struct.string* (i8*) @String_new(i8* %sl_5)
 call void (%struct.string*) @print_string(%struct.string* %5)
+
 br label %if.block_exit_0
 if.block_exit_0:
 br label %ret__
 ret__:
 br label %ret_
+
 ret_:
 %retval = load i32, i32* %retval_
 ret i32 %retval
