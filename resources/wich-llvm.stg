@@ -273,7 +273,12 @@ ScopedStringIndexExpr(e,expr,type) ::= <<
 %<e.varRef> = call %struct.string* (i8) @String_from_char(i8 %c_<e.varRef>)
 >>
 
-VectorIndexExpr(v,expr,type) ::= "ith(<v.varName>, (<expr>)-1)"
+ScopedVectorIndexExpr(e,expr,type) ::= <<
+%vec_<e.varRef> = load %struct.PVector_ptr, %struct.PVector_ptr* %<e.name>_
+<expr>
+%index_<expr.e.varRef> = sub i32 %<expr.e.varRef>, 1
+%<e.varRef> = call double (%struct.PVector_ptr, i32) @ith(%struct.PVector_ptr %vec_<e.varRef>, i32 %index_<expr.e.varRef>)
+>>
 
 NegateIntExpr(e,expr,type) ::= <<
 <expr>

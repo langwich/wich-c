@@ -363,7 +363,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		Expr index = (Expr)visit(ctx.expr());
 		WVariableSymbol s = (WVariableSymbol)currentScope.resolve(varName);
 		if ( s.getType()==SymbolTable._vector ) {
-			return new VectorIndexExpr(varName, index, getTempVar());
+			return new VectorIndexExpr(varName, s, index, getTempVar());
 		}
 		return new StringIndexExpr(varName, s, index, getTempVar());
 	}

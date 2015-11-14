@@ -44,8 +44,10 @@ import wich.codegen.model.expr.NegateIntExpr;
 import wich.codegen.model.expr.ScopedStringIndexExpr;
 import wich.codegen.model.expr.ScopedVarDefStat;
 import wich.codegen.model.expr.ScopedVarRef;
+import wich.codegen.model.expr.ScopedVectorIndexExpr;
 import wich.codegen.model.expr.StringIndexExpr;
 import wich.codegen.model.expr.VarRef;
+import wich.codegen.model.expr.VectorIndexExpr;
 import wich.semantics.SymbolTable;
 import wich.semantics.symbols.WFunctionSymbol;
 
@@ -95,6 +97,10 @@ public class InjectLLVMTraits {
 
 	public OutputModelObject exitModel(StringIndexExpr e) {
 		return new ScopedStringIndexExpr(e.varName, e.symbol, e.expr, e.varRef);
+	}
+
+	public OutputModelObject exitModel(VectorIndexExpr e) {
+		return new ScopedVectorIndexExpr(e.varName, e.symbol, e.expr, e.varRef);
 	}
 
 	public OutputModelObject exitModel(HeapVarRef heapVarRef) {
