@@ -666,42 +666,43 @@ public class TestBytecodeGen {
 
 	@Test
 	public void testFuncWithReturnError() throws Exception {
-		String Wich = "func f(x:int):[] {\n" +
-				"\tif(x<0) {\n" +
-				"\t\treturn x+[0]\n" +
+		String Wich = "func f(x:int):[] { if(x<0) { return x+[0] }\n" +
+				"else{\n" +
+				"\tx = x + [1]\n" +
 				"\t}\n" +
-				"\telse{\n" +
-				"\t\tx = x + [1]\n" +
-				"\t}\n" +
-				"}";
+				"}\n"+
+				"print (f(3))\n";
 		String expecting =
 				"0 strings\n" +
-						"2 functions\n" +
-						"0: addr=0 args=1 locals=0 type=5 1/f\n" +
-						"1: addr=55 args=0 locals=0 type=0 4/main\n" +
-						"22 instr, 56 bytes\n" +
-						"ILOAD 0\n" +
-						"ICONST 0\n" +
-						"ILT\n" +
-						"BRF 23\n" +
-						"ICONST 0\n" +
-						"I2F\n" +
-						"ICONST 1\n" +
-						"VECTOR\n" +
-						"ILOAD 0\n" +
-						"VADDI\n" +
-						"RETV\n" +
-						"BR 22\n" +
-						"ICONST 1\n" +
-						"I2F\n" +
-						"ICONST 1\n" +
-						"VECTOR\n" +
-						"ILOAD 0\n" +
-						"VADDI\n" +
-						"STORE 0\n" +
-						"PUSH 5\n" +
-						"RETV\n" +
-						"HALT\n";
+				"2 functions\n" +
+					"0: addr=0 args=1 locals=0 type=5 1/f\n" +
+					"1: addr=55 args=0 locals=0 type=0 4/main\n" +
+				"25 instr, 65 bytes\n" +
+					"ILOAD 0\n" +
+					"ICONST 0\n" +
+					"ILT\n" +
+					"BRF 23\n" +
+					"ICONST 0\n" +
+					"I2F\n" +
+					"ICONST 1\n" +
+					"VECTOR\n" +
+					"ILOAD 0\n" +
+					"VADDI\n" +
+					"RETV\n" +
+					"BR 22\n" +
+					"ICONST 1\n" +
+					"I2F\n" +
+					"ICONST 1\n" +
+					"VECTOR\n" +
+					"ILOAD 0\n" +
+					"VADDI\n" +
+					"STORE 0\n" +
+					"PUSH 5\n" +
+					"RETV\n" +
+					"ICONST 3\n" +
+					"CALL 0\n" +
+					"VPRINT\n" +
+					"HALT\n";
 		checkCodeGen(Wich, expecting);
 	}
 
