@@ -38,7 +38,6 @@ public class WichBaseTest {
 	public static final String TEST_RES_PLAIN_GEND_CODE = "plain";
 	public static final String TEST_RES_REFCOUNTING_GEND_CODE = "refcounting";
 	public static final String TEST_RES_GC_GEND_CODE = "gc";
-	public static final String TEST_RES_BYTECODE_INTERPRETER = "vm";
 
 	protected File input;
 	protected String baseName;
