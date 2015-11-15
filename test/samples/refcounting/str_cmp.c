@@ -8,7 +8,7 @@ f(String * s)
 {
     ENTER();
     REF((void *)s);
-    if ((s <= String_new("cat"))) {
+    if (String_le(s, String_new("cat"))) {
         MARK();
         {
             EXIT();
@@ -34,7 +34,7 @@ main(int argc, char *argv[])
     REF((void *)s1);
     s2 = String_new("cat");
     REF((void *)s2);
-    if ((s1 > s2)) {
+    if (String_gt(s1, s2)) {
         MARK();
         RELEASE();
     }

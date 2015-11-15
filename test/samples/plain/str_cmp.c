@@ -5,7 +5,7 @@ bool f(String * s);
 bool
 f(String * s)
 {
-    if ((s <= String_new("cat"))) {
+    if (String_le(s, String_new("cat"))) {
         return true;
     }
     return false;
@@ -21,7 +21,7 @@ main(int argc, char *argv[])
 
     s1 = String_new("");
     s2 = String_new("cat");
-    if ((s1 > s2)) {
+    if (String_gt(s1, s2)) {
     }
     else {
         print_string(String_new("miaow"));

@@ -10,7 +10,7 @@ cmp(String * x)
     REF((void *)x);
     {
         EXIT();
-        return (x == String_new("ca"));
+        return String_eq(x, String_new("ca"));
     }
     EXIT();
 }
@@ -26,12 +26,12 @@ main(int argc, char *argv[])
     REF((void *)x);
     y = String_new("dog");
     REF((void *)y);
-    if ((x == y)) {
+    if (String_eq(x, y)) {
         MARK();
         print_string(String_new("x==y"));
         RELEASE();
     }
-    if ((x != y)) {
+    if (String_neq(x, y)) {
         MARK();
         print_string(String_new("x!=y"));
         RELEASE();

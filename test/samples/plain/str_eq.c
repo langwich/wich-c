@@ -5,7 +5,7 @@ bool cmp(String * x);
 bool
 cmp(String * x)
 {
-    return (x == String_new("ca"));
+    return String_eq(x, String_new("ca"));
 }
 
 int
@@ -18,10 +18,10 @@ main(int argc, char *argv[])
 
     x = String_new("cat");
     y = String_new("dog");
-    if ((x == y)) {
+    if (String_eq(x, y)) {
         print_string(String_new("x==y"));
     }
-    if ((x != y)) {
+    if (String_neq(x, y)) {
         print_string(String_new("x!=y"));
     }
     printf("%d\n", cmp(x));
