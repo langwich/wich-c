@@ -4,31 +4,26 @@
 
 int fib(int x);
 
-int
-fib(int x)
+int fib(int x)
 {
     ENTER();
     if (((x == 0) || (x == 1))) {
-        MARK();
-        {
-            EXIT();
-            return x;
-        }
+    	MARK();
+        {EXIT(); return x;}
         RELEASE();
     }
-    {
-        EXIT();
-        return (fib((x - 1)) + fib((x - 2)));
-    }
+    {EXIT(); return (fib((x - 1)) + fib((x - 2)));}
+
     EXIT();
 }
 
-int
-main(int argc, char *argv[])
+
+int main(int ____c, char *____v[])
 {
-    setup_error_handlers();
+	setup_error_handlers();
     ENTER();
-    printf("%d\n", fib(5));
+	printf("%d\n", fib(5));
     EXIT();
-    return 0;
+	return 0;
 }
+

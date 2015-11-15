@@ -15,7 +15,7 @@ PVector_ptr f()
 }
 
 
-int main(int argc, char *argv[])
+int main(int ____c, char *____v[])
 {
 	setup_error_handlers();
 	gc_begin_func();
