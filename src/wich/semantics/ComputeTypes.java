@@ -63,12 +63,9 @@ public class ComputeTypes extends MaintainScopeListener {
 				error(rExpr.start, INVALID_OPERAND_ERROR, rExpr.getText());
 			}
 		}
-		//when both operands' types are known
 		else if (lExpr.exprType != null && rExpr.exprType != null) {
 			ctx.exprType = SymbolTable.op(op, lExpr, rExpr);
-			if (lExpr.exprType != rExpr.exprType) {
-				ctx.promoteToType = SymbolTable.op(op, lExpr, rExpr);
-			}
+			ctx.promoteToType = lExpr.promoteToType == null ? rExpr.promoteToType : lExpr.promoteToType;
 			if (ctx.exprType == SymbolTable.INVALID_TYPE) {
 				String left = lExpr.exprType.getName();
 				String operator = ctx.operator().getText();

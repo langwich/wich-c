@@ -24,13 +24,9 @@ SOFTWARE.
 
 package wich;
 
-import org.antlr.v4.runtime.ANTLRInputStream;
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import wich.codegen.CompilerUtils;
 import wich.errors.WichErrorHandler;
 import wich.parser.WichParser;
-import wich.semantics.DefineSymbols;
 import wich.semantics.SymbolTable;
 
 import java.io.FileOutputStream;

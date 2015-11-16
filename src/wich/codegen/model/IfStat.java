@@ -29,4 +29,10 @@ public class IfStat extends Stat {
 	@ModelElement public Expr condition;
 	@ModelElement public Stat stat;
 	@ModelElement public Stat elseStat;
+
+	public String label;
+
+	public IfStat(String label) {
+		this.label = label;
+	}
 }

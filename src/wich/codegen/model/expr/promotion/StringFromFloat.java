@@ -29,10 +29,11 @@ import wich.codegen.model.expr.Expr;
 import wich.semantics.SymbolTable;
 
 public class StringFromFloat extends Expr {
-    @ModelElement public Expr floatExpr;
+	@ModelElement
+	public Expr floatExpr;
 
-    @Override
-    public Type getType() {
-        return SymbolTable._float;
-    }
+	@Override
+	public Type getType() {
+		return SymbolTable._string;
+	}
 }

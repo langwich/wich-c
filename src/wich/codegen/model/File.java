@@ -19,15 +19,19 @@ SOFTWARE.
 */
 package wich.codegen.model;
 
+import wich.codegen.model.expr.StringLiteral;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class File extends OutputModelObject {
-	@ModelElement public List<Func> functions = new ArrayList<>();
+	@ModelElement public List<Func> functions;
 	@ModelElement public MainFunc main;
+	@ModelElement public List<StringDecl> decls;
 
-	public File(List<Func> functions, MainFunc main) {
+	public File(List<Func> functions, MainFunc main, List<StringDecl> decls) {
 		this.functions = functions;
 		this.main = main;
+		this.decls = decls;
 	}
 }

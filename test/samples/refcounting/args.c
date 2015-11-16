@@ -2,21 +2,22 @@
 #include "wich.h"
 #include "refcounting.h"
 
-void f(int x, PVector_ptr  v);
+void f(int x,PVector_ptr v);
 
-void
-f(int x, PVector_ptr  v)
+void f(int x,PVector_ptr v)
 {
     ENTER();
     REF((void *)v.vector);
+
     EXIT();
 }
 
-int
-main(int argc, char *argv[])
+
+int main(int ____c, char *____v[])
 {
-    setup_error_handlers();
+	setup_error_handlers();
     ENTER();
     EXIT();
-    return 0;
+	return 0;
 }
+

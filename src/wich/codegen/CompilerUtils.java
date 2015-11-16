@@ -81,6 +81,7 @@ public class CompilerUtils {
 	 */
 	public enum CodeGenTarget {
 		PLAIN(new String[]{"wlib"}),
+		LLVM(new String[]{"wlib"}),
 		REFCOUNTING(new String[]{"wlib_refcounting"}),
 		MARK_AND_COMPACT(new String[]{"wlib_mark_and_compact", "mark_and_compact", "gc_mark_and_compact", "malloc_common"}),
 		MARK_AND_SWEEP(new String[]{"wlib_mark_and_sweep", "mark_and_sweep", "gc_mark_and_sweep", "malloc_common"}),
@@ -164,8 +165,13 @@ public class CompilerUtils {
 			case PLAIN :
 				templates = new STGroupFile("wich.stg");
 				break;
+			case LLVM :
+				ModelWalker modelWalker = new ModelWalker(new InjectLLVMTraits());
+				modelWalker.walk(modelRoot);
+				templates = new STGroupFile("wich-llvm.stg");
+				break;
 			case REFCOUNTING :
-				ModelWalker modelWalker = new ModelWalker(new InjectRefCounting());
+				modelWalker = new ModelWalker(new InjectRefCounting());
 				modelWalker.walk(modelRoot);
 //				System.out.println("\nfinal model walk:");
 //				modelWalker = new ModelWalker(new Object() {

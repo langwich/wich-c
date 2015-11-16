@@ -24,8 +24,12 @@ SOFTWARE.
 package wich.codegen.model.expr;
 
 import org.antlr.symtab.Type;
+import wich.codegen.model.ModelElement;
 import wich.codegen.model.OutputModelObject;
+import wich.codegen.model.WichType;
 
 public abstract class Expr extends OutputModelObject {
+	@ModelElement public WichType type;
+	public String varRef;
 	public abstract Type getType();
 }

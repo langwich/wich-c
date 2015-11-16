@@ -2,9 +2,9 @@ func f(a : []) {
 	var b = "cat"
 	{
 		var c = "dog"
-        {
-            var d = "moo"
-        }
+		{
+			var d = "moo"
+		}
 	}
 	{
 		var b = "boo"   // hides outer b

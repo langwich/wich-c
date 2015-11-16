@@ -26,17 +26,22 @@ package wich.codegen.model.expr;
 
 import org.antlr.symtab.Type;
 import wich.codegen.model.ModelElement;
+import wich.codegen.model.VectorType;
 import wich.semantics.SymbolTable;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class VectorLiteral extends Expr {
-	public final int vectorLength;
 	@ModelElement public List<Expr> elems = new ArrayList<>();
 
-	public VectorLiteral(int vectorLength) {
+	public final int vectorLength;
+	public final String tempVar;
+
+	public VectorLiteral(int vectorLength, String tempVar) {
 		this.vectorLength = vectorLength;
+		this.type = new VectorType();
+		this.tempVar = tempVar;
 	}
 
 	@Override

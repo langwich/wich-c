@@ -57,7 +57,7 @@ CVectorBinaryOpMap ::= [
 	".":"Vector_dot"
 ]
 
-File(f, functions, main) ::= <<
+File(f, functions, main, decls) ::= <<
 #include \<stdio.h>
 #include "wich.h"
 
@@ -71,7 +71,7 @@ funcDecl(funcTemplate) ::= <<
 >>
 
 MainFunc(f,returnType,args,body) ::= <<
-int main(int argc, char *argv[])
+int main(int ____c, char *____v[])
 {
 	setup_error_handlers();
 	<body>
@@ -88,22 +88,22 @@ Func(f,returnType,args,body)::=<<
 <\n>
 >>
 
-MainBlock(b,varDefs,stats,cleanup)::= <<
+MainBlock(b,varDefs,stats,initialize,terminate)::= <<
 <Block(...)>
 >>
 
-FuncBlock(b,varDefs,stats,cleanup)::= <<
+FuncBlock(b,varDefs,stats,initialize,terminate)::= <<
 <varDefs; separator="\n">
 <stats; separator="\n">
-<cleanup; separator="\n">
+<terminate; separator="\n">
 >>
 
-Block(b,varDefs,stats,cleanup)::= <<
+Block(b,varDefs,stats,initialize,terminate)::= <<
 <varDefs; separator="\n">
 <stats; separator="\n">
 >>
 
-AssignStat(a,varRef,expr)::=<<
+AssignStat(a,varRef,expr,type)::=<<
 <varRef> = <expr>;
 >>
 
@@ -124,7 +124,7 @@ WhileStat(w,condition, stat) ::= <<
 while (<condition>) <stat;separator="\n">
 >>
 
-ReturnStat(r,expr)  ::= "return <expr>;"
+ReturnStat(r,expr,returnType)  ::= "return <expr>;"
 
 BlockStatement(b,block) ::= <<
 {
@@ -132,11 +132,13 @@ BlockStatement(b,block) ::= <<
 }
 >>
 
-VarInitStat(v,varRef,expr) ::= "<varRef> = <expr>;"
+VarInitStat(v,varRef,expr,type) ::= "<varRef> = <expr>;"
 
 VarDefStat(v,type) ::= "<type> <v.name>;"
 StringVarDefStat ::= VarDefStat
 VectorVarDefStat ::= VarDefStat
+
+StringDecl(s) ::= ""
 
 CompositeModelObject(cs, modelObjects) ::= <<
 <modelObjects; separator="\n">
@@ -149,46 +151,53 @@ PrintIntStat(pi,expr) 	  ::= <<printf("%d\n", <expr>);>>
 PrintFloatStat(pf,expr)   ::= <<printf("%1.2f\n", <expr>);>>
 PrintBooleanStat(pb,expr) ::= <<printf("%d\n", <expr>);>>
 
-BinaryPrimitiveOp(op,left,right) ::= "(<left> <CPrimitiveBinaryOpMap.(op.wichOp)> <right>)"
-BinaryStringOp(op, left, right)  ::= "<CStringBinaryOpMap.(op.wichOp)>(<left>,<right>)"
-BinaryVectorOp(op, left, right)  ::= "<CVectorBinaryOpMap.(op.wichOp)>(<left>,<right>)"
+BinaryPrimitiveOp(op,left,right,type) ::= "(<left> <CPrimitiveBinaryOpMap.(op.wichOp)> <right>)"
+BinaryStringOp(op, left, right,resType,type)  ::= "<CStringBinaryOpMap.(op.wichOp)>(<left>,<right>)"
+BinaryVectorOp(op, left, right,resType,type)  ::= "<CVectorBinaryOpMap.(op.wichOp)>(<left>,<right>)"
 
-VectorFromInt(v,vector,intLiteral)	::= "Vector_from_int(<intLiteral>,(<vector>).vector->length)"
-VectorFromFloat(v,vector,floatLiteral)	::= "Vector_from_float(<floatLiteral>,(<vector>).vector->length)"
-StringFromVector(s,vector) ::= "String_from_vector(<vector>)"
-StringFromInt(s,intExpr) ::= "String_from_int(<intExpr>)"
-StringFromFloat(s,floatExpr) ::= "String_from_float(<floatExpr>)"
+VectorFromInt(v,vector,intLiteral,type)	::= "Vector_from_int(<intLiteral>,(<vector>).vector->length)"
+VectorFromFloat(v,vector,floatLiteral,type)	::= "Vector_from_float(<floatLiteral>,(<vector>).vector->length)"
+StringFromVector(s,vector,type) ::= "String_from_vector(<vector>)"
+StringFromInt(s,intExpr,type) ::= "String_from_int(<intExpr>)"
+StringFromFloat(s,floatExpr,type) ::= "String_from_float(<floatExpr>)"
+FloatFromInt(e,expr,type) ::= "<expr>"
 
-IntLiteral(i)	::= "<i.value>"
-FloatLiteral(f)	::= "<f.value>"
-TrueLiteral(t) ::= "<t.value>"
-FalseLiteral(f) ::="<f.value>"
-VarRef(v)		::= "<v.name>"
-HeapVarRef(v)	::= "<v.name>"
+IntLiteral(i,type)	::= "<i.value>"
+FloatLiteral(f,type)	::= "<f.value>"
+TrueLiteral(t,type) ::= "<t.value>"
+FalseLiteral(f,type) ::="<f.value>"
+VarRef(v,type)		::= "<v.name>"
+HeapVarRef(v,type)	::= "<v.name>"
 
-StringLiteral(s) ::= <<
+StringLiteral(s,type) ::= <<
 String_new(<s.literal>)
 >>
 
-VectorLiteral(v,elems) ::= <<
+VectorLiteral(v,elems,type) ::= <<
 Vector_new((double []){<elems; separator=",">}, <v.vectorLength>)
 >>
 
-FuncCall(c,retType,args) ::= <<
+FuncCall(c,args,type) ::= <<
 <c.funcName>(<args;separator=",">)
 >>
 
-StringIndexExpr(s,expr) ::= <<
+FuncCallVoid(c,args,type) ::= <<
+<c.funcName>(<args;separator=",">)
+>>
+
+StringIndexExpr(s,expr,type) ::= <<
 String_from_char(<s.varName>->str[(<expr>)-1])
 >>
 
-VectorIndexExpr(v,expr) ::= "ith(<v.varName>, (<expr>)-1)"
+VectorIndexExpr(v,expr,type) ::= "ith(<v.varName>, (<expr>)-1)"
 
-NegateExpr(n,expr) ::= "-<expr>"
+NegateExpr(n,expr,type) ::= "-<expr>"
 
-NotExpr(ne,expr) ::= "!<expr>"
+NotExpr(ne,expr,type) ::= "!<expr>"
 
-OpExpr(o,lExp,rExp) ::= "<lExp> <o.op> <rExp>"
+OpExpr(o,lExp,rExp,type) ::= "<lExp> <o.op> <rExp>"
+
+VectorElement(e, expr, type) ::= "<expr>"
 
 ArgDef(arg,type) ::= "<type> <arg.name>"
 

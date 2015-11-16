@@ -1,0 +1,399 @@
+/*
+The MIT License (MIT)
+
+Copyright (c) 2015 Terence Parr, Hanzhou Shi, Shuai Yuan, Yuanyuan Zhang
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
+import "wich.stg"
+import "wich-llvm-include.stg"
+
+LLVMBinaryFloatOpMap ::= [
+	"*":"fmul",
+	"/":"fdiv",
+	"+":"fadd",
+	"-":"fsub",
+	">":"fcmp ogt",
+	">=":"fcmp oge",
+	"<":"fcmp olt",
+	"<=":"fcmp ole",
+	"==":"fcmp oeq",
+	"!=":"fcmp one",
+	"&&":"and",
+	"||":"or"
+]
+
+LLVMBinaryIntOpMap ::= [
+	"*":"mul",
+	"/":"div",
+	"+":"add",
+	"-":"sub",
+	">":"icmp sgt",
+	">=":"icmp sge",
+	"<":"icmp slt",
+	"<=":"icmp sle",
+	"==":"icmp eq",
+	"!=":"icmp ne",
+	"&&":"and",
+	"||":"or"
+]
+
+LLVMStringBinaryOpMap ::= [
+	"+":"String_add",
+	">":"String_gt",
+	">=":"String_ge",
+	"<":"String_lt",
+	"<=":"String_le",
+	"==":"String_eq",
+	"!=":"String_neq"
+]
+
+LLVMVectorBinaryOpMap ::= [
+	"*":"Vector_mul",
+	"/":"Vector_div",
+	"+":"Vector_add",
+	"-":"Vector_sub",
+	"==":"Vector_eq",
+	"!=":"Vector_neq",
+	".":"Vector_dot"
+]
+
+File(f, functions, main, decls) ::= <<
+<include()>
+
+<functions>
+<main>
+<decls;separator="\n">
+>>
+
+MainFunc(f,returnType,args,body) ::= <<
+define i32 @main(i32 %argc, i8** %argv) {
+entry:
+%retval_ = alloca i32
+%argc_ = alloca i32
+%argv_ = alloca i8**
+store i32 0, i32* %retval_
+store i32 %argc, i32* %argc_
+store i8** %argv, i8*** %argv_
+call void () @setup_error_handlers()
+<body>
+}
+<\n>
+>>
+
+Func(f,returnType,args,body) ::= <<
+define <returnType> @<f.name>(<args;separator=", ">) {
+entry:
+<args:argAlloc();separator="\n">
+<body>
+}
+<\n>
+>>
+
+ScopedArgDef(arg,type) ::= "<type> %<arg.name>"
+
+argAlloc(arg) ::= <<
+%<arg.arg.name>_ = alloca <arg.type>
+store <arg.type> %<arg.arg.name>, <arg.type>* %<arg.arg.name>_
+>>
+
+FuncBlock(b,varDefs,stats,initialize,terminate)::= <<
+<initialize; separator="\n">
+<varDefs; separator="\n">
+<stats; separator="\n">
+<terminate; separator="\n">
+>>
+
+Block(b,varDefs,stats,initialize,terminate)::= <<
+<varDefs; separator="\n">
+<stats; separator="\n">
+<terminate; separator="\n">
+>>
+
+WhileStat(w,condition, stat) ::= <<
+br label %while.block_entry_<w.label>
+while.block_entry_<w.label>:
+<condition>
+br i1 %<condition.e.varRef>, label %while.block_body_<w.label>, label %while.block_exit_<w.label>
+while.block_body_<w.label>:
+<stat>
+br label %while.block_entry_<w.label>
+while.block_exit_<w.label>:
+>>
+
+VarInitStat(v,varRef,expr,type) ::= <<
+<expr>
+store <type> %<expr.e.varRef>, <type>* %<v.name>_
+>>
+
+AssignStat(v,varRef,expr,type)::= <<
+<expr>
+store <type> %<expr.e.varRef>, <type>* %<v.name>_
+>>
+
+ScopedVarDefStat(v,type) ::= <<
+%<v.name>_ = alloca <type>
+>>
+StringVarDefStat ::= ScopedVarDefStat
+VectorVarDefStat ::= ScopedVarDefStat
+
+IfStat(i,condition,stat,elseStat) ::= <<
+<condition>
+br i1 %<condition.e.varRef>, label %if.block_true_<i.label>, label %if.block_false_<i.label>
+if.block_true_<i.label>:
+<stat>
+br label %if.block_exit_<i.label>
+if.block_false_<i.label>:
+<elseStat>
+br label %if.block_exit_<i.label>
+if.block_exit_<i.label>:
+>>
+
+ReturnStat(r,expr,returnType)  ::= <<
+<expr>
+store <returnType> %<expr.e.varRef>, <returnType>* %retval_
+br label %ret_
+return.exit_<r.num>:
+>>
+
+CallStat(c,callExpr) ::=<<
+<callExpr>
+>>
+
+ElementAssignStat(e,varRef,index,expr) ::= <<
+<varRef>
+<index>
+%index_<index.e.varRef> = sub i32 %<index.e.varRef>, 1
+<expr>
+call void (%struct.PVector_ptr,i32,double) @set_ith(%struct.PVector_ptr %<varRef.e.varRef>, i32 %index_<index.e.varRef>, double %<expr.e.varRef>)
+>>
+
+BlockStatement(b,block) ::= <<
+<block>
+>>
+
+StringDecl(s) ::= <<
+@sl.str<s.num> = private unnamed_addr constant [<s.len> x i8] c"<s.str>", align 1
+>>
+
+IntLiteral(e,type)	::= <<
+%<e.varRef> = add i32 <e.value>, 0
+>>
+
+FloatLiteral(e,type)	::= <<
+%<e.varRef> = fadd double <e.value>, 0.00
+>>
+
+TrueLiteral(e,type) ::= <<
+%<e.varRef> = add i1 1, 0
+>>
+
+FalseLiteral(e,type) ::= <<
+%<e.varRef> = add i1 0, 0
+>>
+
+ScopedVarRef(e,type)		::= <<
+%<e.varRef> = load <type>, <type>* %<e.name>_
+>>
+
+StringLiteral(e,type) ::= <<
+%sl_<e.varRef> = getelementptr [<e.len> x i8], [<e.len> x i8]* @sl.str<e.num>, i32 0, i32 0
+%<e.varRef> = call %struct.string* (i8*) @String_new(i8* %sl_<e.varRef>)
+>>
+
+VectorLiteral(e,elems,type) ::= <<
+%<e.tempVar> = alloca [<e.vectorLength> x double]
+<elems:elementAlloc(); separator="\n">
+%vec_ptr_<e.varRef> = getelementptr [<e.vectorLength> x double], [<e.vectorLength> x double]* %<e.tempVar>, i64 0, i64 0
+%<e.varRef> = call %struct.PVector_ptr @PVector_new(double* %vec_ptr_<e.varRef>, i64 <e.vectorLength>)
+>>
+
+elementAlloc(expr) ::= <<
+%<expr.e.varRef>_ = getelementptr [<expr.e.len> x double], [<expr.e.len> x double]* %<expr.e.vecRef>, i64 0, i64 <expr.e.index>
+<expr>
+store double %<expr.e.varRef>, double* %<expr.e.varRef>_
+>>
+
+VectorElement(e, expr, type) ::= "<expr>"
+
+BinaryPrimitiveOp(e,left,right,type) ::= <<
+<left>
+<right>
+%<e.varRef> = <LLVMBinaryIntOpMap.(e.wichOp)> i32 %<left.e.varRef>, %<right.e.varRef>
+>>
+
+BinaryFloatOp(e,left,right,type) ::= <<
+<left>
+<right>
+%<e.varRef> = <LLVMBinaryFloatOpMap.(e.wichOp)> <type> %<left.e.varRef>, %<right.e.varRef>
+>>
+
+BinaryIntOp(e,left,right,type) ::= <<
+<left>
+<right>
+%<e.varRef> = <LLVMBinaryIntOpMap.(e.wichOp)> <type> %<left.e.varRef>, %<right.e.varRef>
+>>
+
+BinaryStringOp(e,left,right,resType,type)  ::= <<
+<left>
+<right>
+%<e.varRef> = call <resType> (<type>,<type>) @<LLVMStringBinaryOpMap.(e.wichOp)>(<type> %<left.e.varRef>,<type> %<right.e.varRef>)
+>>
+
+BinaryVectorOp(e,left,right,resType,type)  ::= <<
+<left>
+<right>
+%<e.varRef> = call <type> (<type>,<type>) @<LLVMVectorBinaryOpMap.(e.wichOp)>(<type> %<left.e.varRef>,<type> %<right.e.varRef>)
+>>
+
+ScopedStringIndexExpr(e,expr,type) ::= <<
+<expr>
+%str_<e.varRef>_ = load %struct.string*, %struct.string** %<e.name>_
+%str_<e.varRef>_str_ = getelementptr %struct.string, %struct.string* %str_<e.varRef>_, i64 0, i32 2
+%index_<e.varRef> = sub i32 %<expr.e.varRef>, 1
+%c_<e.varRef>_ = getelementptr [0 x i8], [0 x i8]* %str_<e.varRef>_str_, i64 0, i32 %index_<e.varRef>
+%c_<e.varRef> = load i8, i8* %c_<e.varRef>_
+%<e.varRef> = call %struct.string* (i8) @String_from_char(i8 %c_<e.varRef>)
+>>
+
+ScopedVectorIndexExpr(e,expr,type) ::= <<
+%vec_<e.varRef> = load %struct.PVector_ptr, %struct.PVector_ptr* %<e.name>_
+<expr>
+%index_<expr.e.varRef> = sub i32 %<expr.e.varRef>, 1
+%<e.varRef> = call double (%struct.PVector_ptr, i32) @ith(%struct.PVector_ptr %vec_<e.varRef>, i32 %index_<expr.e.varRef>)
+>>
+
+NegateIntExpr(e,expr,type) ::= <<
+<expr>
+%<e.varRef> = sub <type> 0, %<expr.e.varRef>
+>>
+
+NegateFloatExpr(e,expr,type) ::= <<
+<expr>
+%<e.varRef> = fsub <type> 0.0, %<expr.e.varRef>
+>>
+
+FuncCall(e,args,type) ::= <<
+<args;separator="\n">
+%<e.varRef> = call <type> (<args:argType();separator=",">) @<e.funcName>(<args:argPass();separator=",">)
+>>
+
+FuncCallVoid(e,args,type) ::= <<
+<args;separator="\n">
+call <type> (<args:argType();separator=",">) @<e.funcName>(<args:argPass();separator=",">)
+>>
+
+argType(arg) ::= <<
+<arg.type>
+>>
+
+argPass(arg) ::= <<
+<arg.type> %<arg.e.varRef>
+>>
+
+VectorFromInt(e,vector,intLiteral,type)	::= <<
+<intLiteral>
+%vec_<vector.e.varRef>_ = extractvalue %struct.PVector_ptr %<vector.e.varRef>, 1
+%vec_<vector.e.varRef> = load %struct.PVector, %struct.PVector* %vec_<vector.e.varRef>_
+%len_<vector.e.varRef> = extractvalue %struct.PVector %vec_<vector.e.varRef>, 2
+%<e.varRef> = call %struct.PVector_ptr (i32, i64) @Vector_from_int(i32 %<intLiteral.e.varRef>, i64 %len_<vector.e.varRef>)
+>>
+
+VectorFromFloat(e,vector,floatLiteral,type)	::= <<
+<floatLiteral>
+%vec_<vector.e.varRef>_ = extractvalue %struct.PVector_ptr %<vector.e.varRef>, 1
+%vec_<vector.e.varRef> = load %struct.PVector, %struct.PVector* %vec_<vector.e.varRef>_
+%len_<vector.e.varRef> = extractvalue %struct.PVector %vec_<vector.e.varRef>, 2
+%<e.varRef> = call %struct.PVector_ptr (double, i64) @Vector_from_float(double %<floatLiteral.e.varRef>, i64 %len_<vector.e.varRef>)
+>>
+
+StringFromVector(e,vector,type) ::= <<
+<vector>
+%<e.varRef> = call %struct.string* (<vector.type>) @String_from_vector(<vector.type> %<vector.e.varRef>)
+>>
+
+StringFromInt(e,intExpr,type) ::= <<
+<intExpr>
+%<e.varRef> = call %struct.string* (i32) @String_from_int(i32 %<intExpr.e.varRef>)
+>>
+
+StringFromFloat(e,floatExpr,type) ::= <<
+<floatExpr>
+%<e.varRef> = call %struct.string* (double) @String_from_float(double %<floatExpr.e.varRef>)
+>>
+
+FloatFromInt(e,expr,type) ::= <<
+<expr>
+%<e.varRef> = sitofp i32 %<expr.e.varRef> to double
+>>
+
+VoidType(v) ::= "void"
+IntType(t) ::= "i32"
+FloatType(t) ::= "double"
+VectorType(t) ::= "%struct.PVector_ptr"
+StringType(t) ::= "%struct.string*"
+BooleanType(t) ::= "i1"
+TmpVarDef(t,type) ::="<typeMo> tmp<t.varIndex>;"
+
+BlockTermination(term,type) ::= <<
+br label %ret__
+ret__:
+br label %ret_
+
+ret_:
+%retval = load <type>, <type>* %retval_
+ret <type> %retval
+>>
+
+BlockTerminationVoid(term,type) ::= <<
+br label %ret__
+ret__:
+br label %ret_
+
+ret_:
+ret void
+>>
+
+BlockInitialization(init,type) ::= <<
+%retval_ = alloca <type>
+>>
+
+PrintNewLine(p) 		  ::= <<printf("\n");>>
+PrintStringStat(ps,expr)  ::= <<
+<expr>
+call void (%struct.string*) @print_string(%struct.string* %<expr.e.varRef>)
+>>
+
+PrintVectorStat(pv,expr)  ::= <<
+<expr>
+call void (%struct.PVector_ptr) @print_vector(%struct.PVector_ptr %<expr.e.varRef>)
+>>
+PrintIntStat(pi,expr) ::= <<
+<expr>
+%pi_<pi.label> = call i32 (i8*, ...) @printf(i8* getelementptr ([4 x i8], [4 x i8]* @pi.str, i64 0, i64 0), i32 %<expr.e.varRef>)
+>>
+PrintFloatStat(pf,expr) ::= <<
+<expr>
+%pf_<pf.label> = call i32 (i8*, ...) @printf(i8* getelementptr ([7 x i8], [7 x i8]* @pf.str, i64 0, i64 0), double %<expr.e.varRef>)
+>>
+PrintBooleanStat(pb,expr) ::= <<
+<expr>
+%pb_<pb.label> = call i32 (i8*, ...) @printf(i8* getelementptr ([4 x i8], [4 x i8]* @pi.str, i64 0, i64 0), i1 %<expr.e.varRef>)
+>>
