@@ -188,7 +188,7 @@ public class BytecodeGenerator extends WichBaseVisitor<Code> {
 	public Code visitWhile(@NotNull WichParser.WhileContext ctx) {
 		Code cond = visit(ctx.expr());
 		Code stat = visit(ctx.statement());
-		Code all = CodeBlock.join(cond,asm.brf(stat.sizeBytes()+asm.br().size+asm.br().size),stat);
+		Code all = CodeBlock.join(cond, asm.brf(stat.sizeBytes() + asm.br().size + asm.br().size), stat);
 		return all.join(asm.br(-all.sizeBytes()));
 	}
 
@@ -229,6 +229,19 @@ public class BytecodeGenerator extends WichBaseVisitor<Code> {
 	@Override
 	public Code visitAtom(@NotNull WichParser.AtomContext ctx) {
 		return visitChildren(ctx);
+	}
+
+	@Override
+	public Code visitLen(WichParser.LenContext ctx) {
+		if (ctx.expr().exprType == SymbolTable._vector) {
+			return CodeBlock.join(visit(ctx.expr()),asm.vlen());
+		}
+		else if (ctx.expr().exprType == SymbolTable._string) {
+			return CodeBlock.join(visit(ctx.expr()),asm.slen());
+		}
+		else {
+			return Code.None;
+		}
 	}
 
 	@Override

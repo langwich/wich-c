@@ -151,25 +151,27 @@ PrintIntStat(pi,expr) 	  ::= <<printf("%d\n", <expr>);>>
 PrintFloatStat(pf,expr)   ::= <<printf("%1.2f\n", <expr>);>>
 PrintBooleanStat(pb,expr) ::= <<printf("%d\n", <expr>);>>
 
-BinaryPrimitiveOp(op,left,right,type) ::= "(<left> <CPrimitiveBinaryOpMap.(op.wichOp)> <right>)"
-BinaryStringOp(op, left, right,resType,type)  ::= "<CStringBinaryOpMap.(op.wichOp)>(<left>,<right>)"
-BinaryVectorOp(op, left, right,resType,type)  ::= "<CVectorBinaryOpMap.(op.wichOp)>(<left>,<right>)"
+VectorLen(v,expr) ::= <<Vector_len(<expr>)>>
+StrLen(s,expr)    ::= <<String_len(<expr>)>>
 
-VectorFromInt(v,vector,intLiteral,type)	::= "Vector_from_int(<intLiteral>,(<vector>).vector->length)"
-VectorFromFloat(v,vector,floatLiteral,type)	::= "Vector_from_float(<floatLiteral>,(<vector>).vector->length)"
-StringFromVector(s,vector,type) ::= "String_from_vector(<vector>)"
-StringFromInt(s,intExpr,type) ::= "String_from_int(<intExpr>)"
-StringFromFloat(s,floatExpr,type) ::= "String_from_float(<floatExpr>)"
-FloatFromInt(e,expr,type) ::= "<expr>"
+BinaryPrimitiveOp(op,left,right) ::= "(<left> <CPrimitiveBinaryOpMap.(op.wichOp)> <right>)"
+BinaryStringOp(op, left, right)  ::= "<CStringBinaryOpMap.(op.wichOp)>(<left>,<right>)"
+BinaryVectorOp(op, left, right)  ::= "<CVectorBinaryOpMap.(op.wichOp)>(<left>,<right>)"
 
-IntLiteral(i,type)	::= "<i.value>"
-FloatLiteral(f,type)	::= "<f.value>"
-TrueLiteral(t,type) ::= "<t.value>"
-FalseLiteral(f,type) ::="<f.value>"
-VarRef(v,type)		::= "<v.name>"
-HeapVarRef(v,type)	::= "<v.name>"
+VectorFromInt(v,vector,intLiteral)	::= "Vector_from_int(<intLiteral>,(<vector>).vector->length)"
+VectorFromFloat(v,vector,floatLiteral)	::= "Vector_from_float(<floatLiteral>,(<vector>).vector->length)"
+StringFromVector(s,vector) ::= "String_from_vector(<vector>)"
+StringFromInt(s,intExpr) ::= "String_from_int(<intExpr>)"
+StringFromFloat(s,floatExpr) ::= "String_from_float(<floatExpr>)"
 
-StringLiteral(s,type) ::= <<
+IntLiteral(i)	::= "<i.value>"
+FloatLiteral(f)	::= "<f.value>"
+TrueLiteral(t) ::= "<t.value>"
+FalseLiteral(f) ::="<f.value>"
+VarRef(v)		::= "<v.name>"
+HeapVarRef(v)	::= "<v.name>"
+
+StringLiteral(s) ::= <<
 String_new(<s.literal>)
 >>
 

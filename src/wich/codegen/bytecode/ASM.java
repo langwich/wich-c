@@ -121,6 +121,8 @@ public class ASM {
 	public Instr sprint()			{ return new Instr("SPRINT"); }
 	public Instr vprint()			{ return new Instr("VPRINT"); }
 	public Instr nop()				{ return new Instr("NOP"); }
+	public Instr vlen()				{ return new Instr("VLEN"); }
+	public Instr slen()				{ return new Instr("SLEN"); }
 
 	public void gen(String format, Object... args) {
 		buffer.add(String.format(format + "\n", args));

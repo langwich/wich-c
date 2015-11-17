@@ -59,12 +59,14 @@ import wich.codegen.model.expr.HeapVarRef;
 import wich.codegen.model.expr.IntLiteral;
 import wich.codegen.model.expr.NegateExpr;
 import wich.codegen.model.expr.NotExpr;
+import wich.codegen.model.expr.StrLen;
 import wich.codegen.model.expr.StringIndexExpr;
 import wich.codegen.model.expr.StringLiteral;
 import wich.codegen.model.expr.TrueLiteral;
 import wich.codegen.model.expr.VarRef;
 import wich.codegen.model.expr.VectorElement;
 import wich.codegen.model.expr.VectorIndexExpr;
+import wich.codegen.model.expr.VectorLen;
 import wich.codegen.model.expr.VectorLiteral;
 import wich.codegen.model.expr.promotion.FloatFromInt;
 import wich.codegen.model.expr.promotion.StringFromFloat;
@@ -301,7 +303,6 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		return getPrintModel(ctx.expr().exprType, expr, getPrintLabel());
 	}
 
-
 	// E X P R E S S I O N S
 
 	@Override
@@ -367,6 +368,22 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	@Override
 	public OutputModelObject visitParens(@NotNull WichParser.ParensContext ctx) {
 		return visit(ctx.expr());
+	}
+
+
+	@Override
+	public OutputModelObject visitLen(WichParser.LenContext ctx) {
+		Expr lenExpr;
+		if (ctx.expr().exprType == SymbolTable._vector) {
+			lenExpr = new VectorLen((Expr)visit(ctx.expr()));
+		}
+		else if(ctx.expr().exprType ==SymbolTable._string) {
+			lenExpr = new StrLen((Expr)visit(ctx.expr()));
+		}
+		else {
+			lenExpr = null;
+		}
+		return lenExpr;
 	}
 
 	@Override

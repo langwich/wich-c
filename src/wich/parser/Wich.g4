@@ -58,7 +58,7 @@ statement
 	|	ID '[' expr ']' '=' expr							# ElementAssign
 	|	call_expr											# CallStatement
 	|	'print' '(' expr? ')'								# Print
-	|   vardef									            # VarDefStatement
+	|	vardef									            # VarDefStatement
 	|	'return' expr										# Return
 	|	block				 								# BlockStatement
 	;
@@ -72,6 +72,7 @@ expr returns [Type exprType, Type promoteToType]
 	|	call_expr											# Call
 	|	ID '[' expr ']'										# Index
 	|	'(' expr ')'										# Parens
+	|	'len(' expr ')'										# Len
 	|	primary												# Atom
 	;
 
@@ -107,6 +108,7 @@ VAR : 'var' ;
 EQUAL : '=' ;
 RETURN : 'return' ;
 PRINT : 'print' ;
+LEN : 'len';
 SUB : '-' ;
 BANG : '!' ;
 MUL : '*' ;

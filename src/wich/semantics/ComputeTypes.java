@@ -182,4 +182,9 @@ public class ComputeTypes extends MaintainScopeListener {
 	public void exitAtom(@NotNull WichParser.AtomContext ctx) {
 		ctx.exprType = ctx.primary().exprType; // bubble up primary's type to expr node
 	}
+
+	@Override
+	public void exitLen(WichParser.LenContext ctx) {
+		ctx.exprType = SymbolTable._int;
+	}
 }

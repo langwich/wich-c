@@ -705,6 +705,150 @@ public class TestBytecodeGen {
 		checkCodeGen(Wich, expecting);
 	}
 
+	@Test
+	public void testLen() throws Exception {
+		String Wich =
+				"var a = \"hello\"\n" +
+				"var b = len([1,2,3])\n" +
+				"print (len(a)+len(\"world\")+b)\n";
+		String expecting =
+				"2 strings\n" +
+					"0: 5/hello\n" +
+					"1: 5/world\n" +
+				"1 functions\n" +
+					"0: addr=0 args=0 locals=2 type=0 4/main\n" +
+				"21 instr, 49 bytes\n" +
+					"SCONST 0\n" +
+					"STORE 0\n" +
+					"ICONST 1\n" +
+					"I2F\n" +
+					"ICONST 2\n" +
+					"I2F\n" +
+					"ICONST 3\n" +
+					"I2F\n" +
+					"ICONST 3\n" +
+					"VECTOR\n" +
+					"VLEN\n" +
+					"STORE 1\n" +
+					"SLOAD 0\n" +
+					"SLEN\n" +
+					"SCONST 1\n" +
+					"SLEN\n" +
+					"IADD\n" +
+					"ILOAD 1\n" +
+					"IADD\n" +
+					"IPRINT\n" +
+					"HALT\n";
+		checkCodeGen(Wich,expecting);
+	}
+	@Test
+	public void bubbleSort() throws Exception {
+		String Wich =
+				"func bubbleSort(vec:[]):[] {\n" +
+					"var length = len(vec)\n" +
+					"var v = vec\n" +
+					"var i = 0\n" +
+					"var j = 0\n" +
+					"while(i< length){\n" +
+						"while(j<((length - i))){\n" +
+							"if (v[j] > v[j+1]){\n" +
+								"var swap = v[j]\n" +
+								"v[j] = v[j+1]\n" +
+								"v[j+1] = swap\n" +
+							"}\n" +
+						"j = j+1\n" +
+				"}\n" +
+				"i = i+1\n" +
+				"}\n" +
+				"return v\n" +
+				"}\n" +
+				"\n" +
+				"var x = [1,4,2,3]\n" +
+				"print(bubbleSort(x))\n";
+		String expecting = "0 strings\n" +
+				"2 functions\n" +
+				"0: addr=0 args=1 locals=4 type=5 10/bubbleSort\n" +
+				"1: addr=161 args=0 locals=1 type=0 4/main\n" +
+				"76 instr, 202 bytes\n" +
+				"VLOAD 0\n" +
+				"VLEN\n" +
+				"STORE 1\n" +
+				"VLOAD 0\n" +
+				"STORE 2\n" +
+				"ICONST 0\n" +
+				"STORE 3\n" +
+				"ICONST 0\n" +
+				"STORE 4\n" +
+				"ILOAD 3\n" +
+				"ILOAD 1\n" +
+				"ILT\n" +
+				"BRF 117\n" +
+				"ILOAD 4\n" +
+				"ILOAD 1\n" +
+				"ILOAD 3\n" +
+				"ISUB\n" +
+				"ILT\n" +
+				"BRF 88\n" +
+				"VLOAD 2\n" +
+				"ILOAD 4\n" +
+				"VLOAD_INDEX\n" +
+				"VLOAD 2\n" +
+				"ILOAD 4\n" +
+				"ICONST 1\n" +
+				"IADD\n" +
+				"VLOAD_INDEX\n" +
+				"FGT\n" +
+				"BRF 49\n" +
+				"VLOAD 2\n" +
+				"ILOAD 4\n" +
+				"VLOAD_INDEX\n" +
+				"STORE 5\n" +
+				"VLOAD 2\n" +
+				"ILOAD 4\n" +
+				"VLOAD 2\n" +
+				"ILOAD 4\n" +
+				"ICONST 1\n" +
+				"IADD\n" +
+				"VLOAD_INDEX\n" +
+				"STORE_INDEX\n" +
+				"VLOAD 2\n" +
+				"ILOAD 4\n" +
+				"ICONST 1\n" +
+				"IADD\n" +
+				"FLOAD 5\n" +
+				"STORE_INDEX\n" +
+				"ILOAD 4\n" +
+				"ICONST 1\n" +
+				"IADD\n" +
+				"STORE 4\n" +
+				"BR -96\n" +
+				"ILOAD 3\n" +
+				"ICONST 1\n" +
+				"IADD\n" +
+				"STORE 3\n" +
+				"BR -121\n" +
+				"VLOAD 2\n" +
+				"RETV\n" +
+				"PUSH 5\n" +
+				"RETV\n" +
+				"ICONST 1\n" +
+				"I2F\n" +
+				"ICONST 4\n" +
+				"I2F\n" +
+				"ICONST 2\n" +
+				"I2F\n" +
+				"ICONST 3\n" +
+				"I2F\n" +
+				"ICONST 4\n" +
+				"VECTOR\n" +
+				"STORE 0\n" +
+				"VLOAD 0\n" +
+				"CALL 0\n" +
+				"VPRINT\n" +
+				"HALT\n";
+		checkCodeGen(Wich,expecting);
+	}
+
 	public void checkCodeGen(String wich, String expecting) throws IOException {
 		Trans tool = new Trans();
 		SymbolTable symtab = new SymbolTable();
