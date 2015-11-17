@@ -11,7 +11,7 @@ public class TestMarkAndCompact extends TestWichExecution {
 
 	@Test
 	public void testCodeGen() throws Exception {
-		testCodeGen(CompilerUtils.CodeGenTarget.MARK_AND_COMPACT);
+		testCodeGen(CompilerUtils.CodeGenTarget.LLVM_MARK_AND_COMPACT);
 	}
 
 	@Test
@@ -21,6 +21,6 @@ public class TestMarkAndCompact extends TestWichExecution {
 		if (expectedFile != null) {
 			expected = CompilerUtils.readFile(expectedFile.getPath(), CompilerUtils.FILE_ENCODING);
 		}
-		executeAndCheck(input.getAbsolutePath(), expected, false, CompilerUtils.CodeGenTarget.MARK_AND_COMPACT);
+		executeAndCheck(input.getAbsolutePath(), expected, false, CompilerUtils.CodeGenTarget.LLVM_MARK_AND_COMPACT);
 	}
 }

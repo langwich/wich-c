@@ -28,9 +28,12 @@ import wich.codegen.model.BlockInitialization;
 import wich.codegen.model.BlockTermination;
 import wich.codegen.model.BlockTerminationVoid;
 import wich.codegen.model.Func;
+import wich.codegen.model.MainBlockTermination;
 import wich.codegen.model.MainFunc;
 import wich.codegen.model.OutputModelObject;
 import wich.codegen.model.ScopedArgDef;
+import wich.codegen.model.ScopedStringVarDefStat;
+import wich.codegen.model.ScopedVectorVarDefStat;
 import wich.codegen.model.StringVarDefStat;
 import wich.codegen.model.VarDefStat;
 import wich.codegen.model.VectorVarDefStat;
@@ -42,7 +45,7 @@ import wich.codegen.model.expr.NegateExpr;
 import wich.codegen.model.expr.NegateFloatExpr;
 import wich.codegen.model.expr.NegateIntExpr;
 import wich.codegen.model.expr.ScopedStringIndexExpr;
-import wich.codegen.model.expr.ScopedVarDefStat;
+import wich.codegen.model.ScopedVarDefStat;
 import wich.codegen.model.expr.ScopedVarRef;
 import wich.codegen.model.expr.ScopedVectorIndexExpr;
 import wich.codegen.model.expr.StringIndexExpr;
@@ -71,11 +74,7 @@ public class InjectLLVMTraits {
 	}
 
 	public OutputModelObject exitModel(MainFunc func) {
-		if (func.returnType.type == SymbolTable._void) {
-			func.body.terminate.add(new BlockTerminationVoid());
-		}
-		else func.body.terminate.add(new BlockTermination(func.returnType));
-
+		func.body.terminate.add(new MainBlockTermination(func.returnType));
 		return func;
 	}
 
@@ -84,11 +83,11 @@ public class InjectLLVMTraits {
 	}
 
 	public OutputModelObject exitModel(StringVarDefStat varDefStat) {
-		return new ScopedVarDefStat(varDefStat.symbol, varDefStat.type);
+		return new ScopedStringVarDefStat(varDefStat.symbol, varDefStat.type);
 	}
 
 	public OutputModelObject exitModel(VectorVarDefStat varDefStat) {
-		return new ScopedVarDefStat(varDefStat.symbol, varDefStat.type);
+		return new ScopedVectorVarDefStat(varDefStat.symbol, varDefStat.type);
 	}
 
 	public OutputModelObject exitModel(VarRef varRef) {
