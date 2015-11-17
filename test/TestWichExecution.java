@@ -84,6 +84,14 @@ public class TestWichExecution extends WichBaseTest {
 				expectedOutputURL =
 						CompilerUtils.getResourceFile(TEST_RES_LLVM_GEND_CODE+"/"+baseName+".ll");
 				break;
+			case LLVM_MARK_AND_COMPACT :
+				expectedOutputURL =
+						CompilerUtils.getResourceFile(TEST_RES_LLVM_MC_GEND_CODE+"/"+baseName+".ll");
+				break;
+			case LLVM_MARK_AND_SWEEP:
+				expectedOutputURL =
+						CompilerUtils.getResourceFile(TEST_RES_LLVM_MS_GEND_CODE+"/"+baseName+".ll");
+				break;
 			case MARK_AND_COMPACT:
 			case MARK_AND_SWEEP:
 				expectedOutputURL =
@@ -105,7 +113,9 @@ public class TestWichExecution extends WichBaseTest {
 		actual = actual.replace("\n\n", "\n");
 		CompilerUtils.writeFile("/tmp/__t.c", actual, StandardCharsets.UTF_8);
 
-		if (target != CodeGenTarget.LLVM) actual = normalizeFile();
+		if (target != CodeGenTarget.LLVM &&
+			target != CodeGenTarget.LLVM_MARK_AND_COMPACT &&
+			target != CodeGenTarget.LLVM_MARK_AND_SWEEP) actual = normalizeFile();
 
 		expected = CompilerUtils.readFile("/tmp/__expected.c", StandardCharsets.UTF_8);
 
@@ -146,7 +156,9 @@ public class TestWichExecution extends WichBaseTest {
 		String executable = "./" + baseName;
 		String targetName;
 		List<String> cc;
-		if (target != CodeGenTarget.LLVM) {
+		if (target != CodeGenTarget.LLVM &&
+			target != CodeGenTarget.LLVM_MARK_AND_COMPACT &&
+			target != CodeGenTarget.LLVM_MARK_AND_SWEEP) {
 			targetName = WORKING_DIR + baseName + ".c";
 			cc = new ArrayList<>();
 			cc.addAll(

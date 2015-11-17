@@ -78,6 +78,8 @@ public class CompilerUtils {
 	public enum CodeGenTarget {
 		PLAIN(new String[]{"wlib"}),
 		LLVM(new String[]{"wlib"}),
+		LLVM_MARK_AND_COMPACT(new String[]{"wlib_mark_and_compact", "mark_and_compact", "gc_mark_and_compact", "malloc_common"}),
+		LLVM_MARK_AND_SWEEP(new String[]{"wlib_mark_and_sweep", "mark_and_sweep", "gc_mark_and_sweep", "malloc_common"}),
 		REFCOUNTING(new String[]{"wlib_refcounting"}),
 		MARK_AND_COMPACT(new String[]{"wlib_mark_and_compact", "mark_and_compact", "gc_mark_and_compact", "malloc_common"}),
 		MARK_AND_SWEEP(new String[]{"wlib_mark_and_sweep", "mark_and_sweep", "gc_mark_and_sweep", "malloc_common"}),
@@ -166,23 +168,23 @@ public class CompilerUtils {
 				modelWalker.walk(modelRoot);
 				templates = new STGroupFile("wich-llvm.stg");
 				break;
+			case LLVM_MARK_AND_COMPACT:
+				modelWalker = new ModelWalker(new InjectLLVMTraits());
+				modelWalker.walk(modelRoot);
+				templates = new STGroupFile("wich-llvm-mc.stg");
+				break;
+			case LLVM_MARK_AND_SWEEP:
+				modelWalker = new ModelWalker(new InjectLLVMTraits());
+				modelWalker.walk(modelRoot);
+				templates = new STGroupFile("wich-llvm-ms.stg");
+				break;
 			case REFCOUNTING :
 				modelWalker = new ModelWalker(new InjectRefCounting());
 				modelWalker.walk(modelRoot);
-//				System.out.println("\nfinal model walk:");
-//				modelWalker = new ModelWalker(new Object() {
-//					public OutputModelObject visitEveryModelObject(OutputModelObject o) {
-//		//				System.out.println("visit every node: "+o.getClass().getSimpleName());
-//						return o;
-//					}
-//				});
-//				modelWalker.walk(modelRoot);
 				templates = new STGroupFile("wich-refcounting.stg");
 				break;
 			case MARK_AND_COMPACT:
 			case MARK_AND_SWEEP:
-//				modelWalker = new ModelWalker(new InjectRefCounting());
-//				modelWalker.walk(modelRoot);
 				templates = new STGroupFile("wich-gc.stg");
 				break;
 			default :

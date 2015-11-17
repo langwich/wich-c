@@ -21,19 +21,31 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-package wich.codegen.model.expr;
 
-import wich.codegen.model.VarDefStat;
-import wich.codegen.model.WichType;
-import wich.semantics.symbols.WVariableSymbol;
+import org.junit.Test;
+import wich.codegen.CompilerUtils;
 
-public class ScopedVarDefStat extends VarDefStat {
-	public ScopedVarDefStat(WVariableSymbol symbol, WichType type) {
-		super(symbol, type);
+import java.io.File;
+import java.net.URL;
+
+public class TestLLVMMarkAndCompact extends TestWichExecution {
+
+	public TestLLVMMarkAndCompact(File input, String baseName) {
+		super(input, baseName);
 	}
 
-	@Override
-	public String getName() {
-		return symbol.getName()+symbol.getInsertionOrderNumber();
+	@Test
+	public void testCodeGen() throws Exception {
+		testCodeGen(CompilerUtils.CodeGenTarget.LLVM_MARK_AND_COMPACT);
+	}
+
+	@Test
+	public void testExecution() throws Exception {
+		URL expectedFile = CompilerUtils.getResourceFile(baseName + ".output");
+		String expected = "";
+		if (expectedFile != null) {
+			expected = CompilerUtils.readFile(expectedFile.getPath(), CompilerUtils.FILE_ENCODING);
+		}
+		executeAndCheck(input.getAbsolutePath(), expected, false, CompilerUtils.CodeGenTarget.LLVM_MARK_AND_COMPACT);
 	}
 }

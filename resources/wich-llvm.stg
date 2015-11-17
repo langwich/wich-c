@@ -76,6 +76,7 @@ LLVMVectorBinaryOpMap ::= [
 ]
 
 File(f, functions, main, decls) ::= <<
+%struct.heap_object = type {}
 <include()>
 
 <functions>
@@ -151,8 +152,8 @@ store <type> %<expr.e.varRef>, <type>* %<v.name>_
 ScopedVarDefStat(v,type) ::= <<
 %<v.name>_ = alloca <type>
 >>
-StringVarDefStat ::= ScopedVarDefStat
-VectorVarDefStat ::= ScopedVarDefStat
+ScopedStringVarDefStat ::= ScopedVarDefStat
+ScopedVectorVarDefStat ::= ScopedVarDefStat
 
 IfStat(i,condition,stat,elseStat) ::= <<
 <condition>
@@ -353,6 +354,16 @@ BooleanType(t) ::= "i1"
 TmpVarDef(t,type) ::="<typeMo> tmp<t.varIndex>;"
 
 BlockTermination(term,type) ::= <<
+br label %ret__
+ret__:
+br label %ret_
+
+ret_:
+%retval = load <type>, <type>* %retval_
+ret <type> %retval
+>>
+
+MainBlockTermination(term,type) ::= <<
 br label %ret__
 ret__:
 br label %ret_

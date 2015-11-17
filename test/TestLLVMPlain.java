@@ -28,9 +28,9 @@ import wich.codegen.CompilerUtils;
 import java.io.File;
 import java.net.URL;
 
-public class TestLLVMExecution extends TestWichExecution {
+public class TestLLVMPlain extends TestWichExecution {
 
-	public TestLLVMExecution(File input, String baseName) {
+	public TestLLVMPlain(File input, String baseName) {
 		super(input, baseName);
 	}
 

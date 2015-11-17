@@ -1,12 +1,14 @@
+%struct.heap_object = type {}
 target triple = "x86_64-apple-macosx10.11.0"
 
 ; ///////// ///////// D A T A  S T R U C T U R E S ///////// /////////
+%struct._object_metadata = type { i8*, i16, [0 x i16] }
+%struct.Heap_Info = type { i8*, i8*, i8*, i32, i32, i32, i32, i32, i32, i32 }
 %struct.__sFILE = type { i8*, i32, i32, i16, i16, %struct.__sbuf, i32, i8*, i32 (i8*)*, i32 (i8*, i8*, i32)*, i64 (i8*, i64, i32)*, i32 (i8*, i8*, i32)*, %struct.__sbuf, %struct.__sFILEX*, i32, [3 x i8], [1 x i8], %struct.__sbuf, i32, i64 }
 %struct.__sFILEX = type opaque
 %struct.__sbuf = type { i8*, i32 }
 %struct.PVector_ptr = type { i32, %struct.PVector* }
 %struct.PVector = type { %struct.heap_object, i32, i64, [0 x %struct._PVectorFatNode] }
-%struct.heap_object = type {}
 %struct._PVectorFatNode = type { double, %struct._PVectorFatNodeElem* }
 %struct._PVectorFatNodeElem = type { %struct.heap_object, i32, double, %struct._PVectorFatNodeElem* }
 %struct.string = type { %struct.heap_object, i64, [0 x i8] }
@@ -72,12 +74,28 @@ declare zeroext i1 @String_le(%struct.string*, %struct.string*)
 
 declare void (i32)* @signal(i32, void (i32)*)
 
+; ///////// ///////// G C ///////// /////////
+
+declare i32 @gc_num_roots(...)
+
+declare void @gc_set_num_roots(i32)
+
+declare void @gc_add_root(i8**)
+
+declare void @gc(...)
+
+declare void @get_heap_info(%struct.Heap_Info* sret, ...)
+
+declare void @gc_shutdown(...)
+
 ; ///////// ///////// S Y S T E M  F U N C T I O N S ///////// /////////
 declare i32 @fprintf(%struct.__sFILE*, i8*, ...)
 
 declare void @exit(i32)
 
 declare i32 @printf(i8*, ...)
+
+declare void @llvm.memcpy.p0i8.p0i8.i64(i8* nocapture, i8* nocapture readonly, i64, i32, i1)
 
 ; ///////// ///////// I N L I N E  F U N C T I O N S ///////// /////////
 define internal { i32, %struct.PVector* } @PVector_copy(i32 %v.coerce0, %struct.PVector* %v.coerce1) {
@@ -149,6 +167,7 @@ ret void
 }
 
 ; ///////// ///////// C O N S T A N T S ///////// /////////
+@NIL_VECTOR = internal constant %struct.PVector_ptr { i32 -1, %struct.PVector* null }, align 8
 @pf.str = private unnamed_addr constant [7 x i8] c"%1.2f\0A\00", align 1
 @pi.str = private unnamed_addr constant [4 x i8] c"%d\0A\00", align 1
 @.str.2 = private unnamed_addr constant [8 x i8] c"UNKNOWN\00", align 1
@@ -156,7 +175,7 @@ ret void
 @.str.4 = private unnamed_addr constant [7 x i8] c"SIGBUS\00", align 1
 @__stderrp = external global %struct.__sFILE*, align 8
 @.str.5 = private unnamed_addr constant [34 x i8] c"Wich is confused; signal %s (%d)\0A\00", align 1
-
+@.str.6 = private unnamed_addr constant [36 x i8] c"%d objects remain after collection\0A\00", align 1
 ; ///////// ///////// G E N E R A T E D  C O D E ///////// /////////
 
 define void @f(i32 %x0, %struct.PVector_ptr %v0) {
