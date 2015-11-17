@@ -35,17 +35,17 @@ public class TestLLVMMarkAndCompact extends TestWichExecution {
 	}
 
 	@Test
-	public void testLLVMCodeGen() throws Exception {
-		testCodeGen(CompilerUtils.CodeGenTarget.LLVM);
+	public void testCodeGen() throws Exception {
+		testCodeGen(CompilerUtils.CodeGenTarget.LLVM_MARK_AND_COMPACT);
 	}
 
 	@Test
-	public void testMarkAndCompactExecution() throws Exception {
+	public void testExecution() throws Exception {
 		URL expectedFile = CompilerUtils.getResourceFile(baseName + ".output");
 		String expected = "";
 		if (expectedFile != null) {
 			expected = CompilerUtils.readFile(expectedFile.getPath(), CompilerUtils.FILE_ENCODING);
 		}
-		executeAndCheck(input.getAbsolutePath(), expected, true, CompilerUtils.CodeGenTarget.LLVM);
+		executeAndCheck(input.getAbsolutePath(), expected, false, CompilerUtils.CodeGenTarget.LLVM_MARK_AND_COMPACT);
 	}
 }

@@ -170,6 +170,8 @@ public class CompilerUtils {
 				break;
 			case LLVM_MARK_AND_COMPACT:
 			case LLVM_MARK_AND_SWEEP:
+				modelWalker = new ModelWalker(new InjectLLVMTraits());
+				modelWalker.walk(modelRoot);
 				templates = new STGroupFile("wich-llvm-gc.stg");
 				break;
 			case REFCOUNTING :

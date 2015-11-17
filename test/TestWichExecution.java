@@ -153,7 +153,9 @@ public class TestWichExecution extends WichBaseTest {
 		String executable = "./" + baseName;
 		String targetName;
 		List<String> cc;
-		if (target != CodeGenTarget.LLVM) {
+		if (target != CodeGenTarget.LLVM &&
+			target != CodeGenTarget.LLVM_MARK_AND_COMPACT &&
+			target != CodeGenTarget.LLVM_MARK_AND_SWEEP) {
 			targetName = WORKING_DIR + baseName + ".c";
 			cc = new ArrayList<>();
 			cc.addAll(

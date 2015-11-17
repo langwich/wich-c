@@ -25,7 +25,7 @@ SOFTWARE.
 import "wich-llvm.stg"
 
 File(f, functions, main, decls) ::= <<
-<include()>
+<include_mac()>
 
 <functions>
 <main>
@@ -42,8 +42,9 @@ store i32 0, i32* %retval_
 store i32 %argc, i32* %argc_
 store i8** %argv, i8*** %argv_
 call void () @setup_error_handlers()
+%__info__ = alloca %struct.Heap_Info, align 8
 %_funcsp = alloca i32, align 4
-%____num_roots = call i32 (...)* @gc_num_roots()
+%____num_roots = call i32 (...) @gc_num_roots()
 store i32 %____num_roots, i32* %_funcsp, align 4
 <body>
 }
@@ -56,7 +57,7 @@ ret__:
 br label %ret_
 
 ret_:
-%num_roots____ = load i32* %_funcsp, align 4
+%num_roots____ = load i32, i32* %_funcsp, align 4
 call void @gc_set_num_roots(i32 %num_roots____)
 %retval = load <type>, <type>* %retval_
 ret <type> %retval
@@ -68,21 +69,22 @@ ret__:
 br label %ret_
 
 ret_:
-%num_roots____ = load i32* %_funcsp, align 4
+%num_roots____ = load i32, i32* %_funcsp, align 4
 call void @gc_set_num_roots(i32 %num_roots____)
-call void (...)* @gc()
-call void (%struct.Heap_Info*, ...)* @get_heap_info(%struct.Heap_Info* sret %info)
-%info___ = getelementptr inbounds %struct.Heap_Info* %info, i32 0, i32 5
-%info__ = load i32* %info___, align 4
+call void (...) @gc()
+call void (%struct.Heap_Info*, ...) @get_heap_info(%struct.Heap_Info* sret %__info__)
+%info___ = getelementptr inbounds  %struct.Heap_Info, %struct.Heap_Info* %__info__, i32 0, i32 5
+%info__ = load i32, i32* %info___, align 4
 %heap_dirty__ = icmp ne i32 %info__, 0
-br i1 %heap_dirty__, label %heap_dirty____, label %heap_clean____
-heap_dirty____:
-%__stderr = load %struct.__sFILE** @__stderrp, align 8
-%remain_num___ = getelementptr inbounds %struct.Heap_Info* %info__, i32 0, i32 5
-%remain_num__ = load i32* %remain_num___, align 4
-%__fprintfret = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %__stderr, i8* getelementptr inbounds ([36 x i8]* @.str, i32 0, i32 0), i32 %remain_num__)
-heap_clean____:
-call void (...)* @gc_shutdown()
+br i1 %heap_dirty__, label %gc.heap_dirty____, label %gc.heap_clean____
+gc.heap_dirty____:
+%__stderr = load %struct.__sFILE*, %struct.__sFILE** @__stderrp, align 8
+%remain_num___ = getelementptr inbounds  %struct.Heap_Info, %struct.Heap_Info* %__info__, i32 0, i32 5
+%remain_num__ = load i32, i32* %remain_num___, align 4
+%__fprintfret = call i32 (%struct.__sFILE*, i8*, ...) @fprintf(%struct.__sFILE* %__stderr, i8* getelementptr inbounds ([36 x i8], [36 x i8]* @.str.6, i32 0, i32 0), i32 %remain_num__)
+br label %gc.heap_clean____
+gc.heap_clean____:
+call void (...) @gc_shutdown()
 %retval = load <type>, <type>* %retval_
 ret <type> %retval
 >>
@@ -99,22 +101,22 @@ ret void
 BlockInitialization(init,type) ::= <<
 %retval_ = alloca <type>
 %_funcsp = alloca i32, align 4
-%____num_roots = call i32 (...)* @gc_num_roots()
+%____num_roots = call i32 (...) @gc_num_roots()
 store i32 %____num_roots, i32* %_funcsp, align 4
 >>
 
-StringVarDefStat(v,type) ::= <<
+ScopedStringVarDefStat(v,type) ::= <<
 %<v.name>_ = alloca <type>
 store %struct.string* null, %struct.string** %<v.name>_, align 8
-%<v.name>_raw_ptr_ = bitcast %struct.string** %world to i8**
+%<v.name>_raw_ptr_ = bitcast %struct.string** %<v.name>_ to i8**
 call void @gc_add_root(i8** %<v.name>_raw_ptr_)
 >>
 
-VectorVarDefStat(v,type) ::= <<
+ScopedVectorVarDefStat(v,type) ::= <<
 %<v.name>_ = alloca <type>
 %<v.name>_mcp_target_ = bitcast %struct.PVector_ptr* %<v.name>_ to i8*
 call void @llvm.memcpy.p0i8.p0i8.i64(i8* %<v.name>_mcp_target_, i8* bitcast (%struct.PVector_ptr* @NIL_VECTOR to i8*), i64 16, i32 8, i1 false)
-%<v.name>_inner_ptr_ = getelementptr inbounds %struct.PVector_ptr* %<v.name>_, i32 0, i32 1
+%<v.name>_inner_ptr_ = getelementptr inbounds %struct.PVector_ptr, %struct.PVector_ptr* %<v.name>_, i32 0, i32 1
 %<v.name>_raw_ptr_ = bitcast %struct.PVector** %<v.name>_inner_ptr_ to i8**
 call void @gc_add_root(i8** %<v.name>_raw_ptr_)
 >>
