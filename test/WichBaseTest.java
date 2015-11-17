@@ -38,7 +38,8 @@ public class WichBaseTest {
 	public static final String TEST_RES_PLAIN_GEND_CODE = "plain";
 	public static final String TEST_RES_REFCOUNTING_GEND_CODE = "refcounting";
 	public static final String TEST_RES_LLVM_GEND_CODE = "llvm";
-	public static final String TEST_RES_LLVM_GC_GEND_CODE = "llvm-gc";
+	public static final String TEST_RES_LLVM_MC_GEND_CODE = "llvm-mc";
+	public static final String TEST_RES_LLVM_MS_GEND_CODE = "llvm-ms";
 	public static final String TEST_RES_GC_GEND_CODE = "gc";
 
 	protected File input;

@@ -169,10 +169,14 @@ public class CompilerUtils {
 				templates = new STGroupFile("wich-llvm.stg");
 				break;
 			case LLVM_MARK_AND_COMPACT:
+				modelWalker = new ModelWalker(new InjectLLVMTraits());
+				modelWalker.walk(modelRoot);
+				templates = new STGroupFile("wich-llvm-mc.stg");
+				break;
 			case LLVM_MARK_AND_SWEEP:
 				modelWalker = new ModelWalker(new InjectLLVMTraits());
 				modelWalker.walk(modelRoot);
-				templates = new STGroupFile("wich-llvm-gc.stg");
+				templates = new STGroupFile("wich-llvm-ms.stg");
 				break;
 			case REFCOUNTING :
 				modelWalker = new ModelWalker(new InjectRefCounting());

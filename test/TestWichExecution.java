@@ -85,9 +85,12 @@ public class TestWichExecution extends WichBaseTest {
 						CompilerUtils.getResourceFile(TEST_RES_LLVM_GEND_CODE+"/"+baseName+".ll");
 				break;
 			case LLVM_MARK_AND_COMPACT :
+				expectedOutputURL =
+						CompilerUtils.getResourceFile(TEST_RES_LLVM_MC_GEND_CODE+"/"+baseName+".ll");
+				break;
 			case LLVM_MARK_AND_SWEEP:
 				expectedOutputURL =
-						CompilerUtils.getResourceFile(TEST_RES_LLVM_GC_GEND_CODE+"/"+baseName+".ll");
+						CompilerUtils.getResourceFile(TEST_RES_LLVM_MS_GEND_CODE+"/"+baseName+".ll");
 				break;
 			case MARK_AND_COMPACT:
 			case MARK_AND_SWEEP:

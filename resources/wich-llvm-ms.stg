@@ -21,7 +21,14 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-package wich.codegen.model;
 
-public class Include {
-}
+import "wich-llvm-mc.stg"
+
+File(f, functions, main, decls) ::= <<
+%struct.heap_object = type { %struct._object_metadata*, i32, i8, %struct.heap_object* }
+<include()>
+
+<functions>
+<main>
+<decls;separator="\n">
+>>

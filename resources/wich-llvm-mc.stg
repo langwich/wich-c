@@ -25,7 +25,8 @@ SOFTWARE.
 import "wich-llvm.stg"
 
 File(f, functions, main, decls) ::= <<
-<include_mac()>
+%struct.heap_object = type { i32, %struct._object_metadata*, i32, i8, %struct.heap_object* }
+<include()>
 
 <functions>
 <main>

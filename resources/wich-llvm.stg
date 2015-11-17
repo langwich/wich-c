@@ -76,6 +76,7 @@ LLVMVectorBinaryOpMap ::= [
 ]
 
 File(f, functions, main, decls) ::= <<
+%struct.heap_object = type {}
 <include()>
 
 <functions>
