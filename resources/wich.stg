@@ -203,6 +203,8 @@ VectorElement(e, expr, type) ::= "<expr>"
 
 ArgDef(arg,type) ::= "<type> <arg.name>"
 
+VectorCopy(v,expr) ::= "PVector_copy(<expr>)"
+
 VoidType(v) ::= "void"
 IntType(t) ::= "int"
 FloatType(t) ::= "double"

@@ -1,28 +1,18 @@
 #include <stdio.h>
 #include "wich.h"
 #include "gc.h"
-PVector_ptr foo();
-
-PVector_ptr
-foo()
-{
-    gc_begin_func();
-    {
-        gc_end_func();
-        return Vector_new((double[]) {
-                          1, 2, 3, 4, 5}, 5);
-    }
-    gc_end_func();
-}
-
-
-int main(int ____c, char *____v[])
+int
+main(int argc, char *argv[])
 {
     setup_error_handlers();
     gc_begin_func();
     VECTOR(x);
-    x = PVector_copy(foo());
-    print_vector(foo());
+    VECTOR(y);
+    x = Vector_new((double[]) {
+                   1, 2, 3}, 3);
+    y = PVector_copy(x);
+    set_ith(y, 1 - 1, 4);
+    print_vector(x);
     gc_end_func();
     gc();
     Heap_Info info = get_heap_info();

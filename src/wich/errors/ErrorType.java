@@ -43,8 +43,8 @@ public enum ErrorType {
 	UNDEFINED_FUNCTION("function <arg1> not defined", ERROR),
 	INTERNAL_STRINGTEMPLATE_ERROR("internal stringtemplate error: <arg1>", ERROR),
 
-	UNKNOWN_TARGET("Unknown translation target: <arg1>", ERROR);
-
+	UNKNOWN_TARGET("Unknown translation target: <arg1>", ERROR),
+	TYPE_ERROR_FOR_LEN("object of expression type has no len()",ERROR);
 
 	protected String template;
 	protected ErrorSeverity severity;

@@ -31,12 +31,7 @@ import wich.errors.WichErrorHandler;
 import wich.parser.WichParser;
 import wich.semantics.symbols.WFunctionSymbol;
 
-import static wich.errors.ErrorType.INCOMPATIBLE_ARGUMENT_ERROR;
-import static wich.errors.ErrorType.INCOMPATIBLE_ASSIGNMENT_ERROR;
-import static wich.errors.ErrorType.INVALID_CONDITION_ERROR;
-import static wich.errors.ErrorType.INVALID_ELEMENT_ERROR;
-import static wich.errors.ErrorType.INVALID_INDEX_ERROR;
-import static wich.errors.ErrorType.INVALID_OPERATION;
+import static wich.errors.ErrorType.*;
 
 public class CheckTypes extends MaintainScopeListener {
 
@@ -117,5 +112,13 @@ public class CheckTypes extends MaintainScopeListener {
 	public void exitCall(@NotNull WichParser.CallContext ctx) {
 		WichParser.Call_exprContext callExprContext = ctx.call_expr();
 		exitCall_expr(callExprContext);
+	}
+
+	@Override
+	public void exitLen(WichParser.LenContext ctx) {
+		Type type = ctx.expr().exprType;
+		if (type != SymbolTable._vector && type != SymbolTable._string) {
+			error(ctx.start,TYPE_ERROR_FOR_LEN,ctx.expr().exprType.getName());
+		}
 	}
 }

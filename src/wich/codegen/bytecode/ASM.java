@@ -109,7 +109,7 @@ public class ASM {
 	public Instr sload_index()		{ return new Instr("SLOAD_INDEX"); }
 	public Instr vload_index()      { return new Instr("VLOAD_INDEX"); }
 	public Instr store_index()		{ return new Instr("STORE_INDEX"); }
-	public Instr push(int i)		{ return new Instr("PUSH", i); }
+	public Instr push_dflt_value()	{ return new Instr("PUSH_DFLT_RETV"); }
 	public Instr pop()              { return new Instr("POP");  }
 	public Instr call(int i)		{ return new Instr("CALL", i); }
 	public Instr ret()				{ return new Instr("RET"); }
@@ -123,6 +123,11 @@ public class ASM {
 	public Instr nop()				{ return new Instr("NOP"); }
 	public Instr vlen()				{ return new Instr("VLEN"); }
 	public Instr slen()				{ return new Instr("SLEN"); }
+	public Instr gc_start()			{ return new Instr("GC_START"); }
+	public Instr gc_end()			{ return new Instr("GC_END"); }
+	public Instr sroot()			{ return new Instr("SROOT"); }
+	public Instr vroot()			{ return new Instr("VROOT"); }
+	public Instr vec_copy()			{ return new Instr("COPY_VECTOR");}
 
 	public void gen(String format, Object... args) {
 		buffer.add(String.format(format + "\n", args));

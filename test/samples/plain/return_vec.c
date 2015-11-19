@@ -12,10 +12,11 @@ PVector_ptr foo()
 
 int main(int ____c, char *____v[])
 {
-	setup_error_handlers();
-	PVector_ptr x;
-	x = foo();
-	print_vector(foo());
-	return 0;
+    setup_error_handlers();
+    PVector_ptr x;
+
+    x = PVector_copy(foo());
+    print_vector(foo());
+    return 0;
 }
 

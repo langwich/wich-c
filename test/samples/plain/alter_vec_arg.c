@@ -5,7 +5,7 @@ void bar(PVector_ptr x);
 
 void bar(PVector_ptr x)
 {
-    set_ith(x, 1-1, 100);
+    set_ith(x, 1 - 1, 100);
     print_vector(x);
 
 }

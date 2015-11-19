@@ -849,6 +849,15 @@ public class TestBytecodeGen {
 		checkCodeGen(Wich,expecting);
 	}
 
+	@Test
+	public void test_float_div() throws Exception {
+		String Wich = "var x = 1.0\n" +
+				"var y = 2.0\n" +
+				"print (y/x)\n";
+		String expecting = "";
+		checkCodeGen(Wich,expecting);
+	}
+
 	public void checkCodeGen(String wich, String expecting) throws IOException {
 		Trans tool = new Trans();
 		SymbolTable symtab = new SymbolTable();

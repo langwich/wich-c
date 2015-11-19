@@ -6,7 +6,7 @@ import org.antlr.symtab.Symbol;
 import org.antlr.symtab.Type;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.NotNull;
-import org.antlr.v4.runtime.tree.TerminalNode;
+import wich.errors.WichErrorHandler;
 import wich.parser.WichBaseVisitor;
 import wich.parser.WichParser;
 import wich.semantics.SymbolTable;
@@ -15,6 +15,8 @@ import wich.semantics.symbols.*;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import static wich.errors.ErrorType.INCOMPATIBLE_ARGUMENT_ERROR;
 
 /**
  *  In the end of visitor is a better alternative for generating code
@@ -71,17 +73,18 @@ public class BytecodeGenerator extends WichBaseVisitor<Code> {
 	public Code visit(@NotNull WichParser.ScriptContext ctx) {
 		Code funcs = Code.None;
 		for (WichParser.FunctionContext f: ctx.function()) {
-			funcs.join(visit(f));
+			funcs = funcs.join(visit(f));
 		}
 
 		WFunctionSymbol m = new WFunctionSymbol("main");
 		m.setType(SymbolTable._void);
 		currentScope.define(m);
 		pushScope(m);
-		Code main = Code.None;
+		Code main = asm.gc_start();
 		for (WichParser.StatementContext s : ctx.statement()){
 			main = main.join(visit(s));
 		}
+		main = main.join(asm.gc_end());
 		main = main.join(asm.halt());
 		main = globalInitCode.join(main);
 		functionBodies.put("main",main);
@@ -93,14 +96,15 @@ public class BytecodeGenerator extends WichBaseVisitor<Code> {
 	@Override
 	public Code visitFunction(@NotNull WichParser.FunctionContext ctx) {
 		pushScope(ctx.scope);
-		Code func = visit(ctx.block());
+		Code func = asm.gc_start().join(visit(ctx.block()));
 		if (ctx.type() == null){
 			func = func.join(asm.ret());
 		}
 		else {
-			func = func.join(asm.push((ctx.scope).getType().getVMTypeIndex()));
+			func = func.join(asm.push_dflt_value());
 			func = func.join(asm.retv());
 		}
+		func = func.join(asm.gc_end());
 		String funcName = ctx.ID().getText();
 		functionBodies.put(funcName, func);
 		popScope();
@@ -137,13 +141,21 @@ public class BytecodeGenerator extends WichBaseVisitor<Code> {
 			symtab.getfunctions().get("main").define(v);
 		}
 		Code code = visit(ctx.expr());
+		if (isVectorCopyNeeded(ctx.expr())) code = code.join(asm.vec_copy());
 		code = code.join(asm.store(getSymbolIndex(v)));
+		if (ctx.expr().exprType == SymbolTable._vector) {
+			code = code.join(asm.vroot());
+		}
+		else if (ctx.expr().exprType == SymbolTable._string) {
+			code = code.join(asm.sroot());
+		}
 		return code;
 	}
 
 	@Override
 	public Code visitAssign(@NotNull WichParser.AssignContext ctx) {
 		Code code = visit(ctx.expr());
+		if (isVectorCopyNeeded(ctx.expr())) code = code.join(asm.vec_copy());
 		WVariableSymbol v = (WVariableSymbol)currentScope.resolve(ctx.ID().getText());
 		code = code.join(asm.store(getSymbolIndex(v)));
 		return code;
@@ -181,7 +193,14 @@ public class BytecodeGenerator extends WichBaseVisitor<Code> {
 
 	@Override
 	public Code visitReturn(@NotNull WichParser.ReturnContext ctx) {
-		return visit(ctx.expr()).join(asm.retv());
+		Scope scope = currentScope;
+		while (!(scope instanceof WFunctionSymbol)) {
+			scope = scope.getEnclosingScope();
+		}
+		if (ctx.expr().exprType != ((WFunctionSymbol)scope).getType()) {
+			//todo error
+		}
+		return visit(ctx.expr()).join(asm.gc_end()).join(asm.retv());
 	}
 
 	@Override
@@ -337,6 +356,7 @@ public class BytecodeGenerator extends WichBaseVisitor<Code> {
 		else {
 			for(int i = 0; i < list.size(); i++) {
 				code = code.join(visit(list.get(i)));
+				if (isVectorCopyNeeded(list.get(i))) code = code.join(asm.vec_copy());
 			}
 		}
 		return code;
@@ -624,5 +644,13 @@ public class BytecodeGenerator extends WichBaseVisitor<Code> {
 		}
 		index += enScope.getAllSymbols().size();
 		return index;
+	}
+
+	public boolean isVectorCopyNeeded(WichParser.ExprContext expr) {
+		if (expr.exprType != SymbolTable._vector ) return false;
+		if (expr instanceof WichParser.CallContext || (expr instanceof WichParser.AtomContext && (!expr.getText().startsWith("[")))) {
+			return true;
+		}
+		return false;
 	}
 }
