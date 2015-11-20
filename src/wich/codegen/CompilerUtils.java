@@ -24,8 +24,12 @@ SOFTWARE.
 package wich.codegen;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.RecognitionException;
+import org.antlr.v4.runtime.Recognizer;
+import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.TokenStream;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.stringtemplate.v4.ST;
@@ -111,14 +115,29 @@ public class CompilerUtils {
 
 	public static final Charset FILE_ENCODING = StandardCharsets.UTF_8;
 
-	public  static ParserRuleContext parse(ANTLRInputStream antlrInputStream) {
+	public  static ParserRuleContext parse(ANTLRInputStream antlrInputStream, WichErrorHandler err) {
 		TokenStream tokens = new CommonTokenStream(new WichLexer(antlrInputStream));
 		WichParser parser = new WichParser(tokens);
-		return parser.script();
+		parser.removeErrorListeners();
+		int[] errors = new int[1];
+		BaseErrorListener antlrListener = new BaseErrorListener() {
+			@Override
+			public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol,
+			                        int line, int charPositionInLine,
+			                        String msg, RecognitionException e) {
+				err.error((Token) offendingSymbol, ErrorType.SYNTAX_ERROR, e, msg);
+				errors[0]++;
+			}
+		};
+		parser.addErrorListener(antlrListener);
+		WichParser.ScriptContext tree = parser.script();
+		if ( errors[0]>0 ) return null;
+		return tree;
 	}
 
 	public static ParserRuleContext defineSymbols(String input, SymbolTable symtab, WichErrorHandler err) {
-		ParserRuleContext tree = parse(new ANTLRInputStream(input));
+		ParserRuleContext tree = parse(new ANTLRInputStream(input), err);
+		if ( tree==null ) return null;
 		ParseTreeWalker walker = new ParseTreeWalker();
 		DefineSymbols defSymbols = new DefineSymbols(symtab, err);
 		walker.walk(defSymbols, tree);
@@ -128,6 +147,7 @@ public class CompilerUtils {
 
 	public static ParserRuleContext getAnnotatedParseTree(String input, SymbolTable symtab, WichErrorHandler err) {
 		ParserRuleContext tree = defineSymbols(input, symtab, err);
+		if ( tree==null ) return null;
 
 		ComputeTypes computeTypes = new ComputeTypes(err);
 		AssignTypes assignTypes = new AssignTypes(err, symtab.numOfVars);
@@ -146,6 +166,7 @@ public class CompilerUtils {
 
 	public static ParserRuleContext checkCorrectness(String input, SymbolTable symtab, WichErrorHandler err) {
 		ParserRuleContext tree = getAnnotatedParseTree(input, symtab, err);
+		if ( tree==null ) return null;
 		CheckTypes checker = new CheckTypes(err);
 		ParseTreeWalker walker = new ParseTreeWalker();
 		walker.walk(checker, tree);
@@ -156,6 +177,8 @@ public class CompilerUtils {
 	                      CompilerUtils.CodeGenTarget target)
 	{
 		ParserRuleContext tree = checkCorrectness(input, symtab, err);
+		if ( tree==null || err.getErrorNum()>0) return "<invalid>";
+
 		CodeGenerator codeGenerator = new CodeGenerator(symtab);
 		File modelRoot = codeGenerator.generate(tree);
 		STGroup templates;

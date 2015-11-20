@@ -27,6 +27,7 @@ package wich.errors;
 import static wich.errors.ErrorSeverity.ERROR;
 
 public enum ErrorType {
+	SYNTAX_ERROR("invalid syntax: <arg1>", ERROR),
 	INVALID_LEFT_SIDE_ERROR("left side of assignment must be a variable", ERROR),
 	INCOMPATIBLE_ASSIGNMENT_ERROR("incompatible type in assignment (cannot promote from <arg2> to <arg1>)", ERROR),
 	INCOMPATIBLE_ARGUMENT_ERROR("incompatible argument type (cannot promote from <arg2> to <arg1>)", ERROR),

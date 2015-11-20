@@ -1,13 +1,13 @@
 import org.junit.Test;
 import wich.Trans;
 import wich.codegen.bytecode.BytecodeWriter;
-import wich.codegen.bytecode.Code;
 import wich.parser.WichParser;
 import wich.semantics.SymbolTable;
 
 import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 public class TestBytecodeGen {
 	@Test
@@ -245,6 +245,7 @@ public class TestBytecodeGen {
 		Trans tool = new Trans();
 		SymbolTable symtab = new SymbolTable();
 		WichParser.ScriptContext tree = tool.semanticsPhase(wich, symtab);
+		assertFalse(tree==null);
 		BytecodeWriter gen = new BytecodeWriter("foo", tool, symtab,tree);
 		String result = gen.generateObjectFile();
 		result = result.replaceAll("\t", "");

@@ -54,7 +54,8 @@ public class WichErrorHandler {
 	public void error(Token token, ErrorType type, Exception e, String... args) {
 		try {
 			String msg = getErrorMessage(token, type, args);
-			errorList.add(type.getSeverity().getName()+": "+msg+"\n"+Arrays.toString(e.getStackTrace()));
+			String exc = e!=null ? Arrays.toString(e.getStackTrace()) : "";
+			errorList.add(type.getSeverity().getName()+": "+msg+"\n"+exc);
 		}
 		catch (Exception _e) {
 			_e.printStackTrace();

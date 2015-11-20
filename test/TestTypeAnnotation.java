@@ -340,6 +340,9 @@ public class TestTypeAnnotation {
 		SymbolTable symtab = new SymbolTable();
 		WichErrorHandler err = new WichErrorHandler();
 		ParserRuleContext tree = CompilerUtils.getAnnotatedParseTree(input, symtab, err);
+		if ( tree==null ) {
+			return "<invalid>";
+		}
 		return TypeHelper.dumpWithType(tree);
 	}
 
