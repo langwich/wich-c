@@ -30,8 +30,11 @@ public class ReturnStat extends Stat {
 	/** Needed for reference counting only; used to inject DEREFs before return */
 	public Scope enclosingScope;
 	@ModelElement public Expr expr;
+	@ModelElement public WichType returnType;
 
-	public ReturnStat(Expr expr) {
+	public String num;
+	public ReturnStat(Expr expr, String label) {
 		this.expr = expr;
+		this.num = label;
 	}
 }

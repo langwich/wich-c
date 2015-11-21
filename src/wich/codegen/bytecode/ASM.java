@@ -61,13 +61,9 @@ public class ASM {
 
 	public Instr i2f()				{ return new Instr("I2F"); }
 	public Instr i2s()				{ return new Instr("I2S"); }
-/*
-	public Instr i2v()				{ return new Instr("I2V"); }
-	public Instr f2v()				{ return new Instr("F2V"); }
-*/
+
 	public Instr f2s()				{ return new Instr("F2S"); }
 	public Instr v2s()              { return new Instr("V2S"); }
-
 
 	public Instr ieq()				{ return new Instr("IEQ"); }
 	public Instr ineq()				{ return new Instr("INEQ"); }
@@ -91,12 +87,8 @@ public class ASM {
 	public Instr sge()				{ return new Instr("SGE"); }
 
 
-	public Instr isnil()			{ return new Instr("ISNIL"); }
-
 	public Instr br()				{ return new Instr("BR", 0); }
 	public Instr br(int a)			{ return new Instr("BR", a); }  // opnd is relative to start of BR instruction, which is offset 0
-	public Instr brt()				{ return new Instr("BRT", 0); }
-	public Instr brt(int a)			{ return new Instr("BRT", a); }
 	public Instr brf()				{ return new Instr("BRF", 0); }
 	public Instr brf(int a)			{ return new Instr("BRF", a); } // opnd arg is relative to next instruction being 0
 
@@ -117,7 +109,6 @@ public class ASM {
 	public Instr sload_index()		{ return new Instr("SLOAD_INDEX"); }
 	public Instr vload_index()      { return new Instr("VLOAD_INDEX"); }
 	public Instr store_index()		{ return new Instr("STORE_INDEX"); }
-	public Instr nil()				{ return new Instr("NIL"); }
 	public Instr push(int i)		{ return new Instr("PUSH", i); }
 	public Instr pop()              { return new Instr("POP");  }
 	public Instr call(int i)		{ return new Instr("CALL", i); }

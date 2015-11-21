@@ -25,12 +25,15 @@ package wich.codegen.model.expr;
 
 import org.antlr.symtab.Type;
 import wich.codegen.model.ModelElement;
+import wich.codegen.model.WichType;
 
 public class NegateExpr extends Expr{
 	@ModelElement public Expr expr;
 
-	public NegateExpr(Expr expr) {
+	public NegateExpr(Expr expr, WichType type, String tempVar) {
 		this.expr = expr;
+		this.type = type;
+		this.varRef = tempVar;
 	}
 
 	@Override

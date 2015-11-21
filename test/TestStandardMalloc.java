@@ -61,4 +61,5 @@ public class TestStandardMalloc extends TestWichExecution {
 		}
 		executeAndCheck(input.getAbsolutePath(), expected, true, CompilerUtils.CodeGenTarget.REFCOUNTING);
 	}
+
 }

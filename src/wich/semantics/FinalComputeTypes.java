@@ -28,6 +28,7 @@ import org.antlr.symtab.TypedSymbol;
 import org.antlr.v4.runtime.misc.NotNull;
 import wich.errors.WichErrorHandler;
 import wich.parser.WichParser;
+import wich.parser.WichParser.ExprContext;
 import wich.semantics.symbols.WFunctionSymbol;
 import wich.semantics.symbols.WVariableSymbol;
 
@@ -46,7 +47,7 @@ public class FinalComputeTypes extends MaintainScopeListener {
 	@Override
 	public void exitElementAssign(@NotNull WichParser.ElementAssignContext ctx) {
 		// might need to promote right hand side per known type of left
-		WichParser.ExprContext expr = ctx.expr(1);
+		ExprContext expr = ctx.expr(1);
 		Symbol id = currentScope.resolve(ctx.ID().getText());
 		if ( id instanceof WVariableSymbol ) {
 			TypeHelper.promote(expr, SymbolTable._float);
@@ -56,7 +57,7 @@ public class FinalComputeTypes extends MaintainScopeListener {
 	@Override
 	public void exitAssign(@NotNull WichParser.AssignContext ctx) {
 		// might need to promote right hand side per known type of left
-		WichParser.ExprContext expr = ctx.expr();
+		ExprContext expr = ctx.expr();
 		Symbol id = currentScope.resolve(ctx.ID().getText());
 		if ( id instanceof WVariableSymbol ) {
 			TypeHelper.promote(expr, ((WVariableSymbol) id).getType());
@@ -67,8 +68,8 @@ public class FinalComputeTypes extends MaintainScopeListener {
 	public void exitOp(@NotNull WichParser.OpContext ctx) {
 		if (ctx.exprType != null) return;
 		int op = ctx.operator().start.getType();
-		WichParser.ExprContext lExpr = ctx.expr(0);
-		WichParser.ExprContext rExpr = ctx.expr(1);
+		ExprContext lExpr = ctx.expr(0);
+		ExprContext rExpr = ctx.expr(1);
 		//check if operand is valid
 		if( lExpr.exprType == SymbolTable.INVALID_TYPE ||
 			rExpr.exprType == SymbolTable.INVALID_TYPE )
@@ -83,9 +84,7 @@ public class FinalComputeTypes extends MaintainScopeListener {
 		//when both operands' types are known
 		else if(lExpr.exprType != null && rExpr.exprType != null) {
 			ctx.exprType = SymbolTable.op(op, lExpr, rExpr);
-			if (lExpr.exprType != rExpr.exprType) {
-				ctx.promoteToType = SymbolTable.op(op, lExpr, rExpr);
-			}
+			ctx.promoteToType = lExpr.promoteToType == null ? rExpr.promoteToType : lExpr.promoteToType;
 			if(ctx.exprType == SymbolTable.INVALID_TYPE) {
 				String left = lExpr.exprType.getName();
 				String operator = ctx.operator().getText();
@@ -186,7 +185,7 @@ public class FinalComputeTypes extends MaintainScopeListener {
 	public void exitVector(@NotNull WichParser.VectorContext ctx) {
 		ctx.exprType = SymbolTable._vector;
 		// promote element type to fit in a vector
-		for (WichParser.ExprContext elem : ctx.expr_list().expr()) {
+		for (ExprContext elem : ctx.expr_list().expr()) {
 			if(elem.exprType != null) { // may not be known at this stage
 				TypeHelper.promote(elem, SymbolTable._float);
 			}

@@ -191,19 +191,16 @@ public class TypeHelper {
 	/** This method is the general helper method used to calculate result type.
 	 *  You should use the method in SymbolTable based on this method.
 	 */
-	public static Type getResultType(int op,
-	                                 ExprContext le,
-	                                 ExprContext re)
+	public static Type getResultType(int op, ExprContext le, ExprContext re)
 	{
-
 		int li = le.exprType.getTypeIndex();
 		int ri = re.exprType.getTypeIndex();
 		Type resultType = opResultTypeMap[op][li][ri];
 		if (resultType == null) {
 			return SymbolTable.INVALID_TYPE;
 		}
-		le.promoteToType = operandPromotionMap[op][li][resultType.getTypeIndex()];
-		re.promoteToType = operandPromotionMap[op][ri][resultType.getTypeIndex()];
+		le.promoteToType = operandPromotionMap[op][li][ri];
+		re.promoteToType = operandPromotionMap[op][ri][li];
 		return resultType;
 	}
 

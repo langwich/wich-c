@@ -27,9 +27,9 @@ import wich.codegen.model.expr.Expr;
 import wich.codegen.model.expr.VarRef;
 
 public class ElementAssignStat extends Stat{
-	@ModelElement public final VarRef varRef;
+	@ModelElement public VarRef varRef;
 	@ModelElement public final Expr index;
-	@ModelElement public final Expr expr;
+	@ModelElement public Expr expr;
 
 	public ElementAssignStat(VarRef varRef, Expr index, Expr expr) {
 		this.varRef = varRef;

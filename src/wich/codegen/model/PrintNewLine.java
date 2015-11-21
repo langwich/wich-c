@@ -24,5 +24,8 @@ SOFTWARE.
 package wich.codegen.model;
 
 
-public class PrintNewLine extends Stat {
+public class PrintNewLine extends PrintStat {
+	public PrintNewLine(String label) {
+		super(label);
+	}
 }

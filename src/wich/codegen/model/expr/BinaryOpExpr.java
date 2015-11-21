@@ -25,6 +25,7 @@ package wich.codegen.model.expr;
 
 import org.antlr.symtab.Type;
 import wich.codegen.model.ModelElement;
+import wich.codegen.model.WichType;
 
 /** An operation on two operands. Split out the operation into subclasses
  *  for primitive, string, vector operand types so the auto-template-construction
@@ -37,10 +38,12 @@ public abstract class BinaryOpExpr extends Expr {
 	@ModelElement public Expr left;
 	@ModelElement public Expr right;
 
-	public BinaryOpExpr(Expr left, String op, Expr right) {
+	public BinaryOpExpr(Expr left, String op, Expr right, WichType type, String tempVar) {
 		this.left = left;
 		this.wichOp = op;
 		this.right = right;
+		this.type = type;
+		this.varRef = tempVar;
 	}
 
 	@Override

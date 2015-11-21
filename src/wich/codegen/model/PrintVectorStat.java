@@ -26,10 +26,11 @@ package wich.codegen.model;
 
 import wich.codegen.model.expr.Expr;
 
-public class PrintVectorStat extends Stat {
+public class PrintVectorStat extends PrintStat {
 	@ModelElement public Expr expr;
 
-	public PrintVectorStat(Expr expr) {
+	public PrintVectorStat(Expr expr, String num) {
+		super(num);
 		this.expr = expr;
 	}
 }

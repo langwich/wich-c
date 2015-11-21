@@ -23,12 +23,20 @@ SOFTWARE.
 */
 package wich.codegen.model;
 
+import wich.semantics.symbols.WVariableSymbol;
+
 public class ArgDef extends OutputModelObject{
-	public final String name;
+
 	@ModelElement public WichType type;
 
-	public ArgDef(String name, WichType type) {
-		this.name = name;
+	public WVariableSymbol symbol;
+
+	public ArgDef(WVariableSymbol symbol, WichType type) {
+		this.symbol = symbol;
 		this.type = type;
+	}
+
+	public String getName() {
+		return symbol.getName();
 	}
 }

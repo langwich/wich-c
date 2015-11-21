@@ -7,13 +7,13 @@ bool cmp(String * x);
 bool cmp(String * x)
 {
 	gc_begin_func();
-	{gc_end_func(); return (x == String_new("ca"));}
+	{gc_end_func(); return String_eq(x,String_new("ca"));}
 
 	gc_end_func();
 }
 
 
-int main(int argc, char *argv[])
+int main(int ____c, char *____v[])
 {
 	setup_error_handlers();
 	gc_begin_func();
@@ -21,10 +21,10 @@ int main(int argc, char *argv[])
 	STRING(y);
 	x = String_new("cat");
 	y = String_new("dog");
-	if ((x == y)) {
+	if (String_eq(x,y)) {
 		print_string(String_new("x==y"));
 	}
-	if ((x != y)) {
+	if (String_neq(x,y)) {
 		print_string(String_new("x!=y"));
 	}
 	printf("%d\n", cmp(x));

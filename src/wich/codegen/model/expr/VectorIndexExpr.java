@@ -25,16 +25,22 @@ package wich.codegen.model.expr;
 
 
 import org.antlr.symtab.Type;
+import wich.codegen.model.FloatType;
 import wich.codegen.model.ModelElement;
 import wich.semantics.SymbolTable;
+import wich.semantics.symbols.WVariableSymbol;
 
 public class VectorIndexExpr extends Expr {
 	public final String varName;
+	public final WVariableSymbol symbol;
 	@ModelElement public Expr expr;
 
-	public VectorIndexExpr(String object, Expr indexExpr) {
+	public VectorIndexExpr(String object, WVariableSymbol v, Expr indexExpr, String tempVar) {
 		this.varName = object;
+		this.symbol = v;
 		this.expr = indexExpr;
+		this.type = new FloatType();
+		this.varRef = tempVar;
 	}
 
 	@Override
