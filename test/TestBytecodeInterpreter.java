@@ -125,7 +125,11 @@ public class TestBytecodeInterpreter extends WichBaseTest{
 		if ( execF.exists() ) {
 			execF.delete();
 		}
-	/*	List<String> cc = new ArrayList<>();
+
+		//how to construct the cmd ?
+		//wrun  /Users/yuanyuan/Dropbox/newruntime/runtime/vm/test/samples/alter_vector_arg.wasm
+
+		List<String> cc = new ArrayList<>();
 		cc.addAll(
 				Arrays.asList(
 						"cc", "-g", "-o", executable,
@@ -148,7 +152,8 @@ public class TestBytecodeInterpreter extends WichBaseTest{
 			throw new RuntimeException("failed compilation of "+generatedFileName+" with result code "+result.a+
 					" from\n"+
 					cmdS+"\nstderr:\n"+result.c);
-		}*/
+		}
+
 		return executable;
 
 	}

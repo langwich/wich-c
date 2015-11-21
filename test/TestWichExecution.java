@@ -132,7 +132,7 @@ public class TestWichExecution extends WichBaseTest {
 								   CompilerUtils.CodeGenTarget target)
 		throws IOException, InterruptedException
 	{
-		String executable = compileC(wichFileName, target);
+ 		String executable = compileC(wichFileName, target);
 		String output = executeC(executable);
 		System.out.println(output);
 		assertEquals(expected, output);
