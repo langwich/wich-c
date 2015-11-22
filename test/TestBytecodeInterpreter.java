@@ -48,9 +48,7 @@ SOFTWARE.
 */
 public class TestBytecodeInterpreter extends WichBaseTest{
 	protected static final String WORKING_DIR = "/tmp/";
-	protected static final String LIB_DIR = "/usr/local/wich/lib";
-	protected static final String INCLUDE_DIR = "/usr/local/wich/include";
-	protected CompilerUtils.MallocImpl mallocImpl = CompilerUtils.MallocImpl.SYSTEM; // default malloc;
+	protected static final String WVM_DIR = "/usr/local/wich/bin/";
 
 	public TestBytecodeInterpreter(File input, String baseName) {
 		super(input, baseName);
@@ -59,7 +57,7 @@ public class TestBytecodeInterpreter extends WichBaseTest{
 
 	@Test
 	public void testBytecodeExecution() throws Exception {
-		URL expectedFile = CompilerUtils.getResourceFile(TEST_RES + baseName + ".output");
+		URL expectedFile = CompilerUtils.getResourceFile(TEST_RES + "/"+baseName + ".output");
 		String expected = "";
 		if (expectedFile != null) {
 			expected = CompilerUtils.readFile(expectedFile.getPath(), CompilerUtils.FILE_ENCODING);
@@ -72,30 +70,20 @@ public class TestBytecodeInterpreter extends WichBaseTest{
 	                               boolean valgrind)
 			throws IOException, InterruptedException
 	{
-		String executable = getWASM(wichFileName);
-		String output = executeWASM(executable);
+		String output = getWASM(wichFileName);
 		System.out.println(output);
 		assertEquals(expected, output);
-		if ( valgrind ) {
+/*		if ( valgrind ) {
 			valgrindCheck(executable);
-		}
+		}*/
 	}
-
-	@Before
-	public void setUp() throws Exception {
-		File dir = new File(LIB_DIR);
-		if ( !dir.exists() ) {
-			throw new IllegalArgumentException("Can't find wich runtime library.");
-		}
-	}
-
-
+/*
 	protected void valgrindCheck(String executable) throws IOException, InterruptedException {
 		// For Intellij users you need to set PATH environment variable in Run/Debug configuration,
 		// since Intellij doesn't inherit environment variables from system.
 		String errSummary = exec(new String[]{"valgrind", executable}).c;
 		assertEquals("Valgrind memcheck failed...", 0, getErrorNumFromSummary(errSummary));
-	}
+	}*/
 
 	protected int getErrorNumFromSummary(String errSummary) {
 		if (errSummary == null || errSummary.length() == 0) return -1;
@@ -120,31 +108,20 @@ public class TestBytecodeInterpreter extends WichBaseTest{
 		String generatedFileName = WORKING_DIR + baseName + ".wasm";
 		CompilerUtils.writeFile(generatedFileName, actual, StandardCharsets.UTF_8);
 
-		String executable = "./" + baseName;
-		File execF = new File(executable);
+	/*	File execF = new File(generatedFileName);
 		if ( execF.exists() ) {
 			execF.delete();
 		}
-
-		//how to construct the cmd ?
-		//wrun  /Users/yuanyuan/Dropbox/newruntime/runtime/vm/test/samples/alter_vector_arg.wasm
+*/
 
 		List<String> cc = new ArrayList<>();
 		cc.addAll(
 				Arrays.asList(
-						"cc", "-g", "-o", executable,
-						generatedFileName,
-						"-L", LIB_DIR,
-						"-I", INCLUDE_DIR, "-std=c99", "-O0"
+						"./wvm", generatedFileName
 				)
 		);
-		for (String lib : target.libs) {
-			cc.add("-l"+lib);
-		}
+
 		String[] cmd = cc.toArray(new String[cc.size()]);
-		if ( mallocImpl!=CompilerUtils.MallocImpl.SYSTEM ) {
-			cc.addAll(Arrays.asList("-l"+mallocImpl.lib, "-lmalloc_common"));
-		}
 		final Triple<Integer, String, String> result = exec(cmd);
 		String cmdS = Utils.join(cmd, " ");
 		System.out.println(cmdS);
@@ -154,13 +131,13 @@ public class TestBytecodeInterpreter extends WichBaseTest{
 					cmdS+"\nstderr:\n"+result.c);
 		}
 
-		return executable;
+		return result.b;
 
 	}
 
 	protected Triple<Integer, String, String> exec(String[] cmd) throws IOException, InterruptedException {
 		ProcessBuilder pb = new ProcessBuilder();
-		pb.command(Arrays.asList(cmd)).directory(new File(WORKING_DIR));
+		pb.command(Arrays.asList(cmd)).directory(new File(WVM_DIR));
 		Process process = pb.start();
 		int resultCode = process.waitFor();
 		String stdout = dump(process.getInputStream());
@@ -181,7 +158,7 @@ public class TestBytecodeInterpreter extends WichBaseTest{
 	}
 
 	protected String executeWASM(String executable) throws IOException, InterruptedException {
-		Triple<Integer, String, String> result = exec(new String[]{"./"+executable});
+		Triple<Integer, String, String> result = exec(new String[]{"./wvm "+executable});
 		if ( result.a!=0 ) {
 			throw new RuntimeException("failed execution of "+executable+" with result code "+result.a+"; stderr:\n"+result.c);
 		}
