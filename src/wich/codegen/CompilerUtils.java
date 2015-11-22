@@ -35,6 +35,8 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
+import wich.Trans;
+import wich.codegen.bytecode.BytecodeWriter;
 import wich.codegen.model.File;
 import wich.errors.ErrorType;
 import wich.errors.WichErrorHandler;
@@ -53,6 +55,8 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+
+import static org.junit.Assert.assertEquals;
 
 public class CompilerUtils {
 
@@ -87,7 +91,8 @@ public class CompilerUtils {
 		REFCOUNTING(new String[]{"wlib_refcounting"}),
 		MARK_AND_COMPACT(new String[]{"wlib_mark_and_compact", "mark_and_compact", "gc_mark_and_compact", "malloc_common"}),
 		MARK_AND_SWEEP(new String[]{"wlib_mark_and_sweep", "mark_and_sweep", "gc_mark_and_sweep", "malloc_common"}),
-		GENERATIONAL_GC(new String[]{"wlib"});
+		SCAVENGER(new String[]{"wlib"}),
+		BYTECODE(new String[]{});
 
 		public String[] libs;
 		public String flag;
@@ -236,7 +241,7 @@ public class CompilerUtils {
 
 
 	public static String stripBrackets(String s) {
-		return s.substring(1,s.length()-1);
+		return s.substring(1, s.length() - 1);
 	}
 
 	/** e.g., replaceFileSuffix("foo.om", ".java") */
@@ -248,6 +253,16 @@ public class CompilerUtils {
 
 	public static String stripFirstLast(String s) {
 		return s.substring(1,s.length()-1);
+	}
+
+	public static String byteCodeGen(String wich) throws IOException {
+		Trans tool = new Trans();
+		SymbolTable symtab = new SymbolTable();
+		WichParser.ScriptContext tree = tool.semanticsPhase(wich, symtab);
+		BytecodeWriter gen = new BytecodeWriter("foo", tool, symtab,tree);
+		String result = gen.generateObjectFile();
+		result = result.replaceAll("\t", "");
+		return result;
 	}
 
 }

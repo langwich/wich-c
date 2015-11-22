@@ -7,7 +7,11 @@ import wich.semantics.SymbolTable;
 import wich.semantics.symbols.WFunctionSymbol;
 import wich.semantics.symbols.WVariableSymbol;
 
-import java.util.Map;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.*;
 
 /** Generate a file containing bytecode and symbol table information
  *  so that an interpreter/VM can execute the code.  For ease
@@ -34,18 +38,28 @@ public class BytecodeWriter {
 
 		StringBuilder buf = new StringBuilder();
 		buf.append(String.format("%d strings\n", symtab.strings.size()));
-		for (String s : symtab.strings.keySet()) {
-			Integer i = symtab.strings.get(s);
-			s = CompilerUtils.stripFirstLast(s);
-			buf.append(String.format("\t%d: %d/%s\n", i, s.length(), s));
+		LinkedHashMap sortedMap = (LinkedHashMap<String, Integer>)symtab.sortHashMapByValues(symtab.strings);
+		for (Object s : sortedMap.keySet()) {
+			Integer i = (Integer) sortedMap.get(s);
+			String literal = CompilerUtils.stripFirstLast((String)s);
+			buf.append(String.format("\t%d: %d/%s\n", i, literal.length(), literal));
 		}
 		buf.append(String.format("%d functions\n", symtab.getfunctions().size()));
+		List<Integer> insertOrder = new ArrayList<>();
+		HashMap<Integer, String> indexMapName = new HashMap<>();
 		for (String s : symtab.getfunctions().keySet()) {
+			int index = symtab.computerFuncIndex(s);
+			insertOrder.add(index);
+			indexMapName.put(index, s);
+		}
+		Collections.sort(insertOrder);
+		for (Integer i :insertOrder) {
+			String s = indexMapName.get(i);
 			WFunctionSymbol f = symtab.getfunctions().get(s);
 			int numLocalsAndArgs = f.nlocals();
 			int numArgs = f.nargs();
 			buf.append(String.format("\t%d: addr=%d args=%d locals=%d type=%d %d/%s\n",
-					symtab.computerFuncIndex(f.getInsertionOrderNumber()), f.address, numArgs, numLocalsAndArgs,
+					symtab.computerFuncIndex(f.getName()), f.address, numArgs, numLocalsAndArgs,
 					f.getType().getVMTypeIndex(), s.length(), s));
 		}
 
@@ -82,7 +96,6 @@ public class BytecodeWriter {
 			WFunctionSymbol fsym = symtab.getfunctions().get(fname);
 			Code body = functionBodies.get(fname);
 			for (Instr I : body.instructions()) {
-//				System.out.println(ip+": "+I);
 				I.address = ip;
 				ip += I.size;
 			}

@@ -38,7 +38,18 @@ public class ASM {
 	public Instr fmul()				{ return new Instr("FMUL"); }
 	public Instr fdiv()				{ return new Instr("FDIV"); }
 	public Instr vadd()				{ return new Instr("VADD");	}
+	public Instr vsub()				{ return new Instr("VSUB");	}
+	public Instr vmul()				{ return new Instr("VMUL");	}
+	public Instr vdiv()				{ return new Instr("VDIV");	}
 	public Instr sadd()				{ return new Instr("SADD");	}
+	public Instr vaddi()            { return new Instr("VADDI"); }
+	public Instr vaddf()            { return new Instr("VADDF"); }
+	public Instr vsubi()            { return new Instr("VSUBI"); }
+	public Instr vsubf()            { return new Instr("VSUBF"); }
+	public Instr vmuli()            { return new Instr("VMULI"); }
+	public Instr vmulf()            { return new Instr("VMULF"); }
+	public Instr vdivi()            { return new Instr("VDIVI"); }
+	public Instr vdivf()            { return new Instr("VDIVF"); }
 
 
 	public Instr or()				{ return new Instr("OR"); }
@@ -50,11 +61,9 @@ public class ASM {
 
 	public Instr i2f()				{ return new Instr("I2F"); }
 	public Instr i2s()				{ return new Instr("I2S"); }
-	public Instr i2v()				{ return new Instr("I2V"); }
-	public Instr f2v()				{ return new Instr("F2V"); }
+
 	public Instr f2s()				{ return new Instr("F2S"); }
 	public Instr v2s()              { return new Instr("V2S"); }
-
 
 	public Instr ieq()				{ return new Instr("IEQ"); }
 	public Instr ineq()				{ return new Instr("INEQ"); }
@@ -68,12 +77,18 @@ public class ASM {
 	public Instr fle()				{ return new Instr("FLE"); }
 	public Instr fgt()				{ return new Instr("FGT"); }
 	public Instr fge()				{ return new Instr("FGE"); }
-	public Instr isnil()			{ return new Instr("ISNIL"); }
+	public Instr veq()              { return new Instr("VEQ"); }
+	public Instr vneq()             { return new Instr("VNEQ"); }
+	public Instr seq()              { return new Instr("SEQ"); }
+	public Instr sneq()             { return new Instr("SNEQ"); }
+	public Instr slt()				{ return new Instr("SLT"); }
+	public Instr sle()				{ return new Instr("SLE"); }
+	public Instr sgt()				{ return new Instr("SGT"); }
+	public Instr sge()				{ return new Instr("SGE"); }
+
 
 	public Instr br()				{ return new Instr("BR", 0); }
 	public Instr br(int a)			{ return new Instr("BR", a); }  // opnd is relative to start of BR instruction, which is offset 0
-	public Instr brt()				{ return new Instr("BRT", 0); }
-	public Instr brt(int a)			{ return new Instr("BRT", a); }
 	public Instr brf()				{ return new Instr("BRF", 0); }
 	public Instr brf(int a)			{ return new Instr("BRF", a); } // opnd arg is relative to next instruction being 0
 
@@ -91,9 +106,10 @@ public class ASM {
 
 	public Instr free()				{ return new Instr("FREE"); }
 
-	public Instr load_index()		{ return new Instr("LOAD_INDEX"); }
+	public Instr sload_index()		{ return new Instr("SLOAD_INDEX"); }
+	public Instr vload_index()      { return new Instr("VLOAD_INDEX"); }
 	public Instr store_index()		{ return new Instr("STORE_INDEX"); }
-	public Instr nil()				{ return new Instr("NIL"); }
+	public Instr push(int i)		{ return new Instr("PUSH", i); }
 	public Instr pop()              { return new Instr("POP");  }
 	public Instr call(int i)		{ return new Instr("CALL", i); }
 	public Instr ret()				{ return new Instr("RET"); }
@@ -120,36 +136,4 @@ public class ASM {
 		instructions.clear();
 		return code;
 	}
-
-	//	public String opnd16(int i) {
-//		byte[] bytes = intToBytes(i);
-//		if ( littleEndian ) {
-//			return String.format("0x%02x 0x%02x", bytes[1], bytes[0]);
-//		}
-//		else {
-//			return String.format("0x%02x 0x%02x", bytes[0], bytes[1]);
-//		}
-//	}
-//
-//	public String opnd32(String is) {
-//		return opnd32(Integer.valueOf(is));
-//	}
-//
-//	public String opnd32(int i) {
-//		byte[] bytes = intToBytes(i);
-//		if ( littleEndian ) {
-//			return String.format("0x%02x 0x%02x 0x%02x 0x%02x", bytes[3], bytes[2], bytes[1], bytes[0]);
-//		}
-//		else {
-//			return String.format("0x%02x 0x%02x 0x%02x 0x%02x", bytes[0], bytes[1], bytes[2], bytes[3]);
-//		}
-//	}
-//
-//	public byte[] intStringToBytes(String vs) { // comes out in big-endian form
-//		return intToBytes(Integer.valueOf(vs));
-//	}
-//
-//	public byte[] intToBytes(int v) { // comes out in big-endian form
-//		return ByteBuffer.allocate(4).putInt(v).array();
-//	}
 }

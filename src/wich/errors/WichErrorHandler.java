@@ -83,7 +83,7 @@ public class WichErrorHandler {
 	public int getErrorNum() { return errorList.size(); }
 
 	public String toString() {
-		return Utils.join(errorList, ", ");
+		return Utils.join(errorList, "\n ");
 	}
 }
 
