@@ -41,6 +41,7 @@ public enum ErrorType {
 	INVALID_TYPE("invalid type for (<arg1>)", ERROR),
 	SYMBOL_NOT_FOUND("symbol not found (<arg1>)", ERROR),
 	UNDEFINED_FUNCTION("function <arg1> not defined", ERROR),
+	INTERNAL_STRINGTEMPLATE_ERROR("internal stringtemplate error: <arg1>", ERROR),
 
 	UNKNOWN_TARGET("Unknown translation target: <arg1>", ERROR);
 

@@ -33,8 +33,10 @@ import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.TokenStream;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.stringtemplate.v4.ST;
+import org.stringtemplate.v4.STErrorListener;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
+import org.stringtemplate.v4.misc.STMessage;
 import wich.Trans;
 import wich.codegen.bytecode.BytecodeWriter;
 import wich.codegen.model.File;
@@ -220,6 +222,32 @@ public class CompilerUtils {
 
 		// model is complete, convert to template hierarchy then string
 		ModelConverter converter = new ModelConverter(templates);
+		templates.setListener(
+			new STErrorListener() {
+				@Override
+				public void compileTimeError(STMessage stMessage) {
+					error(stMessage);
+				}
+				@Override
+				public void runTimeError(STMessage stMessage) {
+					error(stMessage);
+				}
+				@Override
+				public void IOError(STMessage stMessage) {
+					error(stMessage);
+				}
+				@Override
+				public void internalError(STMessage stMessage) {
+					error(stMessage);
+				}
+				protected void error(STMessage stMessage) {
+					ErrorType etype = ErrorType.INTERNAL_STRINGTEMPLATE_ERROR;
+					ST template = new ST(etype.getMessageTemplate());
+					template.add("arg1", stMessage.toString());
+					err.error(template.render(), etype);
+				}
+			}
+		);
 		ST wichST = converter.walk(modelRoot);
 		return wichST.render();
 	}

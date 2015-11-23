@@ -39,11 +39,21 @@ public class WichErrorHandler {
 
 	protected List<String> errorList = new ArrayList<>();
 
+	public void error(String msg, ErrorType type) {
+		errorList.add(type.getSeverity().getName()+": "+msg);
+		if ( type.severity == WARNING ) {
+			errors++;
+		}
+		else {
+			warnings++;
+		}
+	}
+
 	// aggregate error messages. set
 	public void error(Token token, ErrorType type, String... args) {
 		try {
 			String msg = getErrorMessage(token, type, args);
-			errorList.add(type.getSeverity().getName()+": "+msg);
+			error(msg, type);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -55,7 +65,7 @@ public class WichErrorHandler {
 		try {
 			String msg = getErrorMessage(token, type, args);
 			String exc = e!=null ? Arrays.toString(e.getStackTrace()) : "";
-			errorList.add(type.getSeverity().getName()+": "+msg+"\n"+exc);
+			error(msg+"\n"+exc, type);
 		}
 		catch (Exception _e) {
 			_e.printStackTrace();
@@ -66,12 +76,6 @@ public class WichErrorHandler {
 		ST template = new ST(type.getMessageTemplate());
 		for (int i = 0; i < args.length; ++i) {
 			template.add("arg" + String.valueOf(i + 1), args[i]);
-		}
-		if ( type.severity == WARNING ) {
-			errors++;
-		}
-		else {
-			warnings++;
 		}
 		String location = "";
 		if ( token!=null ) {
