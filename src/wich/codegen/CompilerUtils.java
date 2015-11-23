@@ -37,7 +37,6 @@ import org.stringtemplate.v4.STErrorListener;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
 import org.stringtemplate.v4.misc.STMessage;
-import wich.Trans;
 import wich.codegen.bytecode.BytecodeWriter;
 import wich.codegen.model.File;
 import wich.errors.ErrorType;
@@ -186,6 +185,11 @@ public class CompilerUtils {
 		ParserRuleContext tree = checkCorrectness(input, symtab, err);
 		if ( tree==null || err.getErrorNum()>0) return "<invalid>";
 
+		if ( target==CodeGenTarget.BYTECODE ) {
+			BytecodeWriter gen = new BytecodeWriter("unused.wasm", symtab, (WichParser.ScriptContext)tree);
+			return gen.genObjectFile();
+		}
+
 		CodeGenerator codeGenerator = new CodeGenerator(symtab);
 		File modelRoot = codeGenerator.generate(tree);
 		STGroup templates;
@@ -217,9 +221,6 @@ public class CompilerUtils {
 			case MARK_AND_SWEEP:
 			case SCAVENGER:
 				templates = new STGroupFile("wich-gc.stg");
-				break;
-			case BYTECODE:
-				templates = new STGroupFile("wich-bytecode.stg");
 				break;
 			default :
 				err.error(null, ErrorType.UNKNOWN_TARGET, target.toString());
@@ -286,16 +287,5 @@ public class CompilerUtils {
 	public static String stripFirstLast(String s) {
 		return s.substring(1,s.length()-1);
 	}
-
-	public static String byteCodeGen(String wich) throws IOException {
-		Trans tool = new Trans();
-		SymbolTable symtab = new SymbolTable();
-		WichParser.ScriptContext tree = tool.semanticsPhase(wich, symtab);
-		BytecodeWriter gen = new BytecodeWriter("foo", tool, symtab,tree);
-		String result = gen.generateObjectFile();
-		result = result.replaceAll("\t", "");
-		return result;
-	}
-
 }
 

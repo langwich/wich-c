@@ -4,7 +4,6 @@ import wich.codegen.bytecode.BytecodeWriter;
 import wich.parser.WichParser;
 import wich.semantics.SymbolTable;
 
-import java.io.File;
 import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
@@ -711,8 +710,8 @@ public class TestBytecodeGen {
 		SymbolTable symtab = new SymbolTable();
 		WichParser.ScriptContext tree = tool.semanticsPhase(wich, symtab);
 		assertFalse(tree==null);
-		BytecodeWriter gen = new BytecodeWriter("foo", tool, symtab,tree);
-		String result = gen.generateObjectFile();
+		BytecodeWriter gen = new BytecodeWriter("foo", symtab, tree);
+		String result = gen.genObjectFile();
 		result = result.replaceAll("\t", "");
 		assertEquals(expecting, result);
 	}

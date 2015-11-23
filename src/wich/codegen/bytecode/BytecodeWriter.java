@@ -1,39 +1,42 @@
 package wich.codegen.bytecode;
 
-import wich.Trans;
 import wich.codegen.CompilerUtils;
 import wich.parser.WichParser;
 import wich.semantics.SymbolTable;
 import wich.semantics.symbols.WFunctionSymbol;
-import wich.semantics.symbols.WVariableSymbol;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.*;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /** Generate a file containing bytecode and symbol table information
  *  so that an interpreter/VM can execute the code.  For ease
  *  interoperability and debugging ease, generate text not binary file.
  *
- *  foo.lava source text file generates foo.olava object text file.
+ *  foo.w source text file generates foo.wasm object text file.
  */
 public class BytecodeWriter {
-	public Trans tool;
 	public SymbolTable symtab;
 	public String fileName;
 	public WichParser.ScriptContext tree;
 
-	public BytecodeWriter(String fileName, Trans tool, SymbolTable symtab,WichParser.ScriptContext tree) {
+	public BytecodeWriter(String fileName, SymbolTable symtab, WichParser.ScriptContext tree) {
 		this.fileName = fileName;
-		this.tool = tool;
 		this.symtab = symtab;
 		this.tree = tree;
 	}
 
+	public void write() throws IOException {
+		CompilerUtils.writeFile(fileName, genObjectFile(), StandardCharsets.UTF_8);
+	}
+
 	/** Return a string representation of the object file. */
-	public String generateObjectFile() {
+	public String genObjectFile() {
 		Code code = genBytecode();
 
 		StringBuilder buf = new StringBuilder();

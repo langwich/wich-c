@@ -1,27 +1,23 @@
-import junit.framework.Assert;
-import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.Triple;
 import org.antlr.v4.runtime.misc.Utils;
-import org.junit.Before;
 import org.junit.Test;
-import wich.Trans;
 import wich.codegen.CompilerUtils;
 import wich.codegen.bytecode.BytecodeWriter;
-import wich.errors.ErrorType;
 import wich.errors.WichErrorHandler;
 import wich.parser.WichParser;
 import wich.semantics.SymbolTable;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
 
 /*
 The MIT License (MIT)
@@ -46,7 +42,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-public class TestBytecodeInterpreter extends WichBaseTest{
+public class TestBytecodeInterpreter extends WichBaseTest {
 	protected static final String WORKING_DIR = "/tmp/";
 	protected static final String WVM_DIR = "/usr/local/wich/bin/";
 
@@ -70,56 +66,15 @@ public class TestBytecodeInterpreter extends WichBaseTest{
 	                               boolean valgrind)
 			throws IOException, InterruptedException
 	{
-		String output = getWASM(wichFileName);
-		System.out.println(output);
-		assertEquals(expected, output);
-/*		if ( valgrind ) {
-			valgrindCheck(executable);
-		}*/
-	}
-/*
-	protected void valgrindCheck(String executable) throws IOException, InterruptedException {
-		// For Intellij users you need to set PATH environment variable in Run/Debug configuration,
-		// since Intellij doesn't inherit environment variables from system.
-		String errSummary = exec(new String[]{"valgrind", executable}).c;
-		assertEquals("Valgrind memcheck failed...", 0, getErrorNumFromSummary(errSummary));
-	}*/
-
-	protected int getErrorNumFromSummary(String errSummary) {
-		if (errSummary == null || errSummary.length() == 0) return -1;
-		String[] lines = errSummary.split("\n");
-		String summary = lines[lines.length-1];
-		return Integer.parseInt(summary.substring(summary.indexOf(":") + 1, summary.lastIndexOf("errors")).trim());
-	}
-
-	protected String getWASM(String wichInputFilename)
-			throws IOException, InterruptedException
-	{
-		// Translate to .wasm file.
-		Trans tool = new Trans();
-		SymbolTable symtab = new SymbolTable();
-		WichErrorHandler err = new WichErrorHandler();
-		String wichInput = CompilerUtils.readFile(wichInputFilename, CompilerUtils.FILE_ENCODING);
-		WichParser.ScriptContext tree = (WichParser.ScriptContext) CompilerUtils.checkCorrectness(wichInput, symtab, err);
-		BytecodeWriter gen = new BytecodeWriter("foo", tool, symtab,tree);
-		String actual = gen.generateObjectFile();
-		actual = actual.replaceAll("\t", "");
-		assertTrue(err.toString(), err.getErrorNum()==0);
 		String generatedFileName = WORKING_DIR + baseName + ".wasm";
-		CompilerUtils.writeFile(generatedFileName, actual, StandardCharsets.UTF_8);
-
-	/*	File execF = new File(generatedFileName);
-		if ( execF.exists() ) {
-			execF.delete();
-		}
-*/
+		writeWASM(wichFileName, generatedFileName);
 
 		List<String> cc = new ArrayList<>();
 		cc.addAll(
-				Arrays.asList(
-						"./wvm", generatedFileName
-				)
-		);
+			Arrays.asList(
+				"./wvm", generatedFileName
+			             )
+		         );
 
 		String[] cmd = cc.toArray(new String[cc.size()]);
 		final Triple<Integer, String, String> result = exec(cmd);
@@ -131,8 +86,37 @@ public class TestBytecodeInterpreter extends WichBaseTest{
 					cmdS+"\nstderr:\n"+result.c);
 		}
 
-		return result.b;
+		// TODO: ??
+//		if ( valgrind ) {
+//			valgrindCheck(executable);
+//		}
+	}
 
+	protected void writeWASM(String wichInputFilename, String generatedFileName)
+		throws IOException, InterruptedException
+	{
+		// Translate to .wasm file.
+		SymbolTable symtab = new SymbolTable();
+		WichErrorHandler err = new WichErrorHandler();
+		String wichInput = CompilerUtils.readFile(wichInputFilename, CompilerUtils.FILE_ENCODING);
+		WichParser.ScriptContext tree = (WichParser.ScriptContext) CompilerUtils.checkCorrectness(wichInput, symtab, err);
+		BytecodeWriter gen = new BytecodeWriter(generatedFileName, symtab, tree);
+		gen.write();
+		assertTrue(err.toString(), err.getErrorNum()==0);
+	}
+
+//	protected void valgrindCheck(String executable) throws IOException, InterruptedException {
+//		// For Intellij users you need to set PATH environment variable in Run/Debug configuration,
+//		// since Intellij doesn't inherit environment variables from system.
+//		String errSummary = exec(new String[]{"valgrind", executable}).c;
+//		assertEquals("Valgrind memcheck failed...", 0, getErrorNumFromSummary(errSummary));
+//	}
+
+	protected int getErrorNumFromSummary(String errSummary) {
+		if (errSummary == null || errSummary.length() == 0) return -1;
+		String[] lines = errSummary.split("\n");
+		String summary = lines[lines.length-1];
+		return Integer.parseInt(summary.substring(summary.indexOf(":") + 1, summary.lastIndexOf("errors")).trim());
 	}
 
 	protected Triple<Integer, String, String> exec(String[] cmd) throws IOException, InterruptedException {
