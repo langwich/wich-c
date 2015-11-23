@@ -5,8 +5,6 @@ import org.antlr.symtab.Type;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.NotNull;
-import org.stringtemplate.v4.STGroup;
-import org.stringtemplate.v4.STGroupFile;
 import wich.codegen.model.ArgDef;
 import wich.codegen.model.AssignStat;
 import wich.codegen.model.Block;
@@ -40,7 +38,6 @@ import wich.codegen.model.ReturnStat;
 import wich.codegen.model.ReturnVectorHeapVarStat;
 import wich.codegen.model.Stat;
 import wich.codegen.model.StringDecl;
-import wich.codegen.model.expr.StringLiteral;
 import wich.codegen.model.StringType;
 import wich.codegen.model.StringVarDefStat;
 import wich.codegen.model.VarDefStat;
@@ -63,6 +60,7 @@ import wich.codegen.model.expr.IntLiteral;
 import wich.codegen.model.expr.NegateExpr;
 import wich.codegen.model.expr.NotExpr;
 import wich.codegen.model.expr.StringIndexExpr;
+import wich.codegen.model.expr.StringLiteral;
 import wich.codegen.model.expr.TrueLiteral;
 import wich.codegen.model.expr.VarRef;
 import wich.codegen.model.expr.VectorElement;
@@ -92,7 +90,6 @@ import static wich.parser.WichParser.FunctionContext;
 
 public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	protected int blockNumber = 0; // tracks block number within each method
-	protected STGroup templates;
 	protected final SymbolTable symtab;
 	protected File currentFile;
 	protected Scope currentScope;
@@ -105,7 +102,6 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	protected static final String PROMO = "promo";
 
 	public CodeGenerator(SymbolTable symtab) {
-		this.templates = new STGroupFile("wich.stg");
 		this.symtab = symtab;
 	}
 
