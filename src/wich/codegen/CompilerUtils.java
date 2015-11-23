@@ -56,8 +56,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import static org.junit.Assert.assertEquals;
-
 public class CompilerUtils {
 
 	public static final int VOID_TYPE = 0;
