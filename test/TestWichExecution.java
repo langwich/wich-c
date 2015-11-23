@@ -74,28 +74,33 @@ public class TestWichExecution extends WichBaseTest {
 		switch ( target ) {
 			case PLAIN :
 				expectedOutputURL =
-					CompilerUtils.getResourceFile(TEST_RES_PLAIN_GEND_CODE+"/"+baseName+".c");
+					CompilerUtils.getResourceFile(TEST_RES_PLAIN_GEND_CODE+"/"+baseName+target.fileExtension);
 				break;
 			case REFCOUNTING :
 				expectedOutputURL =
-					CompilerUtils.getResourceFile(TEST_RES_REFCOUNTING_GEND_CODE+"/"+baseName+".c");
+					CompilerUtils.getResourceFile(TEST_RES_REFCOUNTING_GEND_CODE+"/"+baseName+target.fileExtension);
 				break;
 			case LLVM :
 				expectedOutputURL =
-						CompilerUtils.getResourceFile(TEST_RES_LLVM_GEND_CODE+"/"+baseName+".ll");
+						CompilerUtils.getResourceFile(TEST_RES_LLVM_GEND_CODE+"/"+baseName+target.fileExtension);
 				break;
 			case LLVM_MARK_AND_COMPACT :
 				expectedOutputURL =
-						CompilerUtils.getResourceFile(TEST_RES_LLVM_MC_GEND_CODE+"/"+baseName+".ll");
+						CompilerUtils.getResourceFile(TEST_RES_LLVM_MC_GEND_CODE+"/"+baseName+target.fileExtension);
 				break;
 			case LLVM_MARK_AND_SWEEP:
 				expectedOutputURL =
-						CompilerUtils.getResourceFile(TEST_RES_LLVM_MS_GEND_CODE+"/"+baseName+".ll");
+						CompilerUtils.getResourceFile(TEST_RES_LLVM_MS_GEND_CODE+"/"+baseName+target.fileExtension);
 				break;
 			case MARK_AND_COMPACT:
 			case MARK_AND_SWEEP:
+			case SCAVENGER:
 				expectedOutputURL =
-					CompilerUtils.getResourceFile(TEST_RES_GC_GEND_CODE+"/"+baseName+".c");
+					CompilerUtils.getResourceFile(TEST_RES_GC_GEND_CODE+"/"+baseName+target.fileExtension);
+				break;
+			case BYTECODE:
+				expectedOutputURL =
+					CompilerUtils.getResourceFile(TEST_RES_BYTECODE_GEND_CODE+"/"+baseName+target.fileExtension);
 				break;
 			default :
 				err.error(null, ErrorType.UNKNOWN_TARGET, target.toString());

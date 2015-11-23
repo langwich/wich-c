@@ -41,6 +41,7 @@ public class WichBaseTest {
 	public static final String TEST_RES_LLVM_MC_GEND_CODE = "llvm-mc";
 	public static final String TEST_RES_LLVM_MS_GEND_CODE = "llvm-ms";
 	public static final String TEST_RES_GC_GEND_CODE = "gc";
+	public static final String TEST_RES_BYTECODE_GEND_CODE = "wasm";
 
 	protected File input;
 	protected String baseName;

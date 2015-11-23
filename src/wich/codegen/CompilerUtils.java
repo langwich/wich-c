@@ -84,22 +84,24 @@ public class CompilerUtils {
 -- Installing: /usr/local/wich/lib/libmark_and_sweep.a
 	 */
 	public enum CodeGenTarget {
-		PLAIN(new String[]{"wlib"}),
-		LLVM(new String[]{"wlib"}),
-		LLVM_MARK_AND_COMPACT(new String[]{"wlib_mark_and_compact", "mark_and_compact", "gc_mark_and_compact", "malloc_common"}),
-		LLVM_MARK_AND_SWEEP(new String[]{"wlib_mark_and_sweep", "mark_and_sweep", "gc_mark_and_sweep", "malloc_common"}),
-		REFCOUNTING(new String[]{"wlib_refcounting"}),
-		MARK_AND_COMPACT(new String[]{"wlib_mark_and_compact", "mark_and_compact", "gc_mark_and_compact", "malloc_common"}),
-		MARK_AND_SWEEP(new String[]{"wlib_mark_and_sweep", "mark_and_sweep", "gc_mark_and_sweep", "malloc_common"}),
-		SCAVENGER(new String[]{"wlib"}),
-		BYTECODE(new String[]{});
+		PLAIN(new String[]{"wlib"}, ".c"),
+		LLVM(new String[]{"wlib"}, ".ll"),
+		LLVM_MARK_AND_COMPACT(new String[]{"wlib_mark_and_compact", "mark_and_compact", "gc_mark_and_compact", "malloc_common"}, ".ll"),
+		LLVM_MARK_AND_SWEEP(new String[]{"wlib_mark_and_sweep", "mark_and_sweep", "gc_mark_and_sweep", "malloc_common"}, ".ll"),
+		REFCOUNTING(new String[]{"wlib_refcounting"}, ".c"),
+		MARK_AND_COMPACT(new String[]{"wlib_mark_and_compact", "mark_and_compact", "gc_mark_and_compact", "malloc_common"}, ".c"),
+		MARK_AND_SWEEP(new String[]{"wlib_mark_and_sweep", "mark_and_sweep", "gc_mark_and_sweep", "malloc_common"}, ".c"),
+		SCAVENGER(new String[]{"wlib"}, ".c"),
+		BYTECODE(new String[]{}, ".wasm");
 
 		public String[] libs;
 		public String flag;
+		public String fileExtension; // ".c" for stuff like script.c, script.wasm, etc...
 
-		CodeGenTarget(String[] libs) {
+		CodeGenTarget(String[] libs, String fileExtension) {
 			this.libs = libs;
 			this.flag = this.toString();
+			this.fileExtension = fileExtension;
 		}
 	}
 
@@ -213,7 +215,11 @@ public class CompilerUtils {
 				break;
 			case MARK_AND_COMPACT:
 			case MARK_AND_SWEEP:
+			case SCAVENGER:
 				templates = new STGroupFile("wich-gc.stg");
+				break;
+			case BYTECODE:
+				templates = new STGroupFile("wich-bytecode.stg");
 				break;
 			default :
 				err.error(null, ErrorType.UNKNOWN_TARGET, target.toString());

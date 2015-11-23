@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static wich.errors.ErrorSeverity.WARNING;
+import static wich.errors.ErrorSeverity.ERROR;
 
 public class WichErrorHandler {
 	public int errors = 0;
@@ -41,7 +41,7 @@ public class WichErrorHandler {
 
 	public void error(String msg, ErrorType type) {
 		errorList.add(type.getSeverity().getName()+": "+msg);
-		if ( type.severity == WARNING ) {
+		if ( type.severity == ERROR ) {
 			errors++;
 		}
 		else {
