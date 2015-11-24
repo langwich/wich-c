@@ -72,7 +72,7 @@ public class TestBytecodeInterpreter extends WichBaseTest {
 		List<String> cc = new ArrayList<>();
 		cc.addAll(
 			Arrays.asList(
-				"./wvm", generatedFileName
+				"./wrun", generatedFileName
 			             )
 		         );
 
