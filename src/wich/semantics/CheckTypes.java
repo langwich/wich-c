@@ -23,6 +23,7 @@ SOFTWARE.
 */
 package wich.semantics;
 
+import org.antlr.symtab.Scope;
 import org.antlr.symtab.Symbol;
 import org.antlr.symtab.Type;
 import org.antlr.symtab.TypedSymbol;
@@ -120,5 +121,24 @@ public class CheckTypes extends MaintainScopeListener {
 		if (type != SymbolTable._vector && type != SymbolTable._string) {
 			error(ctx.start,TYPE_ERROR_FOR_LEN,ctx.expr().exprType.getName());
 		}
+	}
+
+	@Override
+	public void exitReturn(@NotNull WichParser.ReturnContext ctx) {
+		Type returnType = findFunctionSymbol(ctx).getType();
+		if (ctx.expr().exprType != returnType) {
+			errorHandler.error(ctx.start, RETURN_TYPE_ERROR, ctx.expr().exprType.getName(), returnType.getName());
+		}
+	}
+
+	public WFunctionSymbol findFunctionSymbol(@NotNull WichParser.ReturnContext ctx) {
+		Scope s = currentScope;
+		while(! (s instanceof WFunctionSymbol)) {
+			s = s.getEnclosingScope();
+		}
+		if (s != null)
+			return (WFunctionSymbol)s;
+		else
+			return null;
 	}
 }

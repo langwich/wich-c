@@ -169,6 +169,17 @@ public class TestTranslatorError {
 		compileAndCheckError(input, expected);
 	}
 
+	@Test
+	public void testReturnTypeError() throws Exception {
+		String input =
+				"func f():float {\n" +
+					"return 34\n" +
+				"}\n";
+		String expected =
+				"error: line 2:0 invalid return type int, float was expected";
+		compileAndCheckError(input, expected);
+	}
+
 	private void compileAndCheckError(String input, String expected) {
 		SymbolTable symtab = new SymbolTable();
 		WichErrorHandler errorHandler = new WichErrorHandler();

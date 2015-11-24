@@ -42,7 +42,7 @@ public enum ErrorType {
 	SYMBOL_NOT_FOUND("symbol not found (<arg1>)", ERROR),
 	UNDEFINED_FUNCTION("function <arg1> not defined", ERROR),
 	INTERNAL_STRINGTEMPLATE_ERROR("internal stringtemplate error: <arg1>", ERROR),
-
+	RETURN_TYPE_ERROR("invalid return type <arg1>, <arg2> was expected", ERROR),
 	UNKNOWN_TARGET("Unknown translation target: <arg1>", ERROR),
 	TYPE_ERROR_FOR_LEN("object of expression type has no len()",ERROR);
 
