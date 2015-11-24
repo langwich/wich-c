@@ -1,0 +1,12 @@
+0 strings
+2 functions
+	0: addr=0 args=2 locals=0 type=0 1/f
+	1: addr=4 args=0 locals=0 type=0 4/main
+7 instr, 7 bytes
+	GC_START
+	NOP
+	RET
+	GC_END
+	GC_START
+	GC_END
+	HALT

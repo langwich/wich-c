@@ -1,0 +1,43 @@
+5 strings
+	0: 2/ca
+	1: 3/cat
+	2: 3/dog
+	3: 4/x==y
+	4: 4/x!=y
+2 functions
+	0: addr=0 args=1 locals=0 type=3 3/cmp
+	1: addr=13 args=0 locals=2 type=0 4/main
+33 instr, 65 bytes
+	GC_START
+	SLOAD 0
+	SCONST 0
+	SEQ
+	GC_END
+	RET
+	PUSH_DFLT_RETV
+	RET
+	GC_END
+	GC_START
+	SCONST 1
+	STORE 0
+	SROOT
+	SCONST 2
+	STORE 1
+	SROOT
+	SLOAD 0
+	SLOAD 1
+	SEQ
+	BRF 7
+	SCONST 3
+	SPRINT
+	SLOAD 0
+	SLOAD 1
+	SNEQ
+	BRF 7
+	SCONST 4
+	SPRINT
+	SLOAD 0
+	CALL 0
+	BPRINT
+	GC_END
+	HALT

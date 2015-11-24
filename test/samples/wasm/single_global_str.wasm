@@ -1,0 +1,11 @@
+1 strings
+	0: 12/Hello World!
+1 functions
+	0: addr=0 args=0 locals=1 type=0 4/main
+6 instr, 10 bytes
+	GC_START
+	SCONST 0
+	STORE 0
+	SROOT
+	GC_END
+	HALT

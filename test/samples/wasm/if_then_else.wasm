@@ -1,0 +1,22 @@
+2 strings
+	0: 4/TRUE
+	1: 5/FALSE
+1 functions
+	0: addr=0 args=0 locals=2 type=0 4/main
+16 instr, 40 bytes
+	GC_START
+	ICONST 2
+	STORE 0
+	ICONST 1
+	STORE 1
+	ILOAD 0
+	ILOAD 1
+	IGT
+	BRF 10
+	SCONST 0
+	SPRINT
+	BR 7
+	SCONST 1
+	SPRINT
+	GC_END
+	HALT

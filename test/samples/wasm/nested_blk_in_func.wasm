@@ -1,0 +1,23 @@
+2 strings
+	0: 3/cat
+	1: 3/dog
+2 functions
+	0: addr=0 args=0 locals=3 type=0 1/f
+	1: addr=24 args=0 locals=0 type=0 4/main
+16 instr, 30 bytes
+	GC_START
+	SCONST 0
+	STORE 0
+	SROOT
+	SCONST 1
+	STORE 1
+	SROOT
+	SLOAD 0
+	STORE 2
+	SROOT
+	RET
+	GC_END
+	GC_START
+	CALL 0
+	GC_END
+	HALT

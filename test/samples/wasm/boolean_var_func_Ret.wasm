@@ -1,0 +1,31 @@
+2 strings
+	0: 5/happy
+	1: 3/sad
+2 functions
+	0: addr=0 args=1 locals=0 type=3 3/foo
+	1: addr=15 args=0 locals=2 type=0 4/main
+24 instr, 52 bytes
+	GC_START
+	ILOAD 0
+	ICONST 10
+	ILT
+	GC_END
+	RET
+	PUSH_DFLT_RETV
+	RET
+	GC_END
+	GC_START
+	ICONST 5
+	STORE 0
+	ILOAD 0
+	CALL 0
+	STORE 1
+	ILOAD 1
+	BRF 10
+	SCONST 0
+	SPRINT
+	BR 7
+	SCONST 1
+	SPRINT
+	GC_END
+	HALT
