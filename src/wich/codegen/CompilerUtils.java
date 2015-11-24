@@ -162,7 +162,7 @@ public class CompilerUtils {
 			walker.walk(computeTypes, tree);
 			walker = new ParseTreeWalker();
 			walker.walk(assignTypes, tree);
-		} while(!assignTypes.isAssignFinished());
+		} while(!assignTypes.isAssignFinished() && err.getErrorNum() == 0);
 
 		FinalComputeTypes finalComputeTypes = new FinalComputeTypes(err);
 		walker = new ParseTreeWalker();
