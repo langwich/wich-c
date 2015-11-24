@@ -142,7 +142,7 @@ public class TestBytecodeInterpreter extends WichBaseTest {
 	}
 
 	protected String executeWASM(String executable) throws IOException, InterruptedException {
-		Triple<Integer, String, String> result = exec(new String[]{"./wvm "+executable});
+		Triple<Integer, String, String> result = exec(new String[]{"./wrun "+executable});
 		if ( result.a!=0 ) {
 			throw new RuntimeException("failed execution of "+executable+" with result code "+result.a+"; stderr:\n"+result.c);
 		}

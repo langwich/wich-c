@@ -1,6 +1,7 @@
 package wich.codegen.bytecode;
 
 import wich.codegen.CompilerUtils;
+import wich.errors.WichErrorHandler;
 import wich.parser.WichParser;
 import wich.semantics.SymbolTable;
 import wich.semantics.symbols.WFunctionSymbol;

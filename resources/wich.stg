@@ -151,8 +151,8 @@ PrintIntStat(pi,expr) 	  ::= <<printf("%d\n", <expr>);>>
 PrintFloatStat(pf,expr)   ::= <<printf("%1.2f\n", <expr>);>>
 PrintBooleanStat(pb,expr) ::= <<printf("%d\n", <expr>);>>
 
-VectorLen(v,expr) ::= <<Vector_len(<expr>)>>
-StrLen(s,expr)    ::= <<String_len(<expr>)>>
+VectorLen(v,expr,type) ::= <<Vector_len(<expr>)>>
+StrLen(s,expr,type)    ::= <<String_len(<expr>)>>
 
 BinaryPrimitiveOp(op,left,right) ::= "(<left> <CPrimitiveBinaryOpMap.(op.wichOp)> <right>)"
 BinaryStringOp(op, left, right)  ::= "<CStringBinaryOpMap.(op.wichOp)>(<left>,<right>)"

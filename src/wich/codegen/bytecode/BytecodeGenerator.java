@@ -6,7 +6,6 @@ import org.antlr.symtab.Symbol;
 import org.antlr.symtab.Type;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.NotNull;
-import wich.errors.WichErrorHandler;
 import wich.parser.WichBaseVisitor;
 import wich.parser.WichParser;
 import wich.semantics.SymbolTable;
@@ -15,9 +14,9 @@ import wich.semantics.symbols.*;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import static wich.errors.ErrorType.INCOMPATIBLE_ARGUMENT_ERROR;
-
+import wich.errors.WichErrorHandler;
+import static wich.errors.ErrorType.*;
+import wich.semantics.CommonWichListener;
 /**
  *  In the end of visitor is a better alternative for generating code
  *  over the listener. The listener can't control the order in which the
@@ -108,7 +107,7 @@ public class BytecodeGenerator extends WichBaseVisitor<Code> {
 		String funcName = ctx.ID().getText();
 		functionBodies.put(funcName, func);
 		popScope();
-		return Code.None; // don't hook onto other bodies
+		return func;
 	}
 
 	@Override
@@ -137,11 +136,13 @@ public class BytecodeGenerator extends WichBaseVisitor<Code> {
 	@Override
 	public Code visitVardef(@NotNull WichParser.VardefContext ctx) {
 		WVariableSymbol v = (WVariableSymbol)currentScope.resolve(ctx.ID().getText());
-		if (v.getScope() == symtab.GLOBALS) {
+		if (v.getScope() == symtab.GLOBALS) {//move var in wich global to main
 			symtab.getfunctions().get("main").define(v);
 		}
 		Code code = visit(ctx.expr());
-		if (isVectorCopyNeeded(ctx.expr())) code = code.join(asm.vec_copy());
+		if (isVectorCopyNeeded(ctx.expr())) {
+			code = code.join(asm.vec_copy());
+		}
 		code = code.join(asm.store(getSymbolIndex(v)));
 		if (ctx.expr().exprType == SymbolTable._vector) {
 			code = code.join(asm.vroot());
@@ -197,10 +198,7 @@ public class BytecodeGenerator extends WichBaseVisitor<Code> {
 		while (!(scope instanceof WFunctionSymbol)) {
 			scope = scope.getEnclosingScope();
 		}
-		if (ctx.expr().exprType != ((WFunctionSymbol)scope).getType()) {
-			//todo error
-		}
-		return visit(ctx.expr()).join(asm.gc_end()).join(asm.retv());
+		return visit(ctx.expr()).join(asm.gc_end()).join(asm.ret());
 	}
 
 	@Override

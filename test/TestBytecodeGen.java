@@ -155,9 +155,9 @@ public class TestBytecodeGen {
 						"GC_START\n" +
 						"ILOAD 0\n" +
 						"GC_END\n" +
-						"RETV\n" +
+						"RET\n" +
 						"PUSH_DFLT_RETV\n" +
-						"RETV\n" +
+						"RET\n" +
 						"GC_END\n" +
 						"GC_START\n" +
 						"GC_END\n" +
@@ -189,9 +189,9 @@ public class TestBytecodeGen {
 						"BPRINT\n" +
 						"ILOAD 0\n" +
 						"GC_END\n" +
-						"RETV\n" +
+						"RET\n" +
 						"PUSH_DFLT_RETV\n" +
-						"RETV\n" +
+						"RET\n" +
 						"GC_END\n" +
 						"GC_START\n" +
 						"GC_END\n" +
@@ -295,7 +295,7 @@ public class TestBytecodeGen {
 						"GC_START\n" +
 						"ICONST 3\n" +
 						"GC_END\n" +
-						"RETV\n" +
+						"RET\n" +
 						"GC_END\n" +
 						"HALT\n";
 		checkCodeGen(wich, expecting);
@@ -719,7 +719,7 @@ public class TestBytecodeGen {
 						"ILOAD 0\n" +
 						"ILOAD 0\n" +
 						"IMUL\n" +
-						"RETV\n" +
+						"RET\n" +
 						"RET\n" +
 						"ICONST 10\n" +
 						"CALL 0\n" +
@@ -780,7 +780,7 @@ public class TestBytecodeGen {
 						"ILOAD 0\n" +
 						"VADDI\n" +
 						"GC_END\n" +
-						"RETV\n" +
+						"RET\n" +
 						"BR 22\n" +
 						"ICONST 1\n" +
 						"I2F\n" +
@@ -790,7 +790,7 @@ public class TestBytecodeGen {
 						"VADDI\n" +
 						"STORE 0\n" +
 						"PUSH_DFLT_RETV\n" +
-						"RETV\n" +
+						"RET\n" +
 						"GC_END\n" +
 						"GC_START\n" +
 						"ICONST 3\n" +
@@ -931,9 +931,9 @@ public class TestBytecodeGen {
 				"BR -121\n" +
 				"VLOAD 2\n" +
 				"GC_END\n" +
-				"RETV\n" +
+				"RET\n" +
 				"PUSH_DFLT_RETV\n" +
-				"RETV\n" +
+				"RET\n" +
 				"GC_END\n" +
 				"GC_START\n" +
 				"ICONST 1\n" +
