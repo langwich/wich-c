@@ -985,7 +985,7 @@ public class TestBytecodeGen {
 		SymbolTable symtab = new SymbolTable();
 		WichParser.ScriptContext tree = tool.semanticsPhase(wich, symtab);
 		assertFalse(tree==null);
-		BytecodeWriter gen = new BytecodeWriter("foo", symtab, tree);
+		BytecodeWriter gen = new BytecodeWriter(symtab, tree);
 		String result = gen.genObjectFile();
 		result = result.replaceAll("\t", "");
 		assertEquals(expecting, result);

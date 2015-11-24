@@ -148,6 +148,7 @@ public class CompilerUtils {
 		DefineSymbols defSymbols = new DefineSymbols(symtab, err);
 		walker.walk(defSymbols, tree);
 		symtab.numOfVars = defSymbols.getNumOfVars();
+		if (err.getErrorNum() > 0) return null;  //defineSymbol can throw invalid type for function symbols
 		return tree;
 	}
 
@@ -186,7 +187,7 @@ public class CompilerUtils {
 		if ( tree==null || err.getErrorNum()>0) return "<invalid>";
 
 		if ( target==CodeGenTarget.BYTECODE ) {
-			BytecodeWriter gen = new BytecodeWriter("unused.wasm", symtab, (WichParser.ScriptContext)tree);
+			BytecodeWriter gen = new BytecodeWriter(symtab, (WichParser.ScriptContext)tree);
 			return gen.genObjectFile();
 		}
 
