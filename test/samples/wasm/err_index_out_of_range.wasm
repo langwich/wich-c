@@ -1,0 +1,26 @@
+0 strings
+1 functions
+	0: addr=0 args=0 locals=1 type=0 4/main
+22 instr, 56 bytes
+	GC_START
+	ICONST 1
+	I2F
+	ICONST 2
+	I2F
+	ICONST 3
+	I2F
+	ICONST 4
+	I2F
+	ICONST 4
+	VECTOR
+	STORE 0
+	VROOT
+	VLOAD 0
+	ICONST 6
+	ICONST 5
+	I2F
+	STORE_INDEX
+	VLOAD 0
+	VPRINT
+	GC_END
+	HALT

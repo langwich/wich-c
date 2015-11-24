@@ -103,9 +103,6 @@ public class ASM {
 	public Instr store(int i)		{ return new Instr("STORE", i); }
 
 	public Instr vector()           { return new Instr("VECTOR"); }
-
-	public Instr free()				{ return new Instr("FREE"); }
-
 	public Instr sload_index()		{ return new Instr("SLOAD_INDEX"); }
 	public Instr vload_index()      { return new Instr("VLOAD_INDEX"); }
 	public Instr store_index()		{ return new Instr("STORE_INDEX"); }

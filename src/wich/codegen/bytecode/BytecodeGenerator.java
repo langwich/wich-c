@@ -107,7 +107,7 @@ public class BytecodeGenerator extends WichBaseVisitor<Code> {
 		String funcName = ctx.ID().getText();
 		functionBodies.put(funcName, func);
 		popScope();
-		return func;
+		return Code.None;
 	}
 
 	@Override

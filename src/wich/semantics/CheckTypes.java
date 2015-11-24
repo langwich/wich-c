@@ -23,10 +23,7 @@ SOFTWARE.
 */
 package wich.semantics;
 
-import org.antlr.symtab.Scope;
-import org.antlr.symtab.Symbol;
-import org.antlr.symtab.Type;
-import org.antlr.symtab.TypedSymbol;
+import org.antlr.symtab.*;
 import org.antlr.v4.runtime.misc.NotNull;
 import wich.errors.WichErrorHandler;
 import wich.parser.WichParser;
@@ -125,18 +122,21 @@ public class CheckTypes extends MaintainScopeListener {
 
 	@Override
 	public void exitReturn(@NotNull WichParser.ReturnContext ctx) {
-		Type returnType = findFunctionSymbol(ctx).getType();
-		if (ctx.expr().exprType != returnType) {
-			errorHandler.error(ctx.start, RETURN_TYPE_ERROR, ctx.expr().exprType.getName(), returnType.getName());
+		WFunctionSymbol f = findFunctionSymbol();
+		if (f != null) {
+			Type returnType = f.getType();
+			if (ctx.expr().exprType != returnType) {
+				errorHandler.error(ctx.start, RETURN_TYPE_ERROR, ctx.expr().exprType.getName(), returnType.getName());
+			}
 		}
 	}
 
-	public WFunctionSymbol findFunctionSymbol(@NotNull WichParser.ReturnContext ctx) {
+	public WFunctionSymbol findFunctionSymbol() {
 		Scope s = currentScope;
-		while(! (s instanceof WFunctionSymbol)) {
+		while(!(s instanceof WFunctionSymbol || s instanceof GlobalScope)) {
 			s = s.getEnclosingScope();
 		}
-		if (s != null)
+		if (s instanceof WFunctionSymbol)
 			return (WFunctionSymbol)s;
 		else
 			return null;
