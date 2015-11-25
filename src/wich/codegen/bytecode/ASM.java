@@ -110,7 +110,6 @@ public class ASM {
 	public Instr pop()              { return new Instr("POP");  }
 	public Instr call(int i)		{ return new Instr("CALL", i); }
 	public Instr ret()				{ return new Instr("RET"); }
-	public Instr retv()				{ return new Instr("RETV"); }
 
 	public Instr iprint()			{ return new Instr("IPRINT"); }
 	public Instr fprint()			{ return new Instr("FPRINT"); }

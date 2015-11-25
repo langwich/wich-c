@@ -96,13 +96,10 @@ public class BytecodeGenerator extends WichBaseVisitor<Code> {
 	public Code visitFunction(@NotNull WichParser.FunctionContext ctx) {
 		pushScope(ctx.scope);
 		Code func = asm.gc_start().join(visit(ctx.block()));
-		if (ctx.type() == null){
-			func = func.join(asm.ret());
-		}
-		else {
+		if (ctx.type() != null){
 			func = func.join(asm.push_dflt_value());
-			func = func.join(asm.retv());
 		}
+		func = func.join(asm.ret());
 		func = func.join(asm.gc_end());
 		String funcName = ctx.ID().getText();
 		functionBodies.put(funcName, func);
