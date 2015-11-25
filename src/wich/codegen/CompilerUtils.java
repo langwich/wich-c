@@ -159,11 +159,18 @@ public class CompilerUtils {
 		ComputeTypes computeTypes = new ComputeTypes(err);
 		AssignTypes assignTypes = new AssignTypes(err, symtab.numOfVars);
 		ParseTreeWalker walker = new ParseTreeWalker();
+		int assignedBefore, assignedAfter;
+		int errorsBefore, errorsAfter;
 		do {
+			assignedBefore = assignTypes.getCountOfAssigned();
+			errorsBefore = err.getErrorNum();
 			walker.walk(computeTypes, tree);
 			walker = new ParseTreeWalker();
 			walker.walk(assignTypes, tree);
-		} while(!assignTypes.isAssignFinished() && err.getErrorNum() == 0);
+			assignedAfter = assignTypes.getCountOfAssigned();
+			errorsAfter = err.getErrorNum();
+		} while( !assignTypes.isAssignFinished() &&
+				 !(assignedBefore == assignedAfter && assignedAfter < symtab.numOfVars) );
 
 		FinalComputeTypes finalComputeTypes = new FinalComputeTypes(err);
 		walker = new ParseTreeWalker();
