@@ -49,7 +49,7 @@ bubbleSort(PVector_ptr vec)
 }
 
 int
-main(int argc, char *argv[])
+main(int ____c, char *____v[])
 {
     setup_error_handlers();
     ENTER();

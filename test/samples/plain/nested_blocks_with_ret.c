@@ -1,16 +1,9 @@
 #include <stdio.h>
 #include "wich.h"
-<<<<<<< HEAD
 
 int f(PVector_ptr a);
 
 int f(PVector_ptr a)
-=======
-int f(PVector_ptr a);
-
-int
-f(PVector_ptr a)
->>>>>>> 8e1235b... correct vector copy when needed
 {
     int x;
     String * b;
@@ -37,15 +30,9 @@ f(PVector_ptr a)
 
 int main(int ____c, char *____v[])
 {
-<<<<<<< HEAD
-	setup_error_handlers();
-	printf("%d\n", f(Vector_new((double []){1}, 1)));
-	return 0;
-=======
     setup_error_handlers();
     printf("%d\n", f(Vector_new((double[]) {
                                 1}, 1)));
     return 0;
->>>>>>> 8e1235b... correct vector copy when needed
 }
 

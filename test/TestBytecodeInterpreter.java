@@ -81,7 +81,6 @@ public class TestBytecodeInterpreter extends TestWichExecution {
 		String actual = executeWASM(wasmFilename);
 		assertEquals(expected, actual);
 
-		//?? integrate valgrind to wrun ??
 		if ( valgrind ) {
 			valgrindCheck(wasmFilename);
 		}

@@ -2,7 +2,7 @@
 #include "wich.h"
 #include "refcounting.h"
 int
-main(int argc, char *argv[])
+main(int ____c, char *____v[])
 {
     setup_error_handlers();
     ENTER();

@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "wich.h"
 int
-main(int argc, char *argv[])
+main(int ____c, char *____v[])
 {
     setup_error_handlers();
     String *a;
