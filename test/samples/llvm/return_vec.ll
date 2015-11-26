@@ -228,10 +228,11 @@ store i8** %argv, i8*** %argv_
 call void () @setup_error_handlers()
 %x0_ = alloca %struct.PVector_ptr
 %0 = call %struct.PVector_ptr () @foo()
-store %struct.PVector_ptr %0, %struct.PVector_ptr* %x0_
+%1 = call %struct.PVector_ptr @Vector_copy(%struct.PVector_ptr %0)
+store %struct.PVector_ptr %1, %struct.PVector_ptr* %x0_
 
-%1 = call %struct.PVector_ptr () @foo()
-call void (%struct.PVector_ptr) @print_vector(%struct.PVector_ptr %1)
+%2 = call %struct.PVector_ptr () @foo()
+call void (%struct.PVector_ptr) @print_vector(%struct.PVector_ptr %2)
 br label %ret__
 ret__:
 br label %ret_

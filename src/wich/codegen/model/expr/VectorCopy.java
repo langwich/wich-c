@@ -25,21 +25,19 @@ package wich.codegen.model.expr;
 
 import org.antlr.symtab.Type;
 import wich.codegen.model.ModelElement;
-import wich.codegen.model.WichType;
-
-import java.util.ArrayList;
-import java.util.List;
+import wich.codegen.model.VectorType;
 
 public class VectorCopy extends Expr {
-	public final Type argtype;
 	@ModelElement public Expr expr;
 
-	public VectorCopy(Type argtype) {
-		this.argtype = argtype;
+	public VectorCopy(Expr expr, String tempVar) {
+		this.expr = expr;
+		this.type = new VectorType();
+		this.varRef = tempVar;
 	}
 
 	@Override
 	public Type getType() {
-		return argtype;
+		return type.type;
 	}
 }

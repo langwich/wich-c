@@ -226,15 +226,16 @@ store double %promo2, double* %promo2_
 %4 = call %struct.PVector_ptr @PVector_new(double* %vec_ptr_4, i64 3)
 store %struct.PVector_ptr %4, %struct.PVector_ptr* %x1_
 %5 = load %struct.PVector_ptr, %struct.PVector_ptr* %x1_
-call void (%struct.PVector_ptr) @bar(%struct.PVector_ptr %5)
-%6 = load %struct.PVector_ptr, %struct.PVector_ptr* %x1_
-%7 = add i32 1, 0
-%index_7 = sub i32 %7, 1
-%8 = add i32 99, 0
-%promo3 = sitofp i32 %8 to double
-call void (%struct.PVector_ptr,i32,double) @set_ith(%struct.PVector_ptr %6, i32 %index_7, double %promo3)
-%9 = load %struct.PVector_ptr, %struct.PVector_ptr* %x1_
-call void (%struct.PVector_ptr) @print_vector(%struct.PVector_ptr %9)
+%6 = call %struct.PVector_ptr @Vector_copy(%struct.PVector_ptr %5)
+call void (%struct.PVector_ptr) @bar(%struct.PVector_ptr %6)
+%7 = load %struct.PVector_ptr, %struct.PVector_ptr* %x1_
+%8 = add i32 2, 0
+%index_8 = sub i32 %8, 1
+%9 = add i32 99, 0
+%promo3 = sitofp i32 %9 to double
+call void (%struct.PVector_ptr,i32,double) @set_ith(%struct.PVector_ptr %7, i32 %index_8, double %promo3)
+%10 = load %struct.PVector_ptr, %struct.PVector_ptr* %x1_
+call void (%struct.PVector_ptr) @print_vector(%struct.PVector_ptr %10)
 br label %ret__
 ret__:
 br label %ret_

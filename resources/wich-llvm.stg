@@ -345,6 +345,11 @@ FloatFromInt(e,expr,type) ::= <<
 %<e.varRef> = sitofp i32 %<expr.e.varRef> to double
 >>
 
+VectorCopy(e,expr,type) ::= <<
+<expr>
+%<e.varRef> = call %struct.PVector_ptr @Vector_copy(%struct.PVector_ptr %<expr.e.varRef>)
+>>
+
 VoidType(v) ::= "void"
 IntType(t) ::= "i32"
 FloatType(t) ::= "double"
