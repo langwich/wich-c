@@ -9,7 +9,10 @@ import wich.semantics.SymbolTable;
 public class StrLen extends Expr {
 	@ModelElement public Expr expr;
 
-	public StrLen(Expr expr) { this.expr = expr; }
+	public StrLen(Expr expr, String tempVar) {
+		this.expr = expr;
+		this.varRef = tempVar;
+	}
 
 	@Override
 	public Type getType() { return SymbolTable._int; }

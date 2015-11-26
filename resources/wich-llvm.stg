@@ -350,6 +350,16 @@ VectorCopy(e,expr,type) ::= <<
 %<e.varRef> = call %struct.PVector_ptr @Vector_copy(%struct.PVector_ptr %<expr.e.varRef>)
 >>
 
+VectorLen(e,expr,type) ::= <<
+<expr>
+%<e.varRef> = call i32 @Vector_len(%struct.PVector_ptr %<expr.e.varRef>)
+>>
+
+StrLen(e,expr,type)    ::= <<
+<expr>
+%<e.varRef> = call i32 @String_len(%struct.string* %<expr.e.varRef>)
+>>
+
 VoidType(v) ::= "void"
 IntType(t) ::= "i32"
 FloatType(t) ::= "double"

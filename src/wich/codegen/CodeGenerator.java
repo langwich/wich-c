@@ -361,17 +361,9 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 
 	@Override
 	public OutputModelObject visitLen(WichParser.LenContext ctx) {
-		Expr lenExpr;
-		if (ctx.expr().exprType == SymbolTable._vector) {
-			lenExpr = new VectorLen((Expr)visit(ctx.expr()));
-		}
-		else if(ctx.expr().exprType ==SymbolTable._string) {
-			lenExpr = new StrLen((Expr)visit(ctx.expr()));
-		}
-		else {
-			lenExpr = null;
-		}
-		return lenExpr;
+		Expr expr = (Expr) visit(ctx.expr());
+		String varRef = getTempVar();
+		return ctx.expr().exprType == SymbolTable._vector ? new VectorLen(expr, varRef) : new StrLen(expr, varRef);
 	}
 
 	@Override

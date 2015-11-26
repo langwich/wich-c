@@ -9,8 +9,9 @@ import wich.semantics.SymbolTable;
 public class VectorLen extends Expr {
 	@ModelElement public Expr expr;
 
-	public VectorLen(Expr expr) {
+	public VectorLen(Expr expr, String tempVar) {
 		this.expr = expr;
+		this.varRef = tempVar;
 	}
 
 	@Override
