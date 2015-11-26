@@ -168,13 +168,27 @@ public class TestWichExecution extends WichBaseTest {
 		throws IOException, InterruptedException
 	{
 		String executable = "./" + baseName;
+
+		List<String> cc = new ArrayList<>();
+		String targetName = getCompilerCommand(target, executable, cc);
+		compile(wichFileName, target, cc, targetName, executable);
+
+		Triple<Integer, String, String> res = executeC(executable);
+		System.out.println(res.b);
+		if (res.c.length() > 0) assertEquals(expected, res.b);
+		else assertEquals(expected, res.b);
+
+		if ( valgrind ) {
+			valgrindCheck(executable);
+		}
+	}
+
+	protected String getCompilerCommand(CodeGenTarget target, String executable, List<String> cc) {
 		String targetName;
-		List<String> cc;
 		if (target != CodeGenTarget.LLVM &&
-			target != CodeGenTarget.LLVM_MARK_AND_COMPACT &&
-			target != CodeGenTarget.LLVM_MARK_AND_SWEEP) {
+				target != CodeGenTarget.LLVM_MARK_AND_COMPACT &&
+				target != CodeGenTarget.LLVM_MARK_AND_SWEEP) {
 			targetName = WORKING_DIR + baseName + ".c";
-			cc = new ArrayList<>();
 			cc.addAll(
 					Arrays.asList(
 							"cc", "-g", "-o", executable,
@@ -187,7 +201,6 @@ public class TestWichExecution extends WichBaseTest {
 		}
 		else {
 			targetName = WORKING_DIR + baseName + ".ll";
-			cc = new ArrayList<>();
 			cc.addAll(
 					Arrays.asList(
 							"clang-3.8", "-o", executable,
@@ -198,14 +211,7 @@ public class TestWichExecution extends WichBaseTest {
 					)
 			);
 		}
-		compile(wichFileName, target, cc, targetName, executable);
-
-		String output = executeC(executable);
-		System.out.println(output);
-		assertEquals(expected, output);
-		if ( valgrind ) {
-			valgrindCheck(executable);
-		}
+		return targetName;
 	}
 
 	protected void valgrindCheck(String executable) throws IOException, InterruptedException {
@@ -262,8 +268,7 @@ public class TestWichExecution extends WichBaseTest {
 		int resultCode = process.waitFor();
 		String stdout = dump(process.getInputStream());
 		String stderr = dump(process.getErrorStream());
-		Triple<Integer, String, String> ret = new Triple<>(resultCode, stdout, stderr);
-		return ret;
+		return new Triple<>(resultCode, stdout, stderr);
 	}
 
 	protected String dump(InputStream is) throws IOException {
@@ -277,11 +282,7 @@ public class TestWichExecution extends WichBaseTest {
 		return out.toString();
 	}
 
-	protected String executeC(String executable) throws IOException, InterruptedException {
-		Triple<Integer, String, String> result = exec(new String[]{"./"+executable});
-		if ( result.a!=0 ) {
-			throw new RuntimeException("failed execution of "+executable+" with result code "+result.a+"; stderr:\n"+result.c);
-		}
-		return result.b;
+	protected Triple<Integer, String, String> executeC(String executable) throws IOException, InterruptedException {
+		return exec(new String[]{"./"+executable});
 	}
 }

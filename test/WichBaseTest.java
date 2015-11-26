@@ -53,7 +53,11 @@ public class WichBaseTest {
 
 	@Parameterized.Parameters(name="{1}")
 	public static Collection<Object[]> findInputFiles() {
-		URL testFolder = CompilerUtils.getResourceFile(TEST_RES);
+		return findTestCasesInFolder(TEST_RES);
+	}
+
+	protected static Collection<Object[]> findTestCasesInFolder(String folder) {
+		URL testFolder = CompilerUtils.getResourceFile(folder);
 		Collection<Object[]> result = new ArrayList<>();
 		// only feed test methods with wich source files.
 		String regexp = "^\\w+\\.w$";

@@ -1,3 +1,3 @@
-func f() {
-	return 34
-}
+//func f() {
+//	return 34
+//}
