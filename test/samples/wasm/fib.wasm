@@ -1,0 +1,37 @@
+0 strings
+2 functions
+	0: addr=0 args=1 locals=0 type=1 3/fib
+	1: addr=58 args=0 locals=0 type=0 4/main
+32 instr, 70 bytes
+	GC_START
+	ILOAD 0
+	ICONST 0
+	IEQ
+	ILOAD 0
+	ICONST 1
+	IEQ
+	OR
+	BRF 8
+	ILOAD 0
+	GC_END
+	RET
+	ILOAD 0
+	ICONST 1
+	ISUB
+	CALL 0
+	ILOAD 0
+	ICONST 2
+	ISUB
+	CALL 0
+	IADD
+	GC_END
+	RET
+	PUSH_DFLT_RETV
+	RET
+	GC_END
+	GC_START
+	ICONST 5
+	CALL 0
+	IPRINT
+	GC_END
+	HALT

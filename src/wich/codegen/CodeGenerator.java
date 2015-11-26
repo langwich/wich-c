@@ -47,25 +47,7 @@ import wich.codegen.model.VectorVarDefStat;
 import wich.codegen.model.VoidType;
 import wich.codegen.model.WhileStat;
 import wich.codegen.model.WichType;
-import wich.codegen.model.expr.BinaryOpExpr;
-import wich.codegen.model.expr.BinaryPrimitiveOp;
-import wich.codegen.model.expr.BinaryStringOp;
-import wich.codegen.model.expr.BinaryVectorOp;
-import wich.codegen.model.expr.Expr;
-import wich.codegen.model.expr.FalseLiteral;
-import wich.codegen.model.expr.FloatLiteral;
-import wich.codegen.model.expr.FuncCall;
-import wich.codegen.model.expr.HeapVarRef;
-import wich.codegen.model.expr.IntLiteral;
-import wich.codegen.model.expr.NegateExpr;
-import wich.codegen.model.expr.NotExpr;
-import wich.codegen.model.expr.StringIndexExpr;
-import wich.codegen.model.expr.StringLiteral;
-import wich.codegen.model.expr.TrueLiteral;
-import wich.codegen.model.expr.VarRef;
-import wich.codegen.model.expr.VectorElement;
-import wich.codegen.model.expr.VectorIndexExpr;
-import wich.codegen.model.expr.VectorLiteral;
+import wich.codegen.model.expr.*;
 import wich.codegen.model.expr.promotion.FloatFromInt;
 import wich.codegen.model.expr.promotion.StringFromFloat;
 import wich.codegen.model.expr.promotion.StringFromInt;
@@ -255,6 +237,11 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		updateLexicalOrder(v);
 		Expr expr = (Expr)visit(ctx.expr());
 
+		if (isVectorCopyNeeded(ctx.expr())) {
+			VectorCopy e = new VectorCopy(SymbolTable._vector);
+			e.expr = expr;
+			expr = e;
+		}
 		VarInitStat varInit = new VarInitStat(getVarRef(varName, true), expr, getTypeModel(expr.getType()));
 		VarDefStat varDef = getVarDefStat(v);
 		return new CompositeModelObject(varDef, varInit);
@@ -273,6 +260,11 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	public OutputModelObject visitAssign(@NotNull WichParser.AssignContext ctx) {
 		String varName = ctx.ID().getText();
 		Expr expr      = (Expr)visit(ctx.expr());
+		if (isVectorCopyNeeded(ctx.expr())) {
+			VectorCopy e = new VectorCopy(SymbolTable._vector);
+			e.expr = expr;
+			expr = e;
+		}
 		return new AssignStat(getVarRef(varName, true), expr, getTypeModel(expr.getType()));
 	}
 
@@ -300,7 +292,6 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		Expr expr = (Expr)visit(ctx.expr());
 		return getPrintModel(ctx.expr().exprType, expr, getPrintLabel());
 	}
-
 
 	// E X P R E S S I O N S
 
@@ -343,8 +334,15 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 
 		if( ctx.expr_list()!=null ) {
 			for (WichParser.ExprContext e : ctx.expr_list().expr()) {
-				Expr arg = (Expr) visit(e);
-				fc.args.add( arg );
+				Expr expr = (Expr)visit(e);
+				if (isVectorCopyNeeded(e)) {
+					VectorCopy arg = new VectorCopy(SymbolTable._vector);
+					arg.expr = expr;
+					fc.args.add( arg );
+				}
+				else {
+					fc.args.add(expr);
+				}
 			}
 		}
 
@@ -367,6 +365,22 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	@Override
 	public OutputModelObject visitParens(@NotNull WichParser.ParensContext ctx) {
 		return visit(ctx.expr());
+	}
+
+
+	@Override
+	public OutputModelObject visitLen(WichParser.LenContext ctx) {
+		Expr lenExpr;
+		if (ctx.expr().exprType == SymbolTable._vector) {
+			lenExpr = new VectorLen((Expr)visit(ctx.expr()));
+		}
+		else if(ctx.expr().exprType ==SymbolTable._string) {
+			lenExpr = new StrLen((Expr)visit(ctx.expr()));
+		}
+		else {
+			lenExpr = null;
+		}
+		return lenExpr;
 	}
 
 	@Override
@@ -628,8 +642,16 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		String name = v.getName();
 		int num = 0;
 		if (nameOccurrenceMap.containsKey(name)) num = nameOccurrenceMap.get(name);
-		nameOccurrenceMap.put(name, num+1);
+		nameOccurrenceMap.put(name, num + 1);
 		v.setInsertionOrderNumber(num);
+	}
+
+	private static boolean isVectorCopyNeeded(WichParser.ExprContext expr) {
+		if (expr.exprType != SymbolTable._vector ) return false;
+		if (expr instanceof WichParser.CallContext || (expr instanceof WichParser.AtomContext && (!expr.getText().startsWith("[")))) {
+			return true;
+		}
+		return false;
 	}
 
 	protected void pushScope(Scope s) {currentScope = s;}

@@ -17,10 +17,12 @@ public class TestBytecodeGen {
 				"";
 		String expecting =
 				"0 strings\n" +
-				"1 functions\n" +
-				"0: addr=0 args=0 locals=0 type=0 4/main\n" +
-				"1 instr, 1 bytes\n" +
-					"HALT\n";
+						"1 functions\n" +
+						"0: addr=0 args=0 locals=0 type=0 4/main\n" +
+						"3 instr, 3 bytes\n" +
+						"GC_START\n" +
+						"GC_END\n" +
+						"HALT\n";
 		checkCodeGen(wich, expecting);
 	}
 
@@ -30,12 +32,14 @@ public class TestBytecodeGen {
 				"var i = 1\n";
 		String expecting =
 				"0 strings\n" +
-				"1 functions\n" +
-					"0: addr=0 args=0 locals=1 type=0 4/main\n" +
-				"3 instr, 9 bytes\n"+
-					"ICONST 1\n"+
-					"STORE 0\n"+
-					"HALT\n";
+						"1 functions\n" +
+						"0: addr=0 args=0 locals=1 type=0 4/main\n" +
+						"5 instr, 11 bytes\n" +
+						"GC_START\n" +
+						"ICONST 1\n" +
+						"STORE 0\n" +
+						"GC_END\n" +
+						"HALT\n";
 		checkCodeGen(wich, expecting);
 	}
 
@@ -44,14 +48,17 @@ public class TestBytecodeGen {
 		String wich =
 				"var s = \"hello\"\n";
 		String expecting =
-				"1 strings\n"+
-					"0: 5/hello\n"+
-				"1 functions\n" +
-				"0: addr=0 args=0 locals=1 type=0 4/main\n" +
-				"3 instr, 7 bytes\n"+
-					"SCONST 0\n"+
-					"STORE 0\n"+
-					"HALT\n";
+				"1 strings\n" +
+						"0: 5/hello\n" +
+						"1 functions\n" +
+						"0: addr=0 args=0 locals=1 type=0 4/main\n" +
+						"6 instr, 10 bytes\n" +
+						"GC_START\n" +
+						"SCONST 0\n" +
+						"STORE 0\n" +
+						"SROOT\n" +
+						"GC_END\n" +
+						"HALT\n";
 		checkCodeGen(wich, expecting);
 	}
 
@@ -60,17 +67,20 @@ public class TestBytecodeGen {
 		String wich =
 				"var v = [1.0,2.0,3.0]\n";
 		String excepting =
-				"0 strings\n"+
-				"1 functions\n"+
-				"0: addr=0 args=0 locals=1 type=0 4/main\n" +
-					"7 instr, 25 bytes\n"+
-					"FCONST 1.0\n"+
-					"FCONST 2.0\n"+
-					"FCONST 3.0\n"+
-					"ICONST 3\n"+
-					"VECTOR\n"+
-					"STORE 0\n"+
-					"HALT\n";
+				"0 strings\n" +
+						"1 functions\n" +
+						"0: addr=0 args=0 locals=1 type=0 4/main\n" +
+						"10 instr, 28 bytes\n" +
+						"GC_START\n" +
+						"FCONST 1.0\n" +
+						"FCONST 2.0\n" +
+						"FCONST 3.0\n" +
+						"ICONST 3\n" +
+						"VECTOR\n" +
+						"STORE 0\n" +
+						"VROOT\n" +
+						"GC_END\n" +
+						"HALT\n";
 		checkCodeGen(wich, excepting);
 	}
 
@@ -79,19 +89,22 @@ public class TestBytecodeGen {
 		String wich =
 				"var v = [1,2,3]\n";
 		String excepting =
-				"0 strings\n"+
-						"1 functions\n"+
+				"0 strings\n" +
+						"1 functions\n" +
 						"0: addr=0 args=0 locals=1 type=0 4/main\n" +
-						"10 instr, 28 bytes\n"+
-						"ICONST 1\n"+
-						"I2F\n"+
-						"ICONST 2\n"+
-						"I2F\n"+
-						"ICONST 3\n"+
-						"I2F\n"+
-						"ICONST 3\n"+
-						"VECTOR\n"+
-						"STORE 0\n"+
+						"13 instr, 31 bytes\n" +
+						"GC_START\n" +
+						"ICONST 1\n" +
+						"I2F\n" +
+						"ICONST 2\n" +
+						"I2F\n" +
+						"ICONST 3\n" +
+						"I2F\n" +
+						"ICONST 3\n" +
+						"VECTOR\n" +
+						"STORE 0\n" +
+						"VROOT\n" +
+						"GC_END\n" +
 						"HALT\n";
 		checkCodeGen(wich, excepting);
 	}
@@ -102,16 +115,22 @@ public class TestBytecodeGen {
 				"func g() {}\n";
 		String expecting =
 				"0 strings\n" +
-				"3 functions\n" +
-					"0: addr=0 args=0 locals=0 type=0 1/f\n" +
-					"1: addr=2 args=0 locals=0 type=0 1/g\n" +
-					"2: addr=4 args=0 locals=0 type=0 4/main\n" +
-					"5 instr, 5 bytes\n" +
-					"NOP\n" +
-					"RET\n" +
-					"NOP\n" +
-					"RET\n" +
-					"HALT\n";
+						"3 functions\n" +
+						"0: addr=0 args=0 locals=0 type=0 1/f\n" +
+						"1: addr=4 args=0 locals=0 type=0 1/g\n" +
+						"2: addr=8 args=0 locals=0 type=0 4/main\n" +
+						"11 instr, 11 bytes\n" +
+						"GC_START\n" +
+						"NOP\n" +
+						"RET\n" +
+						"GC_END\n" +
+						"GC_START\n" +
+						"NOP\n" +
+						"RET\n" +
+						"GC_END\n" +
+						"GC_START\n" +
+						"GC_END\n" +
+						"HALT\n";
 		checkCodeGen(wich, expecting);
 	}
 
@@ -122,20 +141,27 @@ public class TestBytecodeGen {
 				"func g(z:int):int{ return z }\n";
 		String expecting =
 				"0 strings\n" +
-				"3 functions\n" +
-					"0: addr=0 args=0 locals=0 type=0 1/f\n" +
-					"1: addr=10 args=1 locals=0 type=1 1/g\n" +
-					"2: addr=18 args=0 locals=0 type=0 4/main\n" +
-					"9 instr, 19 bytes\n" +
-					"ICONST 3\n" +
-					"CALL 1\n" +
-					"POP\n" +
-					"RET\n" +
-					"ILOAD 0\n" +
-					"RETV\n" +
-					"PUSH 1\n" +
-					"RETV\n" +
-					"HALT\n";
+						"3 functions\n" +
+						"0: addr=0 args=0 locals=0 type=0 1/f\n" +
+						"1: addr=12 args=1 locals=0 type=1 1/g\n" +
+						"2: addr=21 args=0 locals=0 type=0 4/main\n" +
+						"16 instr, 24 bytes\n" +
+						"GC_START\n" +
+						"ICONST 3\n" +
+						"CALL 1\n" +
+						"POP\n" +
+						"RET\n" +
+						"GC_END\n" +
+						"GC_START\n" +
+						"ILOAD 0\n" +
+						"GC_END\n" +
+						"RET\n" +
+						"PUSH_DFLT_RETV\n" +
+						"RET\n" +
+						"GC_END\n" +
+						"GC_START\n" +
+						"GC_END\n" +
+						"HALT\n";
 		checkCodeGen(wich, expecting);
 	}
 
@@ -146,23 +172,30 @@ public class TestBytecodeGen {
 				"func g(z:int,b:boolean):int{ print(b) return z }\n";
 		String expecting =
 				"0 strings\n" +
-				"3 functions\n" +
-					"0: addr=0 args=1 locals=1 type=0 1/f\n" +
-					"1: addr=15 args=2 locals=0 type=1 1/g\n" +
-					"2: addr=27 args=0 locals=0 type=0 4/main\n" +
-				"12 instr, 28 bytes\n" +
-					"ILOAD 0\n" +
-					"ICONST 1\n" +
-					"CALL 1\n" +
-					"STORE 1\n" +
-					"RET\n" +
-					"ILOAD 1\n" +
-					"BPRINT\n" +
-					"ILOAD 0\n" +
-					"RETV\n" +
-					"PUSH 1\n" +
-					"RETV\n" +
-					"HALT\n";
+						"3 functions\n" +
+						"0: addr=0 args=1 locals=1 type=0 1/f\n" +
+						"1: addr=17 args=2 locals=0 type=1 1/g\n" +
+						"2: addr=30 args=0 locals=0 type=0 4/main\n" +
+						"19 instr, 33 bytes\n" +
+						"GC_START\n" +
+						"ILOAD 0\n" +
+						"ICONST 1\n" +
+						"CALL 1\n" +
+						"STORE 1\n" +
+						"RET\n" +
+						"GC_END\n" +
+						"GC_START\n" +
+						"ILOAD 1\n" +
+						"BPRINT\n" +
+						"ILOAD 0\n" +
+						"GC_END\n" +
+						"RET\n" +
+						"PUSH_DFLT_RETV\n" +
+						"RET\n" +
+						"GC_END\n" +
+						"GC_START\n" +
+						"GC_END\n" +
+						"HALT\n";
 		checkCodeGen(wich, expecting);
 	}
 
@@ -172,10 +205,11 @@ public class TestBytecodeGen {
 				"var i = 3" +
 				"if ( i>0 ) print (i)\n";
 		String expecting =
-				"0 strings\n"+
-				"1 functions\n"+
-				"0: addr=0 args=0 locals=1 type=0 4/main\n"+
-				"9 instr, 25 bytes\n" +
+				"0 strings\n" +
+						"1 functions\n" +
+						"0: addr=0 args=0 locals=1 type=0 4/main\n" +
+						"11 instr, 27 bytes\n" +
+						"GC_START\n" +
 						"ICONST 3\n" +
 						"STORE 0\n" +
 						"ILOAD 0\n" +
@@ -184,6 +218,7 @@ public class TestBytecodeGen {
 						"BRF 7\n" +
 						"ILOAD 0\n" +
 						"IPRINT\n" +
+						"GC_END\n" +
 						"HALT\n";
 		checkCodeGen(wich, expecting);
 	}
@@ -195,11 +230,12 @@ public class TestBytecodeGen {
 				"if ( i>0 ) print (i)\n" +
 				"else print (\"hi\")";
 		String expecting =
-				"1 strings\n"+
-				"0: 2/hi\n"+
-				"1 functions\n"+
-					"0: addr=0 args=0 locals=1 type=0 4/main\n"+
-				"12 instr, 32 bytes\n" +
+				"1 strings\n" +
+						"0: 2/hi\n" +
+						"1 functions\n" +
+						"0: addr=0 args=0 locals=1 type=0 4/main\n" +
+						"14 instr, 34 bytes\n" +
+						"GC_START\n" +
 						"ICONST 3\n" +
 						"STORE 0\n" +
 						"ILOAD 0\n" +
@@ -211,6 +247,7 @@ public class TestBytecodeGen {
 						"BR 7\n" +
 						"SCONST 0\n" +
 						"SPRINT\n" +
+						"GC_END\n" +
 						"HALT\n";
 		checkCodeGen(wich, expecting);
 	}
@@ -222,24 +259,26 @@ public class TestBytecodeGen {
 				"while ( i<10 ) {i = i + 1 }\n"+
 				"print(i)";
 		String expecting =
-				"0 strings\n"+
-				"1 functions\n"+
-				"0: addr=0 args=0 locals=1 type=0 4/main\n"+
-				"14 instr, 40 bytes\n"+
-					"ICONST 0\n"+
-					"STORE 0\n"+
-					"ILOAD 0\n"+
-					"ICONST 10\n"+
-					"ILT\n"+
-					"BRF 18\n"+
-					"ILOAD 0\n"+
-					"ICONST 1\n"+
-					"IADD\n"+
-					"STORE 0\n"+
-					"BR -24\n"+
-					"ILOAD 0\n"+
-					"IPRINT\n"+
-					"HALT\n";
+				"0 strings\n" +
+						"1 functions\n" +
+						"0: addr=0 args=0 locals=1 type=0 4/main\n" +
+						"16 instr, 42 bytes\n" +
+						"GC_START\n" +
+						"ICONST 0\n" +
+						"STORE 0\n" +
+						"ILOAD 0\n" +
+						"ICONST 10\n" +
+						"ILT\n" +
+						"BRF 18\n" +
+						"ILOAD 0\n" +
+						"ICONST 1\n" +
+						"IADD\n" +
+						"STORE 0\n" +
+						"BR -24\n" +
+						"ILOAD 0\n" +
+						"IPRINT\n" +
+						"GC_END\n" +
+						"HALT\n";
 		checkCodeGen(wich, expecting);
 	}
 
@@ -249,13 +288,16 @@ public class TestBytecodeGen {
 		String wich =
 				"return 3\n";
 		String expecting =
-				"0 strings\n"+
-				"1 functions\n"+
-				"0: addr=0 args=0 locals=0 type=0 4/main\n"+
-				"3 instr, 7 bytes\n" +
-					"ICONST 3\n" +
-					"RETV\n" +
-					"HALT\n";
+				"0 strings\n" +
+						"1 functions\n" +
+						"0: addr=0 args=0 locals=0 type=0 4/main\n" +
+						"6 instr, 10 bytes\n" +
+						"GC_START\n" +
+						"ICONST 3\n" +
+						"GC_END\n" +
+						"RET\n" +
+						"GC_END\n" +
+						"HALT\n";
 		checkCodeGen(wich, expecting);
 	}
 
@@ -266,18 +308,20 @@ public class TestBytecodeGen {
 				"{var y = 1 print (x+y)}\n";
 		String expecting =
 				"0 strings\n" +
-				"1 functions\n" +
-					"0: addr=0 args=0 locals=2 type=0 4/main\n" +
-				"9 instr, 25 bytes\n" +
-					"ICONST 3\n" +
-					"STORE 0\n" +
-					"ICONST 1\n" +
-					"STORE 1\n" +
-					"ILOAD 0\n" +
-					"ILOAD 1\n" +
-					"IADD\n" +
-					"IPRINT\n" +
-					"HALT\n";
+						"1 functions\n" +
+						"0: addr=0 args=0 locals=2 type=0 4/main\n" +
+						"11 instr, 27 bytes\n" +
+						"GC_START\n" +
+						"ICONST 3\n" +
+						"STORE 0\n" +
+						"ICONST 1\n" +
+						"STORE 1\n" +
+						"ILOAD 0\n" +
+						"ILOAD 1\n" +
+						"IADD\n" +
+						"IPRINT\n" +
+						"GC_END\n" +
+						"HALT\n";
 		checkCodeGen(wich, expecting);
 	}
 
@@ -288,20 +332,24 @@ public class TestBytecodeGen {
 				"f(1)\n";
 		String expecting =
 				"0 strings\n" +
-				"2 functions\n" +
-					"0: addr=0 args=1 locals=1 type=0 1/f\n" +
-					"1: addr=17 args=0 locals=0 type=0 4/main\n" +
-				"10 instr, 26 bytes\n" +
-					"ICONST 1\n" +
-					"STORE 1\n" +
-					"ILOAD 0\n" +
-					"ILOAD 1\n" +
-					"IADD\n" +
-					"IPRINT\n" +
-					"RET\n" +
-					"ICONST 1\n" +
-					"CALL 0\n" +
-					"HALT\n";
+						"2 functions\n" +
+						"0: addr=0 args=1 locals=1 type=0 1/f\n" +
+						"1: addr=19 args=0 locals=0 type=0 4/main\n" +
+						"14 instr, 30 bytes\n" +
+						"GC_START\n" +
+						"ICONST 1\n" +
+						"STORE 1\n" +
+						"ILOAD 0\n" +
+						"ILOAD 1\n" +
+						"IADD\n" +
+						"IPRINT\n" +
+						"RET\n" +
+						"GC_END\n" +
+						"GC_START\n" +
+						"ICONST 1\n" +
+						"CALL 0\n" +
+						"GC_END\n" +
+						"HALT\n";
 		checkCodeGen(wich, expecting);
 	}
 
@@ -312,20 +360,23 @@ public class TestBytecodeGen {
 				"v[1] = 4.0\n";
 		String expecting =
 				"0 strings\n" +
-				"1 functions\n" +
-					"0: addr=0 args=0 locals=1 type=0 4/main\n" +
-				"11 instr, 39 bytes\n" +
-					"FCONST 1.0\n" +
-					"FCONST 2.0\n" +
-					"FCONST 3.0\n" +
-					"ICONST 3\n" +
-					"VECTOR\n" +
-					"STORE 0\n" +
-					"VLOAD 0\n" +
-					"ICONST 1\n" +
-					"FCONST 4.0\n" +
-					"STORE_INDEX\n" +
-					"HALT\n";
+						"1 functions\n" +
+						"0: addr=0 args=0 locals=1 type=0 4/main\n" +
+						"14 instr, 42 bytes\n" +
+						"GC_START\n" +
+						"FCONST 1.0\n" +
+						"FCONST 2.0\n" +
+						"FCONST 3.0\n" +
+						"ICONST 3\n" +
+						"VECTOR\n" +
+						"STORE 0\n" +
+						"VROOT\n" +
+						"VLOAD 0\n" +
+						"ICONST 1\n" +
+						"FCONST 4.0\n" +
+						"STORE_INDEX\n" +
+						"GC_END\n" +
+						"HALT\n";
 		checkCodeGen(wich,expecting);
 	}
 
@@ -338,18 +389,21 @@ public class TestBytecodeGen {
 				"0 strings\n" +
 						"1 functions\n" +
 						"0: addr=0 args=0 locals=1 type=0 4/main\n" +
-						"12 instr, 40 bytes\n" +
+						"15 instr, 43 bytes\n" +
+						"GC_START\n" +
 						"FCONST 1.0\n" +
 						"FCONST 2.0\n" +
 						"FCONST 3.0\n" +
 						"ICONST 3\n" +
 						"VECTOR\n" +
 						"STORE 0\n" +
+						"VROOT\n" +
 						"VLOAD 0\n" +
 						"ICONST 1\n" +
 						"ICONST 4\n" +
 						"I2F\n" +
 						"STORE_INDEX\n" +
+						"GC_END\n" +
 						"HALT\n";
 		checkCodeGen(wich,expecting);
 	}
@@ -363,7 +417,8 @@ public class TestBytecodeGen {
 				"0 strings\n" +
 						"1 functions\n" +
 						"0: addr=0 args=0 locals=2 type=0 4/main\n" +
-						"8 instr, 22 bytes\n" +
+						"10 instr, 24 bytes\n" +
+						"GC_START\n" +
 						"ICONST 1\n" +
 						"STORE 0\n" +
 						"FCONST 3.14\n" +
@@ -371,6 +426,7 @@ public class TestBytecodeGen {
 						"I2F\n" +
 						"FADD\n" +
 						"STORE 1\n" +
+						"GC_END\n" +
 						"HALT\n";
 		checkCodeGen(wich,expecting);
 	}
@@ -385,17 +441,20 @@ public class TestBytecodeGen {
 				"0 strings\n" +
 						"1 functions\n" +
 						"0: addr=0 args=0 locals=1 type=0 4/main\n" +
-						"11 instr, 37 bytes\n" +
+						"14 instr, 40 bytes\n" +
+						"GC_START\n" +
 						"FCONST 1.0\n" +
 						"FCONST 2.0\n" +
 						"FCONST 3.0\n" +
 						"ICONST 3\n" +
 						"VECTOR\n" +
 						"STORE 0\n" +
+						"VROOT\n" +
 						"VLOAD 0\n" +
 						"ICONST 4\n" +
 						"VADDI\n" +
 						"STORE 0\n" +
+						"GC_END\n" +
 						"HALT\n";
 		checkCodeGen(wich,expecting);
 	}
@@ -410,17 +469,20 @@ public class TestBytecodeGen {
 				"0 strings\n" +
 						"1 functions\n" +
 						"0: addr=0 args=0 locals=1 type=0 4/main\n" +
-						"11 instr, 37 bytes\n" +
+						"14 instr, 40 bytes\n" +
+						"GC_START\n" +
 						"FCONST 1.0\n" +
 						"FCONST 2.0\n" +
 						"FCONST 3.0\n" +
 						"ICONST 3\n" +
 						"VECTOR\n" +
 						"STORE 0\n" +
+						"VROOT\n" +
 						"VLOAD 0\n" +
 						"ICONST 4\n" +
 						"VADDI\n" +
 						"STORE 0\n" +
+						"GC_END\n" +
 						"HALT\n";
 		checkCodeGen(wich,expecting);
 	}
@@ -435,17 +497,20 @@ public class TestBytecodeGen {
 				"0 strings\n" +
 						"1 functions\n" +
 						"0: addr=0 args=0 locals=1 type=0 4/main\n" +
-						"11 instr, 37 bytes\n" +
+						"14 instr, 40 bytes\n" +
+						"GC_START\n" +
 						"FCONST 1.0\n" +
 						"FCONST 2.0\n" +
 						"FCONST 3.0\n" +
 						"ICONST 3\n" +
 						"VECTOR\n" +
 						"STORE 0\n" +
+						"VROOT\n" +
 						"VLOAD 0\n" +
 						"FCONST 3.14\n" +
 						"VADDF\n" +
 						"STORE 0\n" +
+						"GC_END\n" +
 						"HALT\n";
 		checkCodeGen(wich,expecting);
 	}
@@ -460,17 +525,20 @@ public class TestBytecodeGen {
 				"0 strings\n" +
 						"1 functions\n" +
 						"0: addr=0 args=0 locals=1 type=0 4/main\n" +
-						"11 instr, 37 bytes\n" +
+						"14 instr, 40 bytes\n" +
+						"GC_START\n" +
 						"FCONST 1.0\n" +
 						"FCONST 2.0\n" +
 						"FCONST 3.0\n" +
 						"ICONST 3\n" +
 						"VECTOR\n" +
 						"STORE 0\n" +
+						"VROOT\n" +
 						"VLOAD 0\n" +
 						"FCONST 3.14\n" +
 						"VADDF\n" +
 						"STORE 0\n" +
+						"GC_END\n" +
 						"HALT\n";
 		checkCodeGen(wich,expecting);
 	}
@@ -481,10 +549,11 @@ public class TestBytecodeGen {
 				"var i = 3\n" +
 						"if (i == 3 ) print (i)\n";
 		String expecting =
-				"0 strings\n"+
-						"1 functions\n"+
-						"0: addr=0 args=0 locals=1 type=0 4/main\n"+
-						"9 instr, 25 bytes\n" +
+				"0 strings\n" +
+						"1 functions\n" +
+						"0: addr=0 args=0 locals=1 type=0 4/main\n" +
+						"11 instr, 27 bytes\n" +
+						"GC_START\n" +
 						"ICONST 3\n" +
 						"STORE 0\n" +
 						"ILOAD 0\n" +
@@ -493,6 +562,7 @@ public class TestBytecodeGen {
 						"BRF 7\n" +
 						"ILOAD 0\n" +
 						"IPRINT\n" +
+						"GC_END\n" +
 						"HALT\n";
 		checkCodeGen(wich, expecting);
 	}
@@ -504,19 +574,22 @@ public class TestBytecodeGen {
 				"var s = \"abc\" \n" +
 						"if (s == \"abc\" ) print (s)\n";
 		String expecting =
-				"1 strings\n"+
-						"0: 3/abc\n"+
-						"1 functions\n"+
-						"0: addr=0 args=0 locals=1 type=0 4/main\n"+
-						"9 instr, 21 bytes\n" +
+				"1 strings\n" +
+						"0: 3/abc\n" +
+						"1 functions\n" +
+						"0: addr=0 args=0 locals=1 type=0 4/main\n" +
+						"12 instr, 24 bytes\n" +
+						"GC_START\n" +
 						"SCONST 0\n" +
 						"STORE 0\n" +
+						"SROOT\n" +
 						"SLOAD 0\n" +
 						"SCONST 0\n" +
 						"SEQ\n" +
 						"BRF 7\n" +
 						"SLOAD 0\n" +
 						"SPRINT\n" +
+						"GC_END\n" +
 						"HALT\n";
 		checkCodeGen(wich, expecting);
 	}
@@ -527,18 +600,22 @@ public class TestBytecodeGen {
 				"var s1 = \"abc\" \n" +
 						"var s2 = s1 + \"xyz\" \n";
 		String expecting =
-				"2 strings\n"+
-						"0: 3/abc\n"+
-						"1: 3/xyz\n"+
-						"1 functions\n"+
-						"0: addr=0 args=0 locals=2 type=0 4/main\n"+
-						"7 instr, 17 bytes\n" +
+				"2 strings\n" +
+						"0: 3/abc\n" +
+						"1: 3/xyz\n" +
+						"1 functions\n" +
+						"0: addr=0 args=0 locals=2 type=0 4/main\n" +
+						"11 instr, 21 bytes\n" +
+						"GC_START\n" +
 						"SCONST 0\n" +
 						"STORE 0\n" +
+						"SROOT\n" +
 						"SLOAD 0\n" +
 						"SCONST 1\n" +
 						"SADD\n" +
 						"STORE 1\n" +
+						"SROOT\n" +
+						"GC_END\n" +
 						"HALT\n";
 		checkCodeGen(wich, expecting);
 	}
@@ -549,18 +626,22 @@ public class TestBytecodeGen {
 				"var s1 = \"abc\" \n" +
 						"var s2 = s1 + 100 \n";
 		String expecting =
-				"1 strings\n"+
-						"0: 3/abc\n"+
-						"1 functions\n"+
-						"0: addr=0 args=0 locals=2 type=0 4/main\n"+
-						"8 instr, 20 bytes\n" +
+				"1 strings\n" +
+						"0: 3/abc\n" +
+						"1 functions\n" +
+						"0: addr=0 args=0 locals=2 type=0 4/main\n" +
+						"12 instr, 24 bytes\n" +
+						"GC_START\n" +
 						"SCONST 0\n" +
 						"STORE 0\n" +
+						"SROOT\n" +
 						"SLOAD 0\n" +
 						"ICONST 100\n" +
 						"I2S\n" +
 						"SADD\n" +
 						"STORE 1\n" +
+						"SROOT\n" +
+						"GC_END\n" +
 						"HALT\n";
 		checkCodeGen(wich, expecting);
 	}
@@ -571,18 +652,22 @@ public class TestBytecodeGen {
 				"var s1 = \"abc\" \n" +
 						"var s2 = s1 + 3.14 \n";
 		String expecting =
-				"1 strings\n"+
-						"0: 3/abc\n"+
-						"1 functions\n"+
-						"0: addr=0 args=0 locals=2 type=0 4/main\n"+
-						"8 instr, 20 bytes\n" +
+				"1 strings\n" +
+						"0: 3/abc\n" +
+						"1 functions\n" +
+						"0: addr=0 args=0 locals=2 type=0 4/main\n" +
+						"12 instr, 24 bytes\n" +
+						"GC_START\n" +
 						"SCONST 0\n" +
 						"STORE 0\n" +
+						"SROOT\n" +
 						"SLOAD 0\n" +
 						"FCONST 3.14\n" +
 						"F2S\n" +
 						"SADD\n" +
 						"STORE 1\n" +
+						"SROOT\n" +
+						"GC_END\n" +
 						"HALT\n";
 		checkCodeGen(wich, expecting);
 	}
@@ -593,16 +678,18 @@ public class TestBytecodeGen {
 				"var s1 = \"abc\" \n" +
 						"var s2 = s1 + [1,2,3] \n";
 		String expecting =
-				"1 strings\n"+
-						"0: 3/abc\n"+
-						"1 functions\n"+
-						"0: addr=0 args=0 locals=2 type=0 4/main\n"+
-						"15 instr, 39 bytes\n" +
+				"1 strings\n" +
+						"0: 3/abc\n" +
+						"1 functions\n" +
+						"0: addr=0 args=0 locals=2 type=0 4/main\n" +
+						"19 instr, 43 bytes\n" +
+						"GC_START\n" +
 						"SCONST 0\n" +
 						"STORE 0\n" +
+						"SROOT\n" +
 						"SLOAD 0\n" +
 						"ICONST 1\n" +
-                		"I2F\n" +
+						"I2F\n" +
 						"ICONST 2\n" +
 						"I2F\n" +
 						"ICONST 3\n" +
@@ -612,6 +699,8 @@ public class TestBytecodeGen {
 						"V2S\n" +
 						"SADD\n" +
 						"STORE 1\n" +
+						"SROOT\n" +
+						"GC_END\n" +
 						"HALT\n";
 		checkCodeGen(wich, expecting);
 	}
@@ -630,7 +719,7 @@ public class TestBytecodeGen {
 						"ILOAD 0\n" +
 						"ILOAD 0\n" +
 						"IMUL\n" +
-						"RETV\n" +
+						"RET\n" +
 						"RET\n" +
 						"ICONST 10\n" +
 						"CALL 0\n" +
@@ -648,7 +737,8 @@ public class TestBytecodeGen {
 				"0: 2/hi\n" +
 				"1 functions\n" +
 				"0: addr=0 args=0 locals=1 type=0 4/main\n" +
-				"11 instr, 29 bytes\n" +
+				"13 instr, 31 bytes\n" +
+				"GC_START\n" +
 				"ICONST 3\n" +
 				"STORE 0\n" +
 				"ILOAD 0\n" +
@@ -659,6 +749,7 @@ public class TestBytecodeGen {
 				"BR 7\n" +
 				"SCONST 0\n" +
 				"SPRINT\n" +
+				"GC_END\n" +
 				"HALT\n";
 		checkCodeGen(Wich, expecting);
 	}
@@ -673,36 +764,220 @@ public class TestBytecodeGen {
 				"print (f(3))\n";
 		String expecting =
 				"0 strings\n" +
-				"2 functions\n" +
-					"0: addr=0 args=1 locals=0 type=5 1/f\n" +
-					"1: addr=55 args=0 locals=0 type=0 4/main\n" +
-				"25 instr, 65 bytes\n" +
-					"ILOAD 0\n" +
-					"ICONST 0\n" +
-					"ILT\n" +
-					"BRF 23\n" +
-					"ICONST 0\n" +
-					"I2F\n" +
-					"ICONST 1\n" +
-					"VECTOR\n" +
-					"ILOAD 0\n" +
-					"VADDI\n" +
-					"RETV\n" +
-					"BR 22\n" +
-					"ICONST 1\n" +
-					"I2F\n" +
-					"ICONST 1\n" +
-					"VECTOR\n" +
-					"ILOAD 0\n" +
-					"VADDI\n" +
-					"STORE 0\n" +
-					"PUSH 5\n" +
-					"RETV\n" +
-					"ICONST 3\n" +
-					"CALL 0\n" +
-					"VPRINT\n" +
-					"HALT\n";
+						"2 functions\n" +
+						"0: addr=0 args=1 locals=0 type=5 1/f\n" +
+						"1: addr=56 args=0 locals=0 type=0 4/main\n" +
+						"30 instr, 68 bytes\n" +
+						"GC_START\n" +
+						"ILOAD 0\n" +
+						"ICONST 0\n" +
+						"ILT\n" +
+						"BRF 24\n" +
+						"ICONST 0\n" +
+						"I2F\n" +
+						"ICONST 1\n" +
+						"VECTOR\n" +
+						"ILOAD 0\n" +
+						"VADDI\n" +
+						"GC_END\n" +
+						"RET\n" +
+						"BR 22\n" +
+						"ICONST 1\n" +
+						"I2F\n" +
+						"ICONST 1\n" +
+						"VECTOR\n" +
+						"ILOAD 0\n" +
+						"VADDI\n" +
+						"STORE 0\n" +
+						"PUSH_DFLT_RETV\n" +
+						"RET\n" +
+						"GC_END\n" +
+						"GC_START\n" +
+						"ICONST 3\n" +
+						"CALL 0\n" +
+						"VPRINT\n" +
+						"GC_END\n" +
+						"HALT\n";
 		checkCodeGen(Wich, expecting);
+	}
+
+	@Test
+	public void testLen() throws Exception {
+		String Wich =
+				"var a = \"hello\"\n" +
+				"var b = len([1,2,3])\n" +
+				"print (len(a)+len(\"world\")+b)\n";
+		String expecting =
+				"2 strings\n" +
+						"0: 5/hello\n" +
+						"1: 5/world\n" +
+						"1 functions\n" +
+						"0: addr=0 args=0 locals=2 type=0 4/main\n" +
+						"24 instr, 52 bytes\n" +
+						"GC_START\n" +
+						"SCONST 0\n" +
+						"STORE 0\n" +
+						"SROOT\n" +
+						"ICONST 1\n" +
+						"I2F\n" +
+						"ICONST 2\n" +
+						"I2F\n" +
+						"ICONST 3\n" +
+						"I2F\n" +
+						"ICONST 3\n" +
+						"VECTOR\n" +
+						"VLEN\n" +
+						"STORE 1\n" +
+						"SLOAD 0\n" +
+						"SLEN\n" +
+						"SCONST 1\n" +
+						"SLEN\n" +
+						"IADD\n" +
+						"ILOAD 1\n" +
+						"IADD\n" +
+						"IPRINT\n" +
+						"GC_END\n" +
+						"HALT\n";
+		checkCodeGen(Wich,expecting);
+	}
+	@Test
+	public void bubbleSort() throws Exception {
+		String Wich =
+				"func bubbleSort(vec:[]):[] {\n" +
+					"var length = len(vec)\n" +
+					"var v = vec\n" +
+					"var i = 0\n" +
+					"var j = 0\n" +
+					"while(i< length){\n" +
+						"while(j<((length - i))){\n" +
+							"if (v[j] > v[j+1]){\n" +
+								"var swap = v[j]\n" +
+								"v[j] = v[j+1]\n" +
+								"v[j+1] = swap\n" +
+							"}\n" +
+						"j = j+1\n" +
+				"}\n" +
+				"i = i+1\n" +
+				"}\n" +
+				"return v\n" +
+				"}\n" +
+				"\n" +
+				"var x = [1,4,2,3]\n" +
+				"print(bubbleSort(x))\n";
+		String expecting = "0 strings\n" +
+				"2 functions\n" +
+				"0: addr=0 args=1 locals=4 type=5 10/bubbleSort\n" +
+				"1: addr=164 args=0 locals=1 type=0 4/main\n" +
+				"85 instr, 209 bytes\n" +
+				"GC_START\n" +
+				"VLOAD 0\n" +
+				"VLEN\n" +
+				"STORE 1\n" +
+				"VLOAD 0\n" +
+				"COPY_VECTOR\n" +
+				"STORE 2\n" +
+				"VROOT\n" +
+				"ICONST 0\n" +
+				"STORE 3\n" +
+				"ICONST 0\n" +
+				"STORE 4\n" +
+				"ILOAD 3\n" +
+				"ILOAD 1\n" +
+				"ILT\n" +
+				"BRF 117\n" +
+				"ILOAD 4\n" +
+				"ILOAD 1\n" +
+				"ILOAD 3\n" +
+				"ISUB\n" +
+				"ILT\n" +
+				"BRF 88\n" +
+				"VLOAD 2\n" +
+				"ILOAD 4\n" +
+				"VLOAD_INDEX\n" +
+				"VLOAD 2\n" +
+				"ILOAD 4\n" +
+				"ICONST 1\n" +
+				"IADD\n" +
+				"VLOAD_INDEX\n" +
+				"FGT\n" +
+				"BRF 49\n" +
+				"VLOAD 2\n" +
+				"ILOAD 4\n" +
+				"VLOAD_INDEX\n" +
+				"STORE 5\n" +
+				"VLOAD 2\n" +
+				"ILOAD 4\n" +
+				"VLOAD 2\n" +
+				"ILOAD 4\n" +
+				"ICONST 1\n" +
+				"IADD\n" +
+				"VLOAD_INDEX\n" +
+				"STORE_INDEX\n" +
+				"VLOAD 2\n" +
+				"ILOAD 4\n" +
+				"ICONST 1\n" +
+				"IADD\n" +
+				"FLOAD 5\n" +
+				"STORE_INDEX\n" +
+				"ILOAD 4\n" +
+				"ICONST 1\n" +
+				"IADD\n" +
+				"STORE 4\n" +
+				"BR -96\n" +
+				"ILOAD 3\n" +
+				"ICONST 1\n" +
+				"IADD\n" +
+				"STORE 3\n" +
+				"BR -121\n" +
+				"VLOAD 2\n" +
+				"GC_END\n" +
+				"RET\n" +
+				"PUSH_DFLT_RETV\n" +
+				"RET\n" +
+				"GC_END\n" +
+				"GC_START\n" +
+				"ICONST 1\n" +
+				"I2F\n" +
+				"ICONST 4\n" +
+				"I2F\n" +
+				"ICONST 2\n" +
+				"I2F\n" +
+				"ICONST 3\n" +
+				"I2F\n" +
+				"ICONST 4\n" +
+				"VECTOR\n" +
+				"STORE 0\n" +
+				"VROOT\n" +
+				"VLOAD 0\n" +
+				"COPY_VECTOR\n" +
+				"CALL 0\n" +
+				"VPRINT\n" +
+				"GC_END\n" +
+				"HALT\n";
+		checkCodeGen(Wich,expecting);
+	}
+
+	@Test
+	public void test_float_div() throws Exception {
+		String Wich = "var x = 1.0\n" +
+				"var y = 2.0\n" +
+				"print (y/x)\n";
+		String expecting = "0 strings\n" +
+				"1 functions\n" +
+				"0: addr=0 args=0 locals=2 type=0 4/main\n" +
+				"11 instr, 27 bytes\n" +
+				"GC_START\n" +
+				"FCONST 1.0\n" +
+				"STORE 0\n" +
+				"FCONST 2.0\n" +
+				"STORE 1\n" +
+				"FLOAD 1\n" +
+				"FLOAD 0\n" +
+				"FDIV\n" +
+				"FPRINT\n" +
+				"GC_END\n" +
+				"HALT\n";
+		checkCodeGen(Wich,expecting);
 	}
 
 	public void checkCodeGen(String wich, String expecting) throws IOException {
@@ -710,7 +985,7 @@ public class TestBytecodeGen {
 		SymbolTable symtab = new SymbolTable();
 		WichParser.ScriptContext tree = tool.semanticsPhase(wich, symtab);
 		assertFalse(tree==null);
-		BytecodeWriter gen = new BytecodeWriter("foo", symtab, tree);
+		BytecodeWriter gen = new BytecodeWriter(symtab, tree);
 		String result = gen.genObjectFile();
 		result = result.replaceAll("\t", "");
 		assertEquals(expecting, result);

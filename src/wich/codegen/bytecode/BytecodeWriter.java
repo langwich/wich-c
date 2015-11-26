@@ -1,6 +1,7 @@
 package wich.codegen.bytecode;
 
 import wich.codegen.CompilerUtils;
+import wich.errors.WichErrorHandler;
 import wich.parser.WichParser;
 import wich.semantics.SymbolTable;
 import wich.semantics.symbols.WFunctionSymbol;
@@ -22,17 +23,15 @@ import java.util.Map;
  */
 public class BytecodeWriter {
 	public SymbolTable symtab;
-	public String fileName;
 	public WichParser.ScriptContext tree;
 
-	public BytecodeWriter(String fileName, SymbolTable symtab, WichParser.ScriptContext tree) {
-		this.fileName = fileName;
+	public BytecodeWriter(SymbolTable symtab, WichParser.ScriptContext tree) {
 		this.symtab = symtab;
 		this.tree = tree;
 	}
 
-	public void write() throws IOException {
-		CompilerUtils.writeFile(fileName, genObjectFile(), StandardCharsets.UTF_8);
+	public void write(String outputFile) throws IOException {
+		CompilerUtils.writeFile(outputFile, genObjectFile(), StandardCharsets.UTF_8);
 	}
 
 	/** Return a string representation of the object file. */

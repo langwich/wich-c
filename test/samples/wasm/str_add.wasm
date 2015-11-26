@@ -1,0 +1,19 @@
+2 strings
+	0: 5/hello
+	1: 5/world
+1 functions
+	0: addr=0 args=0 locals=2 type=0 4/main
+13 instr, 25 bytes
+	GC_START
+	SCONST 0
+	STORE 0
+	SROOT
+	SCONST 1
+	STORE 1
+	SROOT
+	SLOAD 0
+	SLOAD 1
+	SADD
+	SPRINT
+	GC_END
+	HALT

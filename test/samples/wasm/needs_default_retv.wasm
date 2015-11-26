@@ -1,0 +1,15 @@
+0 strings
+2 functions
+	0: addr=0 args=0 locals=0 type=1 1/f
+	1: addr=5 args=0 locals=0 type=0 4/main
+10 instr, 12 bytes
+	GC_START
+	NOP
+	PUSH_DFLT_RETV
+	RET
+	GC_END
+	GC_START
+	CALL 0
+	IPRINT
+	GC_END
+	HALT

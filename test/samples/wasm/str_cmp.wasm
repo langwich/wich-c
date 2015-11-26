@@ -1,0 +1,42 @@
+3 strings
+	0: 3/cat
+	1: 0/
+	2: 5/miaow
+2 functions
+	0: addr=0 args=1 locals=0 type=3 1/f
+	1: addr=28 args=0 locals=2 type=0 4/main
+34 instr, 70 bytes
+	GC_START
+	SLOAD 0
+	SCONST 0
+	SLE
+	BRF 10
+	ICONST 1
+	GC_END
+	RET
+	ICONST 0
+	GC_END
+	RET
+	PUSH_DFLT_RETV
+	RET
+	GC_END
+	GC_START
+	SCONST 1
+	STORE 0
+	SROOT
+	SCONST 0
+	STORE 1
+	SROOT
+	SLOAD 0
+	SLOAD 1
+	SGT
+	BRF 7
+	NOP
+	BR 7
+	SCONST 2
+	SPRINT
+	SLOAD 1
+	CALL 0
+	BPRINT
+	GC_END
+	HALT

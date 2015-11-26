@@ -203,4 +203,10 @@ public class FinalComputeTypes extends MaintainScopeListener {
 		if (ctx.exprType != null) return;
 		ctx.exprType = ctx.primary().exprType; // bubble up primary's type to expr node
 	}
+
+	@Override
+	public void exitLen(WichParser.LenContext ctx) {
+		if (ctx.exprType != null) return;
+		ctx.exprType = SymbolTable._int;
+	}
 }

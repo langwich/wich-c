@@ -1,0 +1,77 @@
+5 strings
+	0: 17/ is greater than 
+	1: 26/ is less than or equal to 
+	2: 5/hellp
+	3: 5/aello
+	4: 5/hello
+4 functions
+	0: addr=0 args=2 locals=0 type=3 6/str_gt
+	1: addr=13 args=2 locals=0 type=0 6/gt_msg
+	2: addr=28 args=2 locals=0 type=0 6/le_msg
+	3: addr=43 args=0 locals=5 type=0 4/main
+65 instr, 145 bytes
+	GC_START
+	SLOAD 0
+	SLOAD 1
+	SGT
+	GC_END
+	RET
+	PUSH_DFLT_RETV
+	RET
+	GC_END
+	GC_START
+	SLOAD 0
+	SCONST 0
+	SADD
+	SLOAD 1
+	SADD
+	SPRINT
+	RET
+	GC_END
+	GC_START
+	SLOAD 0
+	SCONST 1
+	SADD
+	SLOAD 1
+	SADD
+	SPRINT
+	RET
+	GC_END
+	GC_START
+	SCONST 2
+	STORE 0
+	SROOT
+	SCONST 3
+	STORE 1
+	SROOT
+	SCONST 4
+	STORE 2
+	SROOT
+	SLOAD 0
+	SLOAD 2
+	CALL 0
+	STORE 3
+	ILOAD 3
+	BRF 15
+	SLOAD 0
+	SLOAD 2
+	CALL 1
+	BR 12
+	SLOAD 0
+	SLOAD 2
+	CALL 2
+	SLOAD 1
+	SLOAD 2
+	CALL 0
+	STORE 4
+	ILOAD 4
+	BRF 15
+	SLOAD 1
+	SLOAD 2
+	CALL 1
+	BR 12
+	SLOAD 1
+	SLOAD 2
+	CALL 2
+	GC_END
+	HALT

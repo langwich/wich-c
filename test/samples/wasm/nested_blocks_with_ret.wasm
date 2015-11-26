@@ -1,0 +1,45 @@
+4 strings
+	0: 3/cat
+	1: 3/dog
+	2: 3/moo
+	3: 3/boo
+2 functions
+	0: addr=0 args=1 locals=5 type=1 1/f
+	1: addr=61 args=0 locals=0 type=0 4/main
+36 instr, 80 bytes
+	GC_START
+	ICONST 32
+	STORE 1
+	SCONST 0
+	STORE 2
+	SROOT
+	SCONST 1
+	STORE 4
+	SROOT
+	SCONST 2
+	STORE 5
+	SROOT
+	ILOAD 1
+	GC_END
+	RET
+	SCONST 3
+	STORE 4
+	SROOT
+	ICONST 7
+	I2F
+	ICONST 1
+	VECTOR
+	STORE 3
+	VROOT
+	PUSH_DFLT_RETV
+	RET
+	GC_END
+	GC_START
+	ICONST 1
+	I2F
+	ICONST 1
+	VECTOR
+	CALL 0
+	IPRINT
+	GC_END
+	HALT

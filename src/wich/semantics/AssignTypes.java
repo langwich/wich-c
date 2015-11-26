@@ -59,4 +59,5 @@ public class AssignTypes extends MaintainScopeListener{
 
 	public boolean isAssignFinished() { return countOfAssigned == numOfVars; }
 
+	public int getCountOfAssigned() { return countOfAssigned; }
 }

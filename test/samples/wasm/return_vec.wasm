@@ -1,0 +1,32 @@
+0 strings
+2 functions
+	0: addr=0 args=0 locals=0 type=5 3/foo
+	1: addr=42 args=0 locals=1 type=0 4/main
+27 instr, 57 bytes
+	GC_START
+	ICONST 1
+	I2F
+	ICONST 2
+	I2F
+	ICONST 3
+	I2F
+	ICONST 4
+	I2F
+	ICONST 5
+	I2F
+	ICONST 5
+	VECTOR
+	GC_END
+	RET
+	PUSH_DFLT_RETV
+	RET
+	GC_END
+	GC_START
+	CALL 0
+	COPY_VECTOR
+	STORE 0
+	VROOT
+	CALL 0
+	VPRINT
+	GC_END
+	HALT

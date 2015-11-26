@@ -1,0 +1,35 @@
+2 strings
+	0: 4/z==0
+	1: 4/z!=0
+2 functions
+	0: addr=0 args=1 locals=1 type=2 1/f
+	1: addr=23 args=0 locals=1 type=0 4/main
+28 instr, 60 bytes
+	GC_START
+	FCONST 1.0
+	STORE 1
+	ILOAD 0
+	I2F
+	FLOAD 1
+	FNEG
+	FADD
+	GC_END
+	RET
+	PUSH_DFLT_RETV
+	RET
+	GC_END
+	GC_START
+	ICONST 2
+	CALL 0
+	STORE 0
+	FLOAD 0
+	ICONST 0
+	FEQ
+	BRF 10
+	SCONST 0
+	SPRINT
+	BR 7
+	SCONST 1
+	SPRINT
+	GC_END
+	HALT

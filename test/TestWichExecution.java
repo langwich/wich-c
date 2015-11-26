@@ -74,33 +74,32 @@ public class TestWichExecution extends WichBaseTest {
 		switch ( target ) {
 			case PLAIN :
 				expectedOutputURL =
-					CompilerUtils.getResourceFile(TEST_RES_PLAIN_GEND_CODE+"/"+baseName+target.fileExtension);
+					CompilerUtils.getResourceFile(TEST_RES_PLAIN_GEND_CODE+"/"+baseName+".c");
 				break;
 			case REFCOUNTING :
 				expectedOutputURL =
-					CompilerUtils.getResourceFile(TEST_RES_REFCOUNTING_GEND_CODE+"/"+baseName+target.fileExtension);
+					CompilerUtils.getResourceFile(TEST_RES_REFCOUNTING_GEND_CODE+"/"+baseName+".c");
 				break;
 			case LLVM :
 				expectedOutputURL =
-						CompilerUtils.getResourceFile(TEST_RES_LLVM_GEND_CODE+"/"+baseName+target.fileExtension);
+						CompilerUtils.getResourceFile(TEST_RES_LLVM_GEND_CODE+"/"+baseName+".ll");
 				break;
 			case LLVM_MARK_AND_COMPACT :
 				expectedOutputURL =
-						CompilerUtils.getResourceFile(TEST_RES_LLVM_MC_GEND_CODE+"/"+baseName+target.fileExtension);
+						CompilerUtils.getResourceFile(TEST_RES_LLVM_MC_GEND_CODE+"/"+baseName+".ll");
 				break;
 			case LLVM_MARK_AND_SWEEP:
 				expectedOutputURL =
-						CompilerUtils.getResourceFile(TEST_RES_LLVM_MS_GEND_CODE+"/"+baseName+target.fileExtension);
-				break;
-			case MARK_AND_COMPACT:
-			case MARK_AND_SWEEP:
-			case SCAVENGER:
-				expectedOutputURL =
-					CompilerUtils.getResourceFile(TEST_RES_GC_GEND_CODE+"/"+baseName+target.fileExtension);
+						CompilerUtils.getResourceFile(TEST_RES_LLVM_MS_GEND_CODE+"/"+baseName+".ll");
 				break;
 			case BYTECODE:
 				expectedOutputURL =
-					CompilerUtils.getResourceFile(TEST_RES_BYTECODE_GEND_CODE+"/"+baseName+target.fileExtension);
+						CompilerUtils.getResourceFile(TEST_RES_BYTECODE_GEND_CODE+"/"+baseName+".wasm");
+				break;
+			case MARK_AND_COMPACT:
+			case MARK_AND_SWEEP:
+				expectedOutputURL =
+					CompilerUtils.getResourceFile(TEST_RES_GC_GEND_CODE+"/"+baseName+".c");
 				break;
 			default :
 				err.error(null, ErrorType.UNKNOWN_TARGET, target.toString());
@@ -110,19 +109,29 @@ public class TestWichExecution extends WichBaseTest {
 		String expPath = expectedOutputURL.getPath();
 		String expected = CompilerUtils.readFile(expPath, CompilerUtils.FILE_ENCODING);
 		expected = expected.replace("\n\n", "\n"); // strip blank lines
-		CompilerUtils.writeFile("/tmp/__expected.c", expected, StandardCharsets.UTF_8);
+		if (target == CodeGenTarget.BYTECODE)
+			CompilerUtils.writeFile("/tmp/__expected.wasm", expected, StandardCharsets.UTF_8);
+		else
+			CompilerUtils.writeFile("/tmp/__expected.c", expected, StandardCharsets.UTF_8);
 
 		String wichInput = CompilerUtils.readFile(input.getAbsolutePath(), CompilerUtils.FILE_ENCODING);
 		String actual = CompilerUtils.genCode(wichInput, symtab, err, target);
 		assertTrue(err.toString(), err.getErrorNum()==0);
 		actual = actual.replace("\n\n", "\n");
-		CompilerUtils.writeFile("/tmp/__t.c", actual, StandardCharsets.UTF_8);
+		if (target == CodeGenTarget.BYTECODE)
+			CompilerUtils.writeFile("/tmp/__t.wasm", actual, StandardCharsets.UTF_8);
+		else
+			CompilerUtils.writeFile("/tmp/__t.c", actual, StandardCharsets.UTF_8);
 
-		if (target != CodeGenTarget.LLVM &&
+		if (target != CodeGenTarget.BYTECODE &&
+			target != CodeGenTarget.LLVM &&
 			target != CodeGenTarget.LLVM_MARK_AND_COMPACT &&
 			target != CodeGenTarget.LLVM_MARK_AND_SWEEP) actual = normalizeFile();
 
-		expected = CompilerUtils.readFile("/tmp/__expected.c", StandardCharsets.UTF_8);
+		if (target == CodeGenTarget.BYTECODE)
+			expected = CompilerUtils.readFile("/tmp/__expected.wasm", StandardCharsets.UTF_8);
+		else
+			expected = CompilerUtils.readFile("/tmp/__expected.c", StandardCharsets.UTF_8);
 
 		Assert.assertEquals(expected, actual);
 	}
