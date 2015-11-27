@@ -132,7 +132,8 @@ public class CompilerUtils {
 			public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol,
 			                        int line, int charPositionInLine,
 			                        String msg, RecognitionException e) {
-				err.error((Token) offendingSymbol, ErrorType.SYNTAX_ERROR, e, msg);
+				System.out.println(msg);
+				err.error((Token) offendingSymbol, ErrorType.SYNTAX_ERROR, msg);
 				errors[0]++;
 			}
 		};
