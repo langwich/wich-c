@@ -30,9 +30,8 @@ int f(PVector_ptr a)
 
 int main(int ____c, char *____v[])
 {
-    setup_error_handlers();
-    printf("%d\n", f(Vector_new((double[]) {
-                                1}, 1)));
-    return 0;
+	setup_error_handlers();
+	printf("%d\n", f(Vector_new((double []){1}, 1)));
+	return 0;
 }
 
