@@ -87,10 +87,11 @@ public class CompilerUtils {
 		LLVM(new String[]{"wlib"}, ".ll"),
 		LLVM_MARK_AND_COMPACT(new String[]{"wlib_mark_and_compact", "mark_and_compact", "gc_mark_and_compact", "malloc_common"}, ".ll"),
 		LLVM_MARK_AND_SWEEP(new String[]{"wlib_mark_and_sweep", "mark_and_sweep", "gc_mark_and_sweep", "malloc_common"}, ".ll"),
+		LLVM_SCAVENGER(new String[]{"wlib_scavenger", "scavenger", "gc_scavenger", "malloc_common"}, ".c"),
 		REFCOUNTING(new String[]{"wlib_refcounting"}, ".c"),
 		MARK_AND_COMPACT(new String[]{"wlib_mark_and_compact", "mark_and_compact", "gc_mark_and_compact", "malloc_common"}, ".c"),
 		MARK_AND_SWEEP(new String[]{"wlib_mark_and_sweep", "mark_and_sweep", "gc_mark_and_sweep", "malloc_common"}, ".c"),
-		SCAVENGER(new String[]{"wlib"}, ".c"),
+		SCAVENGER(new String[]{"wlib_scavenger", "scavenger", "gc_scavenger", "malloc_common"}, ".c"),
 		BYTECODE(new String[]{}, ".wasm");
 
 		public String[] libs;
@@ -219,6 +220,11 @@ public class CompilerUtils {
 				modelWalker = new ModelWalker(new InjectLLVMTraits());
 				modelWalker.walk(modelRoot);
 				templates = new STGroupFile("wich-llvm-ms.stg");
+				break;
+			case LLVM_SCAVENGER:
+				modelWalker = new ModelWalker(new InjectLLVMTraits());
+				modelWalker.walk(modelRoot);
+				templates = new STGroupFile("wich-llvm-svgr.stg");
 				break;
 			case REFCOUNTING :
 				modelWalker = new ModelWalker(new InjectRefCounting());

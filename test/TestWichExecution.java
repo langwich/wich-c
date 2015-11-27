@@ -92,6 +92,10 @@ public class TestWichExecution extends WichBaseTest {
 				expectedOutputURL =
 						CompilerUtils.getResourceFile(TEST_RES_LLVM_MS_GEND_CODE+"/"+baseName+".ll");
 				break;
+			case LLVM_SCAVENGER:
+				expectedOutputURL =
+						CompilerUtils.getResourceFile(TEST_RES_LLVM_SVGR_GEND_CODE+"/"+baseName+".ll");
+				break;
 			case BYTECODE:
 				expectedOutputURL =
 						CompilerUtils.getResourceFile(TEST_RES_BYTECODE_GEND_CODE+"/"+baseName+".wasm");
@@ -126,7 +130,8 @@ public class TestWichExecution extends WichBaseTest {
 		if (target != CodeGenTarget.BYTECODE &&
 			target != CodeGenTarget.LLVM &&
 			target != CodeGenTarget.LLVM_MARK_AND_COMPACT &&
-			target != CodeGenTarget.LLVM_MARK_AND_SWEEP) actual = normalizeFile();
+			target != CodeGenTarget.LLVM_MARK_AND_SWEEP &&
+			target != CodeGenTarget.LLVM_SCAVENGER) actual = normalizeFile();
 
 		if (target == CodeGenTarget.BYTECODE)
 			expected = CompilerUtils.readFile("/tmp/__expected.wasm", StandardCharsets.UTF_8);
@@ -187,7 +192,8 @@ public class TestWichExecution extends WichBaseTest {
 		String targetName;
 		if (target != CodeGenTarget.LLVM &&
 				target != CodeGenTarget.LLVM_MARK_AND_COMPACT &&
-				target != CodeGenTarget.LLVM_MARK_AND_SWEEP) {
+				target != CodeGenTarget.LLVM_MARK_AND_SWEEP &&
+				target != CodeGenTarget.LLVM_SCAVENGER) {
 			targetName = WORKING_DIR + baseName + ".c";
 			cc.addAll(
 					Arrays.asList(
