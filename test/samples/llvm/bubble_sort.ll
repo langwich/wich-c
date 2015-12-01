@@ -297,22 +297,21 @@ store i8** %argv, i8*** %argv_
 call void () @setup_error_handlers()
 %x0_ = alloca %struct.PVector_ptr
 %0 = alloca [4 x double]
-%promo0_ = getelementptr [4 x double], [4 x double]* %0, i64 0, i64 0
+%vpromo0_ = getelementptr [4 x double], [4 x double]* %0, i64 0, i64 0
 %1 = add i32 1, 0
 %promo0 = sitofp i32 %1 to double
-store double %promo0, double* %promo0_
-%promo1_ = getelementptr [4 x double], [4 x double]* %0, i64 0, i64 1
+store double %promo0, double* %vpromo0_
+%vpromo1_ = getelementptr [4 x double], [4 x double]* %0, i64 0, i64 1
 %2 = add i32 4, 0
 %promo1 = sitofp i32 %2 to double
-store double %promo1, double* %promo1_
-%promo2_ = getelementptr [4 x double], [4 x double]* %0, i64 0, i64 2
+store double %promo1, double* %vpromo1_
+%vpromo2_ = getelementptr [4 x double], [4 x double]* %0, i64 0, i64 2
 %3 = add i32 2, 0
 %promo2 = sitofp i32 %3 to double
-store double %promo2, double* %promo2_
-%promo3_ = getelementptr [4 x double], [4 x double]* %0, i64 0, i64 3
-%4 = add i32 3, 0
-%promo3 = sitofp i32 %4 to double
-store double %promo3, double* %promo3_
+store double %promo2, double* %vpromo2_
+%v4_ = getelementptr [4 x double], [4 x double]* %0, i64 0, i64 3
+%4 = fadd double 3.1, 0.00
+store double %4, double* %v4_
 %vec_ptr_5 = getelementptr [4 x double], [4 x double]* %0, i64 0, i64 0
 %5 = call %struct.PVector_ptr @PVector_new(double* %vec_ptr_5, i64 4)
 store %struct.PVector_ptr %5, %struct.PVector_ptr* %x0_

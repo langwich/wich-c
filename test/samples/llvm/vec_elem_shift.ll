@@ -196,14 +196,14 @@ call void () @setup_error_handlers()
 %0 = add i32 1, 0
 store i32 %0, i32* %j0_
 %1 = alloca [2 x double]
-%promo0_ = getelementptr [2 x double], [2 x double]* %1, i64 0, i64 0
+%vpromo0_ = getelementptr [2 x double], [2 x double]* %1, i64 0, i64 0
 %2 = add i32 1, 0
 %promo0 = sitofp i32 %2 to double
-store double %promo0, double* %promo0_
-%promo1_ = getelementptr [2 x double], [2 x double]* %1, i64 0, i64 1
+store double %promo0, double* %vpromo0_
+%vpromo1_ = getelementptr [2 x double], [2 x double]* %1, i64 0, i64 1
 %3 = add i32 2, 0
 %promo1 = sitofp i32 %3 to double
-store double %promo1, double* %promo1_
+store double %promo1, double* %vpromo1_
 %vec_ptr_4 = getelementptr [2 x double], [2 x double]* %1, i64 0, i64 0
 %4 = call %struct.PVector_ptr @PVector_new(double* %vec_ptr_4, i64 2)
 store %struct.PVector_ptr %4, %struct.PVector_ptr* %x0_

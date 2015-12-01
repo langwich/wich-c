@@ -211,10 +211,10 @@ store %struct.string* %3, %struct.string** %b1_
 store %struct.string* %4, %struct.string** %c1_
 
 %5 = alloca [1 x double]
-%promo0_ = getelementptr [1 x double], [1 x double]* %5, i64 0, i64 0
+%vpromo0_ = getelementptr [1 x double], [1 x double]* %5, i64 0, i64 0
 %6 = add i32 7, 0
 %promo0 = sitofp i32 %6 to double
-store double %promo0, double* %promo0_
+store double %promo0, double* %vpromo0_
 %vec_ptr_7 = getelementptr [1 x double], [1 x double]* %5, i64 0, i64 0
 %7 = call %struct.PVector_ptr @PVector_new(double* %vec_ptr_7, i64 1)
 store %struct.PVector_ptr %7, %struct.PVector_ptr* %e0_

@@ -194,34 +194,34 @@ call void () @setup_error_handlers()
 %u0_ = alloca %struct.PVector_ptr
 %v0_ = alloca %struct.PVector_ptr
 %0 = alloca [3 x double]
-%promo0_ = getelementptr [3 x double], [3 x double]* %0, i64 0, i64 0
+%vpromo0_ = getelementptr [3 x double], [3 x double]* %0, i64 0, i64 0
 %1 = add i32 1, 0
 %promo0 = sitofp i32 %1 to double
-store double %promo0, double* %promo0_
-%promo1_ = getelementptr [3 x double], [3 x double]* %0, i64 0, i64 1
+store double %promo0, double* %vpromo0_
+%vpromo1_ = getelementptr [3 x double], [3 x double]* %0, i64 0, i64 1
 %2 = add i32 2, 0
 %promo1 = sitofp i32 %2 to double
-store double %promo1, double* %promo1_
-%promo2_ = getelementptr [3 x double], [3 x double]* %0, i64 0, i64 2
+store double %promo1, double* %vpromo1_
+%vpromo2_ = getelementptr [3 x double], [3 x double]* %0, i64 0, i64 2
 %3 = add i32 3, 0
 %promo2 = sitofp i32 %3 to double
-store double %promo2, double* %promo2_
+store double %promo2, double* %vpromo2_
 %vec_ptr_4 = getelementptr [3 x double], [3 x double]* %0, i64 0, i64 0
 %4 = call %struct.PVector_ptr @PVector_new(double* %vec_ptr_4, i64 3)
 store %struct.PVector_ptr %4, %struct.PVector_ptr* %u0_
 %5 = alloca [3 x double]
-%promo3_ = getelementptr [3 x double], [3 x double]* %5, i64 0, i64 0
+%vpromo3_ = getelementptr [3 x double], [3 x double]* %5, i64 0, i64 0
 %6 = add i32 2, 0
 %promo3 = sitofp i32 %6 to double
-store double %promo3, double* %promo3_
-%promo4_ = getelementptr [3 x double], [3 x double]* %5, i64 0, i64 1
+store double %promo3, double* %vpromo3_
+%vpromo4_ = getelementptr [3 x double], [3 x double]* %5, i64 0, i64 1
 %7 = add i32 3, 0
 %promo4 = sitofp i32 %7 to double
-store double %promo4, double* %promo4_
-%promo5_ = getelementptr [3 x double], [3 x double]* %5, i64 0, i64 2
+store double %promo4, double* %vpromo4_
+%vpromo5_ = getelementptr [3 x double], [3 x double]* %5, i64 0, i64 2
 %8 = add i32 4, 0
 %promo5 = sitofp i32 %8 to double
-store double %promo5, double* %promo5_
+store double %promo5, double* %vpromo5_
 %vec_ptr_9 = getelementptr [3 x double], [3 x double]* %5, i64 0, i64 0
 %9 = call %struct.PVector_ptr @PVector_new(double* %vec_ptr_9, i64 3)
 store %struct.PVector_ptr %9, %struct.PVector_ptr* %v0_

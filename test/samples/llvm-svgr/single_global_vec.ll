@@ -202,26 +202,26 @@ call void @llvm.memcpy.p0i8.p0i8.i64(i8* %x0_mcp_target_, i8* bitcast (%struct.P
 %x0_raw_ptr_ = bitcast %struct.PVector** %x0_inner_ptr_ to i8**
 call void @gc_add_root(i8** %x0_raw_ptr_)
 %0 = alloca [5 x double]
-%promo0_ = getelementptr [5 x double], [5 x double]* %0, i64 0, i64 0
+%vpromo0_ = getelementptr [5 x double], [5 x double]* %0, i64 0, i64 0
 %1 = add i32 1, 0
 %promo0 = sitofp i32 %1 to double
-store double %promo0, double* %promo0_
-%promo1_ = getelementptr [5 x double], [5 x double]* %0, i64 0, i64 1
+store double %promo0, double* %vpromo0_
+%vpromo1_ = getelementptr [5 x double], [5 x double]* %0, i64 0, i64 1
 %2 = add i32 2, 0
 %promo1 = sitofp i32 %2 to double
-store double %promo1, double* %promo1_
-%promo2_ = getelementptr [5 x double], [5 x double]* %0, i64 0, i64 2
+store double %promo1, double* %vpromo1_
+%vpromo2_ = getelementptr [5 x double], [5 x double]* %0, i64 0, i64 2
 %3 = add i32 3, 0
 %promo2 = sitofp i32 %3 to double
-store double %promo2, double* %promo2_
-%promo3_ = getelementptr [5 x double], [5 x double]* %0, i64 0, i64 3
+store double %promo2, double* %vpromo2_
+%vpromo3_ = getelementptr [5 x double], [5 x double]* %0, i64 0, i64 3
 %4 = add i32 4, 0
 %promo3 = sitofp i32 %4 to double
-store double %promo3, double* %promo3_
-%promo4_ = getelementptr [5 x double], [5 x double]* %0, i64 0, i64 4
+store double %promo3, double* %vpromo3_
+%vpromo4_ = getelementptr [5 x double], [5 x double]* %0, i64 0, i64 4
 %5 = add i32 5, 0
 %promo4 = sitofp i32 %5 to double
-store double %promo4, double* %promo4_
+store double %promo4, double* %vpromo4_
 %vec_ptr_6 = getelementptr [5 x double], [5 x double]* %0, i64 0, i64 0
 %6 = call %struct.PVector_ptr @PVector_new(double* %vec_ptr_6, i64 5)
 store %struct.PVector_ptr %6, %struct.PVector_ptr* %x0_
