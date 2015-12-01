@@ -310,7 +310,7 @@ store double %promo1, double* %vpromo1_
 %promo2 = sitofp i32 %3 to double
 store double %promo2, double* %vpromo2_
 %v4_ = getelementptr [4 x double], [4 x double]* %0, i64 0, i64 3
-%4 = fadd double 3.1, 0.00
+%4 = fadd double 3, 0.00
 store double %4, double* %v4_
 %vec_ptr_5 = getelementptr [4 x double], [4 x double]* %0, i64 0, i64 0
 %5 = call %struct.PVector_ptr @PVector_new(double* %vec_ptr_5, i64 4)

@@ -17,5 +17,5 @@ func bubbleSort(vec:[]):[] {
 	return v
 }
 
-var x = [1,4,2,3.1]
+var x = [1,4,2,3]
 print(bubbleSort(x))
