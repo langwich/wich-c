@@ -94,16 +94,16 @@ public class InjectLLVMTraits {
 		return new ScopedVarRef(varRef.symbol, varRef.type, varRef.varRef);
 	}
 
+	public OutputModelObject exitModel(HeapVarRef heapVarRef) {
+		return new ScopedVarRef(heapVarRef.symbol, heapVarRef.type, heapVarRef.varRef);
+	}
+
 	public OutputModelObject exitModel(StringIndexExpr e) {
 		return new ScopedStringIndexExpr(e.varName, e.symbol, e.expr, e.varRef);
 	}
 
 	public OutputModelObject exitModel(VectorIndexExpr e) {
 		return new ScopedVectorIndexExpr(e.varName, e.symbol, e.expr, e.varRef);
-	}
-
-	public OutputModelObject exitModel(HeapVarRef heapVarRef) {
-		return new ScopedVarRef(heapVarRef.symbol, heapVarRef.type, heapVarRef.varRef);
 	}
 
 	public OutputModelObject exitModel(ArgDef argDef) {

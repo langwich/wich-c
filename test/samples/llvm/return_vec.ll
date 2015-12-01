@@ -44,6 +44,8 @@ declare %struct.PVector_ptr @Vector_mul(%struct.PVector_ptr, %struct.PVector_ptr
 
 declare %struct.PVector_ptr @Vector_div(%struct.PVector_ptr, %struct.PVector_ptr)
 
+declare i32 @Vector_len(%struct.PVector_ptr)
+
 declare void @print_vector(%struct.PVector_ptr)
 
 declare %struct.string* @String_new(i8*)
@@ -71,6 +73,8 @@ declare zeroext i1 @String_ge(%struct.string*, %struct.string*)
 declare zeroext i1 @String_lt(%struct.string*, %struct.string*)
 
 declare zeroext i1 @String_le(%struct.string*, %struct.string*)
+
+declare i32 @String_len(%struct.string*)
 
 declare void (i32)* @signal(i32, void (i32)*)
 
@@ -228,10 +232,11 @@ store i8** %argv, i8*** %argv_
 call void () @setup_error_handlers()
 %x0_ = alloca %struct.PVector_ptr
 %0 = call %struct.PVector_ptr () @foo()
-store %struct.PVector_ptr %0, %struct.PVector_ptr* %x0_
+%1 = call %struct.PVector_ptr @Vector_copy(%struct.PVector_ptr %0)
+store %struct.PVector_ptr %1, %struct.PVector_ptr* %x0_
 
-%1 = call %struct.PVector_ptr () @foo()
-call void (%struct.PVector_ptr) @print_vector(%struct.PVector_ptr %1)
+%2 = call %struct.PVector_ptr () @foo()
+call void (%struct.PVector_ptr) @print_vector(%struct.PVector_ptr %2)
 br label %ret__
 ret__:
 br label %ret_

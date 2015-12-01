@@ -235,13 +235,9 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 		String varName = ctx.ID().getText();
 		WVariableSymbol v = (WVariableSymbol)currentScope.resolve(varName);
 		updateLexicalOrder(v);
-		Expr expr = (Expr)visit(ctx.expr());
 
-		if (isVectorCopyNeeded(ctx.expr())) {
-			VectorCopy e = new VectorCopy(SymbolTable._vector);
-			e.expr = expr;
-			expr = e;
-		}
+		Expr expr = (Expr)visit(ctx.expr());
+		if (isVectorCopyNeeded(ctx.expr())) expr = new VectorCopy(expr, getTempVar());
 		VarInitStat varInit = new VarInitStat(getVarRef(varName, true), expr, getTypeModel(expr.getType()));
 		VarDefStat varDef = getVarDefStat(v);
 		return new CompositeModelObject(varDef, varInit);
@@ -260,11 +256,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 	public OutputModelObject visitAssign(@NotNull WichParser.AssignContext ctx) {
 		String varName = ctx.ID().getText();
 		Expr expr      = (Expr)visit(ctx.expr());
-		if (isVectorCopyNeeded(ctx.expr())) {
-			VectorCopy e = new VectorCopy(SymbolTable._vector);
-			e.expr = expr;
-			expr = e;
-		}
+		if (isVectorCopyNeeded(ctx.expr())) expr = new VectorCopy(expr, getTempVar());
 		return new AssignStat(getVarRef(varName, true), expr, getTypeModel(expr.getType()));
 	}
 
@@ -336,8 +328,7 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 			for (WichParser.ExprContext e : ctx.expr_list().expr()) {
 				Expr expr = (Expr)visit(e);
 				if (isVectorCopyNeeded(e)) {
-					VectorCopy arg = new VectorCopy(SymbolTable._vector);
-					arg.expr = expr;
+					VectorCopy arg = new VectorCopy(expr, getTempVar());
 					fc.args.add( arg );
 				}
 				else {
@@ -370,17 +361,9 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 
 	@Override
 	public OutputModelObject visitLen(WichParser.LenContext ctx) {
-		Expr lenExpr;
-		if (ctx.expr().exprType == SymbolTable._vector) {
-			lenExpr = new VectorLen((Expr)visit(ctx.expr()));
-		}
-		else if(ctx.expr().exprType ==SymbolTable._string) {
-			lenExpr = new StrLen((Expr)visit(ctx.expr()));
-		}
-		else {
-			lenExpr = null;
-		}
-		return lenExpr;
+		Expr expr = (Expr) visit(ctx.expr());
+		String varRef = getTempVar();
+		return ctx.expr().exprType == SymbolTable._vector ? new VectorLen(expr, varRef) : new StrLen(expr, varRef);
 	}
 
 	@Override

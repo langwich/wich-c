@@ -40,6 +40,7 @@ public class WichBaseTest {
 	public static final String TEST_RES_LLVM_GEND_CODE = "llvm";
 	public static final String TEST_RES_LLVM_MC_GEND_CODE = "llvm-mc";
 	public static final String TEST_RES_LLVM_MS_GEND_CODE = "llvm-ms";
+	public static final String TEST_RES_LLVM_SVGR_GEND_CODE = "llvm-svgr";
 	public static final String TEST_RES_GC_GEND_CODE = "gc";
 	public static final String TEST_RES_BYTECODE_GEND_CODE = "wasm";
 
@@ -53,7 +54,11 @@ public class WichBaseTest {
 
 	@Parameterized.Parameters(name="{1}")
 	public static Collection<Object[]> findInputFiles() {
-		URL testFolder = CompilerUtils.getResourceFile(TEST_RES);
+		return findTestCasesInFolder(TEST_RES);
+	}
+
+	protected static Collection<Object[]> findTestCasesInFolder(String folder) {
+		URL testFolder = CompilerUtils.getResourceFile(folder);
 		Collection<Object[]> result = new ArrayList<>();
 		// only feed test methods with wich source files.
 		String regexp = "^\\w+\\.w$";

@@ -199,13 +199,13 @@ NotExpr(ne,expr,type) ::= "!<expr>"
 
 OpExpr(o,lExp,rExp,type) ::= "<lExp> <o.op> <rExp>"
 
-VectorElement(e, expr, type) ::= "<expr>"
+VectorElement(e,expr,type) ::= "<expr>"
 
 ArgDef(arg,type) ::= "<type> <arg.name>"
 
-VectorCopy(v,expr, type) ::= "PVector_copy(<expr>)"
+VectorCopy(v,expr,type) ::= "PVector_copy(<expr>)"
 
-FloatFromInt(e, expr, type) ::= "<expr>"
+FloatFromInt(e,expr,type) ::= "<expr>"
 
 VoidType(v) ::= "void"
 IntType(t) ::= "int"

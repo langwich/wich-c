@@ -17,11 +17,10 @@ int main(int ____c, char *____v[])
 {
 	setup_error_handlers();
     ENTER();
-
-    VECTOR(x);
-    x = PVector_copy(foo());
-    REF((void *)x.vector);
-    print_vector(foo());
+	VECTOR(x);
+	x = PVector_copy(foo());
+	REF((void *)x.vector);
+	print_vector(foo());
     EXIT();
 	return 0;
 }
