@@ -204,18 +204,18 @@ call void @gc_add_root(i8** %a0_raw_ptr_)
 %0 = call %struct.string* (i8*) @String_new(i8* %sl_0)
 store %struct.string* %0, %struct.string** %a0_
 %1 = alloca [3 x double]
-%promo0_ = getelementptr [3 x double], [3 x double]* %1, i64 0, i64 0
+%vpromo0_ = getelementptr [3 x double], [3 x double]* %1, i64 0, i64 0
 %2 = add i32 1, 0
 %promo0 = sitofp i32 %2 to double
-store double %promo0, double* %promo0_
-%promo1_ = getelementptr [3 x double], [3 x double]* %1, i64 0, i64 1
+store double %promo0, double* %vpromo0_
+%vpromo1_ = getelementptr [3 x double], [3 x double]* %1, i64 0, i64 1
 %3 = add i32 2, 0
 %promo1 = sitofp i32 %3 to double
-store double %promo1, double* %promo1_
-%promo2_ = getelementptr [3 x double], [3 x double]* %1, i64 0, i64 2
+store double %promo1, double* %vpromo1_
+%vpromo2_ = getelementptr [3 x double], [3 x double]* %1, i64 0, i64 2
 %4 = add i32 3, 0
 %promo2 = sitofp i32 %4 to double
-store double %promo2, double* %promo2_
+store double %promo2, double* %vpromo2_
 %vec_ptr_5 = getelementptr [3 x double], [3 x double]* %1, i64 0, i64 0
 %5 = call %struct.PVector_ptr @PVector_new(double* %vec_ptr_5, i64 3)
 %6 = call i32 @Vector_len(%struct.PVector_ptr %5)

@@ -223,18 +223,18 @@ call void @llvm.memcpy.p0i8.p0i8.i64(i8* %x1_mcp_target_, i8* bitcast (%struct.P
 %x1_raw_ptr_ = bitcast %struct.PVector** %x1_inner_ptr_ to i8**
 call void @gc_add_root(i8** %x1_raw_ptr_)
 %0 = alloca [3 x double]
-%promo0_ = getelementptr [3 x double], [3 x double]* %0, i64 0, i64 0
+%vpromo0_ = getelementptr [3 x double], [3 x double]* %0, i64 0, i64 0
 %1 = add i32 1, 0
 %promo0 = sitofp i32 %1 to double
-store double %promo0, double* %promo0_
-%promo1_ = getelementptr [3 x double], [3 x double]* %0, i64 0, i64 1
+store double %promo0, double* %vpromo0_
+%vpromo1_ = getelementptr [3 x double], [3 x double]* %0, i64 0, i64 1
 %2 = add i32 2, 0
 %promo1 = sitofp i32 %2 to double
-store double %promo1, double* %promo1_
-%promo2_ = getelementptr [3 x double], [3 x double]* %0, i64 0, i64 2
+store double %promo1, double* %vpromo1_
+%vpromo2_ = getelementptr [3 x double], [3 x double]* %0, i64 0, i64 2
 %3 = add i32 3, 0
 %promo2 = sitofp i32 %3 to double
-store double %promo2, double* %promo2_
+store double %promo2, double* %vpromo2_
 %vec_ptr_4 = getelementptr [3 x double], [3 x double]* %0, i64 0, i64 0
 %4 = call %struct.PVector_ptr @PVector_new(double* %vec_ptr_4, i64 3)
 store %struct.PVector_ptr %4, %struct.PVector_ptr* %x1_
