@@ -53,6 +53,7 @@ public class TestWichExecution extends WichBaseTest {
 	protected static final String WORKING_DIR = "/tmp/";
 	protected static final String LIB_DIR = "/usr/local/wich/lib";
 	protected static final String INCLUDE_DIR = "/usr/local/wich/include";
+	protected static final String CLANG = System.getenv("CLANG_HOME");
 	protected CompilerUtils.MallocImpl mallocImpl = CompilerUtils.MallocImpl.SYSTEM; // default malloc;
 
 	public TestWichExecution(File input, String baseName) {
@@ -209,7 +210,7 @@ public class TestWichExecution extends WichBaseTest {
 			targetName = WORKING_DIR + baseName + ".ll";
 			cc.addAll(
 					Arrays.asList(
-							"clang-3.8", "-o", executable,
+							CLANG+"/bin/clang", "-o", executable,
 							targetName,
 							"-L", LIB_DIR,
 							"-D" + target.flag,
