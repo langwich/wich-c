@@ -215,10 +215,10 @@ return.exit_0:
 store %struct.string* %5, %struct.string** %b1_
 
 %6 = alloca [1 x double]
-%promo0_ = getelementptr [1 x double], [1 x double]* %6, i64 0, i64 0
+%vpromo0_ = getelementptr [1 x double], [1 x double]* %6, i64 0, i64 0
 %7 = add i32 7, 0
 %promo0 = sitofp i32 %7 to double
-store double %promo0, double* %promo0_
+store double %promo0, double* %vpromo0_
 %vec_ptr_8 = getelementptr [1 x double], [1 x double]* %6, i64 0, i64 0
 %8 = call %struct.PVector_ptr @PVector_new(double* %vec_ptr_8, i64 1)
 store %struct.PVector_ptr %8, %struct.PVector_ptr* %e0_
@@ -242,10 +242,10 @@ store i32 %argc, i32* %argc_
 store i8** %argv, i8*** %argv_
 call void () @setup_error_handlers()
 %0 = alloca [1 x double]
-%promo0_ = getelementptr [1 x double], [1 x double]* %0, i64 0, i64 0
+%vpromo0_ = getelementptr [1 x double], [1 x double]* %0, i64 0, i64 0
 %1 = add i32 1, 0
 %promo0 = sitofp i32 %1 to double
-store double %promo0, double* %promo0_
+store double %promo0, double* %vpromo0_
 %vec_ptr_2 = getelementptr [1 x double], [1 x double]* %0, i64 0, i64 0
 %2 = call %struct.PVector_ptr @PVector_new(double* %vec_ptr_2, i64 1)
 %3 = call i32 (%struct.PVector_ptr) @f(%struct.PVector_ptr %2)
