@@ -138,7 +138,7 @@ public class ComputeTypes extends MaintainScopeListener {
 		if ( s!=null && s instanceof WVariableSymbol ) {
 			ctx.exprType = ((TypedSymbol) s).getType();
 		} else {
-			error(ctx.ID().getSymbol(), SYMBOL_NOT_FOUND, ctx.ID().getText());
+			//let FinalComputeTypes throw the error
 		}
 	}
 
