@@ -56,7 +56,6 @@ public class DefineSymbols extends CommonWichListener {
 	public void enterVardef(WichParser.VardefContext ctx) {
 		String varName = ctx.ID().getText();
 		try {
-
 			currentScope.define(new WVariableSymbol(varName)); // type set in type computation phase
 			numOfVars++;
 		}catch (IllegalArgumentException e) {
@@ -71,7 +70,9 @@ public class DefineSymbols extends CommonWichListener {
 		WBuiltInTypeSymbol type = resolveType(typeName);
 		if ( type!=null ) {
 			arg.setType(type);
-			((WFunctionSymbol)currentScope).argTypes.add(type);
+			if (currentScope instanceof  WFunctionSymbol) {
+				((WFunctionSymbol)currentScope).argTypes.add(type);
+			}
 		}
 		else{
 			error(ctx.ID().getSymbol(), INVALID_TYPE, arg.getName());
@@ -93,10 +94,15 @@ public class DefineSymbols extends CommonWichListener {
 			if ( type!=null ) f.setType(type);
 			else error(ctx.ID().getSymbol(), INVALID_TYPE, f.getName());
 		}
-		ctx.scope = f;
-		currentScope.define(f);
-		//symtab.functions.put(ctx.ID().getText(),f);
-		pushScope(f);
+
+		try{
+			ctx.scope = f;
+			currentScope.define(f);
+			pushScope(f);
+		}catch (IllegalArgumentException e) {
+			error(ctx.start, DUPLICATE_SYMBOL, ctx.ID().getText());
+		}
+
 	}
 
 	@Override
