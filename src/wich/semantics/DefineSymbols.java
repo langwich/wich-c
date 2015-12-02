@@ -33,6 +33,7 @@ import wich.semantics.symbols.WBuiltInTypeSymbol;
 import wich.semantics.symbols.WFunctionSymbol;
 import wich.semantics.symbols.WVariableSymbol;
 
+import static wich.errors.ErrorType.DUPLICATE_SYMBOL;
 import static wich.errors.ErrorType.INVALID_TYPE;
 
 /*Define symbols, annotate explicit type information for function and args.*/
@@ -53,8 +54,14 @@ public class DefineSymbols extends CommonWichListener {
 
 	@Override
 	public void enterVardef(WichParser.VardefContext ctx) {
-		currentScope.define(new WVariableSymbol(ctx.ID().getText())); // type set in type computation phase
-		numOfVars++;
+		String varName = ctx.ID().getText();
+		try {
+
+			currentScope.define(new WVariableSymbol(varName)); // type set in type computation phase
+			numOfVars++;
+		}catch (IllegalArgumentException e) {
+			error(ctx.start, DUPLICATE_SYMBOL, varName);
+		}
 	}
 
 	@Override

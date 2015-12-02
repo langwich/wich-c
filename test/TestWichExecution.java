@@ -181,7 +181,7 @@ public class TestWichExecution extends WichBaseTest {
 
 		Triple<Integer, String, String> res = executeC(executable);
 		System.out.println(res.b);
-		if (res.c.length() > 0) assertEquals(expected, res.b);
+		if (res.c.length() > 0) assertEquals(expected, res.c);
 		else assertEquals(expected, res.b);
 
 		if ( valgrind ) {

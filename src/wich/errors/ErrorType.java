@@ -44,7 +44,8 @@ public enum ErrorType {
 	INTERNAL_STRINGTEMPLATE_ERROR("internal stringtemplate error: <arg1>", ERROR),
 	RETURN_TYPE_ERROR("invalid return type <arg1>, <arg2> was expected", ERROR),
 	UNKNOWN_TARGET("Unknown translation target: <arg1>", ERROR),
-	TYPE_ERROR_FOR_LEN("object of expression type has no len()",ERROR);
+	TYPE_ERROR_FOR_LEN("object of expression type has no len()",ERROR),
+	DUPLICATE_SYMBOL("duplicate symbol: <arg1> ",ERROR);
 
 	protected String template;
 	protected ErrorSeverity severity;
