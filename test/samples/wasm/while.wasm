@@ -1,14 +1,14 @@
 0 strings
 1 functions
 	0: addr=0 args=0 locals=1 type=0 4/main
-19 instr, 49 bytes
+19 instr, 53 bytes
 	GC_START
 	ICONST 10
 	STORE 0
 	ILOAD 0
 	ICONST 0
 	IGT
-	BRF 29
+	BRF 33
 	ILOAD 0
 	I2F
 	FCONST 1.0
@@ -18,6 +18,6 @@
 	ICONST 1
 	ISUB
 	STORE 0
-	BR -35
+	BR -39
 	GC_END
 	HALT

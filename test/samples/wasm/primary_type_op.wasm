@@ -3,8 +3,8 @@
 	1: 4/z!=0
 2 functions
 	0: addr=0 args=1 locals=1 type=2 1/f
-	1: addr=23 args=0 locals=1 type=0 4/main
-28 instr, 60 bytes
+	1: addr=27 args=0 locals=1 type=0 4/main
+28 instr, 64 bytes
 	GC_START
 	FCONST 1.0
 	STORE 1
