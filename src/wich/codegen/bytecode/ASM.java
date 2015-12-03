@@ -93,7 +93,7 @@ public class ASM {
 	public Instr brf(int a)			{ return new Instr("BRF", a); } // opnd arg is relative to next instruction being 0
 
 	public Instr iconst(int v)		{ return new Instr("ICONST", v, 5); }
-	public Instr fconst(float v)	{ return new Instr("FCONST", v, 5); }
+	public Instr fconst(float v)	{ return new Instr("FCONST", v, 9); }
 	public Instr sconst(int i)		{ return new Instr("SCONST",i); }
 
 	public Instr iload(int i)		{ return new Instr("ILOAD", i); }

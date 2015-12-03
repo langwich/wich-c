@@ -3,7 +3,7 @@
 	1: 5/world
 1 functions
 	0: addr=0 args=0 locals=4 type=0 4/main
-23 instr, 51 bytes
+23 instr, 55 bytes
 	GC_START
 	SCONST 0
 	STORE 0
