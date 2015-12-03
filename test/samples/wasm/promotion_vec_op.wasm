@@ -1,7 +1,7 @@
 0 strings
 1 functions
 	0: addr=0 args=0 locals=2 type=0 4/main
-23 instr, 61 bytes
+23 instr, 73 bytes
 	GC_START
 	FCONST 1.0
 	FCONST 2.0
