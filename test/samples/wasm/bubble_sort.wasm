@@ -2,7 +2,7 @@
 2 functions
 	0: addr=0 args=1 locals=3 type=5 10/bubbleSort
 	1: addr=164 args=0 locals=1 type=0 4/main
-88 instr, 226 bytes
+88 instr, 230 bytes
 	GC_START
 	VLOAD 0
 	VLEN
@@ -74,7 +74,7 @@
 	I2F
 	ICONST 4
 	I2F
-	FCONST 2.15
+	FCONST 2.153
 	ICONST 2
 	I2F
 	ICONST 23

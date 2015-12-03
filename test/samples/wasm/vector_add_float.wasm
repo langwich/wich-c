@@ -2,7 +2,7 @@
 2 functions
 	0: addr=0 args=1 locals=2 type=5 1/f
 	1: addr=48 args=0 locals=0 type=0 4/main
-28 instr, 60 bytes
+28 instr, 64 bytes
 	GC_START
 	ICONST 1
 	I2F
