@@ -1,3 +1,3 @@
 func foo(x:int){}
-func foo(y:int){}
+func foo(x:int){}
 
