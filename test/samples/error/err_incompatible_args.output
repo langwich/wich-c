@@ -1,0 +1,2 @@
+error: line 2:0 incompatible argument type (cannot promote from float to int)
+ error: line 2:0 incompatible argument type (cannot promote from int to boolean)

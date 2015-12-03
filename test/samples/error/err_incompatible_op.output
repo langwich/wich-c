@@ -1,0 +1,1 @@
+error: line 2:8 incompatible operand types (int + boolean)
