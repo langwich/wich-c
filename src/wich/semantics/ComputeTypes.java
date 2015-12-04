@@ -92,21 +92,17 @@ public class ComputeTypes extends MaintainScopeListener {
 		if ( f!=null && f instanceof WFunctionSymbol ) {
 			ctx.exprType = ((WFunctionSymbol) f).getType();
 			promoteArgTypes(ctx, (WFunctionSymbol) f);
-		} else {
+		}
+		else {
 			error(ctx.ID().getSymbol(), UNDEFINED_FUNCTION, ctx.ID().getText());
 		}
 	}
 
 	@Override
 	public void exitCall(@NotNull WichParser.CallContext ctx) {
-		Symbol f = currentScope.resolve(ctx.call_expr().ID().getText());
-		if ( f!=null && f instanceof WFunctionSymbol ) {
-			ctx.exprType = ((WFunctionSymbol) f).getType();
-			WichParser.Call_exprContext callExprContext = ctx.call_expr();
-			promoteArgTypes(callExprContext, (WFunctionSymbol)f);
-		} else {
-			error(ctx.call_expr().ID().getSymbol(), UNDEFINED_FUNCTION, ctx.call_expr().ID().getText());
-		}
+		// Node for rule call_expr has already computed types for call.
+		// We just percolate the type upwards.
+		ctx.exprType = ctx.call_expr().exprType;
 	}
 
 	@Override
@@ -120,9 +116,11 @@ public class ComputeTypes extends MaintainScopeListener {
 		Type idType = ((WVariableSymbol) s).getType();
 		if ( idType==SymbolTable._string ) {        //string can be indexed
 			ctx.exprType = SymbolTable._string;
-		} else if ( idType==SymbolTable._vector ) {         // vector can be indexed
+		}
+		else if ( idType==SymbolTable._vector ) {         // vector can be indexed
 			ctx.exprType = SymbolTable._float;
-		} else if (idType != null) {
+		}
+		else if (idType != null) {
 			error(ctx.start, INVALID_OPERATION, "[]", ((WVariableSymbol) s).getType().getName());
 		}
 	}
@@ -137,7 +135,8 @@ public class ComputeTypes extends MaintainScopeListener {
 		Symbol s = currentScope.resolve(ctx.ID().getText());
 		if ( s!=null && s instanceof WVariableSymbol ) {
 			ctx.exprType = ((TypedSymbol) s).getType();
-		} else {
+		}
+		else {
 			//let FinalComputeTypes throw the error
 		}
 	}

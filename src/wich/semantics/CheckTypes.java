@@ -23,13 +23,25 @@ SOFTWARE.
 */
 package wich.semantics;
 
-import org.antlr.symtab.*;
+import org.antlr.symtab.GlobalScope;
+import org.antlr.symtab.Scope;
+import org.antlr.symtab.Symbol;
+import org.antlr.symtab.Type;
+import org.antlr.symtab.TypedSymbol;
 import org.antlr.v4.runtime.misc.NotNull;
 import wich.errors.WichErrorHandler;
 import wich.parser.WichParser;
 import wich.semantics.symbols.WFunctionSymbol;
 
-import static wich.errors.ErrorType.*;
+import static wich.errors.ErrorType.INCOMPATIBLE_ARGUMENT_ERROR;
+import static wich.errors.ErrorType.INCOMPATIBLE_ASSIGNMENT_ERROR;
+import static wich.errors.ErrorType.INVALID_CONDITION_ERROR;
+import static wich.errors.ErrorType.INVALID_ELEMENT_ERROR;
+import static wich.errors.ErrorType.INVALID_INDEX_ERROR;
+import static wich.errors.ErrorType.INVALID_OPERATION;
+import static wich.errors.ErrorType.RETURN_TYPE_ERROR;
+import static wich.errors.ErrorType.SYMBOL_NOT_FOUND;
+import static wich.errors.ErrorType.TYPE_ERROR_FOR_LEN;
 
 public class CheckTypes extends MaintainScopeListener {
 
@@ -40,9 +52,16 @@ public class CheckTypes extends MaintainScopeListener {
 	@Override
 	public void exitAssign(@NotNull WichParser.AssignContext ctx) {
 		Symbol s = currentScope.resolve(ctx.ID().getText());
-		Type left = ((TypedSymbol)s).getType();
+		if ( s==null ) {
+			error(ctx.start, SYMBOL_NOT_FOUND, ctx.ID().getText());
+			return;
+		}
+		Type left = ((TypedSymbol) s).getType();
 		if ( !TypeHelper.isLegalAssign(left, ctx.expr()) ) {
-			error(ctx.start, INCOMPATIBLE_ASSIGNMENT_ERROR, left.getName(), ctx.expr().exprType.getName());
+			error(ctx.start,
+			      INCOMPATIBLE_ASSIGNMENT_ERROR,
+			      left.getName(),
+			      ctx.expr().exprType.getName());
 		}
 	}
 
@@ -52,7 +71,10 @@ public class CheckTypes extends MaintainScopeListener {
 		WichParser.ExprContext elem = ctx.expr(1);
 		//id must be of vector type
 		Symbol id = currentScope.resolve(ctx.ID().getText());
-		if (((TypedSymbol)id).getType() != SymbolTable._vector) {
+		if ( id==null ) {
+			error(ctx.start, SYMBOL_NOT_FOUND, ctx.ID().getText());
+		}
+		else if (((TypedSymbol)id).getType() != SymbolTable._vector) {
 			error(ctx.start, INVALID_OPERATION, "[]", ((TypedSymbol)id).getType().getName());
 		}
 		// index must be expression of int type
@@ -78,21 +100,21 @@ public class CheckTypes extends MaintainScopeListener {
 
 	@Override
 	public void exitIf(@NotNull WichParser.IfContext ctx) {
-		if(ctx.expr().exprType != SymbolTable._boolean)
+		if (ctx.expr().exprType != SymbolTable._boolean)
 			error(ctx.start, INVALID_CONDITION_ERROR, ctx.expr().exprType.getName());
 	}
 
 
 	@Override
 	public void exitWhile(@NotNull WichParser.WhileContext ctx) {
-		if(ctx.expr().exprType != SymbolTable._boolean)
+		if (ctx.expr().exprType != SymbolTable._boolean)
 			error(ctx.start, INVALID_CONDITION_ERROR, ctx.expr().exprType.getName());
 	}
 
 	@Override
 	public void exitCall_expr(@NotNull WichParser.Call_exprContext ctx) {
 		Symbol f = currentScope.resolve(ctx.ID().getText());
-		if(f != null && f instanceof WFunctionSymbol){
+		if (f != null && f instanceof WFunctionSymbol){
 			int numOfArgs = ((WFunctionSymbol)f).argTypes.size();
 			if(numOfArgs != 0 && numOfArgs == ctx.expr_list().expr().size()){
 				for(int i = 0; i < numOfArgs; i++){
@@ -104,12 +126,6 @@ public class CheckTypes extends MaintainScopeListener {
 				}
 			}
 		}
-	}
-
-	@Override
-	public void exitCall(@NotNull WichParser.CallContext ctx) {
-		WichParser.Call_exprContext callExprContext = ctx.call_expr();
-		exitCall_expr(callExprContext);
 	}
 
 	@Override

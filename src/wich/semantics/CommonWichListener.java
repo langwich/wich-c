@@ -38,15 +38,13 @@ public class CommonWichListener extends WichBaseListener {
 		if ( typeSymbol instanceof WBuiltInTypeSymbol ) {
 			return (WBuiltInTypeSymbol)typeSymbol;
 		}
-		else {
-			return null;
-		}
+		return null;
 	}
 
 	void promoteArgTypes(WichParser.Call_exprContext ctx, WFunctionSymbol f) {
 		int numOfArgs = f.argTypes.size();
 		//check the number of args
-		if(numOfArgs != 0 && numOfArgs != ctx.expr_list().expr().size()){
+		if (numOfArgs != 0 && numOfArgs != ctx.expr_list().expr().size()) {
 			error(ctx.start, INCORRECT_ARG_NUMBERS,
 					String.valueOf(numOfArgs),
 					String.valueOf(ctx.expr_list().expr().size()));
