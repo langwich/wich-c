@@ -1,0 +1,1 @@
+error: line 2:0 invalid vector index type (should be int, but [] was given)

@@ -336,6 +336,21 @@ public class TestTypeAnnotation {
 		annotateTypeAndCheck(input, expecting);
 	}
 
+	@Test
+	public void testPromoteSelfAssign() throws Exception {
+		String input =
+				"var v = [1.0,2.0,3.0]\n" +
+				"v = v + 4\n";
+		String expecting = "[1.0,2.0,3.0]:[]\n" +
+				"1.0:float\n" +
+				"2.0:float\n" +
+				"3.0:float\n" +
+				"v:[]\n" +
+				"4:int => []\n" +
+				"+:[] => []\n";
+		annotateTypeAndCheck(input, expecting);
+	}
+
 	private String getExpressionDump(String input) {
 		SymbolTable symtab = new SymbolTable();
 		WichErrorHandler err = new WichErrorHandler();

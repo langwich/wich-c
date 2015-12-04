@@ -1,0 +1,1 @@
+func foo(x:float,y:int,c:Boolean):int { }

@@ -1,0 +1,16 @@
+0 strings
+1 functions
+	0: addr=0 args=0 locals=2 type=0 4/main
+12 instr, 32 bytes
+	GC_START
+	ICONST 1
+	STORE 0
+	FCONST 3.14
+	ILOAD 0
+	I2F
+	FADD
+	STORE 1
+	FLOAD 1
+	FPRINT
+	GC_END
+	HALT
