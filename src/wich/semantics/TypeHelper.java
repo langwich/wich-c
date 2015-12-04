@@ -204,6 +204,20 @@ public class TypeHelper {
 		return resultType;
 	}
 
+	public static Type getPromoteType(int op, WichParser.OpContext ctx) {
+		ExprContext le = ctx.expr(0);
+		ExprContext re = ctx.expr(1);
+		int li = le.exprType.getTypeIndex();
+		int ri = re.exprType.getTypeIndex();
+		Type leftToRight = operandPromotionMap[op][li][ri];
+		Type rightToLeft = operandPromotionMap[op][ri][li];
+		if (leftToRight != null)
+			return leftToRight;
+		if (rightToLeft != null)
+			return rightToLeft;
+		return null;
+	}
+
 	/** This method is used to promote type in assignment.
 	 *  Returns a boolean indicating whether the assignment is legal.
 	 *  The expr type info must be available before this method works.
@@ -214,7 +228,7 @@ public class TypeHelper {
 
 	/** This method is used to promote type during type annotation */
 	public static void promote(ExprContext elem, Type targetType) {
-		if (elem.exprType != null ) {  // elem.exprType may not be known
+		if (elem.exprType != null  && elem.promoteToType != targetType) {  // elem.exprType may not be known
 			int selfIndex = elem.exprType.getTypeIndex();
 			elem.promoteToType = equalityPromoteFromTo[selfIndex][targetType.getTypeIndex()];
 		}

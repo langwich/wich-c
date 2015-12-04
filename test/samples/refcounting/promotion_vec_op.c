@@ -11,7 +11,7 @@ main(int ____c, char *____v[])
     v = Vector_new((double[]) {
                    1.0, 2.0, 3.0}, 3);
     REF((void *)v.vector);
-    v = Vector_add(v, 4);
+    v = Vector_add(v, Vector_from_int(4, (v).vector->length));
     REF((void *)v.vector);
     w = Vector_add(Vector_from_int(100, (v).vector->length), v);
     REF((void *)w.vector);
