@@ -397,6 +397,14 @@ public class BytecodeGenerator extends WichBaseVisitor<Code> {
 					right = promoteI2F(right);
 				}
 			}
+			else if(ctx.exprType == SymbolTable._boolean) {
+				if (ctx.expr(0).exprType == SymbolTable._float && ctx.expr(1).exprType == SymbolTable._int) {
+					right = promoteI2F(right);
+				}
+				else if (ctx.expr(0).exprType == SymbolTable._int && ctx.expr(1).exprType == SymbolTable._float){
+					left = promoteI2F(left);
+				}
+			}
 		}
 		//order of operands in vector operations, vector first
 		if(ctx.exprType == SymbolTable._vector && ctx.expr(0).exprType != SymbolTable._vector) {
