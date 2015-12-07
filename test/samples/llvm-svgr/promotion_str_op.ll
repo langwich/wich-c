@@ -182,113 +182,6 @@ ret void
 @.str.6 = private unnamed_addr constant [36 x i8] c"%d objects remain after collection\0A\00", align 1
 ; ///////// ///////// G E N E R A T E D  C O D E ///////// /////////
 
-define %struct.PVector_ptr @bubbleSort(%struct.PVector_ptr %v0) {
-entry:
-%v0_ = alloca %struct.PVector_ptr
-store %struct.PVector_ptr %v0, %struct.PVector_ptr* %v0_
-%retval_ = alloca %struct.PVector_ptr
-%_funcsp = alloca i32, align 4
-%____num_roots = call i32 (...) @gc_num_roots()
-store i32 %____num_roots, i32* %_funcsp, align 4
-%length0_ = alloca i32
-%i0_ = alloca i32
-%j0_ = alloca i32
-%0 = load %struct.PVector_ptr, %struct.PVector_ptr* %v0_
-%1 = call i32 @Vector_len(%struct.PVector_ptr %0)
-store i32 %1, i32* %length0_
-%2 = add i32 1, 0
-store i32 %2, i32* %i0_
-%3 = add i32 1, 0
-store i32 %3, i32* %j0_
-br label %while.block_entry_0
-while.block_entry_0:
-%4 = load i32, i32* %i0_
-%5 = load i32, i32* %length0_
-%6 = icmp sle i32 %4, %5
-br i1 %6, label %while.block_body_0, label %while.block_exit_0
-while.block_body_0:
-%7 = add i32 1, 0
-store i32 %7, i32* %j0_
-br label %while.block_entry_1
-while.block_entry_1:
-%8 = load i32, i32* %j0_
-%9 = load i32, i32* %length0_
-%10 = load i32, i32* %i0_
-%11 = sub i32 %9, %10
-%12 = icmp sle i32 %8, %11
-br i1 %12, label %while.block_body_1, label %while.block_exit_1
-while.block_body_1:
-%vec_14 = load %struct.PVector_ptr, %struct.PVector_ptr* %v0_
-%13 = load i32, i32* %j0_
-%index_13 = sub i32 %13, 1
-%14 = call double (%struct.PVector_ptr, i32) @ith(%struct.PVector_ptr %vec_14, i32 %index_13)
-%vec_18 = load %struct.PVector_ptr, %struct.PVector_ptr* %v0_
-%15 = load i32, i32* %j0_
-%16 = add i32 1, 0
-%17 = add i32 %15, %16
-%index_17 = sub i32 %17, 1
-%18 = call double (%struct.PVector_ptr, i32) @ith(%struct.PVector_ptr %vec_18, i32 %index_17)
-%19 = fcmp ogt double %14, %18
-br i1 %19, label %if.block_true_0, label %if.block_false_0
-if.block_true_0:
-%swap0_ = alloca double
-%vec_21 = load %struct.PVector_ptr, %struct.PVector_ptr* %v0_
-%20 = load i32, i32* %j0_
-%index_20 = sub i32 %20, 1
-%21 = call double (%struct.PVector_ptr, i32) @ith(%struct.PVector_ptr %vec_21, i32 %index_20)
-store double %21, double* %swap0_
-%22 = load %struct.PVector_ptr, %struct.PVector_ptr* %v0_
-%23 = load i32, i32* %j0_
-%index_23 = sub i32 %23, 1
-%vec_27 = load %struct.PVector_ptr, %struct.PVector_ptr* %v0_
-%24 = load i32, i32* %j0_
-%25 = add i32 1, 0
-%26 = add i32 %24, %25
-%index_26 = sub i32 %26, 1
-%27 = call double (%struct.PVector_ptr, i32) @ith(%struct.PVector_ptr %vec_27, i32 %index_26)
-call void (%struct.PVector_ptr,i32,double) @set_ith(%struct.PVector_ptr %22, i32 %index_23, double %27)
-%28 = load %struct.PVector_ptr, %struct.PVector_ptr* %v0_
-%29 = load i32, i32* %j0_
-%30 = add i32 1, 0
-%31 = add i32 %29, %30
-%index_31 = sub i32 %31, 1
-%32 = load double, double* %swap0_
-call void (%struct.PVector_ptr,i32,double) @set_ith(%struct.PVector_ptr %28, i32 %index_31, double %32)
-
-br label %if.block_exit_0
-if.block_false_0:
-br label %if.block_exit_0
-if.block_exit_0:
-%33 = load i32, i32* %j0_
-%34 = add i32 1, 0
-%35 = add i32 %33, %34
-store i32 %35, i32* %j0_
-
-br label %while.block_entry_1
-while.block_exit_1:
-%36 = load i32, i32* %i0_
-%37 = add i32 1, 0
-%38 = add i32 %36, %37
-store i32 %38, i32* %i0_
-
-br label %while.block_entry_0
-while.block_exit_0:
-%39 = load %struct.PVector_ptr, %struct.PVector_ptr* %v0_
-store %struct.PVector_ptr %39, %struct.PVector_ptr* %retval_
-br label %ret_
-return.exit_0:
-br label %ret__
-ret__:
-br label %ret_
-
-ret_:
-%num_roots____ = load i32, i32* %_funcsp, align 4
-call void @gc_set_num_roots(i32 %num_roots____)
-%retval = load %struct.PVector_ptr, %struct.PVector_ptr* %retval_
-ret %struct.PVector_ptr %retval
-}
-
-
 define i32 @main(i32 %argc, i8** %argv) {
 entry:
 %retval_ = alloca i32
@@ -302,47 +195,73 @@ call void () @setup_error_handlers()
 %_funcsp = alloca i32, align 4
 %____num_roots = call i32 (...) @gc_num_roots()
 store i32 %____num_roots, i32* %_funcsp, align 4
-%x0_ = alloca %struct.PVector_ptr
-%x0_mcp_target_ = bitcast %struct.PVector_ptr* %x0_ to i8*
-call void @llvm.memcpy.p0i8.p0i8.i64(i8* %x0_mcp_target_, i8* bitcast (%struct.PVector_ptr* @NIL_VECTOR to i8*), i64 16, i32 8, i1 false)
-%x0_inner_ptr_ = getelementptr inbounds %struct.PVector_ptr, %struct.PVector_ptr* %x0_, i32 0, i32 1
-%x0_raw_ptr_ = bitcast %struct.PVector** %x0_inner_ptr_ to i8**
-call void @gc_add_root(i8** %x0_raw_ptr_)
-%0 = alloca [7 x double]
-%vpromo0_ = getelementptr [7 x double], [7 x double]* %0, i64 0, i64 0
-%1 = add i32 100, 0
-%promo0 = sitofp i32 %1 to double
-store double %promo0, double* %vpromo0_
-%vpromo1_ = getelementptr [7 x double], [7 x double]* %0, i64 0, i64 1
-%2 = add i32 99, 0
-%promo1 = sitofp i32 %2 to double
-store double %promo1, double* %vpromo1_
-%vpromo2_ = getelementptr [7 x double], [7 x double]* %0, i64 0, i64 2
-%3 = add i32 4, 0
-%promo2 = sitofp i32 %3 to double
+%s10_ = alloca %struct.string*
+store %struct.string* null, %struct.string** %s10_, align 8
+%s10_raw_ptr_ = bitcast %struct.string** %s10_ to i8**
+call void @gc_add_root(i8** %s10_raw_ptr_)
+%s20_ = alloca %struct.string*
+store %struct.string* null, %struct.string** %s20_, align 8
+%s20_raw_ptr_ = bitcast %struct.string** %s20_ to i8**
+call void @gc_add_root(i8** %s20_raw_ptr_)
+%s30_ = alloca %struct.string*
+store %struct.string* null, %struct.string** %s30_, align 8
+%s30_raw_ptr_ = bitcast %struct.string** %s30_ to i8**
+call void @gc_add_root(i8** %s30_raw_ptr_)
+%s40_ = alloca %struct.string*
+store %struct.string* null, %struct.string** %s40_, align 8
+%s40_raw_ptr_ = bitcast %struct.string** %s40_ to i8**
+call void @gc_add_root(i8** %s40_raw_ptr_)
+%s50_ = alloca %struct.string*
+store %struct.string* null, %struct.string** %s50_, align 8
+%s50_raw_ptr_ = bitcast %struct.string** %s50_ to i8**
+call void @gc_add_root(i8** %s50_raw_ptr_)
+%sl_0 = getelementptr [4 x i8], [4 x i8]* @sl.str0, i32 0, i32 0
+%0 = call %struct.string* (i8*) @String_new(i8* %sl_0)
+store %struct.string* %0, %struct.string** %s10_
+%1 = load %struct.string*, %struct.string** %s10_
+%sl_2 = getelementptr [4 x i8], [4 x i8]* @sl.str1, i32 0, i32 0
+%2 = call %struct.string* (i8*) @String_new(i8* %sl_2)
+%3 = call %struct.string* (%struct.string*,%struct.string*) @String_add(%struct.string* %1,%struct.string* %2)
+store %struct.string* %3, %struct.string** %s20_
+%4 = load %struct.string*, %struct.string** %s10_
+%5 = add i32 100, 0
+%promo0 = call %struct.string* (i32) @String_from_int(i32 %5)
+%6 = call %struct.string* (%struct.string*,%struct.string*) @String_add(%struct.string* %4,%struct.string* %promo0)
+store %struct.string* %6, %struct.string** %s30_
+%7 = load %struct.string*, %struct.string** %s10_
+%8 = fadd double 3.14, 0.00
+%promo1 = call %struct.string* (double) @String_from_float(double %8)
+%9 = call %struct.string* (%struct.string*,%struct.string*) @String_add(%struct.string* %7,%struct.string* %promo1)
+store %struct.string* %9, %struct.string** %s40_
+%10 = load %struct.string*, %struct.string** %s10_
+%11 = alloca [3 x double]
+%vpromo2_ = getelementptr [3 x double], [3 x double]* %11, i64 0, i64 0
+%12 = add i32 1, 0
+%promo2 = sitofp i32 %12 to double
 store double %promo2, double* %vpromo2_
-%v4_ = getelementptr [7 x double], [7 x double]* %0, i64 0, i64 3
-%4 = fadd double 2.15, 0.00
-store double %4, double* %v4_
-%vpromo3_ = getelementptr [7 x double], [7 x double]* %0, i64 0, i64 4
-%5 = add i32 2, 0
-%promo3 = sitofp i32 %5 to double
+%vpromo3_ = getelementptr [3 x double], [3 x double]* %11, i64 0, i64 1
+%13 = add i32 2, 0
+%promo3 = sitofp i32 %13 to double
 store double %promo3, double* %vpromo3_
-%vpromo4_ = getelementptr [7 x double], [7 x double]* %0, i64 0, i64 5
-%6 = add i32 23, 0
-%promo4 = sitofp i32 %6 to double
+%vpromo4_ = getelementptr [3 x double], [3 x double]* %11, i64 0, i64 2
+%14 = add i32 3, 0
+%promo4 = sitofp i32 %14 to double
 store double %promo4, double* %vpromo4_
-%vpromo5_ = getelementptr [7 x double], [7 x double]* %0, i64 0, i64 6
-%7 = add i32 3, 0
-%promo5 = sitofp i32 %7 to double
-store double %promo5, double* %vpromo5_
-%vec_ptr_8 = getelementptr [7 x double], [7 x double]* %0, i64 0, i64 0
-%8 = call %struct.PVector_ptr @PVector_new(double* %vec_ptr_8, i64 7)
-store %struct.PVector_ptr %8, %struct.PVector_ptr* %x0_
-%9 = load %struct.PVector_ptr, %struct.PVector_ptr* %x0_
-%10 = call %struct.PVector_ptr @Vector_copy(%struct.PVector_ptr %9)
-%11 = call %struct.PVector_ptr (%struct.PVector_ptr) @bubbleSort(%struct.PVector_ptr %10)
-call void (%struct.PVector_ptr) @print_vector(%struct.PVector_ptr %11)
+%vec_ptr_15 = getelementptr [3 x double], [3 x double]* %11, i64 0, i64 0
+%15 = call %struct.PVector_ptr @PVector_new(double* %vec_ptr_15, i64 3)
+%promo5 = call %struct.string* (%struct.PVector_ptr) @String_from_vector(%struct.PVector_ptr %15)
+%16 = call %struct.string* (%struct.string*,%struct.string*) @String_add(%struct.string* %10,%struct.string* %promo5)
+store %struct.string* %16, %struct.string** %s50_
+%17 = load %struct.string*, %struct.string** %s10_
+call void (%struct.string*) @print_string(%struct.string* %17)
+%18 = load %struct.string*, %struct.string** %s20_
+call void (%struct.string*) @print_string(%struct.string* %18)
+%19 = load %struct.string*, %struct.string** %s30_
+call void (%struct.string*) @print_string(%struct.string* %19)
+%20 = load %struct.string*, %struct.string** %s40_
+call void (%struct.string*) @print_string(%struct.string* %20)
+%21 = load %struct.string*, %struct.string** %s50_
+call void (%struct.string*) @print_string(%struct.string* %21)
 br label %ret__
 ret__:
 br label %ret_
@@ -369,3 +288,5 @@ ret i32 %retval
 }
 
 
+@sl.str0 = private unnamed_addr constant [4 x i8] c"abc\00", align 1
+@sl.str1 = private unnamed_addr constant [4 x i8] c"xyz\00", align 1
