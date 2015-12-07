@@ -207,7 +207,8 @@ store double %promo2, double* %vpromo2_
 store %struct.PVector_ptr %4, %struct.PVector_ptr* %y0_
 %5 = load %struct.PVector_ptr, %struct.PVector_ptr* %y0_
 %6 = load i32, i32* %x0_
-%vec_5_ = extractvalue %struct.PVector_ptr %5, 1
+%vec_ref_5 = load %struct.PVector_ptr, %struct.PVector_ptr* %y0_
+%vec_5_ = extractvalue %struct.PVector_ptr %vec_ref_5, 1
 %vec_5 = load %struct.PVector, %struct.PVector* %vec_5_
 %len_5 = extractvalue %struct.PVector %vec_5, 2
 %promo3 = call %struct.PVector_ptr (i32, i64) @Vector_from_int(i32 %6, i64 %len_5)

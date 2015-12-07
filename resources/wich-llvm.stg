@@ -311,7 +311,8 @@ argPass(arg) ::= <<
 
 VectorFromInt(e,vector,intLiteral,type)	::= <<
 <intLiteral>
-%vec_<vector.e.varRef>_ = extractvalue %struct.PVector_ptr %<vector.e.varRef>, 1
+%vec_ref_<vector.e.varRef> = load %struct.PVector_ptr, %struct.PVector_ptr* %<vector.e.name>_
+%vec_<vector.e.varRef>_ = extractvalue %struct.PVector_ptr %vec_ref_<vector.e.varRef>, 1
 %vec_<vector.e.varRef> = load %struct.PVector, %struct.PVector* %vec_<vector.e.varRef>_
 %len_<vector.e.varRef> = extractvalue %struct.PVector %vec_<vector.e.varRef>, 2
 %<e.varRef> = call %struct.PVector_ptr (i32, i64) @Vector_from_int(i32 %<intLiteral.e.varRef>, i64 %len_<vector.e.varRef>)

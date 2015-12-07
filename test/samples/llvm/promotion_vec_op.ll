@@ -208,14 +208,16 @@ store double %3, double* %v3_
 store %struct.PVector_ptr %4, %struct.PVector_ptr* %v0_
 %5 = load %struct.PVector_ptr, %struct.PVector_ptr* %v0_
 %6 = add i32 4, 0
-%vec_5_ = extractvalue %struct.PVector_ptr %5, 1
+%vec_ref_5 = load %struct.PVector_ptr, %struct.PVector_ptr* %v0_
+%vec_5_ = extractvalue %struct.PVector_ptr %vec_ref_5, 1
 %vec_5 = load %struct.PVector, %struct.PVector* %vec_5_
 %len_5 = extractvalue %struct.PVector %vec_5, 2
 %promo0 = call %struct.PVector_ptr (i32, i64) @Vector_from_int(i32 %6, i64 %len_5)
 %7 = call %struct.PVector_ptr (%struct.PVector_ptr,%struct.PVector_ptr) @Vector_add(%struct.PVector_ptr %5,%struct.PVector_ptr %promo0)
 store %struct.PVector_ptr %7, %struct.PVector_ptr* %v0_
 %8 = add i32 100, 0
-%vec_9_ = extractvalue %struct.PVector_ptr %9, 1
+%vec_ref_9 = load %struct.PVector_ptr, %struct.PVector_ptr* %v0_
+%vec_9_ = extractvalue %struct.PVector_ptr %vec_ref_9, 1
 %vec_9 = load %struct.PVector, %struct.PVector* %vec_9_
 %len_9 = extractvalue %struct.PVector %vec_9, 2
 %promo1 = call %struct.PVector_ptr (i32, i64) @Vector_from_int(i32 %8, i64 %len_9)
