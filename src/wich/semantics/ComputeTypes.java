@@ -37,7 +37,6 @@ import wich.semantics.symbols.WVariableSymbol;
 import static wich.errors.ErrorType.INCOMPATIBLE_OPERAND_ERROR;
 import static wich.errors.ErrorType.INVALID_OPERAND_ERROR;
 import static wich.errors.ErrorType.INVALID_OPERATION;
-import static wich.errors.ErrorType.SYMBOL_NOT_FOUND;
 import static wich.errors.ErrorType.UNDEFINED_FUNCTION;
 
 /*Compute expression types wherever possible.*/
@@ -109,7 +108,7 @@ public class ComputeTypes extends MaintainScopeListener {
 	public void exitIndex(@NotNull WichParser.IndexContext ctx) {
 		Symbol s = currentScope.resolve(ctx.ID().getText());
 		if ( s==null) {
-			error(ctx.ID().getSymbol(), SYMBOL_NOT_FOUND, ctx.ID().getText());
+		//	let FinalComputeTypes throw the error
 			return;
 		}
 		// string[i] returns a single character string

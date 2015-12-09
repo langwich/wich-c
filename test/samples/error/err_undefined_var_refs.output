@@ -1,0 +1,4 @@
+error: line 1:25 symbol not found (v)
+ error: line 1:42 symbol not found (v)
+ error: line 1:0 symbol not found (v)
+ error: line 1:35 symbol not found (v)
