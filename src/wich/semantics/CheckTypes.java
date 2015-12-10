@@ -107,8 +107,9 @@ public class CheckTypes extends MaintainScopeListener {
 
 	@Override
 	public void exitWhile(@NotNull WichParser.WhileContext ctx) {
-		if (ctx.expr().exprType != SymbolTable._boolean)
+		if (ctx.expr().exprType != SymbolTable._boolean && ctx.expr().exprType != null){
 			error(ctx.start, INVALID_CONDITION_ERROR, ctx.expr().exprType.getName());
+		}
 	}
 
 	@Override
