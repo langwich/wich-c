@@ -224,7 +224,7 @@ public class TestWichExecution extends WichBaseTest {
 	protected void valgrindCheck(String executable) throws IOException, InterruptedException {
 		// For Intellij users you need to set PATH environment variable in Run/Debug configuration,
 		// since Intellij doesn't inherit environment variables from system.
-		String errSummary = exec(new String[]{"valgrind", executable}).c;
+		String errSummary = exec(new String[]{"valgrind", "--undef-value-errors=no", executable}).c;
 		assertEquals("Valgrind memcheck failed...", 0, getErrorNumFromSummary(errSummary));
 	}
 
