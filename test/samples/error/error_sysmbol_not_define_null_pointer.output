@@ -1,0 +1,8 @@
+error: line 4:4 symbol not found (x1)
+ error: line 6:7 symbol not found (x2)
+ error: line 7:11 symbol not found (x3)
+ error: line 9:4 symbol not found (z)
+ error: line 13:7 symbol not found (q)
+ error: line 14:5 symbol not found (q)
+ error: line 17:2 symbol not found (e)
+ error: line 14:1 symbol not found (q)
