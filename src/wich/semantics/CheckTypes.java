@@ -29,6 +29,7 @@ import org.antlr.symtab.Symbol;
 import org.antlr.symtab.Type;
 import org.antlr.symtab.TypedSymbol;
 import org.antlr.v4.runtime.misc.NotNull;
+import wich.codegen.model.expr.Expr;
 import wich.errors.WichErrorHandler;
 import wich.parser.WichParser;
 import wich.semantics.symbols.WFunctionSymbol;
@@ -119,11 +120,13 @@ public class CheckTypes extends MaintainScopeListener {
 			int numOfArgs = ((WFunctionSymbol)f).argTypes.size();
 			if(numOfArgs != 0 && numOfArgs == ctx.expr_list().expr().size()){
 				for(int i = 0; i < numOfArgs; i++){
-					Type actual = ctx.expr_list().expr(i).exprType;
-					Type promoted = ctx.expr_list().expr(i).promoteToType;
-					Type expected = ((WFunctionSymbol)f).argTypes.get(i);
-					if (actual != expected && promoted != expected)
-						error(ctx.start, INCOMPATIBLE_ARGUMENT_ERROR, expected.getName(), actual.getName());
+					if (ctx.expr_list().expr(i).exprType != null) {
+						Type actual = ctx.expr_list().expr(i).exprType;
+						Type promoted = ctx.expr_list().expr(i).promoteToType;
+						Type expected = ((WFunctionSymbol) f).argTypes.get(i);
+						if (actual != expected && promoted != expected)
+							error(ctx.start, INCOMPATIBLE_ARGUMENT_ERROR, expected.getName(), actual.getName());
+					}
 				}
 			}
 		}

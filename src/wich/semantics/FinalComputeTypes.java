@@ -203,10 +203,4 @@ public class FinalComputeTypes extends MaintainScopeListener {
 		ctx.exprType = SymbolTable._int;
 	}
 
-	@Override
-	public void exitWhile(WichParser.WhileContext ctx) {
-		if (ctx.expr().getText().equals("true")) {
-			error(ctx.start,INFINITE_LOOP);
-		}
-	}
 }
