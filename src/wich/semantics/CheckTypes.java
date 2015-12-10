@@ -58,11 +58,13 @@ public class CheckTypes extends MaintainScopeListener {
 			return;
 		}
 		Type left = ((TypedSymbol) s).getType();
-		if ( !TypeHelper.isLegalAssign(left, ctx.expr()) ) {
-			error(ctx.start,
-			      INCOMPATIBLE_ASSIGNMENT_ERROR,
-			      left.getName(),
-			      ctx.expr().exprType.getName());
+		if (ctx.expr().exprType != null) {
+			if (!TypeHelper.isLegalAssign(left, ctx.expr())) {
+				error(ctx.start,
+						INCOMPATIBLE_ASSIGNMENT_ERROR,
+						left.getName(),
+						ctx.expr().exprType.getName());
+			}
 		}
 	}
 
@@ -83,7 +85,7 @@ public class CheckTypes extends MaintainScopeListener {
 			error(ctx.start, INVALID_INDEX_ERROR, index.exprType.getName()); //should terminate the program
 		}
 		// element value must be expression of float type or can be promoted to float
-		else if ( !TypeHelper.typesAreCompatible(elem, SymbolTable._float) ) {
+		else if ( elem.exprType!= null && (!TypeHelper.typesAreCompatible(elem, SymbolTable._float))) {
 			error(ctx.start, INVALID_ELEMENT_ERROR, elem.exprType.getName());
 		}
 	}
@@ -92,8 +94,10 @@ public class CheckTypes extends MaintainScopeListener {
 	public void exitVector(@NotNull WichParser.VectorContext ctx) {
 		if (ctx.expr_list() != null) {
 			for (WichParser.ExprContext elem : ctx.expr_list().expr()){
-				if ( !TypeHelper.typesAreCompatible(elem, SymbolTable._float) ) {
-					error(ctx.start, INVALID_ELEMENT_ERROR, elem.exprType.getName());
+				if (elem.exprType != null) {
+					if (!TypeHelper.typesAreCompatible(elem, SymbolTable._float)) {
+						error(ctx.start, INVALID_ELEMENT_ERROR, elem.exprType.getName());
+					}
 				}
 			}
 		}
@@ -101,14 +105,14 @@ public class CheckTypes extends MaintainScopeListener {
 
 	@Override
 	public void exitIf(@NotNull WichParser.IfContext ctx) {
-		if (ctx.expr().exprType != SymbolTable._boolean)
+		if (ctx.expr().exprType != null && ctx.expr().exprType != SymbolTable._boolean)
 			error(ctx.start, INVALID_CONDITION_ERROR, ctx.expr().exprType.getName());
 	}
 
 
 	@Override
 	public void exitWhile(@NotNull WichParser.WhileContext ctx) {
-		if (ctx.expr().exprType != SymbolTable._boolean && ctx.expr().exprType != null){
+		if (ctx.expr().exprType != null && ctx.expr().exprType != SymbolTable._boolean){
 			error(ctx.start, INVALID_CONDITION_ERROR, ctx.expr().exprType.getName());
 		}
 	}
@@ -134,9 +138,11 @@ public class CheckTypes extends MaintainScopeListener {
 
 	@Override
 	public void exitLen(WichParser.LenContext ctx) {
-		Type type = ctx.expr().exprType;
-		if (type != SymbolTable._vector && type != SymbolTable._string) {
-			error(ctx.start,TYPE_ERROR_FOR_LEN,ctx.expr().exprType.getName());
+		if (ctx.expr().exprType != null) {
+			Type type = ctx.expr().exprType;
+			if (type != SymbolTable._vector && type != SymbolTable._string) {
+				error(ctx.start, TYPE_ERROR_FOR_LEN, ctx.expr().exprType.getName());
+			}
 		}
 	}
 
@@ -145,7 +151,7 @@ public class CheckTypes extends MaintainScopeListener {
 		WFunctionSymbol f = findFunctionSymbol();
 		if (f != null) {
 			Type returnType = f.getType();
-			if (ctx.expr().exprType != returnType) {
+			if (ctx.expr().exprType != null && ctx.expr().exprType != returnType) {
 				errorHandler.error(ctx.start, RETURN_TYPE_ERROR, ctx.expr().exprType.getName(), returnType.getName());
 			}
 		}
