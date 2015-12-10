@@ -32,10 +32,7 @@ import wich.parser.WichParser.ExprContext;
 import wich.semantics.symbols.WFunctionSymbol;
 import wich.semantics.symbols.WVariableSymbol;
 
-import static wich.errors.ErrorType.INCOMPATIBLE_OPERAND_ERROR;
-import static wich.errors.ErrorType.INVALID_OPERAND_ERROR;
-import static wich.errors.ErrorType.INVALID_OPERATION;
-import static wich.errors.ErrorType.SYMBOL_NOT_FOUND;
+import static wich.errors.ErrorType.*;
 
 /*Another pass to support forward reference */
 public class FinalComputeTypes extends MaintainScopeListener {
@@ -205,4 +202,5 @@ public class FinalComputeTypes extends MaintainScopeListener {
 		if (ctx.exprType != null) return;
 		ctx.exprType = SymbolTable._int;
 	}
+
 }
