@@ -301,7 +301,8 @@ public class CodeGenerator extends WichBaseVisitor<OutputModelObject> {
 
 	@Override
 	public OutputModelObject visitNegate(@NotNull WichParser.NegateContext ctx) {
-		return new NegateExpr((Expr)visit(ctx.expr()), getTypeModel(ctx.exprType), getTempVar());
+		WichType type = ctx.promoteToType != null ? getTypeModel(ctx.promoteToType) : getTypeModel(ctx.exprType);
+		return new NegateExpr((Expr)visit(ctx.expr()), type, getTempVar());
 	}
 
 	@Override

@@ -96,8 +96,12 @@ public class FinalComputeTypes extends MaintainScopeListener {
 
 	@Override
 	public void exitNegate(@NotNull WichParser.NegateContext ctx) {
-		if (ctx.exprType != null) return;
-		ctx.exprType = ctx.expr().exprType;
+		if (ctx.exprType == null) {
+			ctx.exprType = ctx.expr().exprType;
+		}
+		if (ctx.promoteToType != null) {
+			ctx.expr().promoteToType = ctx.promoteToType;
+		}
 	}
 
 	@Override
